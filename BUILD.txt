@@ -1,0 +1,4 @@
+1) add cmake to the path
+2) Provide the build locations for the FLANN and HDI libraries 
+
+python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib -DHDI_BLD_ROOT=../bld/hdi
