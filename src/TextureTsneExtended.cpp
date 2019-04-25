@@ -1,5 +1,5 @@
 // Simplified version of https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
-#include "TextureTsne.h"
+#include "TextureTsneExtended.h"
 #include "hdi/dimensionality_reduction/tsne.h"
 #include "hdi/utils/cout_log.h"
 #include "hdi/utils/log_helper_functions.h"
@@ -19,18 +19,14 @@
 #include <iostream>
 #include <vector>
 
-
-
 // constructor
-TextureTsne::TextureTsne(
+TextureTsneExtended::TextureTsneExtended(
 	bool verbose, 
-	int iterations, 
 	int num_target_dimensions,
 	int perplexity,
-	int exaggeration_iter,
 	int knn_algorithm
-) : _verbose(verbose), _iterations(iterations), _num_target_dimensions(num_target_dimensions),
-	_perplexity(perplexity), _exaggeration_iter(exaggeration_iter), _knn_algorithm(knn_algorithm)
+) : _verbose(verbose), _num_target_dimensions(num_target_dimensions),
+	_perplexity(perplexity), _knn_algorithm(knn_algorithm)
 {
 }
 	
@@ -38,7 +34,7 @@ TextureTsne::TextureTsne(
 // Only accept c-type float (row-major, dense) and cast any non conforming args. 
 // Return a numpy compatible array.
 //py::array_t<float, py::array::c_style>
-py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
+bool TextureTsneExtended::init_transform(
 	py::array_t<float, py::array::c_style | py::array::forcecast> X) 
 {
 	if (_verbose) {
@@ -49,22 +45,10 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 		std::cout << "knn type: " << ((-1 == _knn_algorithm) ? "flann\n": "hnsw\n");
 	}
 	try {
-		QFileInfo libInfo = LibInfo::get_lib_info();
-		//std::cout << "set library path with " << libInfo.absolutePath().toStdString() << std::endl;
-		//
-		QApplication::addLibraryPath(libInfo.absolutePath());
-		char *dllPath = const_cast<char *>(libInfo.absolutePath().toStdString().c_str());
-		int argc = 1;
-		QApplication _app(argc, static_cast<char **>(&dllPath));
-		
-		_app.setQuitOnLastWindowClosed(false);
-		QApplication::setApplicationName("TextureTsne tSNE");
-		QApplication::setApplicationVersion("0.0.3");
 
 		auto X_loc = X;
 		float similarities_comp_time = 0;
-		float gradient_desc_comp_time = 0;
-		typedef float scalar_type;
+
 		py::buffer_info X_info = X_loc.request();
 		if (X_info.ndim != 2) {
 			throw std::runtime_error("Expecting input data to have two dimensions, data point and values");
@@ -78,11 +62,7 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 
 		hdi::utils::CoutLog log;
 		hdi::dr::HDJointProbabilityGenerator<scalar_type> prob_gen;
-		hdi::dr::HDJointProbabilityGenerator<scalar_type>::sparse_scalar_matrix_type distributions;
 		hdi::dr::HDJointProbabilityGenerator<scalar_type>::Parameters prob_gen_param;
-		hdi::dr::GradientDescentTSNETexture tSNE;
-		hdi::dr::TsneParameters tSNE_param;
-		hdi::data::Embedding<scalar_type> embedding;
 
 		{
 			hdi::utils::ScopedTimer<float,hdi::utils::Seconds> timer(similarities_comp_time);
@@ -92,21 +72,81 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 				static_cast<float *>(X_info.ptr),
 				_num_dimensions,
 				_num_data_points,
-				distributions,
+				_distributions,
 				prob_gen_param);
 		}
 
 		std::cout << "knn complete" << "\n";
+		if (_verbose) {
+			std::cout << "Similarities computation (sec) " << similarities_comp_time << "\n";
+		}
+
+	} 
+	catch (const std::exception& e) {
+		std::cout << "Fatal error: " << e.what() << std::endl;
+		return false;
+	}
+	return true;
+}
+
+
+py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
+	bool verbose,
+	int iterations,
+	int exaggeration,
+	py::array_t<float, py::array::c_style | py::array::forcecast> given_embed) 
+{
+	_verbose = verbose;
+	_iterations = iterations;
+	_exaggeration_iter = exaggeration;
+	try {
+		QFileInfo libInfo = LibInfo::get_lib_info();
+		//std::cout << "set library path with " << libInfo.absolutePath().toStdString() << std::endl;
+		//
+		QApplication::addLibraryPath(libInfo.absolutePath());
+		char *dllPath = const_cast<char *>(libInfo.absolutePath().toStdString().c_str());
+		int argc = 1;
+		auto app = std::make_unique<QApplication>(argc, static_cast<char **>(&dllPath));
+		float gradient_desc_comp_time = 0;
+		
+		app->setQuitOnLastWindowClosed(false);
+		QApplication::setApplicationName("TextureTsne tSNE");
+		QApplication::setApplicationVersion("0.0.3");
+		
 		OffscreenBuffer _offscreen;
 		_offscreen.bindContext();
+		auto embedding_loc = given_embed;
+		py::buffer_info emb_info = embedding_loc.request();
+
+		hdi::dr::GradientDescentTSNETexture tSNE;
+		hdi::dr::TsneParameters tSNE_param;
+		hdi::data::Embedding<scalar_type> embedding;
 		std::cout << "grad descent tsne starting" << "\n";
 		{
 			hdi::utils::ScopedTimer<float,hdi::utils::Seconds> timer(gradient_desc_comp_time);
 			tSNE_param._embedding_dimensionality = _num_target_dimensions;
 			tSNE_param._mom_switching_iter = _exaggeration_iter;
 			tSNE_param._remove_exaggeration_iter = _exaggeration_iter;
-			tSNE.initialize(distributions,&embedding,tSNE_param);
-			
+			tSNE.initialize(_distributions,&embedding,tSNE_param);
+			if (emb_info.ndim == 2) {
+				if (_verbose) {
+					std::cout << "Starting from given embedding...\n";
+				}
+				float * emb_in = static_cast<float *>(emb_info.ptr);
+				// user provided default for embedding - overwrite the random def.
+				typename hdi::data::Embedding<scalar_type>::scalar_vector_type* embedding_container = &(embedding.getContainer());
+				// simply replace the container by the input?
+				for(int p = 0; p < _num_data_points; p++) {
+					for(int d = 0; d < 2; d++) {
+						(*embedding_container)[p * 2 + d] = emb_in[p * 2 + d];
+					}
+				}
+			}
+			else {
+				if (_verbose) {
+					std::cout << "Starting from random embedding...\n";
+				}				
+			}
 			if (_verbose) {
 				std::cout << "Computing gradient descent...\n";
 			}
@@ -133,16 +173,14 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 			output[i] = data[i];
 		}
 		if (_verbose) {
-			std::cout << "Similarities computation (sec) " << similarities_comp_time << "\n";
 			std::cout << "Gradient descent (sec) " << gradient_desc_comp_time << "\n";
 		}
-		QMetaObject::invokeMethod(&_app, "quit", Qt::QueuedConnection);
-		_app.exec();
-		return result;
+		QMetaObject::invokeMethod(app.get(), "quit", Qt::QueuedConnection);
+		app->exec();
+		return result;	
 	} 
 	catch (const std::exception& e) {
 		std::cout << "Fatal error: " << e.what() << std::endl;
 	}
-	return py::array_t<float>(0);
-	
+	return py::array_t<float>(0);		
 }

@@ -13,7 +13,7 @@ with open("./src/docs/README.md", "r") as fh:
 
 setup(
     name='nptsne',
-    version='0.0.2',
+    version='0.0.3',
 	author='Nicola Pezzotti, Julian Thijssen, Baldur van Lew',
 	description='The nptsne package is designed to export a number of python classes that wrap tSNE',
 	long_description=long_description,

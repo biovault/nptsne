@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4.0)
-project(nptsne VERSION 0.0.2)
+project(nptsne VERSION 0.0.3)
 
 if(SKBUILD)
   message(STATUS "The project is built using scikit-build")
@@ -20,6 +20,8 @@ add_subdirectory(pybind11)
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(NPTSNE_FILES 
 	src/TextureTsne.cpp
+	src/TextureTsneExtended.cpp
+	src/LibInfo.cpp
 	src/nptSNEBind.cpp
 )
 
@@ -32,8 +34,9 @@ find_package(Qt5OpenGL REQUIRED)
 get_target_property(Qt5OpenGL_location Qt5::OpenGL LOCATION)
 find_package(Qt5Widgets REQUIRED)
 get_target_property(Qt5Widgets_location Qt5::Widgets LOCATION)
-
 find_package(Qt5Gui REQUIRED)
+get_target_property(Qt5Gui_location Qt5::Gui LOCATION)
+
 if(WIN32)
 	get_target_property(QT_PLATFORM_PLUGIN_location Qt5::QWindowsIntegrationPlugin LOCATION)
 	message(STATUS "Plugin Qt5::QWindowsIntegrationPlugin is at location ${QT_PLATFORM_PLUGIN_location}")
@@ -90,6 +93,6 @@ ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 INSTALL(TARGETS nptsne LIBRARY DESTINATION nptsne)
 message(STATUS "adding ${QT_PLATFORM_PLUGIN_location}")
-INSTALL(FILES ${QT_PLATFORM_PLUGIN_location}  DESTINATION nptsne/platform)
-INSTALL(FILES ${QtCore_location} ${Qt5OpenGL_location} ${Qt5Widgets_location}  DESTINATION nptsne)
+INSTALL(FILES ${QT_PLATFORM_PLUGIN_location}  DESTINATION nptsne/platforms)
+INSTALL(FILES ${QtCore_location} ${Qt5OpenGL_location} ${Qt5Widgets_location} ${Qt5Gui_location} DESTINATION nptsne)
 INSTALL(FILES ./src/py/__init__.py DESTINATION nptsne)

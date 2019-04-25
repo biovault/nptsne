@@ -1,4 +1,14 @@
-1) add cmake to the path
+1) add cmake to the path (e.g. set PATH=%PATH%;C:\Program Files\CMake\bin)
 2) Provide the build locations for the FLANN and HDI libraries 
 
-python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib -DHDI_BLD_ROOT=../bld/hdi
+py3.7
+
+python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib -DHDI_BLD_ROOT=../bld/hdi -DPYBIND11_PYTHON_VERSION=3.7
+rename dist dist37
+
+py3.6
+python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib -DHDI_BLD_ROOT=../bld/hdi -DPYBIND11_PYTHON_VERSION=3.6
+rename dist dist36
+
+3) Testing 
+pip install dist37 or dist36\<pkgname>.whl
