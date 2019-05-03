@@ -4,6 +4,7 @@
 #include <pybind11/numpy.h>
 namespace py = pybind11;
 #include "LibInfo.h"
+#include "KnnAlgorithm.h"
 #include "OffscreenBuffer.h"
 
 class TextureTsne {
@@ -15,8 +16,9 @@ public:
 		int num_target_dimensions=2,
 		int perplexity=30,
 		int exaggeration_iter=250,
-		int knn_algorithm=-1
-		);
+		KnnAlgorithm knn_algorithm=KnnAlgorithm::Flann
+	);
+		
 	// tSNE transform and return results
 	py::array_t<float, py::array::c_style> fit_transform(
 		py::array_t<float, py::array::c_style | py::array::forcecast> X);
@@ -29,7 +31,7 @@ private:
     int _iterations;
     int _exaggeration_iter;
     int _perplexity;
-	int _knn_algorithm;
+	KnnAlgorithm _knn_algorithm;
     double _theta;
     int _num_target_dimensions;
 };

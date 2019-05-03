@@ -28,7 +28,7 @@ TextureTsne::TextureTsne(
 	int num_target_dimensions,
 	int perplexity,
 	int exaggeration_iter,
-	int knn_algorithm
+	KnnAlgorithm knn_algorithm
 ) : _verbose(verbose), _iterations(iterations), _num_target_dimensions(num_target_dimensions),
 	_perplexity(perplexity), _exaggeration_iter(exaggeration_iter), _knn_algorithm(knn_algorithm)
 {
@@ -46,7 +46,7 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 		std::cout << "Target dimensions: " << _num_target_dimensions << "\n";
 		std::cout << "Perplexity: " << _perplexity << "\n";
 		std::cout << "Exaggeration iter.: " << _exaggeration_iter <<"\n";
-		std::cout << "knn type: " << ((-1 == _knn_algorithm) ? "flann\n": "hnsw\n");
+		std::cout << "knn type: " << ((KnnAlgorithm::Flann == _knn_algorithm) ? "flann\n": "hnsw\n");
 	}
 	try {
 		QFileInfo libInfo = LibInfo::get_lib_info();
@@ -87,7 +87,7 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 		{
 			hdi::utils::ScopedTimer<float,hdi::utils::Seconds> timer(similarities_comp_time);
 			prob_gen_param._perplexity = _perplexity;
-			prob_gen_param._aknn_algorithm = _knn_algorithm;
+			prob_gen_param._aknn_algorithm = static_cast<int>(_knn_algorithm);
 			prob_gen.computeProbabilityDistributions(
 				static_cast<float *>(X_info.ptr),
 				_num_dimensions,
