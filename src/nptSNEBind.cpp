@@ -132,14 +132,16 @@ PYBIND11_MODULE(nptsne, m) {
 		Args:
 			verbose: Enable verbose logging to std:out
 			
-			iterations: the number of iterations to runr )doc",
+			iterations: the number of iterations to run 
+		Returns:
+			A numpy array contain a flatten (1D) embedding)doc",
 		py::arg("verbose")=false, 
 		py::arg("iterations")=1000);
 		
 	textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay, 
 		R"doc(
 		Enable exaggeration decay. Effective on next call to run_transform. 
-		Exaggeration decay is fixed at nnn iterations. This call is ony effective once.
+		Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
 		)doc");
 
 	textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at, 
