@@ -15,7 +15,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-
+#include <exception>
+	
 // constructor
 TextureTsneExtended::TextureTsneExtended(
 	bool verbose, 
@@ -106,7 +107,7 @@ bool TextureTsneExtended::init_transform(
 
 void TextureTsneExtended::start_exaggeration_decay() 
 {
-	if (_decay_started_at >= 0 && !_exaggeration_decay) {
+	if (!_exaggeration_decay) {
 		hdi::dr::TsneParameters tSNE_param;
 		_exaggeration_decay = true;
 		tSNE_param._embedding_dimensionality = _num_target_dimensions;
@@ -115,6 +116,9 @@ void TextureTsneExtended::start_exaggeration_decay()
 		tSNE_param._presetEmbedding = _have_preset_embedding;
 		_decay_started_at = _iteration_count;
 		_tSNE.updateParams(tSNE_param);
+	}
+	else {
+		throw std::exception("Exaggeration decay is already active.");
 	}
 }
 

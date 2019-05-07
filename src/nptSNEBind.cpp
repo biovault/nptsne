@@ -142,6 +142,7 @@ PYBIND11_MODULE(nptsne, m) {
 		R"doc(
 		Enable exaggeration decay. Effective on next call to run_transform. 
 		Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
+		Raises: RuntimeError if the decay is already active. This can be ignored.	
 		)doc");
 
 	textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at, 
