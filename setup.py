@@ -2,6 +2,7 @@ from skbuild import setup  # This line replaces 'from setuptools import setup'
 from skbuild.setuptools_wrap import upstream_Distribution
 # from setuptools.dist import Distribution
 
+__version__ = '0.1.1'
 with open("./src/docs/README.md", "r") as fh:
     long_description = fh.read()
 
@@ -13,7 +14,7 @@ with open("./src/docs/README.md", "r") as fh:
 
 setup(
     name='nptsne',
-    version='0.0.3',
+    version=__version__,
 	author='Nicola Pezzotti, Julian Thijssen, Baldur van Lew',
 	description='The nptsne package is designed to export a number of python classes that wrap tSNE',
 	long_description=long_description,

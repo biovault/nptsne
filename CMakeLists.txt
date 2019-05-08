@@ -15,6 +15,7 @@ endif(WIN32)
 
 message(STATUS "${PYBIND11_CPP_STANDARD}")
 
+# pybind11 is included as a submodule
 add_subdirectory(pybind11)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
