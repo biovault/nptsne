@@ -1,6 +1,16 @@
+Instructions for manual building/testing (for CI see elsewhere) 
+===============================================================
 1) add cmake to the path (e.g. set PATH=%PATH%;C:\Program Files\CMake\bin)
 2) Provide the build locations for the FLANN and HDI libraries 
+3) To get pybind11 (in the absence of a recursive clone of the main repo) remember to 
 
+> git submodule init
+> git submodule update
+
+4) Building (paths from windows example)
+
+Note the full path for the flann lib (relative won't work with the linker)
+WINDOWS:
 py3.7
 
 python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib -DHDI_BLD_ROOT=../bld/hdi -DPYBIND11_PYTHON_VERSION=3.7
@@ -10,5 +20,11 @@ py3.6
 python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib -DHDI_BLD_ROOT=../bld/hdi -DPYBIND11_PYTHON_VERSION=3.6
 rename dist dist36
 
-3) Testing 
+LINUX:
+py3.6
+python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=~/LinuxProjects/flann/bld -DHDI_BLD_ROOT=../bld/hdi -DPYBIND11_PYTHON_VERSION=3.6
+
+5) Testing - use a separate python environment (preferable a separate machine)
 pip install dist37 or dist36\<pkgname>.whl
+
+5a) Use 'behave' BDD test on the test features.

@@ -16,7 +16,7 @@ setup(
     name='nptsne',
     version=__version__,
 	author='Nicola Pezzotti, Julian Thijssen, Baldur van Lew',
-	description='The nptsne package is designed to export a number of python classes that wrap tSNE',
+	description='The nptsne package is designed to export a number of python classes that wrap tSNE. Reference https://arxiv.org/abs/1805.10817',
 	long_description=long_description,
     long_description_content_type="text/markdown",
 	# Include pre-compiled extension

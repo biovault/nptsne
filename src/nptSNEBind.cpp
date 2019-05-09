@@ -17,6 +17,8 @@ PYBIND11_MODULE(nptsne, m) {
 			
 			TextureTsne : linear tSNE simple API
 			TextureTsneExtended : linear tSNE advanced API
+			
+		Reference: https://arxiv.org/abs/1805.10817
 
         .. currentmodule:: nptsne
 

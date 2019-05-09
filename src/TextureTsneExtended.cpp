@@ -118,7 +118,7 @@ void TextureTsneExtended::start_exaggeration_decay()
 		_tSNE.updateParams(tSNE_param);
 	}
 	else {
-		throw std::exception("Exaggeration decay is already active.");
+		throw std::runtime_error("Exaggeration decay is already active.");
 	}
 }
 
