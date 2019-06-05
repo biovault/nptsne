@@ -1,5 +1,25 @@
 Instructions for manual building/testing (for CI see elsewhere) 
 ===============================================================
+Prerequisites
+=============
+Development tools (above build-essential)
+
+sudo apt-get install cmake
+sudo apt-get install cmake-qt-gui (optional)
+sudo apt-get install liblz4-dev
+sudo apt-get install liblz4-tool (optional)
+sudo apt-get install libgl-dev
+
+Extra python packages for your 3.6 and 3.7 (assuming an anaconda environment as default)
+
+numpy
+scipy
+matplotlib
+scikit-build
+
+
+Building
+========
 1) add cmake to the path (e.g. set PATH=%PATH%;C:\Program Files\CMake\bin)
 2) Provide the build locations for the FLANN and HDI libraries 
 3) To get pybind11 (in the absence of a recursive clone of the main repo) remember to 
