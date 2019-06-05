@@ -11,6 +11,6 @@ The tSNE implementations are the original work of the authors named in the liter
 
 Class | Description | Publication
 ---  | --- | ---
-TextureTsne | Linear time tSNE reliant on GPU textures | TODO
-
+TextureTsne | Linear time tSNE reliant on GPU textures | https://arxiv.org/abs/1805.10817
+TextureTsneExtended | Linear time tSNE reliant on GPU textures, extended API | https://arxiv.org/abs/1805.10817
 
