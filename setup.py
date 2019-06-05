@@ -21,8 +21,9 @@ setup(
     long_description_content_type="text/markdown",
 	# Include pre-compiled extension
 	packages=['nptsne'],
-    package_data={'nptsne': ['nptsne.cp36-win_amd64.pyd', '*.*', '**/*.*']},
+#    package_data={'nptsne': ['nptsne.cp36-win_amd64.pyd', '*.*', '**/*.*']},
 #    distclass=BinaryDistribution,
+# 	TODO add test_require for the behave tests see https://stackoverflow.com/questions/21698004/python-behave-integration-in-setuptools-setup-py
 	classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache License 2.0",
