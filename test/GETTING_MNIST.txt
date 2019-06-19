@@ -1,0 +1,3 @@
+70000 point mnist available at
+
+wget https://github.com/amplab/datascience-sp14/raw/master/lab7/mldata/mnist-original.mat

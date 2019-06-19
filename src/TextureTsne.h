@@ -6,6 +6,8 @@ namespace py = pybind11;
 #include "LibInfo.h"
 #include "KnnAlgorithm.h"
 #include "OffscreenBuffer.h"
+#include "hdi/dimensionality_reduction/tsne.h"
+#include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
 
 class TextureTsne {
 public:
@@ -32,6 +34,7 @@ private:
     int _exaggeration_iter;
     int _perplexity;
 	KnnAlgorithm _knn_algorithm;
+	hdi::dr::TsneParameters tSNE_param;
     double _theta;
     int _num_target_dimensions;
 };

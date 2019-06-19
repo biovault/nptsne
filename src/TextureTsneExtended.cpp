@@ -166,7 +166,7 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 				_app = std::make_unique<QApplication>(argc, static_cast<char **>(&dllPath));
 				_app->setQuitOnLastWindowClosed(false);
 				QApplication::setApplicationName("TextureTsne tSNE");
-				QApplication::setApplicationVersion("0.0.3");
+				QApplication::setApplicationVersion("0.1.0");
 				_offscreen = new OffscreenBuffer();
 				_offscreen->bindContext();
 				
