@@ -35,13 +35,23 @@ bool TextureTsneExtended::init_transform(
 {
 	auto embedding_loc = initial_embedding;
 	py::buffer_info emb_info = embedding_loc.request();
+	auto X_loc = X;
+	py::buffer_info X_info = X_loc.request();
+	if (X_info.ndim != 2) {
+		throw std::runtime_error("Expecting input data to have two dimensions, data point and values");
+	}
+	_num_data_points = X_info.shape[0];
+	_num_dimensions = X_info.shape[1];
+	std::cout << "emb_info size: " <<  emb_info.size << " emb_info dims: " <<  emb_info.ndim << std::endl;
 	if (emb_info.ndim == 2 && emb_info.size > 0) {
 		if (_verbose) {
 			std::cout << "Initialize from given embedding...\n";
+			std::cout << "Embed dimensions: " << emb_info.shape[0] << ", " << emb_info.shape[1] << "\n";
 		}
 		_have_preset_embedding = true;
 		float * emb_in = static_cast<float *>(emb_info.ptr);
 		// user provided default for embedding - overwrite the random def.
+		_embedding = hdi::data::Embedding<scalar_type>(emb_info.shape[0], emb_info.shape[1]);
 		typename hdi::data::Embedding<scalar_type>::scalar_vector_type* embedding_container = &(_embedding.getContainer());
 		// simply replace the container by the input?
 		for(int p = 0; p < _num_data_points; p++) {
@@ -52,25 +62,17 @@ bool TextureTsneExtended::init_transform(
 	}
 	
 	if (_verbose) {
-		std::cout << "Iterations: " << _iterations << "\n";
 		std::cout << "Target dimensions: " << _num_target_dimensions << "\n";
 		std::cout << "Perplexity: " << _perplexity << "\n";
 		std::cout << "knn type: " << ((KnnAlgorithm::Flann == _knn_algorithm) ? "flann\n": "hnsw\n");
 	}
 	try {
 		
-		auto X_loc = X;
 		float similarities_comp_time = 0;
 		_exaggeration_decay = false;
 		_iteration_count = 0;
 		_decay_started_at = -1;
 
-		py::buffer_info X_info = X_loc.request();
-		if (X_info.ndim != 2) {
-			throw std::runtime_error("Expecting input data to have two dimensions, data point and values");
-		}
-		_num_data_points = X_info.shape[0];
-		_num_dimensions = X_info.shape[1];
 		if (_verbose) {
 			std::cout << "Read " << _num_data_points << " points,\n";
 			std::cout << " and " << _num_dimensions << " value dimensions.\n";
@@ -174,7 +176,17 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 				_tSNE.initialize(_distributions,&_embedding,tSNE_param);
 			}
 			else {
-				// continuing tSNE possibly with new params 
+				// continuing tSNE possibly with new params from start_exaggeration_decay
+				if (!_exaggeration_decay) {
+					// Continuing with no decay, maintain the disabled decay for this run
+					hdi::dr::TsneParameters tSNE_param;
+					tSNE_param._embedding_dimensionality = _num_target_dimensions;
+					tSNE_param._mom_switching_iter = _iteration_count + iterations;
+					tSNE_param._remove_exaggeration_iter = _iteration_count + iterations;
+					tSNE_param._presetEmbedding = _have_preset_embedding;
+					_tSNE.updateParams(tSNE_param);
+					
+				}
 				std::cout << "continuing tSNE" << "\n";	
 			}
 			
@@ -207,7 +219,7 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 			for(int iter = 0; iter < _iterations; ++iter){
 				_tSNE.doAnIteration();
 				if (_verbose) {
-					std::cout << "Iter: " << iter << "\n";
+					std::cout << "Iter: " << _iteration_count + iter << "\n";
 				}
 			}
 			

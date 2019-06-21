@@ -19,7 +19,7 @@ Scenario Outline: run_transform
 	Examples: Iteration settings
 		| num_iters  | max_range  | min_range    |
 		| "100"	     | "1.5,2.5"  | "-1.5,-2.5"  |  
-		| "200"      | "4.5,6.1"  | "-4.5,-6.1"  |
+		| "200"      | "4.5,6.3"  | "-4.5,-6.3"  |
 		| "500"      | "7.5,11.5" | "-7.5,-11.5" |
 		| "1000"     | "9.5,13.0" | "-9.5,-13.0" |
 		
@@ -28,13 +28,13 @@ Scenario: run transform and enable decay
 	 When init_transform and run_transform is run for "200" iterations
 	 Then decay started is "-1"
 	 Then the iteration count is "200"
-	 Then the embedding is within "4.5,5.8" and "-4.5,-5.8"	
+	 Then the embedding is within "4.5,6.0" and "-4.5,-6.0"	
 	 When run_transform for an additional "200" iterations
 	 Then decay started is "-1"
 	 Then the iteration count is "400"
-	 Then the embedding is within "13.0,17.0" and "-13.0,-17.0"
+	 Then the embedding is within "5.0,11.0" and "-5.0,-11.0"
 	 When set exaggeration decay on
 	  And run_transform for an additional "200" iterations
 	 Then decay started is "400" 
 	 Then the iteration count is "600"
-	 Then the embedding is within "40,50" and "-40,-50"	 
+	 Then the embedding is within "15,20" and "-15,-20"	 
