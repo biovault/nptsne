@@ -1,66 +1,78 @@
-## <span style="font-size:2em;">Instructions for manual building/testing</span> 
+## <span style="font-size:1.5em;">Instructions for manual building/testing</span>
 
 (for CI/CD see elsewhere)
 
-##Prerequisites
- 
+## Prerequisites
+
 Development tools (above build-essential)
 
+```
 sudo apt-get install cmake
 sudo apt-get install cmake-qt-gui (optional)
 sudo apt-get install liblz4-dev
 sudo apt-get install liblz4-tool (optional)
 sudo apt-get install libgl-dev
+```
 
 Extra python packages for your 3.6 and 3.7 (assuming an anaconda environment as default)
 
-numpy
-scipy
-matplotlib
-scikit-build
+- numpy
+- scipy
+- matplotlib
+- scikit-build
 
 
 ##Building
- 
-1) add cmake to the path (e.g. set PATH=%PATH%;C:\Program Files\CMake\bin)
-2) Provide the build locations for the FLANN and HDI libraries 
-3) To get pybind11 (in the absence of a recursive clone of the main repo) remember to 
 
-> \>git submodule init
-> \>git submodule update
-
+1. add cmake to the path (e.g. set PATH=%PATH%;C:\Program Files\CMake\bin)
+2. Provide the build locations for the FLANN and HDI libraries
+3. To get pybind11 (in the absence of a recursive clone of the main repo) remember to
+```
+git submodule init
+git submodule update
+```
 4) Building (paths from windows example)
 
 Note the full path for the flann lib (relative won't work with the linker)
 
 #### WINDOWS Build:
+**Note:** *If errors occur with skbuild and cmake do pip install cmake in the py3x environment*
 
 First cleanup the previous build
-> \>cleanup.bat
+>```cleanup.bat```
 
 **py3.7**
-4.a) > \>conda activate py37
+
+4.a) ```conda activate Py37```
 
 **py3.6**
-4.a)  >conda activate py36
 
-4.b) python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib 
+4.a) ```conda activate Py36```
+
+4.b)
+```
+pip install cmake
+python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib
+```
 
 #### LINUX Build:
 
 First cleanup the previous build
-> \>./cleanup.sh
+```./cleanup.sh```
 
 **CENTOS only**
-4.a) scl enable devtoolset-7
+
+4.a) ```scl enable devtoolset-7```
 
 _Either py3.6_
-4.b) conda activate py36
+
+4.b) ```conda activate py36```
 
 _Or py3.7_
-4.b) conda activate py37
 
-4.c) python setup.py bdist_wheel -- 
+4.b) ```conda activate py37```
+
+4.c) ```python setup.py bdist_wheel --```
 
 
 5) Testing - use a separate python environment (preferable a separate machine)
@@ -74,33 +86,33 @@ The following is a recipe for setting up  a device image for testing or building
 
 #### Choosing the hardware needed
 
-To test we need an instance with graphics hardware. For Windows instances Amazon Elactic Graphics supports on demand GPU usage, however, at the time of writing (June 2019), this is not suported for Linux. As a result the instance should be chosen from the following:
+To test we need an instance with graphics hardware. For Windows instances Amazon Elastic Graphics supports on demand GPU usage, however, at the time of writing (June 2019), this is not supported for Linux. As a result the instance should be chosen from the following:
 
-EC2 Instance Type with  NVIDIA TESLA GPU (p & g types - June 2019)
-p2.xlarge
-p2.8xlarge	
-p2.16xlarge	
-p3.2xlarge	
-p3.8xlarge	
-p3.16xlarge	
-g2.2xlarge	
-g2.8xlarge	
-g3.4xlarge	
-g3.8xlarge
+__EC2 Instance Types with  NVIDIA TESLA GPUs (p & g types - June 2019)__
+- p2.xlarge
+- p2.8xlarge
+- p2.16xlarge
+- p3.2xlarge
+- p3.8xlarge
+- p3.16xlarge
+- g2.2xlarge
+- g2.8xlarge
+- g3.4xlarge
+- g3.8xlarge
 
-g2.2xlarge is the cheapes but the performance of large tSNE can be quite slow, g3.4xlarge is a good compromise.  Not all types are available in all regions. 
+g2.2xlarge is the cheapest but the performance of large tSNE can be quite slow, g3.4xlarge is a good compromise.  Not all types are available in all regions.
 
 #### Spot instances
-On AWS use spot instances to save on costs. The Choosing a regon in a night time zone seems to increase the chances of availability (e.g. from the Netherlands - N.California appears to be a good option).  g3.4xlarge can generally be obtained on spot (June 2019) at approx $0.65 per hour, g2.2xlarge for $0.21.
+On AWS use spot instances to save on costs. The Choosing a regoin in a night time zone seems to increase the chances of availability (e.g. from the Netherlands - N.California appears to be a good option).  g3.4xlarge can generally be obtained on spot (June 2019) at approx $0.65 per hour, g2.2xlarge for $0.21.
 
 Spots can be allocated in blocks from 1 to 6 hours but can also be prematurely terminated. Use a running spot instance to create an image following the recipe below
 
 #### Building a Centos7 with latest NVIDIA drivers
 
-1. Search the AWS marketplace for a suitable base image. In this case "CentOS 7 (x86_64) - with Updates HVM" 
+1. Search the AWS marketplace for a suitable base image. In this case "CentOS 7 (x86_64) - with Updates HVM"
 2. Going to the configuration page you can select a region and discover the AMI Id in that region.
 3. Launch a spot instance with graphics hardware  (for unlimited or unlimited time)
-4. ssh to the instance with your prvate key and follow the following:
+4. ssh to the instance with your private key and follow the following:
 
 ```
 sudo yum erase nvidia cuda
@@ -113,7 +125,7 @@ blacklist rivafb
 blacklist nvidiafb
 blacklist rivatv
 EOF
-sudo echo "GRUB_CMDLINE_LINUX="rdblacklist=nouveau" >> /etc/default/grub 
+sudo echo "GRUB_CMDLINE_LINUX="rdblacklist=nouveau" >> /etc/default/grub
 sudo grub2-mkconfig -o /boot/grub2/grub.cfg
 
 aws s3 --no-sign-request cp --recursive s3://ec2-linux-nvidia-drivers/latest/ .
@@ -157,17 +169,18 @@ cp ./usr/lib64/libpng16.so.16.37.0 /home/centos/miniconda2/envs/py36/lib/
 cp ./usr/lib64/libpng16.so.16.37.0 /home/centos/miniconda2/envs/py37/lib/
 ```
 
-References 
-[Installing latest graphics drivers on AWS instance]( https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-nvidia-driver.html)
-[Setting up a graphics environment on an EC2 instance](https://kitware.github.io/paraviewweb/docs/graphics_on_ec2_g2.html)
+References
+
+1. [Installing latest graphics drivers on AWS instance]( https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/install-nvidia-driver.html)
+2. [Setting up a graphics environment on an EC2 instance](https://kitware.github.io/paraviewweb/docs/graphics_on_ec2_g2.html)
 
 ###### <span style="font-size:1.5em;">Save as an AMI</span>
-Save the instance to a private AMI that can be used to launch a new spot instance. 
+Save the instance to a private AMI that can be used to launch a new spot instance.
 
 
 #### Building a Ubuntu 16.04 with latest NVIDIA drivers
 
 As CentOS but:
 
-1.) use sudo apt-get install instead of yum
-2.) sudo apt-get install build-essential  (gcc 5.4 - supports stdc++14)
+1. use sudo apt-get install instead of yum
+2. sudo apt-get install build-essential  (gcc 5.4 - supports stdc++14)
