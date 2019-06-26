@@ -1,0 +1,5 @@
+# Requirements for building in ReadTheDocs
+pybind11
+scikit-build
+sphinx-gallery
+cmake

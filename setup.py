@@ -25,9 +25,9 @@ setup(
 #    distclass=BinaryDistribution,
 # 	TODO add test_require for the behave tests see https://stackoverflow.com/questions/21698004/python-behave-integration-in-setuptools-setup-py
 	classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: Apache License 2.0",
-        "Operating System :: Windows",
+        "Operating System :: OS Independent",
     ],
 
 )

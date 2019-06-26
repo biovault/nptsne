@@ -58,10 +58,10 @@ add_subdirectory(pybind11)
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(NPTSNE_FILES 
-	src/TextureTsne.cpp
-	src/TextureTsneExtended.cpp
-	src/LibInfo.cpp
-	src/nptSNEBind.cpp
+	nptsne/TextureTsne.cpp
+	nptsne/TextureTsneExtended.cpp
+	nptsne/LibInfo.cpp
+	nptsne/nptSNEBind.cpp
 )
 
 pybind11_add_module(nptsne ${NPTSNE_FILES})
@@ -239,4 +239,4 @@ if(UNIX)
 		install(FILES "/usr/lib/x86_64-linux-gnu/libflann_cpp.so.1.8.4" DESTINATION nptsne RENAME libflann_cpp.so)
 	endif()	
 endif(UNIX)	
-install(FILES ./src/py/__init__.py DESTINATION nptsne)
+install(FILES ./nptsne/deploy__init__.py DESTINATION nptsne RENAME __init__.py)

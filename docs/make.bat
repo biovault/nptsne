@@ -5,12 +5,12 @@ pushd %~dp0
 REM Command file for Sphinx documentation
 
 if "%SPHINXBUILD%" == "" (
-REM 	set SPHINXBUILD=sphinx-build
-	set SPHINXBUILD=sphinx-apidoc
+	set SPHINXBUILD=sphinx-build
 )
 set SOURCEDIR=source
 set BUILDDIR=build
-
+set SPHINXPROJ=nptsne
+set SPHINXOPTS=-vvv
 if "%1" == "" goto help
 
 %SPHINXBUILD% >NUL 2>NUL
