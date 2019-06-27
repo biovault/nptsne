@@ -1,0 +1,269 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>nptsne API &#8212; nptsne 0.1.1a1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Citation" href="citation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="nptsne-api">
+<h1>nptsne API<a class="headerlink" href="#nptsne-api" title="Permalink to this headline">¶</a></h1>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#nptsne.TextureTsne" title="nptsne.TextureTsne"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextureTsne</span></code></a>(self,&nbsp;verbose,&nbsp;iterations,&nbsp;…)</td>
+<td>TextureTsne: a simple wrapper API for the linear tSNE implementation.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#nptsne.TextureTsneExtended" title="nptsne.TextureTsneExtended"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TextureTsneExtended</span></code></a>(self,&nbsp;verbose,&nbsp;…)</td>
+<td>TextureTsneExtended: an advanced wrapper API for the linear tSNE implementation.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#nptsne.KnnAlgorithm" title="nptsne.KnnAlgorithm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">KnnAlgorithm</span></code></a>(self,&nbsp;arg0)</td>
+<td>Members:</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="api-class-methods">
+<h2>API class methods<a class="headerlink" href="#api-class-methods" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nptsne.TextureTsne">
+<em class="property">class </em><code class="descclassname">nptsne.</code><code class="descname">TextureTsne</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.TextureTsne</em>, <em>verbose: bool = False</em>, <em>iterations: int = 1000</em>, <em>num_target_dimensions: int = 2</em>, <em>perplexity: int = 30</em>, <em>exaggeration_iter: int = 250</em>, <em>knn_algorithm: nptsne.nptsne.KnnAlgorithm = KnnAlgorithm.Flann</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsne" title="Permalink to this definition">¶</a></dt>
+<dd><p>TextureTsne: a simple wrapper API for the linear tSNE implementation.</p>
+<blockquote>
+<div>TextureTsne GPU compute shader implementation of the gradient descent
+linear tSNE described in doi://</div></blockquote>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">verbose (bool): Enable verbose logging to std::out</p>
+<dl class="last docutils">
+<dt>iterations (int): The number of iterations to perform. This must</dt>
+<dd>be at least 1000.</dd>
+<dt>num_target_dimensions (int): The number of dimensions for the output</dt>
+<dd>embedding. Default is 2.</dd>
+<dt>perplexity (int): The tSNE parameter that defines the neighborhood size.</dt>
+<dd>Usually between 10 and 30. Default is 30.</dd>
+<dt>exaggeration_iter (int): The iteration when force exaggeration starts </dt>
+<dd>to decay.</dd>
+<dt>knn_algorithm (str): The knn algorithm used for the nearest neighbor</dt>
+<dd>calculation. The default is ‘Flann’ for less than 50 dimensions 
+‘HNSW’ may be faster</dd>
+</dl>
+</dd>
+</dl>
+<p>..automethod:: __init__</p>
+<dl class="method">
+<dt id="nptsne.TextureTsne.fit_transform">
+<code class="descname">fit_transform</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.TextureTsne, X: numpy.ndarray[float32]</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray[float32]<a class="headerlink" href="#nptsne.TextureTsne.fit_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit X into an embedded space and return that transformed output.</p>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd>X (ndarray) The iput data with shape (num. data points, num. dimensions)</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nptsne.TextureTsneExtended">
+<em class="property">class </em><code class="descclassname">nptsne.</code><code class="descname">TextureTsneExtended</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.TextureTsneExtended</em>, <em>verbose: bool = False</em>, <em>num_target_dimensions: int = 2</em>, <em>perplexity: int = 30</em>, <em>knn_algorithm: nptsne.nptsne.KnnAlgorithm = KnnAlgorithm.Flann</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsneExtended" title="Permalink to this definition">¶</a></dt>
+<dd><p>TextureTsneExtended: an advanced wrapper API for the linear tSNE implementation.</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>TextureTsneExtended offers additional control over the exaggeration decay</dt>
+<dd>along with the ability to input an initial embedding.
+Based on the linear tSNE algorithm described in doi://</dd>
+</dl>
+</div></blockquote>
+<dl class="docutils">
+<dt>Args:</dt>
+<dd><p class="first">verbose (bool): Enable verbose logging to std::out</p>
+<dl class="last docutils">
+<dt>num_target_dimensions (int): The number of dimensions for the output</dt>
+<dd>embedding. Default is 2.</dd>
+<dt>perplexity (int): The tSNE parameter that defines the neighborhood size.</dt>
+<dd>Usually between 10 and 30. Default is 30.</dd>
+<dt>knn_algorithm (str): The knn algorithm used for the nearest neighbor</dt>
+<dd>calculation. The default is ‘Flann’ for less than 50 dimensions 
+‘HNSW’ may be faster</dd>
+</dl>
+</dd>
+</dl>
+<p>..automethod:: __init__</p>
+<dl class="method">
+<dt id="nptsne.TextureTsneExtended.close">
+<code class="descname">close</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.TextureTsneExtended</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsneExtended.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Release GPU resources for the transform</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nptsne.TextureTsneExtended.decay_started_at">
+<code class="descname">decay_started_at</code><a class="headerlink" href="#nptsne.TextureTsneExtended.decay_started_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>The iteration number when exaggeration decay started. 
+Returns:</p>
+<blockquote>
+<div>-1 if decays has not started.</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="nptsne.TextureTsneExtended.init_transform">
+<code class="descname">init_transform</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.TextureTsneExtended, X: numpy.ndarray[float32], initial_embedding: numpy.ndarray[float32] = array([], dtype=float32)</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nptsne.TextureTsneExtended.init_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit X into an embedded space and return that transformed output.
+Args:</p>
+<blockquote>
+<div><p>X (ndarray) The iput data with shape (num. data points, num. dimensions)</p>
+<dl class="docutils">
+<dt>initial_embedding(ndarray) An optional initial embedding. Shape should be </dt>
+<dd>(num data points, num output dimensions)</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="nptsne.TextureTsneExtended.iteration_count">
+<code class="descname">iteration_count</code><a class="headerlink" href="#nptsne.TextureTsneExtended.iteration_count" title="Permalink to this definition">¶</a></dt>
+<dd><p>The number of completed iterations of tSNE gradient descent.
+Returns:</p>
+<blockquote>
+<div>iteration_count</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="nptsne.TextureTsneExtended.run_transform">
+<code class="descname">run_transform</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.TextureTsneExtended</em>, <em>verbose: bool = False</em>, <em>iterations: int = 1000</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray[float32]<a class="headerlink" href="#nptsne.TextureTsneExtended.run_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the transform gradient descent for a number of iterations 
+with the current settings for exaggeration.
+Args:</p>
+<blockquote>
+<div><p>verbose: Enable verbose logging to std:out</p>
+<p>iterations: the number of iterations to run</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>A numpy array contain a flatten (1D) embedding</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nptsne.TextureTsneExtended.start_exaggeration_decay">
+<code class="descname">start_exaggeration_decay</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.TextureTsneExtended</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsneExtended.start_exaggeration_decay" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable exaggeration decay. Effective on next call to run_transform. 
+Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
+Raises: RuntimeError if the decay is already active. This can be ignored.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nptsne.KnnAlgorithm">
+<em class="property">class </em><code class="descclassname">nptsne.</code><code class="descname">KnnAlgorithm</code><span class="sig-paren">(</span><em>self: nptsne.nptsne.KnnAlgorithm</em>, <em>arg0: int</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.KnnAlgorithm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Members:</p>
+<p>Flann</p>
+<p>HNSW</p>
+<dl class="attribute">
+<dt id="nptsne.KnnAlgorithm.name">
+<code class="descname">name</code><a class="headerlink" href="#nptsne.KnnAlgorithm.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>(self: handle) -&gt; str</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">nptsne</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nptsne API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#api-class-methods">API class methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ReleaseNotes.html">Release History</a></li>
+<li class="toctree-l1"><a class="reference internal" href="download.html">Downloads</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="citation.html" title="previous chapter">Citation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Baldur van Lew.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.9</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.11</a>
+      
+      |
+      <a href="_sources/nptsne.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

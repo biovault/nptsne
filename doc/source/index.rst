@@ -13,6 +13,7 @@ Welcome to nptsne's documentation!
    citation
    nptsne
    ReleaseNotes
+   download
 
 Note: This is an Alpha release. For more detail see :ref:`release-notes-label`.
 
