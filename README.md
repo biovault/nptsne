@@ -2,4 +2,4 @@
 
 **nptsne** is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation. 
 
-For more detail see the [documentation](http://bldrvnlw.github.io/nptsne)
+For more detail see the [documentation](https://biovault.github.io/nptsne/)
