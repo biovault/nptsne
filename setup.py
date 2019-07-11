@@ -3,7 +3,7 @@ from skbuild.setuptools_wrap import upstream_Distribution
 # from setuptools.dist import Distribution
 
 __version__ = '0.1.1'
-with open("./src/docs/README.md", "r") as fh:
+with open("./nptsne_src/docs/README.md", "r") as fh:
     long_description = fh.read()
 
 #class BinaryDistribution(upstream_Distribution):

@@ -2,6 +2,9 @@
 cmake_minimum_required(VERSION 3.4.0)
 project(nptsne VERSION 0.1.0)
 
+# pybind11 is included as a submodule
+add_subdirectory(pybind11)
+
 include(FindPythonInterp)
 find_package(PythonInterp REQUIRED)
 set(PYBIND11_PYTHON_VERSION "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" CACHE STRING "" FORCE)
@@ -53,15 +56,14 @@ endif(WIN32)
 
 message(STATUS "${PYBIND11_CPP_STANDARD}")
 
-# pybind11 is included as a submodule
-add_subdirectory(pybind11)
+
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(NPTSNE_FILES 
-	nptsne/TextureTsne.cpp
-	nptsne/TextureTsneExtended.cpp
-	nptsne/LibInfo.cpp
-	nptsne/nptSNEBind.cpp
+	nptsne_src/TextureTsne.cpp
+	nptsne_src/TextureTsneExtended.cpp
+	nptsne_src/LibInfo.cpp
+	nptsne_src/nptSNEBind.cpp
 )
 
 pybind11_add_module(nptsne ${NPTSNE_FILES})
