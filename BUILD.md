@@ -52,7 +52,7 @@ First cleanup the previous build
 4.b)
 ```
 pip install cmake
-python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib
+python setup.py bdist_wheel -- -DFLANN_BUILD_DIR=G:/Projects/3rdParty/flann/bld/lib -DHDI_INCLUDE_ROOT=G:/Projects/tsne_py/TextureTSNE -DHDI_BLD_ROOT=G:/Projects/tsne_py/TextureTSNE/bld/hdi
 ```
 
 #### LINUX Build:

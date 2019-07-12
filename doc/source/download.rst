@@ -12,7 +12,7 @@ Download the correct file file for your OS and python version and install with p
    :header: "py36", "py37"
    :widths: 40, 40
 
-    `nptsne-0.1.1-cp36-cp36m-win_amd64.whl <https://drive.google.com/uc?export=download&id=1ffCp3lWtyb5BmaO0nXG_x4tDMhGlroKb>`_, `nptsne-0.1.1-cp37-cp37m-win_amd64.whl <https://drive.google.com/uc?export=download&id=13lvdvh-K9z8uU5extU9_j645KRWJtiJN>`_
+    `nptsne-0.2.0-cp36-cp36m-win_amd64.whl <https://drive.google.com/uc?export=download&id=1OOIazZ-VGDwi64EB5JWxN2eXlcfKMlbJ>`_, `nptsne-0.2.0-cp37-cp37m-win_amd64.whl <https://drive.google.com/uc?export=download&id=1f2ra9r4fOq-F3PKo5jAF1aEcpI7CaDje>`_
 
 
 .. csv-table:: Ubuntu whl files

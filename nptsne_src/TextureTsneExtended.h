@@ -3,13 +3,15 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
-#include "LibInfo.h"
+//#include "LibInfo.h"
 #include <tuple>
-#include "OffscreenBuffer.h"
+//#include "OffscreenBuffer.h"
 #include "KnnAlgorithm.h"
 #include "hdi/data/embedding.h"
 #include "hdi/dimensionality_reduction/hd_joint_probability_generator.h"
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
 class TextureTsneExtended {
 public:
@@ -41,11 +43,11 @@ public:
 	
 private:
 
-	OffscreenBuffer* _offscreen;
+	//OffscreenBuffer* _offscreen;
 	hdi::dr::HDJointProbabilityGenerator<scalar_type>::sparse_scalar_matrix_type _distributions;
 	hdi::data::Embedding<scalar_type> _embedding;
 	hdi::dr::GradientDescentTSNETexture _tSNE;
-	std::unique_ptr<QApplication> _app;
+	//std::unique_ptr<QApplication> _app;
 	
 	int _num_data_points;
     int _num_dimensions;
@@ -59,4 +61,5 @@ private:
     double _theta;
     int _num_target_dimensions;
 	bool _have_preset_embedding;
+    GLFWwindow* _offscreen_context;
 };

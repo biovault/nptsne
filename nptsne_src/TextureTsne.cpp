@@ -6,18 +6,13 @@
 #include "hdi/data/panel_data.h"
 #include "hdi/data/io.h"
 #include "hdi/dimensionality_reduction/hd_joint_probability_generator.h"
-#include "hdi/utils/visual_utils.h"
 #include "hdi/utils/scoped_timers.h"
 
-#include <QtCore>
-#include <QMetaObject>
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
 #include <iostream>
 #include <vector>
-
-
 
 // constructor
 TextureTsne::TextureTsne(
@@ -28,7 +23,7 @@ TextureTsne::TextureTsne(
 	int exaggeration_iter,
 	KnnAlgorithm knn_algorithm
 ) : _verbose(verbose), _iterations(iterations), _num_target_dimensions(num_target_dimensions),
-	_perplexity(perplexity), _exaggeration_iter(exaggeration_iter), _knn_algorithm(knn_algorithm)
+	_perplexity(perplexity), _exaggeration_iter(exaggeration_iter), _knn_algorithm(knn_algorithm), _offscreen_context(nullptr)
 {
 }
 	
@@ -46,22 +41,23 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 		std::cout << "Exaggeration iter.: " << _exaggeration_iter <<"\n";
 		std::cout << "knn type: " << ((KnnAlgorithm::Flann == _knn_algorithm) ? "flann\n": "hnsw\n");
 	}
-	QFileInfo libInfo = LibInfo::get_lib_info();
-	//std::cout << "set library path with " << libInfo.absolutePath().toStdString() << std::endl;
-	//char *dllPath = const_cast<char *>(libInfo.absolutePath().toStdString().c_str());
-	QApplication::addLibraryPath(libInfo.absolutePath());
-	QString pluginPath= libInfo.absolutePath().append("/plugins");
-	QApplication::addLibraryPath(pluginPath);
-	//std::cout << "applicationDirPath: " << QApplication::applicationDirPath().toStdString().c_str() << std::endl;	
-	
-	int argc = 0;
-	QApplication _app(argc, nullptr);	
-	_app.setQuitOnLastWindowClosed(false);
-	QApplication::setApplicationName("TextureTsne tSNE");
-	QApplication::setApplicationVersion("0.1.0");	
+
+
 	typedef float scalar_type;
-	OffscreenBuffer _offscreen;
-	_offscreen.bindContext();
+    if (!glfwInit()) {
+        throw std::runtime_error("Unable to initialize GLFW.");
+    }
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // invisible - ie offscreen, window
+    _offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+    glfwMakeContextCurrent(_offscreen_context);
+    
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+    {
+        throw std::runtime_error("Failed to initialize OpenGL context");
+    }    
 
 	auto result = py::array_t<float>(0);
 	try {
@@ -122,7 +118,8 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 			}
 		}
 		std::cout << "grad descent tsne complete" << "\n";
-		_offscreen.releaseContext();
+        glfwDestroyWindow(_offscreen_context);
+        glfwTerminate();
 
 		auto size = _num_data_points * _num_target_dimensions;
 		result = py::array_t<float>(size);
@@ -137,12 +134,11 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 			std::cout << "Similarities computation (sec) " << similarities_comp_time << "\n";
 			std::cout << "Gradient descent (sec) " << gradient_desc_comp_time << "\n";
 		}
-		QMetaObject::invokeMethod(&_app, "quit", Qt::QueuedConnection);
+
 	} 
 	catch (const std::exception& e) {
 		std::cout << "Fatal error: " << e.what() << std::endl;
 	}
-	_app.exec();	
 	return result;
 	
 }

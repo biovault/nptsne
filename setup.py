@@ -2,7 +2,7 @@ from skbuild import setup  # This line replaces 'from setuptools import setup'
 from skbuild.setuptools_wrap import upstream_Distribution
 # from setuptools.dist import Distribution
 
-__version__ = '0.1.1'
+__version__ = '0.2.0'
 with open("./nptsne_src/docs/README.md", "r") as fh:
     long_description = fh.read()
 

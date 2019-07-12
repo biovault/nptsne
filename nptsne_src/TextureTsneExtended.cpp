@@ -1,15 +1,11 @@
-// Simplified version of https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
 #include "TextureTsneExtended.h"
 #include "hdi/dimensionality_reduction/tsne.h"
 #include "hdi/utils/cout_log.h"
 #include "hdi/utils/log_helper_functions.h"
 #include "hdi/data/panel_data.h"
 #include "hdi/data/io.h"
-#include "hdi/utils/visual_utils.h"
 #include "hdi/utils/scoped_timers.h"
 
-#include <QtCore>
-#include <QMetaObject>
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
@@ -24,7 +20,7 @@ TextureTsneExtended::TextureTsneExtended(
 	int perplexity,
 	KnnAlgorithm knn_algorithm
 ) : _verbose(verbose), _num_target_dimensions(num_target_dimensions),
-	_perplexity(perplexity), _knn_algorithm(knn_algorithm), _app(nullptr), _offscreen(nullptr), _exaggeration_decay(false), _iteration_count(0), _have_preset_embedding(false)
+	_perplexity(perplexity), _knn_algorithm(knn_algorithm), _offscreen_context(nullptr), _exaggeration_decay(false), _iteration_count(0), _have_preset_embedding(false)
 {
 }
 	
@@ -142,12 +138,8 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 	_iterations = iterations;
 
 	try {
-		QFileInfo libInfo = LibInfo::get_lib_info();
-		//std::cout << "set library path with " << libInfo.absolutePath().toStdString() << std::endl;
-		//
 
 		int argc = 1;
-		//auto app = std::make_unique<QApplication>(argc, static_cast<char **>(&dllPath));
 		float gradient_desc_comp_time = 0;
 	
 		std::cout << "grad descent tsne starting" << "\n";
@@ -162,16 +154,18 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 				tSNE_param._mom_switching_iter = _iteration_count + iterations;
 				tSNE_param._remove_exaggeration_iter = _iteration_count + iterations;
 				tSNE_param._presetEmbedding = _have_preset_embedding;
-			
-				QApplication::addLibraryPath(libInfo.absolutePath());
-				char *dllPath = const_cast<char *>(libInfo.absolutePath().toStdString().c_str());
-				_app = std::make_unique<QApplication>(argc, static_cast<char **>(&dllPath));
-				_app->setQuitOnLastWindowClosed(false);
-				QApplication::setApplicationName("TextureTsne tSNE");
-				QApplication::setApplicationVersion("0.1.0");
-				_offscreen = new OffscreenBuffer();
-				_offscreen->bindContext();
-				
+
+                if (!glfwInit()) {
+                    throw std::runtime_error("Unable to initialize GLFW.");
+                }
+                glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // inisible - ie offscreen, window
+                _offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+                glfwMakeContextCurrent(_offscreen_context);
+
+                if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
+                {
+                    throw std::runtime_error("Failed to initialize OpenGL context");
+                } 				
 				std::cout << "initializing tSNE" << "\n";
 				_tSNE.initialize(_distributions,&_embedding,tSNE_param);
 			}
@@ -228,14 +222,12 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 				std::cout << " in total " << _iteration_count << " iterations done... \n";
 			}
 		}
-		//std::cout << "grad descent tsne complete" << "\n";
-		//_offscreen.releaseContext();
 	
 		auto size = _num_data_points * _num_target_dimensions;
 		auto result = py::array_t<float>(size);
 		py::buffer_info result_info = result.request();
 		float *output = static_cast<float *>(result_info.ptr);
-		_tSNE.getEmbedding();
+		//_tSNE.getEmbedding();
 		auto data = _embedding.getContainer().data();
 		for (decltype(size) i = 0; i < size; i++) {
 			output[i] = data[i];
@@ -243,8 +235,6 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 		if (_verbose) {
 			std::cout << "Gradient descent (sec) " << gradient_desc_comp_time << "\n";
 		}
-		//QMetaObject::invokeMethod(app.get(), "quit", Qt::QueuedConnection);
-		//app->exec();
 		return result;	
 	} 
 	catch (const std::exception& e) {
@@ -255,8 +245,6 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 
 void TextureTsneExtended::close() 
 {
-	_offscreen->releaseContext();
-	delete(_offscreen);
-	QMetaObject::invokeMethod(_app.get(), "quit", Qt::QueuedConnection);
-	_app->exec();	
+    glfwDestroyWindow(_offscreen_context);
+    glfwTerminate();
 }

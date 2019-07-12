@@ -3,11 +3,12 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
-#include "LibInfo.h"
 #include "KnnAlgorithm.h"
-#include "OffscreenBuffer.h"
+//#include "OffscreenBuffer.h"
 #include "hdi/dimensionality_reduction/tsne.h"
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
+#include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
 class TextureTsne {
 public:
@@ -37,4 +38,5 @@ private:
 	hdi::dr::TsneParameters tSNE_param;
     double _theta;
     int _num_target_dimensions;
+    GLFWwindow* _offscreen_context;
 };
