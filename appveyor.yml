@@ -1,0 +1,50 @@
+build: false
+
+environment:
+    PYTHON_HOME: "C:\\Python37-x64"
+
+    CONAN_USERNAME: "lkeb"
+    CONAN_LOGIN_USERNAME: "admin"
+    CONAN_PASSWORD:
+        secure: g+1lNdgrCLmyKNf3KvbHSln5A1H7BsVhsMsIbwgo+UU=
+    CONAN_CHANNEL: "stable"
+    VS150COMNTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\"
+    CONAN_UPLOAD: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
+    CONAN_REMOTE: lkebconan
+    CONAN_STABLE_BRANCH_PATTERN: "release/*"
+    CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
+    
+    matrix:
+### Limit build to 2017, x64 , Release, Shared
+        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+          CONAN_VISUAL_VERSIONS: 15
+          CONAN_ARCHS: x86_64
+          CONAN_BUILD_TYPES: Release
+          CONAN_VISUAL_RUNTIMES: MD
+          BUILD_SHARED: True
+
+install:
+  - set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
+  - pip.exe install conan --upgrade 
+  - pip.exe install conan_package_tools bincrafters_package_tools scikit-build
+  - conan user # It creates the conan data directory
+
+skip_commits:
+    files:
+        - README.md
+        - travis.yml
+        
+notifications:
+  - provider: Email
+    to: 
+        - b.van_lew@lumc.nl
+    subject: nptsne Windows build {{status}}
+    message: "URL is {{buildUrl}} Commit ID {{commitId}}. Messages {{jobs.0.messages.0.message}}"
+    on_build_success: true
+    on_build_failure: true
+    on_build_status_changed: true     
+        
+test_script:
+  - python build.py
+  
+after_test:  

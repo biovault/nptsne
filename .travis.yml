@@ -1,0 +1,49 @@
+env:
+   global:
+     - CONAN_REFERENCE="hdps-core/0.1.0"
+     - CONAN_USERNAME="lkeb"
+     - CONAN_CHANNEL="stable"     
+     - CONAN_LOGIN_USERNAME="admin"
+     - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET  
+     - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
+     - CONAN_STABLE_BRANCH_PATTERN="master"
+     - CONAN_UPLOAD_ONLY_WHEN_STABLE=1"
+
+ignore:
+    - README.md
+    - appveyor.yml
+        
+linux: &linux
+   os: linux
+   dist: xenial
+   language: python
+   python: "3.7"
+   services:
+     - docker
+osx: &osx
+   os: osx
+   language: generic
+   python: "3.7.1"
+matrix:
+   include:
+      - <<: *linux
+        env: 
+            - CONAN_GCC_VERSIONS=9 
+            - CONAN_DOCKER_IMAGE=conanio/gcc9
+            - CONAN_BUILD_TYPES=Release
+            - CONAN_ARCHS=x86_64
+      - <<: *osx
+        osx_image: xcode10.3
+        env: 
+            - CONAN_APPLE_CLANG_VERSIONS=10.0
+            - CONAN_BUILD_TYPES=Release
+            - CONAN_ARCHS=x86_64
+            - CONAN_IS_TRAVIS_OSX=1  
+
+install:
+  - chmod +x .ci/install.sh
+  - ./.ci/install.sh
+
+script:
+  - chmod +x .ci/run.sh
+  - ./.ci/run.sh
