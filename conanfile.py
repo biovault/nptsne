@@ -4,10 +4,9 @@ from conans import ConanFile, CMake, tools
 import os
 import json
 
-
 class NptsneConan(ConanFile):
     name = "nptsne"
-    version = "1.0.0rc1"
+    version = '1.0.0rc1'
     description = "nptsne is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation."
     topics = ("python", "analysis", "n-dimensional", "tSNE")
     url = "https://github.com/biovault/nptsne"
@@ -21,7 +20,7 @@ class NptsneConan(ConanFile):
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": True, "fPIC": True}
-    export_sources = "CMakeLists.txt", "hdi/*"
+    export_sources = "_package/*"
 
     _source_subfolder = name
     # For now use conan and bincrafters - we may wish to host our own versions
@@ -31,7 +30,6 @@ class NptsneConan(ConanFile):
         "HDILib/1.0.0-alpha1@lkeb/stable"
     )   
     
-
     def system_requirements(self):
         if tools.os_info.is_linux:
             if tools.os_info.with_apt:
@@ -87,7 +85,7 @@ class NptsneConan(ConanFile):
         plat_names = {'Windows': 'win_amd64', 'Linux': 'linux_x86_64', "Macos": 'macosx-10.6-intel'}
         self.run('python setup.py bdist_wheel --plat-name={0} --dist-dir={1}'.format(
             plat_names[str(self.settings.os)], 
-            os.path.join(self.build_folder, 'dist')
+            os.path.join(self.package_folder, 'dist')
         ), cwd=os.path.join(self.package_folder, "_package"))
 
     def package(self):
@@ -101,6 +99,7 @@ class NptsneConan(ConanFile):
         self.copy("*.dylib", dst="lib", keep_path=False)
         self.copy("*.a", dst="lib", keep_path=False)
         self.copy("*.lib", dst="lib", keep_path=False)
+        self.copy("*.whl", dst="dist", keep_path=False)
 
 
     def package_info(self):

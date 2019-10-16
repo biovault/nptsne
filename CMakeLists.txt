@@ -235,19 +235,24 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 
 
 # The binary extension
-install(TARGETS nptsne LIBRARY DESTINATION nptsne)
-# The associated python module and wrappers
-install(FILES ./nptsne_src/deploy__init__.py DESTINATION nptsne RENAME __init__.py)
+install(TARGETS nptsne 
+    ARCHIVE DESTINATION "_package/nptsne"
+    LIBRARY DESTINATION "_package/nptsne")
+
+# The associated python module and wrappers    
+install(DIRECTORY "_package/" DESTINATION "_package"
+         FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt")    
+
 # Platform specific libs
 if(UNIX)
     # In linux bundle prebuilt libflann and liblz4
 	message(STATUS "Deploying lz4")
 	if(PLATFORM_IS_CENTOS)
-		install(FILES "/usr/lib64/liblz4.so.1.7.5" DESTINATION nptsne RENAME liblz4.so)
-		install(FILES "/usr/lib64/libflann_cpp.so" DESTINATION nptsne RENAME libflann_cpp.so)
+		install(FILES "/usr/lib64/liblz4.so.1.7.5" DESTINATION "_package" RENAME liblz4.so)
+		install(FILES "/usr/lib64/libflann_cpp.so" DESTINATION "_package" RENAME libflann_cpp.so)
 	else()
-		install(FILES "/usr/lib/x86_64-linux-gnu/liblz4.so.1.7.1" DESTINATION nptsne RENAME liblz4.so)
-		install(FILES "/usr/lib/x86_64-linux-gnu/libflann_cpp.so" DESTINATION nptsne RENAME libflann_cpp.so)
+		install(FILES "/usr/lib/x86_64-linux-gnu/liblz4.so.1.8.3" DESTINATION "_package" RENAME liblz4.so)
+		install(FILES "/usr/lib/x86_64-linux-gnu/libflann_cpp.so" DESTINATION "_package" RENAME libflann_cpp.so)
 	endif()	
 endif(UNIX)	
 

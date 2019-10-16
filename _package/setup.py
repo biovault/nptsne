@@ -1,9 +1,10 @@
 from skbuild import setup  # This line replaces 'from setuptools import setup'
 from skbuild.setuptools_wrap import upstream_Distribution
 import sys
+from nptsne.version import __version__
 # from setuptools.dist import Distribution
 
-with open("./nptsne_src/docs/README.md", "r") as fh:
+with open("./docs/README.md", "r") as fh:
     long_description = fh.read()
 
 #class BinaryDistribution(upstream_Distribution):
@@ -14,7 +15,7 @@ with open("./nptsne_src/docs/README.md", "r") as fh:
 
 setup(
     name='nptsne',
-    version='1.0.0rc1',
+    version=__version__,
 	author='Nicola Pezzotti, Thomas Höllt, Julian Thijssen, Baldur van Lew',
     author_email='b.van_lew@lumc.nl',
 	description='The nptsne package is designed to export a number of python classes that wrap tSNE. Reference https://arxiv.org/abs/1805.10817',
@@ -28,6 +29,7 @@ setup(
         "Source Code": "https://github.com/biovault/nptsne"
     },
 	packages=['nptsne'],
+    package_data={'': ['*.pyd', '*.so']},
 # 	TODO add test_require for the behave tests see https://stackoverflow.com/questions/21698004/python-behave-integration-in-setuptools-setup-py
 	classifiers=[
         "Programming Language :: Python :: 3",
