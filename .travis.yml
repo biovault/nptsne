@@ -32,6 +32,12 @@ matrix:
             - CONAN_DOCKER_IMAGE=conanio/gcc9
             - CONAN_BUILD_TYPES=Release
             - CONAN_ARCHS=x86_64
+      - <<: *linux
+        env: 
+            - CONAN_GCC_VERSIONS=5 
+            - CONAN_DOCKER_IMAGE=conanio/gcc5
+            - CONAN_BUILD_TYPES=Release
+            - CONAN_ARCHS=x86_64            
       - <<: *osx
         osx_image: xcode10.3
         env: 
@@ -42,6 +48,7 @@ matrix:
 
 install:
   - chmod +x .ci/install.sh
+  - chmod +x .ci/entry.sh
   - ./.ci/install.sh
 
 script:

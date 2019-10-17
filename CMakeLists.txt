@@ -200,6 +200,10 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	target_link_libraries(nptsne PUBLIC ${OPENGL_LIBRARIES})
+    find_package(lz4 REQUIRED)
+    message(STATUS "LZ4 ${LZ4_FIND_VERSION}")
+    find_package(flann_cpp REQUIRED)
+    message(STATUS "LZ4 ${FLANN_CPP_FIND_VERSION}")    
     #TODO GLFW3.lib
 	if(PLATFORM_IS_CENTOS)
 		# centos
@@ -252,7 +256,7 @@ if(UNIX)
 		install(FILES "/usr/lib64/libflann_cpp.so" DESTINATION "_package" RENAME libflann_cpp.so)
 	else()
 		install(FILES "/usr/lib/x86_64-linux-gnu/liblz4.so.1.8.3" DESTINATION "_package" RENAME liblz4.so)
-		install(FILES "/usr/lib/x86_64-linux-gnu/libflann_cpp.so" DESTINATION "_package" RENAME libflann_cpp.so)
+		install(FILES "/usr/lib/x86_64-linux-gnu/libflann_cpp.so.1.9.1" DESTINATION "_package" RENAME libflann_cpp.so)
 	endif()	
 endif(UNIX)	
 
