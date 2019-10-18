@@ -1,14 +1,17 @@
 cmake_minimum_required(VERSION 3.4.0)
-project(nptsne LANGUAGES CXX)
+file (STRINGS "version.txt" VERSION)
+project(_nptsne LANGUAGES CXX)
 # Invoke this using the command: 
 #	python setup.py bdist_wheel
 # within an environment containing the targeted python interpreter version
 #
-# A PEP 440 version is set in nptsne_src/version.py 
+# A PEP 440 version is set in version.txt - this is not compatible with the CMAKE config
 
 file(REMOVE_RECURSE ${CMAKE_CURRENT_SOURCE_DIR}/dist)
-file(REMOVE_RECURSE nptsne.egg-info)
+file(REMOVE_RECURSE _nptsne.egg-info)
 file(REMOVE_RECURSE _skbuild)
+
+file(GENERATE OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_package/nptsne/_version.txt CONTENT "${VERSION}")
 
 # Conan declared variables
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
@@ -74,20 +77,16 @@ set(NPTSNE_FILES
 	nptsne_src/nptSNEBind.cpp
 )
 
-pybind11_add_module(nptsne ${NPTSNE_FILES})
+pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
 
 find_package(OpenGL REQUIRED)
-if(UNIX OR APPLE)
+if(UNIX)
+    include(FindPkgConfig)
     find_package(PkgConfig REQUIRED)
     pkg_search_module(GLFW REQUIRED glfw3)
 else()
     find_package(glfw3 REQUIRED)    
 endif()    
-
-#set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL  "GLFW lib only" )
-#set( GLFW_BUILD_TESTS OFF CACHE BOOL  "GLFW lib only" )
-#set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
-#set( GLFW_BUILD_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 
 if(WIN32) 
 	set(PYBIND11_CPP_STANDARD "/std:c++14" CACHE STRING "" FORCE) 
@@ -110,7 +109,7 @@ endif(WIN32)
 
 message(STATUS "${PYBIND11_CPP_STANDARD}")
 
-target_compile_definitions(nptsne PUBLIC "-DPYBIND11_PYTHON_VERSION=${PYTHON_MAJ_MIN}")  
+target_compile_definitions(${PROJECT_NAME} PUBLIC "-DPYBIND11_PYTHON_VERSION=${PYTHON_MAJ_MIN}")  
 
 if(UNIX)
 	find_package(LZ4 REQUIRED)
@@ -121,8 +120,8 @@ if(NOT DEFINED HDI_BLD_ROOT)
     set(HDI_INCLUDE_ROOT "${CONAN_INCLUDE_DIRS_HDILIB}/HDILib")
     if(WIN32)
         set(FLANN_BUILD_DIR "${CONAN_FLANN_ROOT}")
+        set(GLFW_ROOT "${CONAN_GLFW_ROOT}")
     endif()
-    set(GLFW_ROOT "${CONAN_GLFW_ROOT}")
 endif()
 
 message( STATUS "HDI_BLD_ROOT: ${HDI_BLD_ROOT}" )
@@ -132,21 +131,87 @@ include_directories ("${CMAKE_SOURCE_DIR}")
 include_directories ("..")
 include_directories ("${HDI_INCLUDE_ROOT}")
 
+# Pass a filename - e.g path1/path2/mylib.1.2.3.ext and return mylib.1.2.ext 
+function(get_short_version_number libname resultVar)
+    get_filename_component(FILE_NAME ${libname} NAME)
+    get_filename_component(FILE_TYPE ${FILE_NAME} LAST_EXT)
+    get_filename_component(NAME_NO_TYPE ${FILE_NAME} NAME_WLE)
+    get_filename_component(NAME_SHORT_VERSION ${NAME_NO_TYPE} NAME_WLE)
+    set(${resultVar} "${NAME_SHORT_VERSION}${FILE_TYPE}" PARENT_SCOPE)
+endfunction()    
+
+# Pass a filename - e.g path1/path2/mylib.1.2.3.ext and return mylib.1.ext 
+function(get_shorter_version_number libname resultVar)
+    get_filename_component(FILE_NAME ${libname} NAME)
+    get_filename_component(FILE_TYPE ${FILE_NAME} LAST_EXT)
+    get_filename_component(NAME_NO_TYPE ${FILE_NAME} NAME_WLE)
+    get_filename_component(NAME_SHORT_VERSION ${NAME_NO_TYPE} NAME_WLE)
+    get_filename_component(NAME_SHORTER_VERSION ${NAME_SHORT_VERSION} NAME_WLE)    
+    set(${resultVar} "${NAME_SHORTER_VERSION}${FILE_TYPE}" PARENT_SCOPE)
+endfunction()  
+
+# VisualStudio (or similar IDE) folder
+set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Python bindings")
+
+# Setup RPATHs for loading the python extension dependencies on Linux and Macos
+# Path is relative to the extension.
+if(APPLE)
+  set(_rpath_value "@loader_path")
+elseif(UNIX)
+  set(_rpath_value "$ORIGIN")
+endif()
+
+if(UNIX)
+    set_target_properties(${PROJECT_NAME} PROPERTIES 
+        INSTALL_RPATH ${_rpath_value}
+        BUILD_WITH_INSTALL_RPATH ON)
+    set(CMAKE_INSTALL_RPATH ${_rpath_value})
+    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,origin")
+    #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,origin")
+    #set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-z,origin,-rpath")
+endif()
+    
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
-if (CMAKE_GENERATOR STREQUAL Xcode)
+if (APPLE)
   add_definitions(-DGL_SILENCE_DEPRECATION)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
   if(DEFINED ENV{CONAN_IS_TRAVIS_OSX})
     find_program(BREW NAMES brew)
-    message(STATUS, "In Darwin with ${BREW}")
+    message(STATUS, "In Macos with ${BREW}")
+    
+    #### Find LIBOMP
     execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS, "BREW LIBOMP ${BREW_LIBOMP_PREFIX}")
     set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
     set(OpenMP_CXX_LIB_NAMES "omp")
     set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
     include_directories("${BREW_LIBOMP_PREFIX}/include") 
+    
+    #### Find flann
     execute_process(COMMAND ${BREW} --prefix flann OUTPUT_VARIABLE BREW_FLANN_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-    include_directories("${BREW_FLANN_PREFIX}/include")     
+    include_directories("${BREW_FLANN_PREFIX}/include")  
+	find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${BREW_FLANN_PREFIX}")
+    get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
+    get_short_version_number(${FLANNCPP_LIBRARY_PATH} FLANNCPP_SHORTNAME)
+    
+    #### Find lz4    
+    execute_process(COMMAND ${BREW} --prefix lz4 OUTPUT_VARIABLE BREW_LZ4_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+    include_directories("${BREW_LZ4_PREFIX}/include") 
+    find_library(LZ4_LIBRARY lz4 HINTS "${BREW_LZ4_PREFIX}")    
+    get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
+    # lz4 link chops two digits from the version 
+    # (this probably a bug due to the library name ending in a digit)
+    get_shorter_version_number(${LZ4_LIBRARY_PATH} LZ4_SHORTNAME)
+   
+    #### Check glfw - was found using PkgConfig
+    find_library(GLFW_LIBRARY glfw HINTS "${GLFW_LIBRARY_DIRS}") 
+    get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
+    get_short_version_number(${GLFWLIBRARY_PATH} GLFW_SHORTNAME)    
+    include_directories(${GLFW_INCLUDE_DIRS})     
+
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${LZ4_LIBRARY} )
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${FLANNCPP_LIBRARY} )   
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARY})     
   else() 
       find_package(LLVM)
       if( LLVM_FOUND )
@@ -193,39 +258,39 @@ else(WIN32)
 	find_library(HDIUI NAMES libhdiutils.a PATHS ${HDIUI_BUILD_DIR} PATH_SUFFIXES ${CMAKE_BUILD_TYPE})	
 endif(WIN32)
 
-target_link_libraries(nptsne PUBLIC ${HDIDR} ${HDIDA} ${HDIUI})
-target_link_libraries(nptsne PUBLIC pybind11::module)
+target_link_libraries(${PROJECT_NAME} PUBLIC ${HDIDR} ${HDIDA} ${HDIUI})
+target_link_libraries(${PROJECT_NAME} PUBLIC pybind11::module)
 
 if(WIN32)
-	target_link_libraries (nptsne PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
-    target_link_libraries(nptsne PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
+	target_link_libraries (${PROJECT_NAME} PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
+    target_link_libraries(${PROJECT_NAME} PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
     #static GLFW
-    target_link_libraries(nptsne PUBLIC ${GLFW_STATIC_LIBRARIES})    
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_STATIC_LIBRARIES})    
 endif()
 
-if(UNIX)
-	target_link_libraries(nptsne PUBLIC ${OPENGL_LIBRARIES}) 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+	target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES}) 
 	if(PLATFORM_IS_CENTOS)
 		# centos
-        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
-        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
-        find_library(GLFW_LIBRARY glfw HINTS /usr/lib64)
+		find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
+		find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
+		find_library(GLFW_LIBRARY glfw HINTS /usr/lib64)
 	else()
 		# ubuntu
-        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
-        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
-        find_library(GLFW_LIBRARY glfw HINTS /usr/lib/x86_64-linux-gnu)
+		find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
+		find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
+		find_library(GLFW_LIBRARY glfw HINTS /usr/lib/x86_64-linux-gnu)
 	endif()
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
-    target_link_libraries(nptsne PUBLIC ${LZ4_LIBRARY} )
-    target_link_libraries(nptsne PUBLIC ${FLANNCPP_LIBRARY} )   
-    target_link_libraries(nptsne PUBLIC ${GLFW_LIBRARY}) 
-    target_link_libraries(nptsne PUBLIC "${OPENGL_gl_LIBRARY}")    
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${LZ4_LIBRARY} )
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${FLANNCPP_LIBRARY} )   
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARY}) 
+    target_link_libraries(${PROJECT_NAME} PUBLIC "${OPENGL_gl_LIBRARY}")    
 endif()
 
-if (UNIX OR APPLE)
+if (UNIX)
     # shared GLFW
     if(GLFW_FOUND AND OPENGL_FOUND)
         message(STATUS "Using installed GLFW ${GLFW_VERSION}")
@@ -234,20 +299,9 @@ else()
     message(STATUS "Using static GLFW ")
 endif()
 
-message( STATUS "Command line project: " nptsne )
+message( STATUS "Command line project: " ${PROJECT_NAME} )
 
-# VisualStudio (or similar IDE) folder
-set_target_properties(nptsne PROPERTIES FOLDER "Python bindings")
 
-if(UNIX OR APPLE)
-	set_target_properties(nptsne PROPERTIES 
-		SKIP_BUILD_RPATH FALSE
-		BUILD_WITH_INSTALL_RPATH ON
-		INSTALL_RPATH "\$ORIGIN")
-      set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,origin")
-      set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,origin")
-      set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-z,origin,-rpath")
-endif(UNIX)
 message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 
 # Install phase - move the extension plus and libraries necessary to
@@ -256,23 +310,61 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 
 
 # The binary extension
-install(TARGETS nptsne 
-    ARCHIVE DESTINATION "_package/nptsne"
-    LIBRARY DESTINATION "_package/nptsne")
+install(TARGETS ${PROJECT_NAME} LIBRARY COMPONENT python DESTINATION "_package/nptsne")
+
+# The binary extension needs to load the glfw flann and lz4 from its own directory
+# use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
+# which are used to get the path to the extension and to modify it.
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "_package/nptsne")
+if(APPLE)
+	install(CODE "
+		execute_process(
+			COMMAND sh -c \"echo 'A=`ls ${CMAKE_INSTALL_PREFIX}/_package/nptsne/*.so` && echo $A' > ~/getname.sh\"
+			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+		execute_process(
+			COMMAND sh -c \"chmod +x ~/getname.sh\"
+			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+		execute_process(
+			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|flann|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && echo install_name_tool -change $A @loader_path/$\{A##*/} `~/getname.sh` >> ~/fixup.sh'\"
+			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})			
+		execute_process(
+			COMMAND sh -c \"chmod +x ~/fixup.sh\"
+			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+		execute_process(
+			COMMAND sh -c \"cat ~/getname.sh\"
+			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})		
+		execute_process(
+			COMMAND sh -c \"cat ~/fixup.sh\"
+			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})	            
+	")
+endif()
 
 # The associated python module and wrappers    
 install(DIRECTORY "_package/" DESTINATION "_package"
          FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt")    
 
 # Platform specific libs
-if(UNIX)
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # In linux bundle prebuilt libflann and liblz4
-	message(STATUS "Deploying lz4 and flann_cpp")
     install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME liblz4.so)
     install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME libflann_cpp.so)
     install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne" RENAME libglfw.so)
+endif()	
 
-endif(UNIX)	
+if(APPLE)
+	message(STATUS "Will deploy lz4, flann_cpp and glfw as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME}")
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME ${LZ4_SHORTNAME})
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME ${FLANNCPP_SHORTNAME})
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne" RENAME ${GLFW_SHORTNAME})
+    file(GLOB_RECURSE PACKAGE_FILES RELATIVE "_package/nptsne" "*.*")
+    message(STATUS "Files in package: ${PACKAGE_FILES}")
+endif()
 
-
-
+# For APPLE now fixup the binary extension to load the dylibs from a relative @loader_path
+if(APPLE)
+	install(CODE "
+			execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
+			execute_process(COMMAND sh -c \"~/fixup.sh\")
+			execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
+	")
+endif()

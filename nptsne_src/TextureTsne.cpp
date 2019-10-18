@@ -52,9 +52,12 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
     if (!glfwInit()) {
         throw std::runtime_error("Unable to initialize GLFW.");
     }
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+#ifdef __APPLE__ 
+    glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);   
+#endif    
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // invisible - ie offscreen, window
     _offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
     if (_offscreen_context == NULL)

@@ -6,8 +6,9 @@ namespace py = pybind11;
 
 // Maintainer note - this uses Google style docstrings
 
-PYBIND11_MODULE(nptsne, m) {
-     
+PYBIND11_MODULE(_nptsne, m) {
+    
+    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended");    
     m.doc() = R"doc(
         Nicola Pezzotti's texture tSNE via pybind11
         -------------------------------------------

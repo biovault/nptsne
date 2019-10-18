@@ -14,6 +14,7 @@
 # Dev branch marker is: 'X.Y.dev' or 'X.Y.devN' where N is an integer.
 # 'X.Y.dev0' is the canonical version of 'X.Y.dev'
 #
-__short_version__ = '1.0'
-__version__ = '1.0.0rc1'
+import pkgutil
+
+__version__ = pkgutil.get_data("nptsne", "_version.txt").strip()
 

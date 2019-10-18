@@ -4,16 +4,19 @@ from conans import ConanFile, CMake, tools
 import os
 import json
 
+with open(os.path.join(os.path.dirname(__file__), "version.txt")) as fp:
+    __version__ = fp.read().strip()
+        
 class NptsneConan(ConanFile):
     name = "nptsne"
-    version = '1.0.0rc1'
+    version = __version__
     description = "nptsne is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation."
     topics = ("python", "analysis", "n-dimensional", "tSNE")
     url = "https://github.com/biovault/nptsne"
     branch = "feature/conan-build"
     author = "B. van Lew <b.van_lew@lumc.nl>" #conanfile author
     license = "MIT"  # License for packaged library; please use SPDX Identifiers https://spdx.org/licenses/
-    exports = ["LICENSE.md"]      # Packages the license for the conanfile.py
+    exports = ["LICENSE.md", "version.txt"]      # Packages the license for the conanfile.py
     generators = "cmake"
 
     # Options may need to change depending on the packaged library

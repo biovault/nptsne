@@ -162,6 +162,12 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
                 if (!glfwInit()) {
                     throw std::runtime_error("Unable to initialize GLFW.");
                 }
+#ifdef __APPLE__ 
+                glfwWindowHint (GLFW_CONTEXT_VERSION_MAJOR, 4);
+                glfwWindowHint (GLFW_CONTEXT_VERSION_MINOR, 1);
+                glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+                glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);   
+#endif                  
                 glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // inisible - ie offscreen, window
                 _offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
                 glfwMakeContextCurrent(_offscreen_context);
