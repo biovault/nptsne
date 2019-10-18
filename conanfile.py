@@ -83,6 +83,8 @@ class NptsneConan(ConanFile):
         cmake.install()
         # set the platform name 
         plat_names = {'Windows': 'win_amd64', 'Linux': 'linux_x86_64', "Macos": 'macosx-10.6-intel'}
+        if self.settings.os == "Macos" or self.settings.os == "Linux":
+            self.run('ls -l', cwd=os.path.join(self.package_folder, "_package"))
         self.run('python setup.py bdist_wheel --plat-name={0} --dist-dir={1}'.format(
             plat_names[str(self.settings.os)], 
             os.path.join(self.package_folder, 'dist')

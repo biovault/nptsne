@@ -27,6 +27,6 @@ fi
 
 pip install conan --upgrade
 pip install conan_package_tools bincrafters_package_tools
-
+pip install scikit-build  # really only for Darwin on travis
 # Automatic detection of arch, compiler, etc. & create conan data dir.    
 conan user

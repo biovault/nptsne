@@ -199,21 +199,22 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-	target_link_libraries(nptsne PUBLIC ${OPENGL_LIBRARIES})
-    find_package(lz4 REQUIRED)
-    message(STATUS "LZ4 ${LZ4_FIND_VERSION}")
-    find_package(flann_cpp REQUIRED)
-    message(STATUS "LZ4 ${FLANN_CPP_FIND_VERSION}")    
+	target_link_libraries(nptsne PUBLIC ${OPENGL_LIBRARIES}) 
     #TODO GLFW3.lib
 	if(PLATFORM_IS_CENTOS)
 		# centos
-		target_link_libraries(nptsne PUBLIC "/usr/lib64/liblz4.so" )
-		target_link_libraries(nptsne PUBLIC "/usr/lib64/libflann_cpp.so" )
+        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
 	else()
 		# ubuntu
-		target_link_libraries(nptsne PUBLIC "/usr/lib/x86_64-linux-gnu/liblz4.so" )
-		target_link_libraries(nptsne PUBLIC "/usr/lib/x86_64-linux-gnu/libflann_cpp.so" )		
+        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
+
 	endif()
+    get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
+    get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)    
+    target_link_libraries(nptsne PUBLIC ${LZ4_LIBRARY} )
+    target_link_libraries(nptsne PUBLIC ${FLANNCPP_LIBRARY} )		    
 	target_link_libraries(nptsne PUBLIC "${OPENGL_gl_LIBRARY}")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
@@ -250,14 +251,10 @@ install(DIRECTORY "_package/" DESTINATION "_package"
 # Platform specific libs
 if(UNIX)
     # In linux bundle prebuilt libflann and liblz4
-	message(STATUS "Deploying lz4")
-	if(PLATFORM_IS_CENTOS)
-		install(FILES "/usr/lib64/liblz4.so.1.7.5" DESTINATION "_package" RENAME liblz4.so)
-		install(FILES "/usr/lib64/libflann_cpp.so" DESTINATION "_package" RENAME libflann_cpp.so)
-	else()
-		install(FILES "/usr/lib/x86_64-linux-gnu/liblz4.so.1.8.3" DESTINATION "_package" RENAME liblz4.so)
-		install(FILES "/usr/lib/x86_64-linux-gnu/libflann_cpp.so.1.9.1" DESTINATION "_package" RENAME libflann_cpp.so)
-	endif()	
+	message(STATUS "Deploying lz4 and flann_cpp")
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME liblz4.so)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME libflann_cpp.so)
+
 endif(UNIX)	
 
 
