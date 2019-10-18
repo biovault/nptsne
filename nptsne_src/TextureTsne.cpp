@@ -14,6 +14,11 @@
 #include <iostream>
 #include <vector>
 
+// not present in glfw 3.1.2
+#ifndef GLFW_FALSE
+#define GLFW_FALSE 0
+#endif
+
 // constructor
 TextureTsne::TextureTsne(
 	bool verbose, 
@@ -52,10 +57,16 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // invisible - ie offscreen, window
     _offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+    if (_offscreen_context == NULL)
+    {
+        glfwTerminate();
+        throw std::runtime_error("Failed to create GLFW window");
+    }
     glfwMakeContextCurrent(_offscreen_context);
     
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
     {
+        glfwTerminate();        
         throw std::runtime_error("Failed to initialize OpenGL context");
     }    
 

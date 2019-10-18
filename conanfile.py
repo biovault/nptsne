@@ -26,7 +26,6 @@ class NptsneConan(ConanFile):
     # For now use conan and bincrafters - we may wish to host our own versions
     requires = (
         "pybind11/2.2.4@conan/stable",
-        "glfw/3.3@bincrafters/stable",
         "HDILib/1.0.0-alpha1@lkeb/stable"
     )   
     
@@ -39,14 +38,21 @@ class NptsneConan(ConanFile):
             installer = tools.SystemPackageTool()  
             installer.install('lz4')
 
+    def requirements(self):
+        if tools.os_info.is_windows:
+            self.requires.add("glfw/3.3@bincrafters/stable")
+            
     def system_requirements(self):
         if tools.os_info.is_linux:
             if tools.os_info.with_apt:
                 installer = tools.SystemPackageTool()
                 installer.install('liblz4-dev')
+                installer.install('libglfw3')
+                installer.install('libglfw3-dev')
         if tools.os_info.is_macos:           
             installer = tools.SystemPackageTool()  
             installer.install('lz4')
+            installer.install('glfw')
             
     def configure(self):
         self.options["HDILib"].shared = False

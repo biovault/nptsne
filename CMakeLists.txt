@@ -77,14 +77,17 @@ set(NPTSNE_FILES
 pybind11_add_module(nptsne ${NPTSNE_FILES})
 
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED)
+if(UNIX OR APPLE)
+    find_package(PkgConfig REQUIRED)
+    pkg_search_module(GLFW REQUIRED glfw3)
+else()
+    find_package(glfw3 REQUIRED)    
+endif()    
 
-set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL  "GLFW lib only" )
-set( GLFW_BUILD_TESTS OFF CACHE BOOL  "GLFW lib only" )
-set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
-set( GLFW_BUILD_INSTALL OFF CACHE BOOL  "GLFW lib only" )
-
-target_link_libraries(glfw PRIVATE ${glfw_LIBRARIES})
+#set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL  "GLFW lib only" )
+#set( GLFW_BUILD_TESTS OFF CACHE BOOL  "GLFW lib only" )
+#set( GLFW_BUILD_DOCS OFF CACHE BOOL  "GLFW lib only" )
+#set( GLFW_BUILD_INSTALL OFF CACHE BOOL  "GLFW lib only" )
 
 if(WIN32) 
 	set(PYBIND11_CPP_STANDARD "/std:c++14" CACHE STRING "" FORCE) 
@@ -193,37 +196,50 @@ endif(WIN32)
 target_link_libraries(nptsne PUBLIC ${HDIDR} ${HDIDA} ${HDIUI})
 target_link_libraries(nptsne PUBLIC pybind11::module)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if(WIN32)
 	target_link_libraries (nptsne PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
     target_link_libraries(nptsne PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    #static GLFW
+    target_link_libraries(nptsne PUBLIC ${GLFW_STATIC_LIBRARIES})    
+endif()
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+if(UNIX)
 	target_link_libraries(nptsne PUBLIC ${OPENGL_LIBRARIES}) 
-    #TODO GLFW3.lib
 	if(PLATFORM_IS_CENTOS)
 		# centos
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
+        find_library(GLFW_LIBRARY glfw HINTS /usr/lib64)
 	else()
 		# ubuntu
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
-
+        find_library(GLFW_LIBRARY glfw HINTS /usr/lib/x86_64-linux-gnu)
 	endif()
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
-    get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)    
+    get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
+    get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
     target_link_libraries(nptsne PUBLIC ${LZ4_LIBRARY} )
-    target_link_libraries(nptsne PUBLIC ${FLANNCPP_LIBRARY} )		    
-	target_link_libraries(nptsne PUBLIC "${OPENGL_gl_LIBRARY}")
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    target_link_libraries(nptsne PUBLIC ${FLANNCPP_LIBRARY} )   
+    target_link_libraries(nptsne PUBLIC ${GLFW_LIBRARY}) 
+    target_link_libraries(nptsne PUBLIC "${OPENGL_gl_LIBRARY}")    
+endif()
+
+if (UNIX OR APPLE)
+    # shared GLFW
+    if(GLFW_FOUND AND OPENGL_FOUND)
+        message(STATUS "Using installed GLFW ${GLFW_VERSION}")
+    endif()
+else()
+    message(STATUS "Using static GLFW ")
+endif()
 
 message( STATUS "Command line project: " nptsne )
 
 # VisualStudio (or similar IDE) folder
 set_target_properties(nptsne PROPERTIES FOLDER "Python bindings")
 
-if(UNIX)
+if(UNIX OR APPLE)
 	set_target_properties(nptsne PROPERTIES 
 		SKIP_BUILD_RPATH FALSE
 		BUILD_WITH_INSTALL_RPATH ON
@@ -254,6 +270,7 @@ if(UNIX)
 	message(STATUS "Deploying lz4 and flann_cpp")
     install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME liblz4.so)
     install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME libflann_cpp.so)
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne" RENAME libglfw.so)
 
 endif(UNIX)	
 

@@ -12,7 +12,11 @@
 #include <iostream>
 #include <vector>
 #include <exception>
-	
+
+// not present in glfw 3.1.2
+#ifndef GLFW_FALSE
+#define GLFW_FALSE 0
+#endif	
 // constructor
 TextureTsneExtended::TextureTsneExtended(
 	bool verbose, 
