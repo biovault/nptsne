@@ -24,7 +24,7 @@ class NptsneConan(ConanFile):
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
-    options = {"shared": [True, False], "fPIC": [True, False], "python_version", "ANY"}
+    options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {"shared": True, "fPIC": True}
     export_sources = "_package/*"
 
