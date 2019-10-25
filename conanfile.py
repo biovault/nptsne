@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, CMake
 import os
+import sys
 import json
 
 with open(os.path.join(os.path.dirname(__file__), "version.txt")) as fp:
     __version__ = fp.read().strip()
-        
+
+__py_version__ = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
+       
 class NptsneConan(ConanFile):
     name = "nptsne"
     version = __version__
@@ -21,8 +24,8 @@ class NptsneConan(ConanFile):
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
-    options = {"shared": [True, False], "fPIC": [True, False]}
-    default_options = {"shared": True, "fPIC": True}
+    options = {"shared": [True, False], "fPIC": [True, False], "python_version", "ANY"}
+    default_options = {"shared": True, "fPIC": True, "python_version": None}
     export_sources = "_package/*"
 
     _source_subfolder = name
@@ -64,6 +67,9 @@ class NptsneConan(ConanFile):
         if self.settings.os == 'Windows':
             del self.options.fPIC 
     
+    def package_id(self):
+        self.info.options.python_version = __py_version__
+        
     def source(self):
         source_url = self.url
         self.run("git clone {0}.git".format(self.url))
@@ -78,7 +84,7 @@ class NptsneConan(ConanFile):
             cmake = CMake(self)
         if self.settings.os == "Windows" and self.options.shared:
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
-        cmake.definitions["BUILD_PYTHON_VERSION"] = "3.7"  
+        cmake.definitions["BUILD_PYTHON_VERSION"] = __py_version__  
         cmake.configure(source_folder=self._source_subfolder)
         cmake.verbose = True
         return cmake
