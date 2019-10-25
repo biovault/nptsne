@@ -6,6 +6,9 @@ from bincrafters import build_template_default
 import os
 import platform
 
+import sys
+__py_version__ = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
+
 def _is_not_shared(build):
     return not(build.options['nptsne:shared'] == True)
     
@@ -27,4 +30,10 @@ if __name__ == "__main__":
     builder.remove_build_if(_is_not_shared)
     if platform.system() == "Windows":
         builder.remove_build_if(_is_not_VS15MDonWindows)    
+        
+    items = []
+    for item in builder.items:
+        item.options["nptsne:python_version"] = __py_version__
+        trems.append(item)
+    builder.items = items    
     builder.run()
