@@ -34,6 +34,6 @@ if __name__ == "__main__":
     items = []
     for item in builder.items:
         item.options["nptsne:python_version"] = __py_version__
-        trems.append(item)
+        items.append(item)
     builder.items = items    
     builder.run()
