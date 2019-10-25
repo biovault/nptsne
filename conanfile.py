@@ -5,6 +5,7 @@ import os
 import sys
 import json
 
+# Python version for wheel building
 with open(os.path.join(os.path.dirname(__file__), "version.txt")) as fp:
     __version__ = fp.read().strip()
 
