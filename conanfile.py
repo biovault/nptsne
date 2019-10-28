@@ -70,7 +70,7 @@ class NptsneConan(ConanFile):
             del self.options.fPIC 
     
     def package_id(self):
-        self.info.options.python_version = __py_version__
+        self.info.options.python_version = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
         
     def source(self):
         source_url = self.url
@@ -105,7 +105,7 @@ class NptsneConan(ConanFile):
         self.run('python setup.py bdist_wheel --plat-name={0} --dist-dir={1} --python-tag={2}'.format(
             plat_names[str(self.settings.os)], 
             os.path.join(self.package_folder, 'dist'),
-            __py_tag__
+            "py{}{}".format(sys.version_info.major, sys.version_info.minor)
         ), cwd=os.path.join(self.package_folder, "_package"))
 
     def package(self):
