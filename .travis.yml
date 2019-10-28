@@ -14,10 +14,6 @@ ignore:
     - appveyor.yml
 
 language: python        
-
-os:
-    - linux
-    - osx
     
 matrix:
    include:

@@ -10,6 +10,7 @@ with open(os.path.join(os.path.dirname(__file__), "version.txt")) as fp:
     __version__ = fp.read().strip()
 
 __py_version__ = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
+__py_tag__ = "py{}{}".format(sys.version_info.major, sys.version_info.minor)
        
 class NptsneConan(ConanFile):
     name = "nptsne"
@@ -101,9 +102,10 @@ class NptsneConan(ConanFile):
         plat_names = {'Windows': 'win_amd64', 'Linux': 'linux_x86_64', "Macos": 'macosx-10.6-intel'}
         if self.settings.os == "Macos" or self.settings.os == "Linux":
             self.run('ls -l', cwd=os.path.join(self.package_folder, "_package"))
-        self.run('python setup.py bdist_wheel --plat-name={0} --dist-dir={1}'.format(
+        self.run('python setup.py bdist_wheel --plat-name={0} --dist-dir={1} --python-tag={2}'.format(
             plat_names[str(self.settings.os)], 
-            os.path.join(self.package_folder, 'dist')
+            os.path.join(self.package_folder, 'dist'),
+            __py_tag__
         ), cwd=os.path.join(self.package_folder, "_package"))
 
     def package(self):
