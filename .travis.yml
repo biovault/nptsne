@@ -26,6 +26,7 @@ osx: &osx
 matrix:
    include:
         env: 
+      - <<: *linux        
             - CONAN_GCC_VERSIONS=5 
             - CONAN_DOCKER_IMAGE=conanio/gcc5
             - CONAN_BUILD_TYPES=Release
