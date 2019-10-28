@@ -12,40 +12,45 @@ env:
 ignore:
     - README.md
     - appveyor.yml
-        
-linux: &linux
-   os: linux
-   dist: xenial
-   language: python
-   services:
-     - docker
-osx: &osx
-   os: osx
-   language: generic
-   python: "3.7.1"
+
+language: python        
+
+os:
+    - linux
+    - osx
+    
 matrix:
    include:
-        env: 
-      - <<: *linux        
-            - CONAN_GCC_VERSIONS=5 
-            - CONAN_DOCKER_IMAGE=conanio/gcc5
-            - CONAN_BUILD_TYPES=Release
-            - CONAN_ARCHS=x86_64 
-            - python=3.6  
-      - <<: *linux
-        env: 
-            - CONAN_GCC_VERSIONS=5 
-            - CONAN_DOCKER_IMAGE=conanio/gcc5
-            - CONAN_BUILD_TYPES=Release
-            - CONAN_ARCHS=x86_64 
-            - python=3.7             
-      - <<: *osx
-        osx_image: xcode10.3
-        env: 
-            - CONAN_APPLE_CLANG_VERSIONS=10.0
-            - CONAN_BUILD_TYPES=Release
-            - CONAN_ARCHS=x86_64
-            - CONAN_IS_TRAVIS_OSX=1  
+        - os: linux
+          python: 3.6 
+          dist: xenial
+          services:
+              - docker
+          env:       
+              - CONAN_GCC_VERSIONS=5 
+              - CONAN_DOCKER_IMAGE=conanio/gcc5
+              - CONAN_BUILD_TYPES=Release
+              - CONAN_ARCHS=x86_64 
+
+        - os: linux
+          python: 3.7        
+          dist: xenial
+          services:
+              - docker
+          env:       
+              - CONAN_GCC_VERSIONS=5 
+              - CONAN_DOCKER_IMAGE=conanio/gcc5
+              - CONAN_BUILD_TYPES=Release
+              - CONAN_ARCHS=x86_64 
+              - python=3.7
+                
+        - os: osx
+          osx_image: xcode10.3
+          env: 
+              - CONAN_APPLE_CLANG_VERSIONS=10.0
+              - CONAN_BUILD_TYPES=Release
+              - CONAN_ARCHS=x86_64
+               CONAN_IS_TRAVIS_OSX=1  
 
 install:
   - chmod +x .ci/install.sh
