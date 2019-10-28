@@ -12,8 +12,8 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
         eval "$(pyenv init -)"
     fi
     curl -I -L homebrew.bintray.com || true
-    pyenv install 3.7.1
-    pyenv virtualenv -p python3.7 3.7.1 conan
+    pyenv install $OSX_PYTHON_FULL
+    pyenv virtualenv -p python$OSX_PYTHON $OSX_PYTHON_FULL conan
     curl -I -L homebrew.bintray.com || true
     pyenv rehash
     curl -I -L homebrew.bintray.com || true 
