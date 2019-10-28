@@ -17,9 +17,6 @@ linux: &linux
    os: linux
    dist: xenial
    language: python
-   python: 
-        - "3.6"
-        - "3.7"
    services:
      - docker
 osx: &osx
@@ -28,18 +25,19 @@ osx: &osx
    python: "3.7.1"
 matrix:
    include:
-      - <<: *linux
         env: 
-            - CONAN_GCC_VERSIONS=9 
-            - CONAN_DOCKER_IMAGE=conanio/gcc9
+            - CONAN_GCC_VERSIONS=5 
+            - CONAN_DOCKER_IMAGE=conanio/gcc5
             - CONAN_BUILD_TYPES=Release
-            - CONAN_ARCHS=x86_64
+            - CONAN_ARCHS=x86_64 
+            - python=3.6  
       - <<: *linux
         env: 
             - CONAN_GCC_VERSIONS=5 
             - CONAN_DOCKER_IMAGE=conanio/gcc5
             - CONAN_BUILD_TYPES=Release
-            - CONAN_ARCHS=x86_64            
+            - CONAN_ARCHS=x86_64 
+            - python=3.7             
       - <<: *osx
         osx_image: xcode10.3
         env: 
