@@ -27,6 +27,7 @@ matrix:
               - CONAN_DOCKER_IMAGE=conanio/gcc5
               - CONAN_BUILD_TYPES=Release
               - CONAN_ARCHS=x86_64 
+              - python=3.6
 
         - os: linux
           python: 3.7        
