@@ -3,26 +3,17 @@
 set -ex
 
 if [[ "$(uname -s)" == 'Darwin' ]]; then
-    brew update || brew update
-    brew outdated pyenv || brew upgrade pyenv
-    brew install pyenv-virtualenv
-    brew install cmake || brew upgrade cmake || true
-
-    if which pyenv > /dev/null; then
-        eval "$(pyenv init -)"
-    fi
-    curl -I -L homebrew.bintray.com || true
-    pyenv install $OSX_PYTHON
-    pyenv virtualenv -p python$OSX_PYTHON $OSX_PYTHON conan
-    curl -I -L homebrew.bintray.com || true
-    pyenv rehash
-    curl -I -L homebrew.bintray.com || true 
-    pyenv activate conan
-    curl -I -L homebrew.bintray.com || true
-    pyenv deactivate
-    curl -I -L homebrew.bintray.com || true 
-    pyenv activate conan
-    curl -I -L homebrew.bintray.com || true   
+    OS=MacOSX-x86_64
+    wget -O miniconda.sh https://repo.continuum.io/miniconda/Miniconda${OSX_PYTHON:0:1}-latest-$OS.sh
+    bash miniconda.sh -b -p $HOME/miniconda
+    export PATH="$HOME/miniconda/bin:$PATH"
+    conda config --set always_yes yes --set changeps1 no
+    conda config --add channels conda-forge
+    conda update -q conda
+    conda install -q conda-build
+    conda create -q -n build_env python=$OSX_PYTHON
+    source activate build_env  
+    conda install -n build_env cmake
 fi
 
 pip install conan --upgrade
