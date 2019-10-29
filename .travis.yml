@@ -1,6 +1,7 @@
 linux: &linux
     os: linux
     language: python
+    sudo: required
     dist: xenial
     services:
       - docker
