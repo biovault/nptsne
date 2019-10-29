@@ -34,7 +34,7 @@ conda install -c conda-forge scikit-build
 pip install conan_package_tools bincrafters_package_tools
 echo Conda python version `python --version`
 echo run_create_in_docker at `which run_create_in_docker`
-cat `which run_create_in_docker`
+ls -al `which run_create_in_docker`
 run_create_in_docker
 echo Run create finished
 alias run_create_in_docker='echo Done'"""
