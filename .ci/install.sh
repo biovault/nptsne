@@ -18,9 +18,10 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
     conda install -c conda-forge scikit-build
 else
     pip install conan --upgrade
-    pip install conan_package_tools bincrafters_package_tools
     pip install scikit-build         
 fi
+
+pip install conan_package_tools bincrafters_package_tools
 
 
 # Automatic detection of arch, compiler, etc. & create conan data dir.    

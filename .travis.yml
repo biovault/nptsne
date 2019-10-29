@@ -44,22 +44,24 @@ matrix:
         - os: osx
           language: generic
           osx_image: xcode10.3
+          python: 3.6 
           env: 
               - CONAN_APPLE_CLANG_VERSIONS=10.0
               - CONAN_BUILD_TYPES=Release
               - CONAN_ARCHS=x86_64
               - CONAN_IS_TRAVIS_OSX=1 
-              - OSX_PYTHON=3.6            
+              - OSX_PYTHON=3.6
               
         - os: osx
           language: generic        
           osx_image: xcode10.3
+          python: 3.7 
           env: 
               - CONAN_APPLE_CLANG_VERSIONS=10.0
               - CONAN_BUILD_TYPES=Release
               - CONAN_ARCHS=x86_64
               - CONAN_IS_TRAVIS_OSX=1 
-              - OSX_PYTHON=3.7                          
+              - OSX_PYTHON=3.7
 
 install:
   - chmod +x .ci/install.sh
