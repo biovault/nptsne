@@ -18,7 +18,7 @@ if __name__ == "__main__":
     if platform.system() == "Windows":
         docker_entry_script = None
     else:
-        docker_entry_script = "pip install scikit-build"    
+        docker_entry_script = "./.ci/entry.sh"    
     builder = build_template_default.get_builder(
         reference="nptsne/1.0.0rc1@lkeb/stable",  # suppress conan using the feature/aaa
         docker_entry_script=docker_entry_script
