@@ -42,6 +42,7 @@ include(FindPythonLibsNew)
 find_package(PythonLibsNew ${BUILD_PYTHON_VERSION} REQUIRED)
 include(FindPythonInterp)
 find_package(PythonInterp REQUIRED)
+find_package(pybind11)
 
 MESSAGE(STATUS "Python : ${PYTHON_LIBRARY}")
 
