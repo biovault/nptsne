@@ -18,7 +18,7 @@ language: python
 matrix:
    include:
         - os: linux
-          python: 3.6 
+          python: "3.6" 
           dist: xenial
           services:
               - docker
@@ -26,11 +26,11 @@ matrix:
               - CONAN_GCC_VERSIONS=5 
               - CONAN_DOCKER_IMAGE=conanio/gcc5
               - CONAN_BUILD_TYPES=Release
-              - CONAN_ARCHS=x86_64 
-              - python=3.6
+              - CONAN_ARCHS=x86_64
+             - CONAN_OPTIONS=nptsne:python_version=3.6
 
         - os: linux
-          python: 3.7        
+          python: "3.7"        
           dist: xenial
           services:
               - docker
@@ -39,29 +39,31 @@ matrix:
               - CONAN_DOCKER_IMAGE=conanio/gcc5
               - CONAN_BUILD_TYPES=Release
               - CONAN_ARCHS=x86_64 
-              - python=3.7
+             - CONAN_OPTIONS=nptsne:python_version=3.7              
                 
         - os: osx
           language: generic
           osx_image: xcode10.3
-          python: 3.6 
+          python: "3.6" 
           env: 
               - CONAN_APPLE_CLANG_VERSIONS=10.0
               - CONAN_BUILD_TYPES=Release
               - CONAN_ARCHS=x86_64
               - CONAN_IS_TRAVIS_OSX=1 
               - OSX_PYTHON=3.6
+             - CONAN_OPTIONS=nptsne:python_version=3.6              
               
         - os: osx
           language: generic        
           osx_image: xcode10.3
-          python: 3.7 
+          python: "3.7" 
           env: 
               - CONAN_APPLE_CLANG_VERSIONS=10.0
               - CONAN_BUILD_TYPES=Release
               - CONAN_ARCHS=x86_64
               - CONAN_IS_TRAVIS_OSX=1 
               - OSX_PYTHON=3.7
+             - CONAN_OPTIONS=nptsne:python_version=3.7              
 
 install:
   - chmod +x .ci/install.sh
