@@ -35,18 +35,17 @@ message(STATUS "Conan CONAN_HDILIB_ROOT***: ${CONAN_HDILIB_ROOT} ***")
 
 find_package(pybind11 REQUIRED)
 
-set(BUILD_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the example library")
+#set(BUILD_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the example library")
 
 message(STATUS "Build Python version ${BUILD_PYTHON_VERSION}")
-include(FindPythonLibsNew)
-find_package(PythonLibsNew ${BUILD_PYTHON_VERSION} REQUIRED)
-include(FindPythonInterp)
-find_package(PythonInterp REQUIRED)
+#include(FindPythonLibsNew)
+#find_package(PythonLibsNew ${BUILD_PYTHON_VERSION} REQUIRED)
+#include(FindPythonInterp)
+#find_package(PythonInterp REQUIRED)
 find_package(pybind11)
 
 MESSAGE(STATUS "Python : ${PYTHON_LIBRARY}")
 
-set(PYBIND11_PYTHON_VERSION "${BUILD_PYTHON_VERSION}" CACHE STRING "" FORCE)
 message (STATUS "The pybind version is ${PYBIND11_PYTHON_VERSION}") 
 message (STATUS "The python executable is at ${PYTHON_EXECUTABLE}") 
 

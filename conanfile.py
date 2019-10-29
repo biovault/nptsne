@@ -89,6 +89,7 @@ class NptsneConan(ConanFile):
         if self.settings.os == "Windows" and self.options.shared:
             cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
         cmake.definitions["BUILD_PYTHON_VERSION"] = __py_version__  
+        cmake.definitions["PYBIND11_PYTHON_VERSION"] = __py_version__  
         cmake.configure(source_folder=self._source_subfolder)
         cmake.verbose = True
         return cmake
