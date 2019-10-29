@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     docker_entry_script = None
     if platform.system() == "Linux":
-        docker_entry_script = "entry=`cat ./.ci/entry.sh` && eval \"$entry\" "
+        docker_entry_script = "entry=`cat ./.ci/entry.sh` ; eval \"$entry\" "
         
     builder = build_template_default.get_builder(
         reference="nptsne/1.0.0rc1@lkeb/stable",  # suppress conan using the feature/aaa
