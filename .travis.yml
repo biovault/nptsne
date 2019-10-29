@@ -32,7 +32,7 @@ matrix:
          - CONAN_DOCKER_IMAGE=conanio/gcc5 
          - CONAN_BUILD_TYPES=Release 
          - CONAN_ARCHS=x86_64
-         - CONAN_LINUX_PYTHON=3.6
+         - CONAN_LINUX_PYTHON=3.6.7
          - CONAN_OPTIONS=nptsne:python_version=3.6
      - <<: *linux
        python: "3.7"        
@@ -41,7 +41,7 @@ matrix:
          - CONAN_DOCKER_IMAGE=conanio/gcc5
          - CONAN_BUILD_TYPES=Release
          - CONAN_ARCHS=x86_64 
-         - CONAN_LINUX_PYTHON=3.7       
+         - CONAN_LINUX_PYTHON=3.7.1       
          - CONAN_OPTIONS=nptsne:python_version=3.7             
    
      - <<: *osx

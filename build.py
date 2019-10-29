@@ -18,11 +18,15 @@ if __name__ == "__main__":
 
     docker_entry_script = None
     if platform.system() == "Linux":
-        docker_entry_script = """pyenv global 3.6.7  
-pip install cmake
-pip install conan 
+        docker_entry_script = """pyver=`python --version | cut -d " " -f 2`
+if [[ "$pyver" != "$CONAN_LINUX_PYTHON" ]] then;
+    pyenv install $CONAN_LINUX_PYTHON
+    pyenv global $CONAN_LINUX_PYTHON 
+    pip install cmake
+    pip install conan 
+fi
 pip install scikit-build
-pip install conan_package_tools bincrafters_package_tools
+pip install conan_package_tools bincrafters_package_tools    
 echo python version `python --version`
 echo run_create_in_docker at `which run_create_in_docker`
 ls -al `which run_create_in_docker`
