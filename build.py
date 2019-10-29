@@ -19,6 +19,7 @@ if __name__ == "__main__":
     docker_entry_script = None
     if platform.system() == "Linux":
         docker_entry_script = """pyver=`python --version | cut -d " " -f 2`
+echo Current py version is: $pyver
 if [ "$pyver" != "$CONAN_LINUX_PYTHON" ]; then
     pyenv install $CONAN_LINUX_PYTHON
     pyenv global $CONAN_LINUX_PYTHON 
