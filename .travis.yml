@@ -1,3 +1,12 @@
+linux: &linux
+    os: linux
+    language: python
+    dist: xenial
+    services:
+      - docker
+osx: &osx 
+    os: osx
+    language: generic
 env:
    global:
      - CONAN_REFERENCE="nptsne/1.0.0rc1"
@@ -11,59 +20,50 @@ env:
 
 ignore:
     - README.md
-    - appveyor.yml
+    - appveyor.yml  
 
-language: python        
-    
 matrix:
    include:
-        - os: linux
-          python: "3.6" 
-          dist: xenial
-          services:
-              - docker
-          env:       
-              - CONAN_GCC_VERSIONS=5 
-              - CONAN_DOCKER_IMAGE=conanio/gcc5
-              - CONAN_BUILD_TYPES=Release
-              - CONAN_ARCHS=x86_64
-             - CONAN_OPTIONS=nptsne:python_version=3.6
+     - <<: *linux
+       python: "3.6" 
+       env: 
+         - CONAN_GCC_VERSIONS=5 
+         - CONAN_DOCKER_IMAGE=conanio/gcc5 
+         - CONAN_BUILD_TYPES=Release 
+         - CONAN_ARCHS=x86_64
 
-        - os: linux
-          python: "3.7"        
-          dist: xenial
-          services:
-              - docker
-          env:       
-              - CONAN_GCC_VERSIONS=5 
-              - CONAN_DOCKER_IMAGE=conanio/gcc5
-              - CONAN_BUILD_TYPES=Release
-              - CONAN_ARCHS=x86_64 
-             - CONAN_OPTIONS=nptsne:python_version=3.7              
-                
-        - os: osx
-          language: generic
-          osx_image: xcode10.3
-          python: "3.6" 
-          env: 
-              - CONAN_APPLE_CLANG_VERSIONS=10.0
-              - CONAN_BUILD_TYPES=Release
-              - CONAN_ARCHS=x86_64
-              - CONAN_IS_TRAVIS_OSX=1 
-              - OSX_PYTHON=3.6
-             - CONAN_OPTIONS=nptsne:python_version=3.6              
-              
-        - os: osx
-          language: generic        
-          osx_image: xcode10.3
-          python: "3.7" 
-          env: 
-              - CONAN_APPLE_CLANG_VERSIONS=10.0
-              - CONAN_BUILD_TYPES=Release
-              - CONAN_ARCHS=x86_64
-              - CONAN_IS_TRAVIS_OSX=1 
-              - OSX_PYTHON=3.7
-             - CONAN_OPTIONS=nptsne:python_version=3.7              
+     - <<: *linux
+       python: "3.7"        
+       env:       
+         - CONAN_GCC_VERSIONS=5 
+         - CONAN_DOCKER_IMAGE=conanio/gcc
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64 
+         - CONAN_OPTIONS=nptsne:python_version=3.7             
+   
+     - <<: *osx
+       language: generic
+       osx_image: xcode10.3
+       python: "3.6" 
+       env: 
+         - CONAN_APPLE_CLANG_VERSIONS=10.0
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64
+         - CONAN_IS_TRAVIS_OSX=1 
+         - OSX_PYTHON=3.6
+         - CONAN_OPTIONS=nptsne:python_version=3.6               
+          
+     - <<: *osx
+       language: generic
+       osx_image: xcode10.3
+       python: "3.7" 
+       env: 
+         - CONAN_APPLE_CLANG_VERSIONS=10.0
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64
+         - CONAN_IS_TRAVIS_OSX=1 
+         - OSX_PYTHON=3.7
+         - CONAN_OPTIONS=nptsne:python_version=3.7                
 
 install:
   - chmod +x .ci/install.sh
