@@ -15,14 +15,15 @@ def _is_not_VS15MDonWindows(build):
         build.settings["compiler.runtime"] == 'MD') 
     
 if __name__ == "__main__":
-    if platform.system() == "Windows":
-        docker_entry_script = None
-    else:
-        docker_entry_script = "./.ci/entry.sh"    
+
     builder = build_template_default.get_builder(
         reference="nptsne/1.0.0rc1@lkeb/stable",  # suppress conan using the feature/aaa
         docker_entry_script=docker_entry_script
     )
+    
+    if platform.system() == "Linxus": 
+        docker_entry_script = "./.ci/entry.sh" 
+        builder.docker_shell = "/bin/sh -c export PATH=\"$HOME/miniconda/bin:$PATH\" && source activate build_env" 
 
     builder.remove_build_if(_is_not_shared)
     if platform.system() == "Windows":
