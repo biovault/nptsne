@@ -14,4 +14,5 @@ if [ "$(uname -s)" == 'Linux' ]; then
     conda install -c conda-forge conan 
     conda install -c conda-forge scikit-build
     pip install conan_package_tools bincrafters_package_tools
+    echo Conda python version `python --version`
 fi 

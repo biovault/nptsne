@@ -37,7 +37,7 @@ matrix:
        python: "3.7"        
        env:       
          - CONAN_GCC_VERSIONS=5 
-         - CONAN_DOCKER_IMAGE=conanio/gcc
+         - CONAN_DOCKER_IMAGE=conanio/gcc5
          - CONAN_BUILD_TYPES=Release
          - CONAN_ARCHS=x86_64 
          - LINUX_PYTHON=3.7       
