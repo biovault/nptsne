@@ -24,9 +24,6 @@ if __name__ == "__main__":
         reference="nptsne/1.0.0rc1@lkeb/stable",  # suppress conan using the feature/aaa
         docker_entry_script=docker_entry_script
     )
-    
-    if platform.system() == "Linux": 
-        builder.docker_shell = "/bin/sh -c export PATH=\"$HOME/miniconda/bin:$PATH\" && source activate build_env" 
 
     builder.remove_build_if(_is_not_shared)
     if platform.system() == "Windows":
