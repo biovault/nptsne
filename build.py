@@ -18,7 +18,21 @@ if __name__ == "__main__":
 
     docker_entry_script = None
     if platform.system() == "Linux":
-        docker_entry_script = "entry=`cat ./.ci/entry.sh` ; eval \"$entry\" "
+        docker_entry_script = """wget -O miniconda.sh https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash miniconda.sh -b -p $HOME/miniconda
+export PATH="$HOME/miniconda/bin:$PATH"
+conda config --set always_yes yes --set changeps1 no
+conda config --add channels conda-forge
+conda update -q conda
+conda install -q conda-build
+echo Creating conda env for python version $CONAN_LINUX_PYTHON
+conda create -q -n build_env python=$CONAN_LINUX_PYTHON
+source activate build_env  
+conda install -n build_env cmake
+conda install -c conda-forge conan 
+conda install -c conda-forge scikit-build
+pip install conan_package_tools bincrafters_package_tools
+echo Conda python version `python --version`"""
         
     builder = build_template_default.get_builder(
         reference="nptsne/1.0.0rc1@lkeb/stable",  # suppress conan using the feature/aaa
