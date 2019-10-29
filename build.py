@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
     docker_entry_script = None
     if platform.system() == "Linux":
-        docker_entry_script = """pyver=$(python --version | cut -d " " -f 2); echo "Current py ver is : $pyver"
+        docker_entry_script = """pyver=$(python --version | cut -d " " -f 2); echo Current py ver is : $pyver
 echo Requested python verson is: $CONAN_LINUX_PYTHON
 echo Current py version is: $pyver
 if [ "$pyver" != "$CONAN_LINUX_PYTHON" ]; then
