@@ -8,7 +8,8 @@ if [ "$(uname -s)" == 'Linux' ]; then
     conda config --add channels conda-forge
     conda update -q conda
     conda install -q conda-build
-    conda create -q -n build_env python=$LINUX_PYTHON
+    echo Creting conda env for python version $CONAN_LINUX_PYTHON
+    conda create -q -n build_env python=$CONAN_LINUX_PYTHON
     source activate build_env  
     conda install -n build_env cmake
     conda install -c conda-forge conan 
