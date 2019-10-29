@@ -11,6 +11,8 @@ with open(os.path.join(os.path.dirname(__file__), "version.txt")) as fp:
 
 __py_version__ = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
 __py_tag__ = "py{}{}".format(sys.version_info.major, sys.version_info.minor)
+
+print("Python version from conanfile: ", __py_version__)
        
 class NptsneConan(ConanFile):
     name = "nptsne"
