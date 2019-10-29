@@ -19,6 +19,7 @@ if __name__ == "__main__":
     docker_entry_script = None
     if platform.system() == "Linux":
         docker_entry_script = """echo Requested python verson is: $CONAN_LINUX_PYTHON
+echo Test "$(date)"        
 if [ "$(python --version | cut -d " " -f 2)" != "$CONAN_LINUX_PYTHON" ]; then
     echo Installing pyenv version $CONAN_LINUX_PYTHON
     pyenv install $CONAN_LINUX_PYTHON
