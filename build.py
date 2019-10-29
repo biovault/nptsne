@@ -32,7 +32,9 @@ conda install -n build_env cmake
 conda install -c conda-forge conan 
 conda install -c conda-forge scikit-build
 pip install conan_package_tools bincrafters_package_tools
-echo Conda python version `python --version`"""
+echo Conda python version `python --version`
+run_create_in_docker
+alias run_create_in_docker='echo Done'"""
         
     builder = build_template_default.get_builder(
         reference="nptsne/1.0.0rc1@lkeb/stable",  # suppress conan using the feature/aaa
