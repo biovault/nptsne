@@ -310,7 +310,7 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 
 
 # The binary extension
-install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "_package/nptsne/libs/")
+install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_INSTALL_PREFIX}/_package/nptsne/libs/")
 
 # The binary extension needs to load the glfw flann and lz4 from its own directory
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
