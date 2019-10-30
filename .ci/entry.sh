@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+# The Linux build running in a docker which comes with a
+# pre-set python vershion which may need to be altered
+if [[ `uname` != "Linux" ]] || [[ -n "$CONAN_DOCKER_IMAGE" ]]; then
+    exit 0
+fi
+
 echo Requested python verson is: $CONAN_LINUX_PYTHON
 export pyver=`python --version | cut -d " " -f 2`   
 echo Installed python verson is: $pyver
@@ -13,9 +19,3 @@ pip install conan
 pip install scikit-build
 pip install conan_package_tools bincrafters_package_tools    
 echo After install python version `python --version`
-echo run_create_in_docker at `which run_create_in_docker`
-ls -al `which run_create_in_docker`
-run_create_in_docker
-echo Run create finished
-alias run_create_in_docker='echo Done'
- 
