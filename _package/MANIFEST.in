@@ -1,2 +1,2 @@
-resursive-include ./nptsne *.txt *.py
-resursive-include ./nptsne/libs *.pyd *.so *.dylib *.dll
+recursive-include nptsne *.txt *.py
+recursive-include nptsne/libs *.pyd *.so *.dylib *.dll
