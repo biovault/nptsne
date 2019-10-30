@@ -1,5 +1,2 @@
-include ./nptsne *.txt
-include ./nptsne *.py
-include ./nptsne/libs *.so*
-include ./nptsne/libs *.pyd*
-include ./nptsne/libs *.dylib*
+resursive-include ./nptsne *.txt *.py
+resursive-include ./nptsne/libs *.pyd *.so *.dylib *.dll
