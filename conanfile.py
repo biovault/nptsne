@@ -107,7 +107,7 @@ class NptsneConan(ConanFile):
             self.run('ls -l', cwd=os.path.join(self.package_folder, "_package"))
         self.run('python setup.py bdist_wheel --plat-name={0} --dist-dir={1}'.format(
             plat_names[str(self.settings.os)], 
-            os.path.join(self.package_folder, 'dist'))
+            os.path.join(self.package_folder, 'dist')
         ), cwd=os.path.join(self.package_folder, "_package"))
 
     def package(self):
