@@ -1,0 +1,6 @@
+recursive-include nptsne *.txt
+recursive-include nptsne *.py
+recursive-include nptsne/libs *.so
+recursive-include nptsne/libs *.pyd
+recursive-include nptsne/libs *.so
+recursive-include nptsne/libs *.dylib

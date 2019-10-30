@@ -310,7 +310,7 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 
 
 # The binary extension
-install(TARGETS ${PROJECT_NAME} LIBRARY COMPONENT python DESTINATION "_package/nptsne/libs")
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "_package/nptsne/libs")
 
 # The binary extension needs to load the glfw flann and lz4 from its own directory
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
@@ -340,7 +340,7 @@ endif()
 
 # The associated python module and wrappers    
 install(DIRECTORY "_package/" DESTINATION "_package"
-         FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt")    
+         FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt|.*\.in")    
 
 # Platform specific libs
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
