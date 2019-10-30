@@ -315,7 +315,6 @@ install(TARGETS ${PROJECT_NAME} LIBRARY COMPONENT python DESTINATION "_package/n
 # The binary extension needs to load the glfw flann and lz4 from its own directory
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
 # which are used to get the path to the extension and to modify it.
-install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "_package/nptsne/libs")
 if(APPLE)
 	install(CODE "
 		execute_process(
