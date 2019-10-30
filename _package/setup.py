@@ -32,7 +32,9 @@ setup(
         "Source Code": "https://github.com/biovault/nptsne"
     },
 	packages=['nptsne'],
-    package_data={'nptsne': ['*.txt', '*.pyd', '*.so', '*.dylib', '_nptsne*.*']},
+    package_data={'nptsne': ['*.txt', '*.py'],
+        'nptsne.libs': ['*.pyd', '*.so', '*.dylib', '_nptsne*.*']
+    },
 # 	TODO add test_require for the behave tests see https://stackoverflow.com/questions/21698004/python-behave-integration-in-setuptools-setup-py
 	classifiers=[
         "Programming Language :: Python :: 3",
