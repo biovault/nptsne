@@ -1,5 +1,6 @@
 from skbuild import setup  # This line replaces 'from setuptools import setup'
 from skbuild.setuptools_wrap import upstream_Distribution
+from setuptools import find_packages
 import sys
 import os
 
@@ -31,10 +32,7 @@ setup(
         "Documentation": "https://biovault.github.io/nptsne",
         "Source Code": "https://github.com/biovault/nptsne"
     },
-	packages=['nptsne'],
-    package_data={'nptsne': ['*.txt', '*.py'],
-        'nptsne/libs': ['libs/*.pyd', 'libs/*.so', 'libs/*.dylib', 'libs/_nptsne*.*']
-    },
+	packages=find_packages(where="nptsne"),
 # 	TODO add test_require for the behave tests see https://stackoverflow.com/questions/21698004/python-behave-integration-in-setuptools-setup-py
 	classifiers=[
         "Programming Language :: Python :: 3",
