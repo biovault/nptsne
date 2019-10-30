@@ -2,7 +2,7 @@
 
 # The Linux build running in a docker which comes with a
 # pre-set python vershion which may need to be altered
-if [[ `uname` != "Linux" ]] || [[ -n "$CONAN_DOCKER_IMAGE" ]]; then
+if [[ `uname` != "Linux" ]]; then
     exit 0
 fi
 
