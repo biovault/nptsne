@@ -1,4 +1,4 @@
-from ._nptsne import * 
+from .libs._nptsne import * 
 from .version import __version__
 
 __all__ = (

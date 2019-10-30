@@ -310,16 +310,16 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 
 
 # The binary extension
-install(TARGETS ${PROJECT_NAME} LIBRARY COMPONENT python DESTINATION "_package/nptsne")
+install(TARGETS ${PROJECT_NAME} LIBRARY COMPONENT python DESTINATION "_package/nptsne/libs")
 
 # The binary extension needs to load the glfw flann and lz4 from its own directory
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
 # which are used to get the path to the extension and to modify it.
-install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "_package/nptsne")
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION "_package/nptsne/libs")
 if(APPLE)
 	install(CODE "
 		execute_process(
-			COMMAND sh -c \"echo 'A=`ls ${CMAKE_INSTALL_PREFIX}/_package/nptsne/*.so` && echo $A' > ~/getname.sh\"
+			COMMAND sh -c \"echo 'A=`ls ${CMAKE_INSTALL_PREFIX}/_package/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
 			COMMAND sh -c \"chmod +x ~/getname.sh\"
@@ -346,16 +346,16 @@ install(DIRECTORY "_package/" DESTINATION "_package"
 # Platform specific libs
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # In linux bundle prebuilt libflann and liblz4
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME liblz4.so)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME libflann_cpp.so)
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne" RENAME libglfw.so)
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME liblz4.so)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME libflann_cpp.so)
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME libglfw.so)
 endif()	
 
 if(APPLE)
 	message(STATUS "Will deploy lz4, flann_cpp and glfw as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME}")
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME ${LZ4_SHORTNAME})
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne" RENAME ${FLANNCPP_SHORTNAME})
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne" RENAME ${GLFW_SHORTNAME})
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME ${LZ4_SHORTNAME})
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME ${GLFW_SHORTNAME})
     file(GLOB_RECURSE PACKAGE_FILES RELATIVE "_package/nptsne" "*.*")
     message(STATUS "Files in package: ${PACKAGE_FILES}")
 endif()
