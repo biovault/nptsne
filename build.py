@@ -18,23 +18,7 @@ if __name__ == "__main__":
 
     docker_entry_script = None
     if platform.system() == "Linux":
-        docker_entry_script = """echo Requested python verson is: $CONAN_LINUX_PYTHON
-echo Test "$(date)"        
-if [ "$(python --version | cut -d " " -f 2)" != "$CONAN_LINUX_PYTHON" ]; then
-    echo Installing pyenv version $CONAN_LINUX_PYTHON
-    pyenv install $CONAN_LINUX_PYTHON
-    pyenv global $CONAN_LINUX_PYTHON 
-    pip install cmake
-    pip install conan 
-fi
-pip install scikit-build
-pip install conan_package_tools bincrafters_package_tools    
-echo python version `python --version`
-echo run_create_in_docker at `which run_create_in_docker`
-ls -al `which run_create_in_docker`
-run_create_in_docker
-echo Run create finished
-alias run_create_in_docker='echo Done'"""
+        docker_entry_script = "./.ci/entry.sh"
         
     builder = build_template_default.get_builder(
         reference="nptsne/1.0.0rc1@lkeb/stable",  # suppress conan using the feature/aaa
