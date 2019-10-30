@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo Requested python verson is: $CONAN_LINUX_PYTHON
-pyver = `python --version | cut -d " " -f 2`   
+export pyver=`python --version | cut -d " " -f 2`   
 echo Installed python verson is: $pyver
 if [[ "$pyver" != "$CONAN_LINUX_PYTHON" ]]; then
     echo Installing pyenv version $CONAN_LINUX_PYTHON
