@@ -20,7 +20,7 @@ class NptsneConan(ConanFile):
     description = "nptsne is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation."
     topics = ("python", "analysis", "n-dimensional", "tSNE")
     url = "https://github.com/biovault/nptsne"
-    branch = "feature/conan-build"
+    branch = "master"
     author = "B. van Lew <b.van_lew@lumc.nl>" #conanfile author
     license = "MIT"  # License for packaged library; please use SPDX Identifiers https://spdx.org/licenses/
     exports = ["LICENSE.md", "version.txt"]      # Packages the license for the conanfile.py

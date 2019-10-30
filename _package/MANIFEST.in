@@ -1,5 +1,5 @@
-include nptsne *.txt
-include nptsne *.py
-include nptsne/libs *.so*
-include nptsne/libs *.pyd*
-include nptsne/libs *.dylib*
+include ./nptsne *.txt
+include ./nptsne *.py
+include ./nptsne/libs *.so*
+include ./nptsne/libs *.pyd*
+include ./nptsne/libs *.dylib*
