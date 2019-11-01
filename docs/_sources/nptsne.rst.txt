@@ -6,10 +6,6 @@ nptsne API
 .. autosummary::
     :toctree:
 
-    TextureTsne
-    TextureTsneExtended
-    KnnAlgorithm
-
 API class methods
 -----------------
 
@@ -25,3 +21,5 @@ API class methods
 
 .. autoclass:: KnnAlgorithm
     :members:
+
+    

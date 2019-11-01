@@ -1,7 +1,9 @@
 Usage
 =========
 
-This release supports 2 python versions (3.6 or 3.7) on three platforms: Windows, Ubuntu, Centos
+This release supports 2 python versions (3.6 or 3.7) on three platforms: Windows, Ubuntu, Macos
+
+On Windows and Linux acceleration is performed using compute shaders. On Macos, due to the lack of compute shader support, tSNE uses a rasterized impplementation with a lowe performance.
 
 Installing
 ----------

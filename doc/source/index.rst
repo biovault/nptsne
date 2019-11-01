@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to nptsne's documentation!
-==================================
+Welcome to the nptsne |version| documentation!
+==============================================
 
 .. toctree::
    :maxdepth: 2
@@ -14,12 +14,16 @@ Welcome to nptsne's documentation!
    nptsne
    ReleaseNotes
    download
+   license
 
-Note: This is an Alpha release. For more detail see :ref:`release-notes-label`.
+Note: This is an Release candidate. For more detail see :ref:`release-notes-label`.
 
 Indices and tables
 ==================
 
+.. |Module Index| replace:: Module Index
+.. _Module Index: modules.html
+
 * :ref:`genindex`
-* :ref:`modindex`
+* |Module Index|_
 * :ref:`search`

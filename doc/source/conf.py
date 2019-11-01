@@ -12,10 +12,8 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+import nptsne
+print(nptsne.__version__)
 
 # -- Project information -----------------------------------------------------
 
@@ -24,14 +22,19 @@ copyright = '2019, Baldur van Lew'
 author = 'Baldur van Lew'
 
 import sys, os
-# To pick up the version definitions
-sys.path.insert(0, os.path.abspath('../..'))
-from nptsne_src.version import __short_version__, __version__
+sys.path.insert(0, os.path.abspath('../../_package'))
+sys.path.insert(0, os.path.abspath('../../_package/nptsne'))
+with open('../../version.txt', 'r') as file:
+    __version__=file.read().replace('\n', '')
+
+mmp = __version__.split('.')
 # The short X.Y version
-version = __short_version__
+version = "{}.{}".format(mmp[0], mmp[1])
 # The full version, including alpha/beta/rc tags
 release = __version__
 
+html_title = release
+rst_epilog = '.. |version| replace:: %s' % release
 
 # -- General configuration ---------------------------------------------------
 
@@ -72,7 +75,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = []
+exclude_patterns = ['changelogs/*.rst', 'modules.rst']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
@@ -83,7 +86,8 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+# html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
