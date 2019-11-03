@@ -36,10 +36,22 @@ setup(
 	packages=find_packages(),
 # 	TODO add test_require for the behave tests see https://stackoverflow.com/questions/21698004/python-behave-integration-in-setuptools-setup-py
 	classifiers=[
+        "Intended Audience :: Science/Research",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: Apache Software License",
+        "Topic :: Software Development",
+        "Topic :: Scientific/Engineering",
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: MacOS :: MacOS X",
+        "Operating System :: POSIX :: Linux",
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: Apache License 2.0",
-        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: C++"
     ],
-    python_requires='>=3.6'
+    python_requires='>=3.6',
+    install_requires=[
+        numpy>='1.11.0'
+    ]
 
 )
