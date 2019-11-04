@@ -255,10 +255,14 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 
 void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding)
 {
+    if (!_tSNE.isInitialized()) {
+        throw std::runtime_error("Tsne object must have been initialized in order to reinitialize.");
+    }
     _exaggeration_decay = false;
     _iteration_count = 0;
     _decay_started_at = -1;
     _have_preset_embedding = false;
+    _iterations = 0;
 	auto embedding_loc = initial_embedding;
 	py::buffer_info emb_info = embedding_loc.request();    
 	if (emb_info.ndim == 2 && emb_info.size > 0) {
@@ -278,6 +282,10 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
 			}
 		}
 	} 
+    else {
+        // No user supplied embedding clear the current one.
+        _embedding.clear();
+    }
     hdi::dr::TsneParameters tSNE_param;
     tSNE_param._embedding_dimensionality = _num_target_dimensions;
     tSNE_param._mom_switching_iter = 0;
