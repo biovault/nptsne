@@ -278,7 +278,11 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
 			}
 		}
 	} 
-    tSNE_param._presetEmbedding = _have_preset_embedding;
+    hdi::dr::TsneParameters tSNE_param;
+    tSNE_param._embedding_dimensionality = _num_target_dimensions;
+    tSNE_param._mom_switching_iter = 0;
+    tSNE_param._remove_exaggeration_iter = 0;
+    tSNE_param._presetEmbedding = _have_preset_embedding;    
     _tSNE.initialize(_distributions,&_embedding,tSNE_param);    
 }
     
