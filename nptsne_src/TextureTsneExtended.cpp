@@ -263,35 +263,39 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
     _decay_started_at = -1;
     _have_preset_embedding = false;
     _iterations = 0;
-	auto embedding_loc = initial_embedding;
-	py::buffer_info emb_info = embedding_loc.request();    
-	if (emb_info.ndim == 2 && emb_info.size > 0) {
-		if (_verbose) {
-			std::cout << "Initialize from given embedding...\n";
-			std::cout << "Embed dimensions: " << emb_info.shape[0] << ", " << emb_info.shape[1] << "\n";
-		}
-		_have_preset_embedding = true;
-		float * emb_in = static_cast<float *>(emb_info.ptr);
-		// user provided default for embedding - overwrite the random def.
-		_embedding = hdi::data::Embedding<scalar_type>(emb_info.shape[0], emb_info.shape[1]);
-		typename hdi::data::Embedding<scalar_type>::scalar_vector_type* embedding_container = &(_embedding.getContainer());
-		// simply replace the container by the input?
-		for(int p = 0; p < _num_data_points; p++) {
-			for(int d = 0; d < 2; d++) {
-				(*embedding_container)[p * 2 + d] = emb_in[p * 2 + d];
-			}
-		}
-	} 
-    else {
-        // No user supplied embedding clear the current one.
-        _embedding.clear();
+    try {
+        auto embedding_loc = initial_embedding;
+        py::buffer_info emb_info = embedding_loc.request();    
+        if (emb_info.ndim == 2 && emb_info.size > 0) {
+            if (_verbose) {
+                std::cout << "Initialize from given embedding...\n";
+                std::cout << "Embed dimensions: " << emb_info.shape[0] << ", " << emb_info.shape[1] << "\n";
+            }
+            _have_preset_embedding = true;
+            float * emb_in = static_cast<float *>(emb_info.ptr);
+            // user provided default for embedding - overwrite the random def.
+            _embedding = hdi::data::Embedding<scalar_type>(emb_info.shape[0], emb_info.shape[1]);
+            typename hdi::data::Embedding<scalar_type>::scalar_vector_type* embedding_container = &(_embedding.getContainer());
+            // simply replace the container by the input?
+            for(int p = 0; p < _num_data_points; p++) {
+                for(int d = 0; d < 2; d++) {
+                    (*embedding_container)[p * 2 + d] = emb_in[p * 2 + d];
+                }
+            }
+        } 
+        else {
+            // No user supplied embedding clear the current one.
+            _embedding.clear();
+        }
+        hdi::dr::TsneParameters tSNE_param;
+        tSNE_param._embedding_dimensionality = _num_target_dimensions;
+        tSNE_param._mom_switching_iter = 0;
+        tSNE_param._remove_exaggeration_iter = 0;
+        tSNE_param._presetEmbedding = _have_preset_embedding;    
+        _tSNE.initialize(_distributions,&_embedding,tSNE_param);    
+    } catch (Exception &e) {
+        std::cout << e.what() << std::endl
     }
-    hdi::dr::TsneParameters tSNE_param;
-    tSNE_param._embedding_dimensionality = _num_target_dimensions;
-    tSNE_param._mom_switching_iter = 0;
-    tSNE_param._remove_exaggeration_iter = 0;
-    tSNE_param._presetEmbedding = _have_preset_embedding;    
-    _tSNE.initialize(_distributions,&_embedding,tSNE_param);    
 }
     
 void TextureTsneExtended::close() 
