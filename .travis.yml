@@ -10,7 +10,7 @@ osx: &osx
     language: generic
 env:
    global:
-     - CONAN_REFERENCE="nptsne/1.0.0rc2"
+     - CONAN_REFERENCE="nptsne/1.0.0rc3"
      - CONAN_USERNAME="lkeb"
      - CONAN_CHANNEL="stable"     
      - CONAN_LOGIN_USERNAME="admin"

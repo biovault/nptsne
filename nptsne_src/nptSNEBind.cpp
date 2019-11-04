@@ -28,7 +28,7 @@ PYBIND11_MODULE(_nptsne, m) {
          TextureTsne : linear tSNE simple API
          TextureTsneExtended : linear tSNE advanced API
                
-          Reference: https://arxiv.org/abs/1805.10817
+          Reference: https://arxiv.org/abs/1805.10817v2
 
     )doc";
      
@@ -42,7 +42,7 @@ PYBIND11_MODULE(_nptsne, m) {
     TextureTsne: a simple wrapper API for the linear tSNE implementation.
 
         TextureTsne GPU compute shader implementation of the gradient descent
-        linear tSNE described in https://arxiv.org/abs/1805.10817
+        linear tSNE described in https://arxiv.org/abs/1805.10817v2
 
     )doc");
 
@@ -116,11 +116,12 @@ PYBIND11_MODULE(_nptsne, m) {
 
     textureTsneExtended.def("init_transform", &TextureTsneExtended::init_transform, "Initialize the transform with given data and optional initial embedding", R"doc(
         Fit X into an embedded space and return that transformed output.
+        
         Args:
-        X (ndarray) The iput data with shape (num. data points, num. dimensions)
+            X (ndarray) The iput data with shape (num. data points, num. dimensions)
 
-        initial_embedding(ndarray) An optional initial embedding. Shape should be
-            (num data points, num output dimensions)
+            initial_embedding(ndarray) An optional initial embedding. Shape should be
+                (num data points, num output dimensions)
 
     )doc",
     py::arg("X"),
@@ -129,12 +130,14 @@ PYBIND11_MODULE(_nptsne, m) {
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform, R"doc(
         Run the transform gradient descent for a number of iterations
         with the current settings for exaggeration.
-        Args:
-        verbose: Enable verbose logging to std:out
 
-        iterations: the number of iterations to run
+        Args:
+            verbose: Enable verbose logging to std:out
+
+            iterations: the number of iterations to run
+        
         Returns:
-        A numpy array contain a flatten (1D) embedding
+            A numpy array contain a flatten (1D) embedding
 
     )doc",
     py::arg("verbose")=false,
@@ -144,9 +147,10 @@ PYBIND11_MODULE(_nptsne, m) {
         Fit X into an embedded space and return that transformed output.
         Knn is not recomputed. If no initial_embedding is supplied the embedding
         is re-randomized.
+        
         Args:
-        initial_embedding(ndarray) An optional initial embedding. Shape should be
-            (num data points, num output dimensions)
+            initial_embedding(ndarray) An optional initial embedding. Shape should be
+                (num data points, num output dimensions)
 
     )doc",
     py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
@@ -154,21 +158,24 @@ PYBIND11_MODULE(_nptsne, m) {
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay, R"doc(
         Enable exaggeration decay. Effective on next call to run_transform.
         Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
+        
         Raises: RuntimeError if the decay is already active. This can be ignored.
 
     )doc");
 
     textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at, R"doc(
         The iteration number when exaggeration decay started.
+        
         Returns:
-        -1 if decays has not started.
+            -1 if decays has not started.
 
     )doc");
 
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count, R"doc(
         The number of completed iterations of tSNE gradient descent.
+        
         Returns:
-        iteration_count)doc");
+            iteration_count)doc");
 
     textureTsneExtended.def("close", &TextureTsneExtended::close, R"doc(
         Release GPU resources for the transform
