@@ -293,8 +293,9 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
         tSNE_param._remove_exaggeration_iter = 0;
         tSNE_param._presetEmbedding = _have_preset_embedding;    
         _tSNE.initialize(_distributions,&_embedding,tSNE_param);    
-    } catch (Exception &e) {
+    } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
+        throw;
     }
 }
     
