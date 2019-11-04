@@ -149,7 +149,6 @@ PYBIND11_MODULE(_nptsne, m) {
             (num data points, num output dimensions)
 
     )doc",
-    py::arg("X"),
     py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
 
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay, R"doc(
