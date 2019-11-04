@@ -47,7 +47,6 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
 		std::cout << "knn type: " << ((KnnAlgorithm::Flann == _knn_algorithm) ? "flann\n": "hnsw\n");
 	}
 
-
 	typedef float scalar_type;
     if (!glfwInit()) {
         throw std::runtime_error("Unable to initialize GLFW.");

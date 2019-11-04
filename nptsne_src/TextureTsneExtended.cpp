@@ -28,7 +28,7 @@ TextureTsneExtended::TextureTsneExtended(
 {
 }
 	
-// Initialise the tSNE with the data and anoptional starting embedding
+// Initialise the tSNE with the data and an optional starting embedding
 bool TextureTsneExtended::init_transform(
 	py::array_t<float, py::array::c_style | py::array::forcecast> X,
 	py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding) 
@@ -60,7 +60,7 @@ bool TextureTsneExtended::init_transform(
 			}
 		}
 	}
-	
+	std::cout << "Embedding size before init: " << _embedding.getContainer().size() << std::endl;
 	if (_verbose) {
 		std::cout << "Target dimensions: " << _num_target_dimensions << "\n";
 		std::cout << "Perplexity: " << _perplexity << "\n";
@@ -140,6 +140,7 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 {
 	_verbose = verbose;
 	_iterations = iterations;
+    std::cout << "Embedding size before run_transform: " << _embedding.getContainer().size() << std::endl;
 
 	try {
 
