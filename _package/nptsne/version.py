@@ -17,5 +17,5 @@
 import pkgutil
 
 __rawversion = pkgutil.get_data("nptsne", "_version.txt").strip()
-__version__ = raw.decode("utf-8")
+__version__ = __rawversion.decode("utf-8")
 
