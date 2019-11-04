@@ -48,7 +48,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
     textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(), R"doc(
      Args:
-         verbose (bool): Enable verbose logging to std::out
+         verbose (bool): Enable verbose logging to standard output
 
          iterations (int): The number of iterations to perform. This must
              be at least 1000.
@@ -96,7 +96,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
     textureTsneExtended.def(py::init<bool, int, int, KnnAlgorithm>(), R"doc(
       Args:
-          verbose (bool): Enable verbose logging to std::out
+          verbose (bool): Enable verbose logging to standard output
 
           num_target_dimensions (int): The number of dimensions for the output
               embedding. Default is 2.
@@ -132,7 +132,7 @@ PYBIND11_MODULE(_nptsne, m) {
         with the current settings for exaggeration.
 
         Args:
-            verbose: Enable verbose logging to std:out
+            verbose: Enable verbose logging to standard output
 
             iterations: the number of iterations to run
         

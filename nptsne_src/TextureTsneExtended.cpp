@@ -60,7 +60,7 @@ bool TextureTsneExtended::init_transform(
 			}
 		}
 	}
-	# std::cout << "Embedding size before init: " << _embedding.getContainer().size() << std::endl;
+	// std::cout << "Embedding size before init: " << _embedding.getContainer().size() << std::endl;
 	if (_verbose) {
 		std::cout << "Target dimensions: " << _num_target_dimensions << "\n";
 		std::cout << "Perplexity: " << _perplexity << "\n";
@@ -140,7 +140,7 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 {
 	_verbose = verbose;
 	_iterations = iterations;
-    # std::cout << "Embedding size before run_transform: " << _embedding.getContainer().size() << std::endl;
+    // std::cout << "Embedding size before run_transform: " << _embedding.getContainer().size() << std::endl;
 
 	try {
 
@@ -289,9 +289,9 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
         } 
         else {
             // No user supplied embedding clear the current one.
-            # std::cout << "Embedding size before clear: " << _embedding.getContainer().size() << std::endl;
+            // std::cout << "Embedding size before clear: " << _embedding.getContainer().size() << std::endl;
             _embedding = hdi::data::Embedding<scalar_type>();
-            # std::cout << "Embedding size after clear: " << _embedding.getContainer().size() << std::endl;            
+            // std::cout << "Embedding size after clear: " << _embedding.getContainer().size() << std::endl;            
         }
         hdi::dr::TsneParameters tSNE_param;
         tSNE_param._embedding_dimensionality = _num_target_dimensions;
