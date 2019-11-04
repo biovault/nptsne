@@ -139,6 +139,18 @@ PYBIND11_MODULE(_nptsne, m) {
     )doc",
     py::arg("verbose")=false,
     py::arg("iterations")=1000);
+    
+    textureTsneExtended.def("reinitialize_transform", &TextureTsneExtended::reinitialize_transform, "Reinitialize the transform with optional initial embedding", R"doc(
+        Fit X into an embedded space and return that transformed output.
+        Knn is not recomputed. If no initial_embedding is supplied the embedding
+        is re-randomized.
+        Args:
+        initial_embedding(ndarray) An optional initial embedding. Shape should be
+            (num data points, num output dimensions)
+
+    )doc",
+    py::arg("X"),
+    py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
 
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay, R"doc(
         Enable exaggeration decay. Effective on next call to run_transform.

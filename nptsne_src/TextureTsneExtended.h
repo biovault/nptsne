@@ -38,7 +38,10 @@ public:
 	py::array_t<float, py::array::c_style> run_transform(
 		bool verbose=false,  
 		int iterations=1000);
-		
+    // Restart the transform with an optional initial embedding
+    void reinitialize_transform(
+        py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<scalar_type>({}));
+    
 	void close();
 	
 private:
