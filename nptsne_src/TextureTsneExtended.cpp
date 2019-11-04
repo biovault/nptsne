@@ -285,9 +285,9 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
         } 
         else {
             // No user supplied embedding clear the current one.
-            std::cout << "Embedding size before clear: " << _embedding.getContainer()->size() << std::endl;
+            std::cout << "Embedding size before clear: " << _embedding.getContainer().size() << std::endl;
             _embedding.clear();
-            std::cout << "Embedding size after clear: " << _embedding.getContainer()->size() << std::endl;            
+            std::cout << "Embedding size after clear: " << _embedding.getContainer().size() << std::endl;            
         }
         hdi::dr::TsneParameters tSNE_param;
         tSNE_param._embedding_dimensionality = _num_target_dimensions;
