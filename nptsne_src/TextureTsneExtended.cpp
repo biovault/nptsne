@@ -253,7 +253,7 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 	return py::array_t<float>(0);		
 }
 
-TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding)
+void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding)
 {
     _exaggeration_decay = false;
     _iteration_count = 0;
