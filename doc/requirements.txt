@@ -1,2 +1,3 @@
 # Requirements for building in ReadTheDocs
-nptsne
+nptsne >= 1.11.0
+http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl

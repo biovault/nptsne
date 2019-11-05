@@ -48,23 +48,18 @@ PYBIND11_MODULE(_nptsne, m) {
 
     textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(), R"doc(
      Args:
+     
          verbose (bool): Enable verbose logging to standard output
 
-         iterations (int): The number of iterations to perform. This must
-             be at least 1000.
+         iterations (int): The number of iterations to perform. This must be at least 1000.
 
-         num_target_dimensions (int): The number of dimensions for the output
-             embedding. Default is 2.
+         num_target_dimensions (int): The number of dimensions for the output embedding. Default is 2.
 
-         perplexity (int): The tSNE parameter that defines the neighborhood size.
-             Usually between 10 and 30. Default is 30.
+         perplexity (int): The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
 
-         exaggeration_iter (int): The iteration when force exaggeration starts
-             to decay.
+         exaggeration_iter (int): The iteration when force exaggeration starts to decay.
 
-         knn_algorithm (str): The knn algorithm used for the nearest neighbor
-             calculation. The default is 'Flann' for less than 50 dimensions
-             'HNSW' may be faster
+         knn_algorithm (str): The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
 
     )doc",
     py::arg("verbose")=false,
@@ -98,15 +93,11 @@ PYBIND11_MODULE(_nptsne, m) {
       Args:
           verbose (bool): Enable verbose logging to standard output
 
-          num_target_dimensions (int): The number of dimensions for the output
-              embedding. Default is 2.
+          num_target_dimensions (int): The number of dimensions for the output embedding. Default is 2.
 
-          perplexity (int): The tSNE parameter that defines the neighborhood size.
-              Usually between 10 and 30. Default is 30.
+          perplexity (int): The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
 
-          knn_algorithm (str): The knn algorithm used for the nearest neighbor
-              calculation. The default is 'Flann' for less than 50 dimensions
-              'HNSW' may be faster
+          knn_algorithm (str): The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
 
     )doc",
     py::arg("verbose")=false,
@@ -118,10 +109,9 @@ PYBIND11_MODULE(_nptsne, m) {
         Fit X into an embedded space and return that transformed output.
         
         Args:
-            X (ndarray) The iput data with shape (num. data points, num. dimensions)
+            X (ndarray): The iput data with shape (num. data points, num. dimensions)
 
-            initial_embedding(ndarray) An optional initial embedding. Shape should be
-                (num data points, num output dimensions)
+            initial_embedding(ndarray): An optional initial embedding. Shape should be (num data points, num output dimensions)
 
     )doc",
     py::arg("X"),
@@ -149,8 +139,7 @@ PYBIND11_MODULE(_nptsne, m) {
         is re-randomized.
         
         Args:
-            initial_embedding(ndarray) An optional initial embedding. Shape should be
-                (num data points, num output dimensions)
+            initial_embedding(ndarray): An optional initial embedding. Shape should be (num data points, num output dimensions)
 
     )doc",
     py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
