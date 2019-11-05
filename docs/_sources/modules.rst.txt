@@ -1,0 +1,9 @@
+.. _module-index-label:
+
+nptsne
+======
+
+.. toctree::
+   :maxdepth: 4
+
+   nptsne
