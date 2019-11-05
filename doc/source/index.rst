@@ -16,7 +16,7 @@ Welcome to the nptsne |version| documentation!
    download
    license
 
-Note: This is an Release candidate. For more detail see :ref:`release-notes-label`.
+Note: This is an Release candidate. For more detail see :ref:`release-notes-label`. 
 
 Indices and tables
 ==================
@@ -26,4 +26,4 @@ Indices and tables
 
 * :ref:`genindex`
 * |Module Index|_
-* :ref:`search`
+* :ref:`search` 

@@ -51,6 +51,7 @@ extensions = [
     'sphinx.ext.githubpages',
 ]
 
+# Include class docstring and init docstring in the  class doc
 autoclass_content = 'both'
 
 # Add any paths that contain templates here, relative to this directory.
