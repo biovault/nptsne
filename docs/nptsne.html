@@ -181,22 +181,15 @@ linear tSNE described in <a class="reference external" href="https://arxiv.org/a
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Verbose (bool):</th><td class="field-body">Enable verbose logging to standard output</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Iterations (int):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">The number of iterations to perform. This must be at least 1000.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Num_target_dimensions (int):</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">The number of dimensions for the output embedding. Default is 2.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Perplexity (int):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Exaggeration_iter (int):</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">The iteration when force exaggeration starts to decay.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Knn_algorithm (str):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">The knn algorithm used for the nearest neighbor calculation. The default is ‘Flann’ for less than 50 dimensions ‘HNSW’ may be faster</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>verbose</strong> (<em>bool</em>) – Enable verbose logging to standard output</li>
+<li><strong>iterations</strong> (<em>int</em>) – The number of iterations to perform. This must be at least 1000.</li>
+<li><strong>num_target_dimensions</strong> (<em>int</em>) – The number of dimensions for the output embedding. Default is 2.</li>
+<li><strong>perplexity</strong> (<em>int</em>) – The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.</li>
+<li><strong>exaggeration_iter</strong> (<em>int</em>) – The iteration when force exaggeration starts to decay.</li>
+<li><strong>knn_algorithm</strong> (<em>str</em>) – The knn algorithm used for the nearest neighbor calculation. The default is ‘Flann’ for less than 50 dimensions ‘HNSW’ may be faster</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -209,7 +202,11 @@ linear tSNE described in <a class="reference external" href="https://arxiv.org/a
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">X (ndarray):</th><td class="field-body">The iput data with shape (num. data points, num. dimensions)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>X</strong> (<em>ndarray</em>) – The iput data with shape (num. data points, num. dimensions)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A numpy array contain a flatten (1D) embedding</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">ndarray</td>
 </tr>
 </tbody>
 </table>
@@ -221,24 +218,20 @@ linear tSNE described in <a class="reference external" href="https://arxiv.org/a
 <dt id="nptsne.TextureTsneExtended">
 <em class="property">class </em><code class="descclassname">nptsne.</code><code class="descname">TextureTsneExtended</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsneExtended</em>, <em>verbose: bool=False</em>, <em>num_target_dimensions: int=2</em>, <em>perplexity: int=30</em>, <em>knn_algorithm: nptsne.libs._nptsne.KnnAlgorithm=KnnAlgorithm.Flann</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsneExtended" title="Permalink to this definition">¶</a></dt>
 <dd><p>TextureTsneExtended: an advanced wrapper API for the linear tSNE implementation.</p>
-<blockquote>
-<div>TextureTsneExtended offers additional control over the exaggeration decay
+<p>TextureTsneExtended offers additional control over the exaggeration decay
 along with the ability to input an initial embedding.
-Based on the linear tSNE algorithm described in <a class="reference external" href="https://arxiv.org/abs/1805.10817v2/">https://arxiv.org/abs/1805.10817v2/</a></div></blockquote>
+Based on the linear tSNE algorithm described in <a class="reference external" href="https://arxiv.org/abs/1805.10817v2/">https://arxiv.org/abs/1805.10817v2/</a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Verbose (bool):</th><td class="field-body">Enable verbose logging to standard output</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Num_target_dimensions (int):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">The number of dimensions for the output embedding. Default is 2.</td>
-</tr>
-<tr class="field-odd field"><th class="field-name" colspan="2">Perplexity (int):</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Knn_algorithm (str):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">The knn algorithm used for the nearest neighbor calculation. The default is ‘Flann’ for less than 50 dimensions ‘HNSW’ may be faster</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>verbose</strong> (<em>bool</em>) – Enable verbose logging to standard output</li>
+<li><strong>num_target_dimensions</strong> (<em>int</em>) – The number of dimensions for the output embedding. Default is 2.</li>
+<li><strong>perplexity</strong> (<em>int</em>) – The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.</li>
+<li><strong>knn_algorithm</strong> (<em>str</em>) – The knn algorithm used for the nearest neighbor calculation. The default is ‘Flann’ for less than 50 dimensions ‘HNSW’ may be faster</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -253,10 +246,16 @@ Based on the linear tSNE algorithm described in <a class="reference external" hr
 <dt id="nptsne.TextureTsneExtended.decay_started_at">
 <code class="descname">decay_started_at</code><a class="headerlink" href="#nptsne.TextureTsneExtended.decay_started_at" title="Permalink to this definition">¶</a></dt>
 <dd><p>The iteration number when exaggeration decay started.</p>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>-1 if decays has not started.</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">-1 if decays has not started.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -267,10 +266,11 @@ Based on the linear tSNE algorithm described in <a class="reference external" hr
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">X (ndarray):</th><td class="field-body">The iput data with shape (num. data points, num. dimensions)</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Initial_embedding (ndarray):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">An optional initial embedding. Shape should be (num data points, num output dimensions)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>X</strong> (<em>ndarray</em>) – The iput data with shape (num. data points, num. dimensions)</li>
+<li><strong>initial_embedding</strong> (<em>ndarray</em>) – An optional initial embedding. Shape should be (num data points, num output dimensions)</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -280,10 +280,16 @@ Based on the linear tSNE algorithm described in <a class="reference external" hr
 <dt id="nptsne.TextureTsneExtended.iteration_count">
 <code class="descname">iteration_count</code><a class="headerlink" href="#nptsne.TextureTsneExtended.iteration_count" title="Permalink to this definition">¶</a></dt>
 <dd><p>The number of completed iterations of tSNE gradient descent.</p>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>iteration_count</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">iteration_count</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -296,8 +302,7 @@ is re-randomized.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Initial_embedding (ndarray):</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body">An optional initial embedding. Shape should be (num data points, num output dimensions)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>initial_embedding</strong> (<em>ndarray</em>) – An optional initial embedding. Shape should be (num data points, num output dimensions)</td>
 </tr>
 </tbody>
 </table>
@@ -312,17 +317,20 @@ with the current settings for exaggeration.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Verbose (bool):</th><td class="field-body">Enable verbose logging to standard output</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>verbose</strong> (<em>bool</em>) – Enable verbose logging to standard output</li>
+<li><strong>iterations</strong> (<em>int</em>) – the number of iterations to run</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Iterations (int):</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body">the number of iterations to run</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A numpy array contain a flatten (1D) embedding</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ndarray</p>
+</td>
 </tr>
 </tbody>
 </table>
-<dl class="docutils">
-<dt>Returns:</dt>
-<dd>A numpy array contain a flatten (1D) embedding</dd>
-</dl>
 </dd></dl>
 
 <dl class="method">
