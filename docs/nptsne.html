@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>nptsne API &mdash; 1.0.0rc1</title>
+  <title>nptsne API &mdash; 1.0.0rc3</title>
   
 
   
@@ -20,20 +20,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'1.0.0rc1',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -184,35 +175,44 @@
 <em class="property">class </em><code class="descclassname">nptsne.</code><code class="descname">TextureTsne</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsne</em>, <em>verbose: bool=False</em>, <em>iterations: int=1000</em>, <em>num_target_dimensions: int=2</em>, <em>perplexity: int=30</em>, <em>exaggeration_iter: int=250</em>, <em>knn_algorithm: nptsne.libs._nptsne.KnnAlgorithm=KnnAlgorithm.Flann</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsne" title="Permalink to this definition">¶</a></dt>
 <dd><p>TextureTsne: a simple wrapper API for the linear tSNE implementation.</p>
 <blockquote>
-<div>TextureTsne GPU compute shader implementation of the gradient descent
-linear tSNE described in <a class="reference external" href="https://arxiv.org/abs/1805.10817">https://arxiv.org/abs/1805.10817</a></div></blockquote>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd><p class="first">verbose (bool): Enable verbose logging to std::out</p>
-<dl class="last docutils">
-<dt>iterations (int): The number of iterations to perform. This must</dt>
-<dd>be at least 1000.</dd>
-<dt>num_target_dimensions (int): The number of dimensions for the output</dt>
-<dd>embedding. Default is 2.</dd>
-<dt>perplexity (int): The tSNE parameter that defines the neighborhood size.</dt>
-<dd>Usually between 10 and 30. Default is 30.</dd>
-<dt>exaggeration_iter (int): The iteration when force exaggeration starts</dt>
-<dd>to decay.</dd>
-<dt>knn_algorithm (str): The knn algorithm used for the nearest neighbor</dt>
-<dd>calculation. The default is ‘Flann’ for less than 50 dimensions
-‘HNSW’ may be faster</dd>
-</dl>
-</dd>
-</dl>
+<div>TextureTsne is a GPU compute shader implementation of the gradient descent
+linear tSNE described in <a class="reference external" href="https://arxiv.org/abs/1805.10817v2">https://arxiv.org/abs/1805.10817v2</a></div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Verbose (bool):</th><td class="field-body">Enable verbose logging to standard output</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Iterations (int):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">The number of iterations to perform. This must be at least 1000.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Num_target_dimensions (int):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">The number of dimensions for the output embedding. Default is 2.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Perplexity (int):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Exaggeration_iter (int):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">The iteration when force exaggeration starts to decay.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Knn_algorithm (str):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">The knn algorithm used for the nearest neighbor calculation. The default is ‘Flann’ for less than 50 dimensions ‘HNSW’ may be faster</td>
+</tr>
+</tbody>
+</table>
 <p>..automethod:: __init__</p>
 <dl class="method">
 <dt id="nptsne.TextureTsne.fit_transform">
 <code class="descname">fit_transform</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsne, X: numpy.ndarray[float32]</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray[float32]<a class="headerlink" href="#nptsne.TextureTsne.fit_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit X into an embedded space and return that transformed output.</p>
-<dl class="docutils">
-<dt>Args:</dt>
-<dd>X (ndarray) The iput data with shape (num. data points, num. dimensions)</dd>
-</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">X (ndarray):</th><td class="field-body">The iput data with shape (num. data points, num. dimensions)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -221,23 +221,27 @@ linear tSNE described in <a class="reference external" href="https://arxiv.org/a
 <dt id="nptsne.TextureTsneExtended">
 <em class="property">class </em><code class="descclassname">nptsne.</code><code class="descname">TextureTsneExtended</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsneExtended</em>, <em>verbose: bool=False</em>, <em>num_target_dimensions: int=2</em>, <em>perplexity: int=30</em>, <em>knn_algorithm: nptsne.libs._nptsne.KnnAlgorithm=KnnAlgorithm.Flann</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsneExtended" title="Permalink to this definition">¶</a></dt>
 <dd><p>TextureTsneExtended: an advanced wrapper API for the linear tSNE implementation.</p>
-<dl class="docutils">
-<dt>TextureTsneExtended offers additional control over the exaggeration decay</dt>
-<dd>along with the ability to input an initial embedding.
-Based on the linear tSNE algorithm described in doi://</dd>
-<dt>Args:</dt>
-<dd><p class="first">verbose (bool): Enable verbose logging to std::out</p>
-<dl class="last docutils">
-<dt>num_target_dimensions (int): The number of dimensions for the output</dt>
-<dd>embedding. Default is 2.</dd>
-<dt>perplexity (int): The tSNE parameter that defines the neighborhood size.</dt>
-<dd>Usually between 10 and 30. Default is 30.</dd>
-<dt>knn_algorithm (str): The knn algorithm used for the nearest neighbor</dt>
-<dd>calculation. The default is ‘Flann’ for less than 50 dimensions
-‘HNSW’ may be faster</dd>
-</dl>
-</dd>
-</dl>
+<blockquote>
+<div>TextureTsneExtended offers additional control over the exaggeration decay
+along with the ability to input an initial embedding.
+Based on the linear tSNE algorithm described in <a class="reference external" href="https://arxiv.org/abs/1805.10817v2/">https://arxiv.org/abs/1805.10817v2/</a></div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Verbose (bool):</th><td class="field-body">Enable verbose logging to standard output</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Num_target_dimensions (int):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">The number of dimensions for the output embedding. Default is 2.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Perplexity (int):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Knn_algorithm (str):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">The knn algorithm used for the nearest neighbor calculation. The default is ‘Flann’ for less than 50 dimensions ‘HNSW’ may be faster</td>
+</tr>
+</tbody>
+</table>
 <p>..automethod:: __init__</p>
 <dl class="method">
 <dt id="nptsne.TextureTsneExtended.close">
@@ -248,49 +252,85 @@ Based on the linear tSNE algorithm described in doi://</dd>
 <dl class="attribute">
 <dt id="nptsne.TextureTsneExtended.decay_started_at">
 <code class="descname">decay_started_at</code><a class="headerlink" href="#nptsne.TextureTsneExtended.decay_started_at" title="Permalink to this definition">¶</a></dt>
-<dd><p>The iteration number when exaggeration decay started.
-Returns:
--1 if decays has not started.</p>
+<dd><p>The iteration number when exaggeration decay started.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>-1 if decays has not started.</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="nptsne.TextureTsneExtended.init_transform">
 <code class="descname">init_transform</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsneExtended, X: numpy.ndarray[float32], initial_embedding: numpy.ndarray[float32]=array([], dtype=float32)</em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#nptsne.TextureTsneExtended.init_transform" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fit X into an embedded space and return that transformed output.
-Args:
-X (ndarray) The iput data with shape (num. data points, num. dimensions)</p>
-<dl class="docutils">
-<dt>initial_embedding(ndarray) An optional initial embedding. Shape should be</dt>
-<dd>(num data points, num output dimensions)</dd>
-</dl>
+<dd><p>Fit X into an embedded space and return that transformed output.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">X (ndarray):</th><td class="field-body">The iput data with shape (num. data points, num. dimensions)</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Initial_embedding (ndarray):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">An optional initial embedding. Shape should be (num data points, num output dimensions)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="nptsne.TextureTsneExtended.iteration_count">
 <code class="descname">iteration_count</code><a class="headerlink" href="#nptsne.TextureTsneExtended.iteration_count" title="Permalink to this definition">¶</a></dt>
-<dd><p>The number of completed iterations of tSNE gradient descent.
-Returns:
-iteration_count</p>
+<dd><p>The number of completed iterations of tSNE gradient descent.</p>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>iteration_count</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nptsne.TextureTsneExtended.reinitialize_transform">
+<code class="descname">reinitialize_transform</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsneExtended</em>, <em>initial_embedding: numpy.ndarray[float32]=array([]</em>, <em>dtype=float32)</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsneExtended.reinitialize_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit X into an embedded space and return that transformed output.
+Knn is not recomputed. If no initial_embedding is supplied the embedding
+is re-randomized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Initial_embedding (ndarray):</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body">An optional initial embedding. Shape should be (num data points, num output dimensions)</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="nptsne.TextureTsneExtended.run_transform">
 <code class="descname">run_transform</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsneExtended</em>, <em>verbose: bool=False</em>, <em>iterations: int=1000</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray[float32]<a class="headerlink" href="#nptsne.TextureTsneExtended.run_transform" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the transform gradient descent for a number of iterations
-with the current settings for exaggeration.
-Args:
-verbose: Enable verbose logging to std:out</p>
-<p>iterations: the number of iterations to run
-Returns:
-A numpy array contain a flatten (1D) embedding</p>
+with the current settings for exaggeration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Verbose (bool):</th><td class="field-body">Enable verbose logging to standard output</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Iterations (int):</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">the number of iterations to run</td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt>Returns:</dt>
+<dd>A numpy array contain a flatten (1D) embedding</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="nptsne.TextureTsneExtended.start_exaggeration_decay">
 <code class="descname">start_exaggeration_decay</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.TextureTsneExtended</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.TextureTsneExtended.start_exaggeration_decay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Enable exaggeration decay. Effective on next call to run_transform.
-Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
-Raises: RuntimeError if the decay is already active. This can be ignored.</p>
+Exaggeration decay is fixed at 150 iterations. This call is ony effective once.</p>
+<p>Raises: RuntimeError if the decay is already active. This can be ignored.</p>
 </dd></dl>
 
 </dd></dl>

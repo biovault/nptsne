@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Usage &mdash; 1.0.0rc1</title>
+  <title>Usage &mdash; 1.0.0rc3</title>
   
 
   
@@ -20,20 +20,11 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'1.0.0rc1',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -177,9 +168,10 @@
 <p>On Windows and Linux acceleration is performed using compute shaders. On Macos, due to the lack of compute shader support, tSNE uses a rasterized impplementation with a lowe performance.</p>
 <div class="section" id="installing">
 <h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
-<p>Download the correct file file for your OS and python version and install with pip install &lt;file&gt;.whl</p>
-<table border="1" class="colwidths-given docutils" id="id3">
-<caption><span class="caption-text">Windows whl files</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<p>WIndows and MacOS can be installed using <em>pip install nptsne</em>.</p>
+<p>Currently for Linux only Ubuntu (16.06 and upward) is supported. Download the correct file file for your python version and install with pip install &lt;file&gt;.whl</p>
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text">Ubuntu whl files</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
 <colgroup>
 <col width="50%" />
 <col width="50%" />
@@ -190,42 +182,8 @@
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference external" href="https://drive.google.com/uc?export=download&amp;id=1OOIazZ-VGDwi64EB5JWxN2eXlcfKMlbJ">nptsne-0.2.0-cp36-cp36m-win_amd64.whl</a></td>
-<td><a class="reference external" href="https://drive.google.com/uc?export=download&amp;id=1f2ra9r4fOq-F3PKo5jAF1aEcpI7CaDje">nptsne-0.2.0-cp37-cp37m-win_amd64.whl</a></td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="colwidths-given docutils" id="id4">
-<caption><span class="caption-text">Ubuntu whl files</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">py36</th>
-<th class="head">py37</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><a class="reference external" href="https://drive.google.com/uc?export=download&amp;id=1UfRm1fLprY7Bkt49HaKi8_710klXU7eA">Ubuntu nptsne-0.1.1-cp36-cp36m-linux_x86_64.whl</a></td>
-<td><a class="reference external" href="https://drive.google.com/uc?export=download&amp;id=1lzPtOVZ8QlhdtyoyWKYeC9ZWQz1s1b1G">Ubuntu nptsne-0.1.1-cp37-cp37m-linux_x86_64.whl</a></td>
-</tr>
-</tbody>
-</table>
-<table border="1" class="colwidths-given docutils" id="id5">
-<caption><span class="caption-text">CentOS whl files <a class="footnote-reference" href="#id2" id="id1">[1]</a></span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">py36</th>
-<th class="head">py37</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><a class="reference external" href="https://drive.google.com/uc?export=download&amp;id=14t5hTO8ju7f3wfa3JUbVZ3XDqZmyy1PA">CentOS nptsne-0.1.1-cp36-cp36m-linux_x86_64.whl</a></td>
-<td><a class="reference external" href="https://drive.google.com/uc?export=download&amp;id=1cG_rd8Wj_suLjfn6c-6ANNaUNPdluEvV">CentOS nptsne-0.1.1-cp37-cp37m-linux_x86_64.whl</a></td>
+<tr class="row-even"><td><a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne-1.0.0rc3-cp36-none-linux_x86_64.whl">Ubuntu nptsne-0.1.1-cp36-none-linux_x86_64.whl</a></td>
+<td><a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl">Ubuntu nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl</a></td>
 </tr>
 </tbody>
 </table>
@@ -239,19 +197,7 @@ examples package both as <a class="reference external" href="https://drive.googl
 <h3>umap to tSNE example<a class="headerlink" href="#umap-to-tsne-example" title="Permalink to this headline">¶</a></h3>
 <p>This short animation shows the effect of inputting a umap embedding of 7000 MNIST digits into tSNE and then
 relaxing the force exaggeration.</p>
-<img src="https://drive.google.com/uc?export=view&id=1fW4IHOyio59Yx59wcpbpQrMl_ZiIlIet"/><table class="docutils footnote" frame="void" id="id2" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[1]</a></td><td><p class="first">CentOS issue</p>
-<p>Fixing problems with libpng16</p>
-<p>If python on Centos reports problems with libpng16 download and untar
-<a class="reference external" href="https://drive.google.com/uc?export=download&amp;id=1xNuCtqGmgW1Ctq-IDwVcLpGSAuKM8cof">libpng16.so.tar.xz</a>
-and copy the contents to the site-packages/nptsne directory.</p>
-<p class="last">This is a known deployment issue and will be fixed in a future release.</p>
-</td></tr>
-</tbody>
-</table>
-</div>
+<img src="https://drive.google.com/uc?export=view&id=1fW4IHOyio59Yx59wcpbpQrMl_ZiIlIet"/></div>
 </div>
 </div>
 

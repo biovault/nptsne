@@ -39,13 +39,3 @@ relaxing the force exaggeration.
     <img src="https://drive.google.com/uc?export=view&id=1fW4IHOyio59Yx59wcpbpQrMl_ZiIlIet"/>
 
 
-
-.. [1] CentOS issue
-
-    Fixing problems with libpng16
-
-    If python on Centos reports problems with libpng16 download and untar
-    `libpng16.so.tar.xz <https://drive.google.com/uc?export=download&id=1xNuCtqGmgW1Ctq-IDwVcLpGSAuKM8cof>`_
-    and copy the contents to the site-packages/nptsne directory.
-
-    This is a known deployment issue and will be fixed in a future release.
