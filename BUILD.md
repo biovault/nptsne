@@ -1,4 +1,21 @@
-## <span style="font-size:1.5em;">Instructions for manual building/testing</span>
+# Build with conan
+This repository is configured too build Window, Linux and Macos using conan and the Appveyor and Travis CIs. The build is done via the conanfile which can also be run manually.
+
+0. Make and select a python virtual env for py36 or 37 (can use miniconda or virtualenv). Make sure that the correct compiler is available.
+1. Pip install conan==1.19.3
+2. Intialize conan with  `conan user`
+3. Pip install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0
+4. Clone and checkout the nptsne branch
+5. cd to the nptsne directory and create with conan ` conan create . nptsne/<version>@<yourname>/develop` `<verson>` must match the version in the conanfile.py. You are free to choose another channel name (here "develop" is suggested. If you intend to deploy your build as stable to the Artifactory you might prefer `nptsne/<version>@<yourorganisationname>/stable`
+
+The CI/CD is configured to use conan.
+
+For more information about conan see the [conan docs](https://docs.conan.io/en/latest/).
+
+## Information only: Old manual build system
+
+What follows is the previous manual build system
+#### <span style="font-size:1.5em;">Instructions for manual building/testing</span>
 
 (for CI/CD see elsewhere)
 
