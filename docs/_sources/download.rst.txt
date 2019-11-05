@@ -16,16 +16,15 @@ Currently for Linux only Ubuntu (16.06 and upward) is supported. Download the co
    :header: "py36", "py37"
    :widths: 40, 40
 
-    `Ubuntu nptsne-0.1.1-cp36-none-linux_x86_64.whl <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne-1.0.0rc3-cp36-none-linux_x86_64.whl>`_, `Ubuntu nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl>`_
+    `Ubuntu nptsne-0.1.1-cp36-none-linux_x86_64.whl <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp36-none-linux_x86_64.whl>`_, `Ubuntu nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl>`_
 
 
 
 Examples
 --------
 
-Example of both the :py:class:`nptsne.TextureTsne` and :py:class:`nptsne.TextureTsneExtended` are available in this
-examples package both as `(zipped) python files <https://drive.google.com/uc?export=download&id=1uuopX-hj25xl0nwSJIJkRaTLEEXotrrQ>`_ or bundled in a
-`Jupyter notebook <https://drive.google.com/uc?export=download&id=1xDZQZtZp3a9o5wHcB22l3ST72hLLZebv>`_.
+Example of both the :py:class:`nptsne.TextureTsne` and :py:class:`nptsne.TextureTsneExtended` are available in a
+`Jupyter notebook <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/NPTSNE_notebooktests.ipynb>`_.
 
 
 umap to tSNE example
