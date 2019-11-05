@@ -14,6 +14,7 @@
 #
 import nptsne
 print(nptsne.__version__)
+import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
@@ -49,6 +50,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.githubpages',
+    'sphinx_rtd_theme',
 ]
 
 # Include class docstring and init docstring in the  class doc
