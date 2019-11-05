@@ -28,7 +28,7 @@ PYBIND11_MODULE(_nptsne, m) {
          TextureTsne : linear tSNE simple API
          TextureTsneExtended : linear tSNE advanced API
                
-          Reference: https://arxiv.org/abs/1805.10817v2
+         Reference: https://arxiv.org/abs/1805.10817v2
 
     )doc";
      
@@ -41,26 +41,24 @@ PYBIND11_MODULE(_nptsne, m) {
     py::class_<TextureTsne> textureTsne(m, "TextureTsne", R"doc(
     TextureTsne: a simple wrapper API for the linear tSNE implementation.
 
-        TextureTsne GPU compute shader implementation of the gradient descent
+        TextureTsne is a GPU compute shader implementation of the gradient descent
         linear tSNE described in https://arxiv.org/abs/1805.10817v2
 
     )doc");
 
     textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(), 
-    R"doc(
-     Args:
-     
-         verbose (bool): Enable verbose logging to standard output
+    R"doc(    
+         :verbose (bool): Enable verbose logging to standard output
 
-         iterations (int): The number of iterations to perform. This must be at least 1000.
+         :iterations (int): The number of iterations to perform. This must be at least 1000.
 
-         num_target_dimensions (int): The number of dimensions for the output embedding. Default is 2.
+         :num_target_dimensions (int): The number of dimensions for the output embedding. Default is 2.
 
-         perplexity (int): The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
+         :perplexity (int): The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
 
-         exaggeration_iter (int): The iteration when force exaggeration starts to decay.
+         :exaggeration_iter (int): The iteration when force exaggeration starts to decay.
 
-         knn_algorithm (str): The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
+         :knn_algorithm (str): The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
 
     )doc",
     py::arg("verbose")=false,
@@ -74,8 +72,7 @@ PYBIND11_MODULE(_nptsne, m) {
     R"doc(
       Fit X into an embedded space and return that transformed output.
 
-      Args:
-           X (ndarray) The iput data with shape (num. data points, num. dimensions)
+      :X (ndarray): The iput data with shape (num. data points, num. dimensions)
 
     )doc",
     py::arg("X")
@@ -86,22 +83,21 @@ PYBIND11_MODULE(_nptsne, m) {
     R"doc(
     TextureTsneExtended: an advanced wrapper API for the linear tSNE implementation.
 
-    TextureTsneExtended offers additional control over the exaggeration decay
-       along with the ability to input an initial embedding.
-       Based on the linear tSNE algorithm described in doi://
+        TextureTsneExtended offers additional control over the exaggeration decay
+        along with the ability to input an initial embedding.
+        Based on the linear tSNE algorithm described in https://arxiv.org/abs/1805.10817v2/
 
     )doc");
 
     textureTsneExtended.def(py::init<bool, int, int, KnnAlgorithm>(), 
     R"doc(
-      Args:
-          verbose (bool): Enable verbose logging to standard output
+      :verbose (bool): Enable verbose logging to standard output
 
-          num_target_dimensions (int): The number of dimensions for the output embedding. Default is 2.
+      :num_target_dimensions (int): The number of dimensions for the output embedding. Default is 2.
 
-          perplexity (int): The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
+      :perplexity (int): The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
 
-          knn_algorithm (str): The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
+      :knn_algorithm (str): The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
 
     )doc",
     py::arg("verbose")=false,
@@ -113,10 +109,9 @@ PYBIND11_MODULE(_nptsne, m) {
     R"doc(
         Fit X into an embedded space and return that transformed output.
         
-        Args:
-            X (ndarray): The iput data with shape (num. data points, num. dimensions)
+        :X (ndarray): The iput data with shape (num. data points, num. dimensions)
 
-            initial_embedding (ndarray): An optional initial embedding. Shape should be (num data points, num output dimensions)
+        :initial_embedding (ndarray): An optional initial embedding. Shape should be (num data points, num output dimensions)
 
     )doc",
     py::arg("X"),
@@ -127,10 +122,9 @@ PYBIND11_MODULE(_nptsne, m) {
         Run the transform gradient descent for a number of iterations
         with the current settings for exaggeration.
 
-        Args:
-            verbose (bool): Enable verbose logging to standard output
+        :verbose (bool): Enable verbose logging to standard output
 
-            iterations (int): the number of iterations to run
+        :iterations (int): the number of iterations to run
         
         Returns:
             A numpy array contain a flatten (1D) embedding
@@ -145,8 +139,7 @@ PYBIND11_MODULE(_nptsne, m) {
         Knn is not recomputed. If no initial_embedding is supplied the embedding
         is re-randomized.
         
-        Args:
-            initial_embedding (ndarray): An optional initial embedding. Shape should be (num data points, num output dimensions)
+        :initial_embedding (ndarray): An optional initial embedding. Shape should be (num data points, num output dimensions)
 
     )doc",
     py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
