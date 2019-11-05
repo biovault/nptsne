@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # The Linux build running in a docker which comes with a
-# pre-set python vershion which may need to be altered
+# pre-set python version which may need to be altered
 if [[ `uname` != "Linux" ]]; then
     exit 0
 fi
@@ -15,7 +15,7 @@ if [[ "$pyver" != "$CONAN_LINUX_PYTHON" ]]; then
     pyenv global $CONAN_LINUX_PYTHON 
 fi
 pip install cmake
-pip install conan 
+pip install conan==1.19.3 
 pip install scikit-build
-pip install conan_package_tools bincrafters_package_tools    
+pip install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0    
 echo After install python version `python --version`
