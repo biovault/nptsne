@@ -36,8 +36,8 @@ environment:
 
 install:
   - set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
-  - pip.exe install conan --upgrade 
-  - pip.exe install conan_package_tools bincrafters_package_tools scikit-build
+  - pip.exe install conan==1.19.3 --upgrade 
+  - pip.exe install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0 scikit-build
   - conan user # It creates the conan data directory
 
 skip_commits:
