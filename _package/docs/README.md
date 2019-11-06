@@ -3,7 +3,7 @@
 The nptsne package is designed to export a number of python classes that
 wrap GPGPU linear complexity tSNE
 implementations based on the following publications
-https://arxiv.org/abs/1805.10817v2
+[DOI: 10.1109/TVCG.2019.2934307](https://doi.org/10.1109/TVCG.2019.2934307) or the [arXiv preprint](https://arxiv.org/abs/1805.10817v2)
 
 ##### Attributions
 

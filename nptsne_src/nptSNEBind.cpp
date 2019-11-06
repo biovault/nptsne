@@ -28,7 +28,7 @@ PYBIND11_MODULE(_nptsne, m) {
          TextureTsne : linear tSNE simple API
          TextureTsneExtended : linear tSNE advanced API
                
-         Reference: https://arxiv.org/abs/1805.10817v2
+         Reference:  https://doi.org/10.1109/TVCG.2019.2934307 or (https://arxiv.org/abs/1805.10817v2)
 
     )pbdoc";
      
@@ -42,7 +42,7 @@ PYBIND11_MODULE(_nptsne, m) {
     TextureTsne: a simple wrapper API for the linear tSNE implementation.
 
         TextureTsne is a GPU compute shader implementation of the gradient descent
-        linear tSNE described in https://arxiv.org/abs/1805.10817v2
+        linear tSNE described in https://doi.org/10.1109/TVCG.2019.2934307 or https://arxiv.org/abs/1805.10817v2
 
     )pbdoc");
 
