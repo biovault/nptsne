@@ -11,18 +11,13 @@ with open(os.path.join(os.path.dirname(__file__), "nptsne", "_version.txt")) as 
 with open("./docs/README.md", "r") as fh:
     long_description = fh.read()
 
-#class BinaryDistribution(upstream_Distribution):
-#    """Distribution which always forces a binary package with platform name"""
-#    def has_ext_modules(foo):
-#       return True
-
 
 setup(
     name='nptsne',
     version=__version__,
 	author='Nicola Pezzotti, Thomas Höllt, Julian Thijssen, Baldur van Lew',
     author_email='b.van_lew@lumc.nl',
-	description='The nptsne package is designed to export a number of python classes that wrap tSNE. Reference https://arxiv.org/abs/1805.10817',
+	description='The nptsne package is designed to export a number of python classes that wrap tSNE. Reference https://arxiv.org/abs/1805.10817v2',
 	long_description=long_description,
     long_description_content_type="text/markdown",
     keywords='tSNE embedding GPU',

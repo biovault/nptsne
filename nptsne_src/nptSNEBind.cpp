@@ -10,8 +10,8 @@ PYBIND11_MODULE(_nptsne, m) {
     
     m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended");    
     m.doc() = R"pbdoc(
-        Nicola Pezzotti's texture tSNE via pybind11
-        -------------------------------------------
+        nptsne - A numpy compatible python extension for GPGPU linear complexity tSNE
+        -----------------------------------------------------------------------------
 
         .. currentmodule:: nptsne
 
@@ -22,8 +22,8 @@ PYBIND11_MODULE(_nptsne, m) {
              TextureTsneExtended
 
 
-         The package contains classes that wrap approximating tSNE
-         and linear tSNE with APIs. The classes are:
+         The package contains classes that wrap linear complexity tSNE. 
+         The classes are:
                
          TextureTsne : linear tSNE simple API
          TextureTsneExtended : linear tSNE advanced API

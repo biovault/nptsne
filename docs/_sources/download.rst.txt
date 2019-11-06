@@ -8,15 +8,15 @@ On Windows and Linux acceleration is performed using compute shaders. On Macos, 
 Installing
 ----------
 
-WIndows and MacOS can be installed using *pip install nptsne*. 
+WIndows and MacOS: install from PyPi using: **pip install nptsne**. 
 
-Currently for Linux only Ubuntu (16.06 and upward) is supported. Download the correct file file for your python version and install with pip install <file>.whl
+Linux: (only Ubuntu (16.06 and upward) is supported). Download the correct file (see below) for your python version and install using **pip install <file>.whl**
 
 .. csv-table:: Ubuntu whl files
    :header: "py36", "py37"
    :widths: 40, 40
 
-    `Ubuntu nptsne-0.1.1-cp36-none-linux_x86_64.whl <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp36-none-linux_x86_64.whl>`_, `Ubuntu nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl>`_
+    `Ubuntu py36 wheel <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp36-none-linux_x86_64.whl>`_, `Ubuntu py37 wheel <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl>`_
 
 
 

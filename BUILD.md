@@ -6,7 +6,7 @@ This repository is configured too build Window, Linux and Macos using conan and 
 2. Intialize conan with  `conan user`
 3. Pip install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0
 4. Clone and checkout the nptsne branch
-5. cd to the nptsne directory and create with conan ` conan create . nptsne/<version>@<yourname>/develop` `<verson>` must match the version in the conanfile.py. You are free to choose another channel name (here "develop" is suggested. If you intend to deploy your build as stable to the Artifactory you might prefer `nptsne/<version>@<yourorganisationname>/stable`
+5. cd to the nptsne directory and create with conan ` conan create . nptsne/<version>@<yourname>/develop` `<version>` must match the version in the conanfile.py. You are free to choose another channel name (here "develop" is suggested. If you intend to deploy your build as stable to the Artifactory you might prefer `nptsne/<version>@<yourorganisationname>/stable`
 
 The CI/CD is configured to use conan.
 
