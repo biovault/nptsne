@@ -1,2 +1,2 @@
 # Requirements for building in ReadTheDocs
-http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl
+http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp37-none-linux_x86_64.whl

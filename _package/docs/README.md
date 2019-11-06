@@ -25,4 +25,4 @@ Linux: (only Ubuntu 16.06 and upward is supported). Download the correct file (s
 
 | py36 | py37 |
 | ---- | ---- |
-| [Ubuntu py36 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp36-none-linux_x86_64.whl) | [Ubuntu py37 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc3-cp37-none-linux_x86_64.whl)|
+| [Ubuntu py36 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp36-none-linux_x86_64.whl) | [Ubuntu py37 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp37-none-linux_x86_64.whl)|

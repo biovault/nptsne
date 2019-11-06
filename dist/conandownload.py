@@ -5,6 +5,7 @@ import urllib.request
 import tarfile
 import shutil
 import os
+import pycurl
 
 # Retrieve the nptsne conan packages for all the supported os
 # versions and python versions. Extract the *.whl files from
@@ -13,7 +14,7 @@ import os
 
 remote="conan-hdim"  # conan-hdim: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
 remote_url_base="http://cytosplore.lumc.nl:8081/artifactory/conan-local"
-version="1.0.0rc3"
+version="1.0.0rc4"
 package_reference = "nptsne/" + version + "@lkeb/stable"
 url_reference = "lkeb/nptsne/" + version + "/stable"
 packages_queries=["os=Windows", "os=Linux", "os=Macos"]
@@ -66,7 +67,19 @@ for query in packages_queries:
                 shutil.copy(os.path.join('./', pyver, whls[0].name), './wheels')
                 
             conantar.close()
-                
+
+
+# Don't forget to setup the netrc with login & password for the artifactory
+c = pycurl.Curl()
+for wheel_name in os.listdir('./linuxwheels'):
+    c.setopt(c.URL, 'http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/{}'.format(wheel_name))
+    c.setopt(c.UPLOAD, 1)
+    c.setopt(c.NETRC, 1)
+    with open('./linuxwheels/{}'.format(wheel_name), 'rb') as file:
+        c.setopt(c.READDATA, file)
+        c.perform()
+    print('Uploaded {}'.format(wheel_name))
+c.close()
 
 # Move the whl to the wheels directory and run
 # twine upload --verbose -r testpypi wheels/nptsne-1.0.0rc2*
