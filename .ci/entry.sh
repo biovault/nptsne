@@ -15,6 +15,7 @@ if [[ "$pyver" != "$CONAN_LINUX_PYTHON" ]]; then
     pyenv global $CONAN_LINUX_PYTHON 
 fi
 pip install cmake
+pip install six==1.12.0
 pip install conan==1.19.3 
 pip install scikit-build
 pip install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0    
