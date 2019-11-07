@@ -24,11 +24,24 @@ if __name__ == "__main__":
         
     printer = Printer(None)
     ci_manager = CIManager(printer)
-    print("Branch detected: ", ci_manager.get_branch())
+    branch = ci_manager.get_branch()
+    version = build_shared.get_version()
+    default_reference = ci_manager.reference
+    print("Branch detected: ", branch)
     print("Version detected: ", build_shared.get_version())
+    print("Default reference: ", default_reference)
+    
+    refstart,refend = default_reference.split('@')
+    name, _ = refstart.split('/')
+    new_reference = None
+    # for builds other than release merge the branchname into the reference
+    if not branch.startswith("release"):
+        new_reference = "{}/{}_{}@".format(name, version, branch.replace('/', '_'), refend)
+        print("Modified reference: ", new_reference)
     
     builder = build_template_default.get_builder(
-        docker_entry_script=docker_entry_script
+        docker_entry_script=docker_entry_script,
+        reference=new_reference
     )
     
     print("Default reference: ", builder.reference)
