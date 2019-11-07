@@ -99,7 +99,7 @@ def main(pypi, to_arti):
 if __name__ == "__main__":
     # execute only if run as a script
     parser = argparse.ArgumentParser(description='Distribute the wheels from the Artifactory')
-    parser.add_argument('--pypi', help='Upload Win and Mac wheels to test (default) or release pypi', default='testpypi', choices=['testpypi', 'releasepypi'])
+    parser.add_argument('--pypi', help='Upload Win and Mac wheels to test or release pypi (default is none)', default='none', choices=['none', 'testpypi', 'releasepypi'])
     parser.add_argument('--lart', help='Upload linux wheels to artifactory', action="store_true")
     args = parser.parse_args()
     

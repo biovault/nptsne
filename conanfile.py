@@ -13,10 +13,19 @@ __py_version__ = "{}.{}".format(sys.version_info.major, sys.version_info.minor)
 __py_tag__ = "cp{}{}".format(sys.version_info.major, sys.version_info.minor)
 
 print("Python version from conanfile: ", __py_version__)
-       
+
+def get_version():
+    git = tools.Git()
+    branch = git.get_branch()
+    if branch.startswith("release"):
+        version = __version__
+    else:
+        version = "{}_{}".format(branch.replace('/', '_'), __version__)
+    return version
+    
 class NptsneConan(ConanFile):
     name = "nptsne"
-    version = __version__
+    version = get_version()
     description = "nptsne is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation."
     topics = ("python", "analysis", "n-dimensional", "tSNE")
     url = "https://github.com/biovault/nptsne"
@@ -130,3 +139,6 @@ class NptsneConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = tools.collect_libs(self)
+        
+    def package_id(self):
+        
