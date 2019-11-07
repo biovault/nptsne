@@ -3,6 +3,7 @@
 
 
 from bincrafters import build_template_default, build_shared
+from conans import tools
 import os
 import platform
 from cpt.ci_manager import CIManager
@@ -31,6 +32,8 @@ if __name__ == "__main__":
     username, version, kwargs = build_shared.get_conan_vars(recipe=recipe)
     print("Branch detected: ", branch)
     print("Version detected: ", build_shared.get_version())
+    
+    tools.environment_append({"CONAN_SOURCE_BRANCH": branch})
 
     new_reference = None
     # for builds other than release create a separate channel
