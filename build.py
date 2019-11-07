@@ -26,15 +26,16 @@ if __name__ == "__main__":
     ci_manager = CIManager(printer)
     branch = ci_manager.get_branch()
     version = build_shared.get_version()
-
+    recipe = get_recipe_path(cwd)
+    name = get_name_from_recipe(recipe=recipe)
+    username, version, kwargs = build_shared.get_conan_vars(recipe=recipe, kwargs=None)
     print("Branch detected: ", branch)
     print("Version detected: ", build_shared.get_version())
 
-    name = "nptsne"
     new_reference = None
-    # for builds other than release merge the branchname into the reference
+    # for builds other than release create a separate channel
     if not branch.startswith("release"):
-        new_reference = "{}/{}_{}".format(name, version, branch.replace('/', '_'))
+        new_reference = "{}/{}@{}/{}".format(name, version, username, branch.replace('/', '_'))
         print("Generated reference: ", new_reference)
     
     builder = build_template_default.get_builder(
