@@ -86,7 +86,7 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Installion and Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Installing and Using</a></li>
 <li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">nptsne API</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#api-class-methods">API class methods</a></li>
@@ -348,7 +348,11 @@ Exaggeration decay is fixed at 150 iterations. This call is ony effective once.<
 <dl class="class">
 <dt id="nptsne.KnnAlgorithm">
 <em class="property">class </em><code class="descclassname">nptsne.</code><code class="descname">KnnAlgorithm</code><span class="sig-paren">(</span><em>self: nptsne.libs._nptsne.KnnAlgorithm</em>, <em>arg0: int</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#nptsne.KnnAlgorithm" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Enumeration used to select the knn algorithm used. Two possibilities are
+supported:</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">KnnAlgorithm.Flann</span></code>: Knn using FLANN - Fast Library for Approximate Nearest Neighbors</p>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">KnnAlgorithm.HNSW</span></code>: Knn using Hnswlib - fast approximate nearest neighbor search</p>
+</dd></dl>
 
 </div>
 </div>
