@@ -28,11 +28,12 @@ def make_version():
    
 class NptsneConan(ConanFile):
     name = "nptsne"
+    # branch = "release/1.0.0"
     version = make_version()
     description = "nptsne is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation."
     topics = ("python", "analysis", "n-dimensional", "tSNE")
     url = "https://github.com/biovault/nptsne"
-    branch = "release/1.0.0"
+
     author = "B. van Lew <b.van_lew@lumc.nl>" #conanfile author
     license = "MIT"  # License for packaged library; please use SPDX Identifiers https://spdx.org/licenses/
     exports = ["LICENSE.md", "version.txt"]      # Packages the license for the conanfile.py
