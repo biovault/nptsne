@@ -14,6 +14,7 @@ __py_tag__ = "cp{}{}".format(sys.version_info.major, sys.version_info.minor)
  
 def make_version():
     git = tools.Git()
+    git.run("branch")
     branch = git.get_branch()
     print("Working branch: ", branch)
     version = ""
