@@ -19,7 +19,9 @@ if __name__ == "__main__":
     docker_entry_script = None
     if platform.system() == "Linux":
         docker_entry_script = "./.ci/entry.sh"
-        
+    
+    print("Version detected", build_shared.get_version())
+    
     builder = build_template_default.get_builder(
         docker_entry_script=docker_entry_script
     )
