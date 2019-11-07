@@ -8,7 +8,7 @@ with open(os.path.join(os.path.dirname(__file__), "nptsne", "_version.txt")) as 
     __version__ = fp.read().strip()
 # from setuptools.dist import Distribution
 
-with open("./docs/README.md", "r") as fh:
+with open("./docs/PyPI_README.md", "r") as fh:
     long_description = fh.read()
     # Inject current version into README (replace ${version} tag)
     long_description = long_description.replace("${version}", __version__)
@@ -19,7 +19,7 @@ setup(
     version=__version__,
 	author='Nicola Pezzotti, Thomas Höllt, Julian Thijssen, Baldur van Lew',
     author_email='b.van_lew@lumc.nl',
-	description='The nptsne package is designed to export a number of python classes that wrap tSNE. Reference http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8811606&isnumber=4359476',
+	description='The nptsne package is designed to export a number of python classes that wrap tSNE.',
 	long_description=long_description,
     long_description_content_type="text/markdown",
     keywords='tSNE embedding GPU',
