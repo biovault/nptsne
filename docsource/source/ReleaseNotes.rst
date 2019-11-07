@@ -9,11 +9,14 @@ Release notes
 -------------
 
 .. include:: ./changelogs/v1.0.0.rst
-.. include:: ./changelogs/v0.2.0.rst
-.. include:: ./changelogs/v0.1.1a1.rst
 
 Previous versions
 -----------------
 
-v0.2.0
-v0.1.1a1
+* v0.2.0
+* v0.1.1a1
+
+.. include:: ./changelogs/v0.2.0.rst
+.. include:: ./changelogs/v0.1.1a1.rst
+
+
