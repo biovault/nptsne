@@ -25,6 +25,8 @@ class NptsneConan(ConanFile):
     license = "MIT"  # License for packaged library; please use SPDX Identifiers https://spdx.org/licenses/
     exports = ["LICENSE.md", "version.txt"]      # Packages the license for the conanfile.py
     generators = "cmake"
+    default_user = "lkeb"
+    default_channel = "stable"
 
     # Options may need to change depending on the packaged library
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}

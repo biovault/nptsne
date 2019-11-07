@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Usage &mdash; 1.0.0rc4</title>
+  <title>Roadmap &mdash; 1.0.0rc4</title>
   
 
   
@@ -35,7 +35,6 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Apache License 2.0" href="license.html" />
     <link rel="prev" title="Release History" href="ReleaseNotes.html" /> 
 </head>
 
@@ -86,18 +85,13 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Installion and Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nptsne.html">nptsne API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ReleaseNotes.html">Release History</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#installing">Installing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#umap-to-tsne-example">umap to tSNE example</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="background.html">Background information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">Apache License 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ReleaseNotes.html">Release History</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Roadmap</a></li>
 </ul>
 
             
@@ -143,13 +137,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Usage</li>
+      <li>Roadmap</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/download.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/roadmap.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -162,41 +156,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="usage">
-<h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<p>This release supports 2 python versions (3.6 or 3.7) on three platforms: Windows, Ubuntu, Macos</p>
-<p>On Windows and Linux acceleration is performed using compute shaders. On Macos, due to the lack of compute shader support, tSNE uses a rasterized impplementation with a lowe performance.</p>
-<div class="section" id="installing">
-<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
-<p>WIndows and MacOS: install from PyPi using: <strong>pip install nptsne</strong>.</p>
-<p>Linux: (only Ubuntu (16.06 and upward) is supported). Download the correct file (see below) for your python version and install using <strong>pip install &lt;file&gt;.whl</strong></p>
-<table border="1" class="colwidths-given docutils" id="id1">
-<caption><span class="caption-text">Ubuntu whl files</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
-<colgroup>
-<col width="50%" />
-<col width="50%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">py36</th>
-<th class="head">py37</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td><a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp36-none-linux_x86_64.whl">Ubuntu py36 wheel</a></td>
-<td><a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp37-none-linux_x86_64.whl">Ubuntu py37 wheel</a></td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="roadmap">
+<h1>Roadmap<a class="headerlink" href="#roadmap" title="Permalink to this headline">¶</a></h1>
+<p>The following items are envisioned for future releases:</p>
+<ol class="arabic simple">
+<li>Release a <em>manylinux</em> wheel on PyPi for full Linux support</li>
+<li>Investigate adding a context manager for TextureTsneExtended to automatically close the nptsne OpenGL context. This would enable the following code:</li>
+</ol>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Possible context manager for TextureTsneExtended</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">nptsne</span><span class="o">.</span><span class="n">TextureTsneExtended</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span> <span class="k">as</span> <span class="n">tsne</span><span class="p">:</span>
+    <span class="n">tsne</span><span class="o">.</span><span class="n">init_transform</span><span class="p">(</span><span class="n">mnist</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+    <span class="n">embedding</span> <span class="o">=</span> <span class="n">tsne</span><span class="o">.</span><span class="n">run_transform</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="n">step_size</span><span class="p">)</span>
+
+<span class="c1"># TextureTsneExtended &amp; OpenGL context have been freed at end of indent context</span>
+<span class="c1"># tsne.close() is not required.</span>
+<span class="c1"># Continue processing embedding result in parent context. e.g.:</span>
+<span class="n">xyembed</span> <span class="o">=</span> <span class="n">embedding</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">70000</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">xyembed</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xyembed</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
 </div>
-<div class="section" id="examples">
-<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
-<p>Example of both the <a class="reference internal" href="nptsne.html#nptsne.TextureTsne" title="nptsne.TextureTsne"><code class="xref py py-class docutils literal notranslate"><span class="pre">nptsne.TextureTsne</span></code></a> and <a class="reference internal" href="nptsne.html#nptsne.TextureTsneExtended" title="nptsne.TextureTsneExtended"><code class="xref py py-class docutils literal notranslate"><span class="pre">nptsne.TextureTsneExtended</span></code></a> are available in a
-<a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/NPTSNE_notebooktests.ipynb">Jupyter notebook</a>.</p>
-<div class="section" id="umap-to-tsne-example">
-<h3>umap to tSNE example<a class="headerlink" href="#umap-to-tsne-example" title="Permalink to this headline">¶</a></h3>
-<p>This short animation shows the effect of inputting a umap embedding of 7000 MNIST digits into tSNE and then
-relaxing the force exaggeration.</p>
-<img src="https://drive.google.com/uc?export=view&id=1fW4IHOyio59Yx59wcpbpQrMl_ZiIlIet"/></div>
 </div>
 </div>
 
@@ -207,8 +186,6 @@ relaxing the force exaggeration.</p>
           <footer>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="license.html" class="btn btn-neutral float-right" title="Apache License 2.0" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="ReleaseNotes.html" class="btn btn-neutral float-left" title="Release History" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

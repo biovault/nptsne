@@ -5,6 +5,13 @@ wrap GPGPU linear complexity tSNE
 implementations based on the following publications
 [DOI: 10.1109/TVCG.2019.2934307](https://doi.org/10.1109/TVCG.2019.2934307) or the [arXiv preprint](https://arxiv.org/abs/1805.10817v2)
 
+When using nptsne please include the following citation:
+
+*N. Pezzotti et al., "GPGPU Linear Complexity t-SNE Optimization," in IEEE Transactions on Visualization and Computer Graphics.\
+doi: 10.1109/TVCG.2019.2934307\
+keywords: {Minimization;Linear programming;Computational modeling;Approximation algorithms;Complexity theory;Optimization;Data visualization;High Dimensional Data;Dimensionality Reduction;Progressive Visual Analytics;Approximate Computation;GPGPU},\
+URL: http://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8811606&isnumber=4359476*
+
 ##### Attributions
 
 The tSNE implementations are the original work of the authors named in the literature.
@@ -25,4 +32,4 @@ Linux: (only Ubuntu 16.06 and upward is supported). Download the correct file (s
 
 | py36 | py37 |
 | ---- | ---- |
-| [Ubuntu py36 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp36-none-linux_x86_64.whl) | [Ubuntu py37 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp37-none-linux_x86_64.whl)|
+| [Ubuntu py36 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-${version}-cp36-none-linux_x86_64.whl) | [Ubuntu py37 wheel](http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-${version}-cp37-none-linux_x86_64.whl)|

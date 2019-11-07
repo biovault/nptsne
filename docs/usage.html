@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; 1.0.0rc4</title>
+  <title>Installion and Usage &mdash; 1.0.0rc4</title>
   
 
   
@@ -35,8 +35,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Roadmap" href="roadmap.html" />
-    <link rel="prev" title="Apache License 2.0" href="license.html" /> 
+    <link rel="next" title="Citation" href="citation.html" />
+    <link rel="prev" title="Welcome to the nptsne 1.0.0rc4 documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,28 +86,16 @@
             
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="usage.html">Installion and Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installion and Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing">Installing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="citation.html">Citation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="nptsne.html">nptsne API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="background.html">Background information</a></li>
 <li class="toctree-l1"><a class="reference internal" href="license.html">Apache License 2.0</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#release-notes">Release notes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-version">Version 1.0.0rc4</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#changelog-1-0-0">Changelog 1.0.0</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-2-0">Version 0.2.0</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#changelog-0-2-0">Changelog 0.2.0</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-1-1a1">Version 0.1.1a1</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#changelog-0-1-1a1">Changelog 0.1.1a1</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#previous-versions">Previous versions</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="ReleaseNotes.html">Release History</a></li>
 <li class="toctree-l1"><a class="reference internal" href="roadmap.html">Roadmap</a></li>
 </ul>
 
@@ -154,13 +142,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Release History</li>
+      <li>Installion and Usage</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/ReleaseNotes.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -173,45 +161,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="release-history">
-<h1>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h1>
-<p>This contains the release notes for the current version (1.0.0rc4) of nptsne.</p>
-<div class="section" id="release-notes">
-<span id="release-notes-label"></span><h2>Release notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="installion-and-usage">
+<h1>Installion and Usage<a class="headerlink" href="#installion-and-usage" title="Permalink to this headline">¶</a></h1>
+<p>This release supports 2 python versions (3.6 or 3.7) on three platforms: Windows, Ubuntu, Macos</p>
+<p>On Windows and Linux acceleration is performed using compute shaders. On Macos, due to the lack of compute shader support, tSNE uses a rasterized impplementation with a lower performance.</p>
+<div class="section" id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+<p>Windows and MacOS: install from PyPi using: <strong>pip install nptsne</strong>. <a class="reference external" href="https://test.pypi.org/project/nptsne/">The PyPi page.</a></p>
+<p>Linux: (only Ubuntu (16.06 and upward) is supported). Download the correct file (see below) for your python version and install using <strong>pip install &lt;file&gt;.whl</strong></p>
+<table border="1" class="colwidths-given docutils" id="id1">
+<caption><span class="caption-text">Ubuntu whl files</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">py36</th>
+<th class="head">py37</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td><a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp36-none-linux_x86_64.whl">Ubuntu py36</a></td>
+<td><a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/nptsne-1.0.0rc4-cp37-none-linux_x86_64.whl">Ubuntu py37</a></td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="section" id="version-version">
-<h2>Version 1.0.0rc4<a class="headerlink" href="#version-version" title="Permalink to this headline">¶</a></h2>
-<p>Supports python 3.6 and 3.7 Windows, Ubuntu (fron xenial) and Macos.</p>
-<div class="section" id="changelog-1-0-0">
-<h3>Changelog 1.0.0<a class="headerlink" href="#changelog-1-0-0" title="Permalink to this headline">¶</a></h3>
-<p>Using the latest <a class="reference external" href="http://github.com/biovault/HDILib">HDI Library</a>
-which supports both GPU computer shader (Windows and Linux) and GPU
-rasterizer (Macos) versions of the underlying tSNE algorithm.</p>
-<p>Added reinitialize_transform to TextureTsneExtended to allow quick embedding regeneration.</p>
-</div>
-</div>
-<div class="section" id="version-0-2-0">
-<h2>Version 0.2.0<a class="headerlink" href="#version-0-2-0" title="Permalink to this headline">¶</a></h2>
-<p>QT dependency removed. Windows release only</p>
-<div class="section" id="changelog-0-2-0">
-<h3>Changelog 0.2.0<a class="headerlink" href="#changelog-0-2-0" title="Permalink to this headline">¶</a></h3>
-<p>This was a Windows only release without QT otherwise it is unchanged from the previous version</p>
-</div>
-</div>
-<div class="section" id="version-0-1-1a1">
-<h2>Version 0.1.1a1<a class="headerlink" href="#version-0-1-1a1" title="Permalink to this headline">¶</a></h2>
-<p>This is an alpha release of the nptsne library. As such the API may change in future releases based on user feedback.</p>
-<p>The initial alpha release is being distributed to a limited audience via GitHub.
-The current roadmap is to switch to PyPi when the API is declared stable.</p>
-<div class="section" id="changelog-0-1-1a1">
-<h3>Changelog 0.1.1a1<a class="headerlink" href="#changelog-0-1-1a1" title="Permalink to this headline">¶</a></h3>
-<p>This is the first release of the <strong>nptsne</strong> package.</p>
-</div>
-</div>
-<div class="section" id="previous-versions">
-<h2>Previous versions<a class="headerlink" href="#previous-versions" title="Permalink to this headline">¶</a></h2>
-<p>v0.2.0
-v0.1.1a1</p>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Example of both the <a class="reference internal" href="nptsne.html#nptsne.TextureTsne" title="nptsne.TextureTsne"><code class="xref py py-class docutils literal notranslate"><span class="pre">nptsne.TextureTsne</span></code></a> and <a class="reference internal" href="nptsne.html#nptsne.TextureTsneExtended" title="nptsne.TextureTsneExtended"><code class="xref py py-class docutils literal notranslate"><span class="pre">nptsne.TextureTsneExtended</span></code></a> are available in a
+<a class="reference external" href="http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/NPTSNE_notebooktests.ipynb">Jupyter notebook</a>.</p>
 </div>
 </div>
 
@@ -223,10 +202,10 @@ v0.1.1a1</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="roadmap.html" class="btn btn-neutral float-right" title="Roadmap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="citation.html" class="btn btn-neutral float-right" title="Citation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="license.html" class="btn btn-neutral float-left" title="Apache License 2.0" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to the nptsne 1.0.0rc4 documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

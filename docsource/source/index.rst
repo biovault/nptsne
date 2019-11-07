@@ -10,11 +10,13 @@ Welcome to the nptsne |version| documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   usage
    citation
    nptsne
-   ReleaseNotes
-   download
+   background
    license
+   ReleaseNotes 
+   roadmap
 
 Note: This is an Release candidate. For more detail see :ref:`release-notes-label`. 
 

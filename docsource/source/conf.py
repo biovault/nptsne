@@ -35,7 +35,13 @@ version = "{}.{}".format(mmp[0], mmp[1])
 release = __version__
 
 html_title = release
-rst_epilog = '.. |version| replace:: %s' % release
+base_arti_url = 'http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne'  # base url for the artifactory repo
+rst_epilog = """
+.. |version| replace:: {0}
+ """.format(release, base_arti_url)  
+ 
+# .. |linux_36_whl| replace:: {1}/nptsne-{0}-cp36-none-linux_x86_64.whl
+# .. |linux_37_whl| replace:: {1}/nptsne-{0}-cp37-none-linux_x86_64.whl
 
 # -- General configuration ---------------------------------------------------
 
@@ -49,9 +55,14 @@ rst_epilog = '.. |version| replace:: %s' % release
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.githubpages',
+    'sphinx.ext.githubpages', 
+    'sphinx.ext.extlinks',
     'sphinx_rtd_theme',
 ]
+
+extlinks = {
+    'linux_whl_url': ('{0}/nptsne-{1}-cp%s-none-linux_x86_64.whl'.format(base_arti_url, release), '')
+}
 
 # Include class docstring and init docstring in the  class doc
 autoclass_content = 'both'
