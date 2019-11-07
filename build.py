@@ -26,18 +26,16 @@ if __name__ == "__main__":
     ci_manager = CIManager(printer)
     branch = ci_manager.get_branch()
     version = build_shared.get_version()
-    default_reference = ci_manager.reference
+
     print("Branch detected: ", branch)
     print("Version detected: ", build_shared.get_version())
-    print("Default reference: ", default_reference)
-    
-    refstart,refend = default_reference.split('@')
-    name, _ = refstart.split('/')
+
+    name = "nptsne"
     new_reference = None
     # for builds other than release merge the branchname into the reference
     if not branch.startswith("release"):
-        new_reference = "{}/{}_{}@".format(name, version, branch.replace('/', '_'), refend)
-        print("Modified reference: ", new_reference)
+        new_reference = "{}/{}_{}".format(name, version, branch.replace('/', '_'))
+        print("Generated reference: ", new_reference)
     
     builder = build_template_default.get_builder(
         docker_entry_script=docker_entry_script,
