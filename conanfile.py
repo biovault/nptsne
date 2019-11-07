@@ -21,6 +21,8 @@ def get_version():
         version = __version__
     else:
         version = "{}_{}".format(__version__, branch.replace('/', '_'))
+    print("Original version: ", __version__)
+    print("Derived version: ", version)
     return version
     
 class NptsneConan(ConanFile):
