@@ -80,9 +80,9 @@ class NptsneConan(ConanFile):
         source_url = self.url
         self.run("git clone {0}.git".format(self.url))
         os.chdir("./{0}".format(self._source_subfolder))
-        branch = os.getenv("CONAN_SOURCE_BRANCH")
+        branch = os.getenv("CONAN_SOURCE_BRANCH", "master")
         print("Checking out branch: ", branch)
-        self.run("git checkout {0}".format(self.branch))
+        self.run("git checkout {0}".format(branch))
         os.chdir("..")
 
     def _configure_cmake(self):
