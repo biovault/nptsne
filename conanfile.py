@@ -17,6 +17,7 @@ print("Python version from conanfile: ", __py_version__)
 def get_version():
     git = tools.Git()
     branch = git.get_branch()
+    print("Working branch: ", branch)
     if branch.startswith("release"):
         version = __version__
     else:
