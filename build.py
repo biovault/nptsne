@@ -5,6 +5,8 @@
 from bincrafters import build_template_default, build_shared
 import os
 import platform
+from cpt.ci_manager import CIManager
+from cpt.printer import Printer
 
 def _is_not_shared(build):
     return not(build.options['nptsne:shared'] == True)
@@ -19,8 +21,11 @@ if __name__ == "__main__":
     docker_entry_script = None
     if platform.system() == "Linux":
         docker_entry_script = "./.ci/entry.sh"
-    
-    print("Version detected", build_shared.get_version())
+        
+    printer = Printer(None)
+    ci_manager = CIManager(printer)
+    print("Branch detected: ", ci_manager.get_branch())
+    print("Version detected: ", build_shared.get_version())
     
     builder = build_template_default.get_builder(
         docker_entry_script=docker_entry_script
