@@ -1,4 +1,4 @@
-Installion and Usage
+Installing and Using
 ====================
 
 This release supports 2 python versions (3.6 or 3.7) on three platforms: Windows, Ubuntu, Macos
@@ -21,7 +21,7 @@ Linux: (only Ubuntu (16.06 and upward) is supported). Download the correct file 
 Examples
 --------
 
-Example of both the :py:class:`nptsne.TextureTsne` and :py:class:`nptsne.TextureTsneExtended` are available in a
+Examples of both the :py:class:`nptsne.TextureTsne` and :py:class:`nptsne.TextureTsneExtended` are available in a
 `Jupyter notebook <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/NPTSNE_notebooktests.ipynb>`_.
 
  
