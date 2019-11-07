@@ -14,7 +14,7 @@ import argparse
 # the dist dir in the conan_package.tgz. Arrange the *whl files
 # into separate subdirectories based on the python version.
 
-def main(to_pypi, to_arti):
+def main(pypi, to_arti):
     remote="conan-hdim"  # conan-hdim: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
     remote_url_base="http://cytosplore.lumc.nl:8081/artifactory/conan-local"
     version="1.0.0rc5"
@@ -91,13 +91,15 @@ def main(to_pypi, to_arti):
             print('Uploaded {}'.format(wheel_name))
         c.close()
 
-    if to_pypi:
+    if pypi == "testpypi":
         subprocess.run(["twine", "upload", "--verbose", "-r", "testpypi", "wheels/*{}*".format(version)])
-
+    if pypi == "releasepypi":
+        subprocess.run(["twine", "upload", "--verbose", "wheels/*{}*".format(version)])
+        
 if __name__ == "__main__":
     # execute only if run as a script
     parser = argparse.ArgumentParser(description='Distribute the wheels from the Artifactory')
-    parser.add_argument('--pypi', help='Upload Win and Mac wheels to pypi', action="store_true")
+    parser.add_argument('--pypi', help='Upload Win and Mac wheels to test (default) or release pypi', default='testpypi', choices=['testpypi', 'releasepypi'])
     parser.add_argument('--lart', help='Upload linux wheels to artifactory', action="store_true")
     args = parser.parse_args()
     
