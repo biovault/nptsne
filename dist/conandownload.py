@@ -17,7 +17,7 @@ import argparse
 def main(pypi, to_arti):
     remote="conan-hdim"  # conan-hdim: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
     remote_url_base="http://cytosplore.lumc.nl:8081/artifactory/conan-local"
-    version="1.0.0rc5"
+    version="1.0.0"
     package_reference = "nptsne/" + version + "@lkeb/stable"
     url_reference = "lkeb/nptsne/" + version + "/stable"
     packages_queries=["os=Windows", "os=Linux", "os=Macos"]
