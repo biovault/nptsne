@@ -1,3 +1,9 @@
+branches:
+  only:
+  - /feature\/.*/
+  - release/v1.0.0
+  - master
+
 build: false
 
 environment:
