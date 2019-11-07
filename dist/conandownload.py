@@ -17,7 +17,7 @@ import argparse
 def main(to_pypi, to_arti):
     remote="conan-hdim"  # conan-hdim: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
     remote_url_base="http://cytosplore.lumc.nl:8081/artifactory/conan-local"
-    version="1.0.0rc4"
+    version="1.0.0rc5"
     package_reference = "nptsne/" + version + "@lkeb/stable"
     url_reference = "lkeb/nptsne/" + version + "/stable"
     packages_queries=["os=Windows", "os=Linux", "os=Macos"]
@@ -32,7 +32,13 @@ def main(to_pypi, to_arti):
         
     if os.path.exists('./wheels'):
         shutil.rmtree('./wheels')
-    os.makedirs('./wheels')    
+    os.makedirs('./wheels')   
+    
+    for vers in python_versions:
+        ver_dir = './{}'.format(vers)
+        if os.path.exists(ver_dir):
+            shutil.rmtree(ver_dir)
+ 
         
     # Get the conan tgz for each package
     for query in packages_queries:
