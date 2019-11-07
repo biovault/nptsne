@@ -12,27 +12,14 @@ with open(os.path.join(os.path.dirname(__file__), "version.txt")) as fp:
 __py_version__ = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
 __py_tag__ = "cp{}{}".format(sys.version_info.major, sys.version_info.minor)
  
-def make_version():
-    git = tools.Git()
-    print("From git branch: ", git.run("branch"))
-    branch = git.get_branch()
-    print("Working branch: ", branch)
-    version = ""
-    if branch.startswith("release") or ("no branch" in branch):
-        version = __version__
-    else:
-        version = "{}_{}".format(__version__, branch.replace('/', '_'))
-    print("Original version: ", __version__)
-    print("Derived version: ", version)
-    return version
    
 class NptsneConan(ConanFile):
     name = "nptsne"
     # branch = "release/1.0.0"
-    version = make_version()
+    version = __version__
     description = "nptsne is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation."
     topics = ("python", "analysis", "n-dimensional", "tSNE")
-    url = "https://github.com/biovault/nptsne"
+    #url = "https://github.com/biovault/nptsne"
 
     author = "B. van Lew <b.van_lew@lumc.nl>" #conanfile author
     license = "MIT"  # License for packaged library; please use SPDX Identifiers https://spdx.org/licenses/
@@ -89,12 +76,12 @@ class NptsneConan(ConanFile):
     def package_id(self):
         self.info.options.python_version = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
         
-    def source(self):
-        source_url = self.url
-        self.run("git clone {0}.git".format(self.url))
-        os.chdir("./{0}".format(self._source_subfolder))
-        self.run("git checkout {0}".format(self.branch))
-        os.chdir("..")
+    # def source(self):
+        # source_url = self.url
+        # self.run("git clone {0}.git".format(self.url))
+        # os.chdir("./{0}".format(self._source_subfolder))
+        # self.run("git checkout {0}".format(self.branch))
+        # os.chdir("..")
 
     def _configure_cmake(self):
         if self.settings.os == "Macos":

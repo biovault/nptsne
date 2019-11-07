@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-from bincrafters import build_template_default
+from bincrafters import build_template_default, build_shared
 import os
 import platform
 
@@ -23,6 +23,8 @@ if __name__ == "__main__":
     builder = build_template_default.get_builder(
         docker_entry_script=docker_entry_script
     )
+    
+    print("Default reference: ", builder.reference)
 
     builder.remove_build_if(_is_not_shared)
     if platform.system() == "Windows":
