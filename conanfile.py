@@ -20,7 +20,7 @@ def get_version():
     if branch.startswith("release"):
         version = __version__
     else:
-        version = "{}_{}".format(branch.replace('/', '_'), __version__)
+        version = "{}_{}".format(__version__, branch.replace('/', '_'))
     return version
     
 class NptsneConan(ConanFile):
