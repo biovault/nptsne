@@ -33,7 +33,14 @@ PYBIND11_MODULE(_nptsne, m) {
     )pbdoc";
      
     // ENUMS
-    py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", py::arithmetic())
+    py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
+        Enumeration used to select the knn algorithm used. Two possibilities are
+        supported:
+        
+        :obj:`KnnAlgorithm.Flann`: Knn using FLANN - Fast Library for Approximate Nearest Neighbors
+        
+        :obj:`KnnAlgorithm.HNSW`: Knn using Hnswlib - fast approximate nearest neighbor search
+    )pbdoc")
     .value("Flann", KnnAlgorithm::Flann)
     .value("HNSW", KnnAlgorithm::HNSW);
 
