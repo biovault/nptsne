@@ -33,8 +33,6 @@ if __name__ == "__main__":
     print("Branch detected: ", branch)
     print("Version detected: ", build_shared.get_version())
     
-    tools.environment_append({"CONAN_SOURCE_BRANCH": branch})
-
     new_reference = None
     # for builds other than release create a separate channel
     if not branch.startswith("release"):
@@ -52,4 +50,6 @@ if __name__ == "__main__":
     if platform.system() == "Windows":
         builder.remove_build_if(_is_not_VS15MDonWindows)    
    
+    builder.update_build_if(lambda build: True,
+                        new_env_vars={"CONAN_SOURCE_BRANCH": branch})
     builder.run()
