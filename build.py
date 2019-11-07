@@ -27,7 +27,7 @@ if __name__ == "__main__":
     branch = ci_manager.get_branch()
     version = build_shared.get_version()
     recipe = build_shared.get_recipe_path(None)
-    name = get_name_from_recipe(recipe=recipe)
+    name = build_shared.get_name_from_recipe(recipe=recipe)
     username, version, kwargs = build_shared.get_conan_vars(recipe=recipe, kwargs=None)
     print("Branch detected: ", branch)
     print("Version detected: ", build_shared.get_version())
