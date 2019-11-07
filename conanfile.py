@@ -17,7 +17,7 @@ def make_version():
     branch = git.get_branch()
     print("Working branch: ", branch)
     version = ""
-    if branch.startswith("release"):
+    if branch.startswith("release") or ("no branch" in branch):
         version = __version__
     else:
         version = "{}_{}".format(__version__, branch.replace('/', '_'))
