@@ -1,6 +1,6 @@
 Version |version|
 -----------------
-Supports python 3.6 and 3.7 Windows, Ubuntu (fron xenial) and Macos.
+Supports python 3.6 and 3.7 Windows, Ubuntu (xenial/16.04 and upward) and Macos.
 
 Changelog 1.0.0
 ~~~~~~~~~~~~~~~
