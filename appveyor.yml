@@ -9,11 +9,9 @@ build: false
 environment:
 #   PYTHON_HOME: "C:\\Python37-x64"
 
-    CONAN_USERNAME: "lkeb"
     CONAN_LOGIN_USERNAME: "admin"
     CONAN_PASSWORD:
         secure: g+1lNdgrCLmyKNf3KvbHSln5A1H7BsVhsMsIbwgo+UU=
-    CONAN_CHANNEL: "stable"
     VS150COMNTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\"
     CONAN_UPLOAD: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
     CONAN_REMOTE: lkebconan

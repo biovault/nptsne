@@ -15,9 +15,7 @@ osx: &osx
     os: osx
     language: generic
 env:
-   global:
-     - CONAN_USERNAME="lkeb"
-     - CONAN_CHANNEL="stable"     
+   global:  
      - CONAN_LOGIN_USERNAME="admin"
      - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET  
      - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
