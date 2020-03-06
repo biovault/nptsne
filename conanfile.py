@@ -32,13 +32,13 @@ class NptsneConan(ConanFile):
     settings = {"os": None, "build_type": None, "compiler": None, "arch": None}
     options = {"shared": [True, False], "fPIC": [True, False], "python_version": "ANY"}
     default_options = {"shared": True, "fPIC": True, "python_version": __py_version__}
-    export_sources = "_package/*"
+    exports_sources = "*"
 
     _source_subfolder = name
     # For now use conan and bincrafters - we may wish to host our own versions
     requires = (
         "pybind11/2.2.4@conan/stable",
-        "HDILib/1.0.0-alpha1@lkeb/stable"
+        "HDILib/latest@biovault/stable"
     )   
     
     def system_requirements(self):
@@ -76,14 +76,14 @@ class NptsneConan(ConanFile):
     def package_id(self):
         self.info.options.python_version = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
         
-    def source(self):
-        source_url = self.url
-        self.run("git clone {0}.git".format(self.url))
-        os.chdir("./{0}".format(self._source_subfolder))
-        branch = os.getenv("CONAN_SOURCE_BRANCH", "master")
-        print("Checking out branch: ", branch)
-        self.run("git checkout {0}".format(branch))
-        os.chdir("..")
+    # def source(self):
+        # source_url = self.url
+        # self.run("git clone {0}.git".format(self.url))
+        # os.chdir("./{0}".format(self._source_subfolder))
+        # branch = os.getenv("CONAN_SOURCE_BRANCH", "master")
+        # print("Checking out branch: ", branch)
+        # self.run("git checkout {0}".format(branch))
+        # os.chdir("..")
 
     def _configure_cmake(self):
         if self.settings.os == "Macos":
@@ -95,7 +95,7 @@ class NptsneConan(ConanFile):
         cmake.definitions["BUILD_PYTHON_VERSION"] = __py_version__  
         cmake.definitions["PYBIND11_PYTHON_VERSION"] = __py_version__  
         cmake.definitions["CMAKE_INSTALL_PREFIX"] = os.path.join(self.package_folder)
-        cmake.configure(source_folder=self._source_subfolder)
+        cmake.configure()
         cmake.verbose = True
         return cmake
 

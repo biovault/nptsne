@@ -1,6 +1,7 @@
 #pragma once
 
-enum class KnnAlgorithm:int {
+enum class KnnAlgorithm {
 	Flann = -1,
-	HNSW = 0
+	HNSW = 0,
+    Annoy = 1
 };

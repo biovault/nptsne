@@ -24,6 +24,7 @@ public:
 		int perplexity=30,
 		KnnAlgorithm knn_algorithm=KnnAlgorithm::Flann
 		);
+        
 	// Initialize the probabilities based on the data
 	bool init_transform(
 		py::array_t<float, py::array::c_style | py::array::forcecast> X,			
@@ -38,6 +39,7 @@ public:
 	py::array_t<float, py::array::c_style> run_transform(
 		bool verbose=false,  
 		int iterations=1000);
+        
     // Restart the transform with an optional initial embedding
     void reinitialize_transform(
         py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<scalar_type>({}));

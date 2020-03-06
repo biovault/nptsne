@@ -1,6 +1,7 @@
 #include <pybind11/pybind11.h>
 #include "TextureTsne.h"
 #include "TextureTsneExtended.h"
+#include "HSne.h"
 #include <tuple>
 namespace py = pybind11;
 
@@ -8,7 +9,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(_nptsne, m) {
     
-    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended");    
+    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended", "HSne");    
     m.doc() = R"pbdoc(
         nptsne - A numpy compatible python extension for GPGPU linear complexity tSNE
         -----------------------------------------------------------------------------
@@ -45,6 +46,7 @@ PYBIND11_MODULE(_nptsne, m) {
     .value("HNSW", KnnAlgorithm::HNSW);
 
     // CLASSES
+    // Basic interface for GPU Texture based tSNE
     py::class_<TextureTsne> textureTsne(m, "TextureTsne", R"pbdoc(
     TextureTsne: a simple wrapper API for the linear tSNE implementation.
 
@@ -95,7 +97,7 @@ PYBIND11_MODULE(_nptsne, m) {
     py::arg("X")
     );
 
-    // Experimental extended TextureTsne
+    // Extended TextureTsne interface for advanced use of GPU texture tSNE
     py::class_<TextureTsneExtended> textureTsneExtended(m, "TextureTsneExtended", 
     R"pbdoc(
       TextureTsneExtended: an advanced wrapper API for the linear tSNE implementation.
@@ -141,65 +143,128 @@ PYBIND11_MODULE(_nptsne, m) {
     py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));
 
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform, 
-    R"pbdoc(
-      Run the transform gradient descent for a number of iterations
-      with the current settings for exaggeration.
+        R"pbdoc(
+          Run the transform gradient descent for a number of iterations
+          with the current settings for exaggeration.
 
-      :param verbose: Enable verbose logging to standard output
-      :type verbose: bool
+          :param verbose: Enable verbose logging to standard output
+          :type verbose: bool
 
-      :param iterations: the number of iterations to run
-      :type iterations: int
-        
-      :return: A numpy array contain a flatten (1D) embedding
-      :rtype: ndarray
+          :param iterations: the number of iterations to run
+          :type iterations: int
+            
+          :return: A numpy array contain a flatten (1D) embedding
+          :rtype: ndarray
 
-    )pbdoc",
-    py::arg("verbose")=false,
-    py::arg("iterations")=1000);
+        )pbdoc",
+        py::arg("verbose")=false,
+        py::arg("iterations")=1000);
     
     textureTsneExtended.def("reinitialize_transform", &TextureTsneExtended::reinitialize_transform, "Reinitialize the transform with optional initial embedding", 
-    R"pbdoc(
-      Fit X into an embedded space and return that transformed output.
-      Knn is not recomputed. If no initial_embedding is supplied the embedding
-      is re-randomized.
-        
-      :param initial_embedding: An optional initial embedding. Shape should be (num data points, num output dimensions)
-      :type initial_embedding: ndarray
+        R"pbdoc(
+          Fit X into an embedded space and return that transformed output.
+          Knn is not recomputed. If no initial_embedding is supplied the embedding
+          is re-randomized.
+            
+          :param initial_embedding: An optional initial embedding. Shape should be (num data points, num output dimensions)
+          :type initial_embedding: ndarray
 
-    )pbdoc",
-    py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
+        )pbdoc",
+        py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
 
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay, 
-    R"pbdoc(
-      Enable exaggeration decay. Effective on next call to run_transform.
-      Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
-        
-      Raises: RuntimeError if the decay is already active. This can be ignored.
+        R"pbdoc(
+          Enable exaggeration decay. Effective on next call to run_transform.
+          Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
+            
+          Raises: RuntimeError if the decay is already active. This can be ignored.
 
-    )pbdoc");
+        )pbdoc");
 
     textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at, 
-    R"pbdoc(
-      The iteration number when exaggeration decay started.
-        
-      :return: -1 if decays has not started.
-      :rtype: int
+        R"pbdoc(
+          The iteration number when exaggeration decay started.
+            
+          :return: -1 if decays has not started.
+          :rtype: int
 
-    )pbdoc");
+        )pbdoc");
 
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count, 
-    R"pbdoc(
-      The number of completed iterations of tSNE gradient descent.
-        
-      :return: iteration_count
-      :rtype: int
-    )pbdoc");
+        R"pbdoc(
+          The number of completed iterations of tSNE gradient descent.
+            
+          :return: iteration_count
+          :rtype: int
+        )pbdoc");
 
     textureTsneExtended.def("close", &TextureTsneExtended::close, 
-    R"pbdoc(
-      Release GPU resources for the transform
+        R"pbdoc(
+          Release GPU resources for the transform
 
-    )pbdoc");
+        )pbdoc");
+    
+    // Hierarchical SNE wrapper
+    py::class_<HSne> hsne_class(m, "HSne", 
+        R"pbdoc(
+        HSne: a simple wrapper API for the Hierarchical SNE implementation.
 
+            Hierarchical SNE is  is a GPU compute shader implementation of Hierarchical
+            Stochastic Neighborhood Embedding described in https://doi.org/10.1111/cgf.12878 
+
+        )pbdoc");
+
+    hsne_class.def(py::init<bool>(), 
+        R"pbdoc(    
+         :param verbose: Enable verbose logging to standard output
+         :type verbose: bool
+        )pbdoc",
+        py::arg("verbose")=false);
+  
+    // create_hsne is overloaded - 
+    // one overload uses default pointer
+    // identifiers 0 -> num points - 1
+    //
+    hsne_class
+    .def("create_hsne", 
+        py::overload_cast<
+            py::array_t<float, py::array::c_style | py::array::forcecast>,
+            int
+        >(&HSne::create_hsne), 
+        R"pbdoc(
+          Create the data hierarchy using hierarchical SNE.
+
+          :param X: The iput data with shape (num. data points, num. dimensions)
+          :type X: ndarray
+
+          :param num_scales: The iput data with shape (num. data points, num. dimensions)
+          :type num_scales: int
+        )pbdoc",
+        py::arg("X"),
+        py::arg("num_scales")
+    )
+    .def("create_hsne", 
+        py::overload_cast<
+            py::array_t<float, py::array::c_style | py::array::forcecast>,
+            int,
+            py::array_t<uint64_t, py::array::c_style | py::array::forcecast>
+        >(&HSne::create_hsne), 
+        R"pbdoc(
+          Create the data hierarchy using hierarchical SNE.
+
+          :param X: The iput data with shape (num. data points, num. dimensions)
+          :type X: ndarray
+
+          :param num_scales: The iput data with shape (num. data points, num. dimensions)
+          :type num_scales: int
+          
+          :param point_ids: The iput data with shape (num. data points, num. dimensions)
+          :type point_ids: ndarray          
+
+        )pbdoc",
+        py::arg("X"),
+        py::arg("num_scales"),
+        py::arg("point_ids"));
+        
+      
 }

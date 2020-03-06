@@ -74,6 +74,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(NPTSNE_FILES 
 	nptsne_src/TextureTsne.cpp
 	nptsne_src/TextureTsneExtended.cpp
+    nptsne_src/HSne.cpp
 	nptsne_src/nptSNEBind.cpp
 )
 
