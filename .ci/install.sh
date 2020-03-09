@@ -15,13 +15,12 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
     source activate build_env  
     conda install -n build_env cmake
     conda install -c conda-forge conan 
-    conda install -c conda-forge scikit-build
 else
     pip install six==1.12.0
-    pip install conan==1.19.3 
-    pip install scikit-build         
+    pip install conan==1.19.3      
 fi
 
+pip install scikit-build    
 pip install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0
 
 
