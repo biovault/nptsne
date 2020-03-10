@@ -49,6 +49,12 @@ void HSne::save_to_file(const std::string &filePath)
     hdi::dr::IO::saveHSNE(*_hsne, out_stream, _log);
 }
 
+HSneScale HSne::get_scale(unsigned int scale_number)
+{
+    return HSneScale(_hsne->scale(scale_number));
+}
+
+
 bool HSne::_init(
     py::array_t<float, py::array::c_style | py::array::forcecast> &X,
     uint64_t *point_ids,

@@ -266,5 +266,47 @@ PYBIND11_MODULE(_nptsne, m) {
         py::arg("num_scales"),
         py::arg("point_ids"));
         
-      
+    hsne_class.def("save", &HSne::save_to_file, "Save the HSNE hierarchy to a file", 
+        R"pbdoc(
+          Save the HSNE as a binary structure to a file
+            
+          :param filename: The iput data with shape (num. data points, num. dimensions)
+          :type filename: string
+
+        )pbdoc",
+        py::arg("file_path"));
+        
+    hsne_class.def("get_scale", &HSne::get_scale, "Get the scale information at the index. 0 is the data scale",
+        R"pbdoc(
+          Get the scale at indes
+          
+          :param scale_number
+          :type scale_number unsigned int
+            
+          :return: A numpy array contain a flatten (1D) embedding
+          :rtype: HSneScale
+
+        )pbdoc",
+        py::arg("scale_number"));        
+    
+    // Scale data for Hsne
+    py::class_<HSneScale> hsne_scale_class(m, "HSneScale", 
+        R"pbdoc(
+        HSneScale: a simple wrapper API for the HSNE data scale.
+
+        )pbdoc");
+    
+    // TODO scale navigation functions
+    /*hsne_scale_class.def("get_selected_landmarks", &HSne::get_selected_landmarks, "Get the scale information at the index. 0 is the data scale",
+        R"pbdoc(
+          Get the scale at indes
+          
+          :param selection
+          :type selection: ndarray
+            
+          :return: A numpy array contain a flatten (1D) embedding
+          :rtype: HSneScale
+
+        )pbdoc",
+        py::arg("scale_number")); */   
 }

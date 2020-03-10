@@ -8,12 +8,15 @@ namespace py = pybind11;
 #include <hdi/dimensionality_reduction/hierarchical_sne.h>
 #include <hdi/utils/cout_log.h>
 
+class HSneScale;
+
 class HSne {
 public:
 
     typedef float scalar_type;
     typedef std::uint64_t DataPointID;
     typedef std::vector<hdi::data::MapMemEff<uint32_t, scalar_type> > probabilityMatrix_t;
+    typedef hdi::dr::HierarchicalSNE<float, probabilityMatrix_t> hsne_t;
     
     // The scale hierarchy data structures defined from the bottom up 
     // Data points...
@@ -39,11 +42,11 @@ public:
         int num_scales,
         py::array_t<uint64_t, py::array::c_style | py::array::forcecast> point_ids);        
           
-    //get_landmarks_at_scale(int scale_number);
-    
-
     // save the raw hierarchy data to a file
     void save_to_file(const std::string &filePath);
+    
+    // Return scale info in a wrapper class
+    HSneScale get_scale(unsigned int scale_number);
 
 	
 private:
@@ -55,12 +58,12 @@ private:
     int _seed;
     
     // The Hierarchical SNE algorithm
-    hdi::dr::HierarchicalSNE<float, probabilityMatrix_t>* _hsne;
+    hsne_t* _hsne;
     
     // Hold the usersupplied or default point ids
     py::array_t<uint64_t, py::array::c_style | py::array::forcecast> *point_ids;
     
-    hdi::dr::HierarchicalSNE<float, probabilityMatrix_t>::Parameters _hsneParams;
+    hsne_t::Parameters _hsneParams;
     
     std::vector< std::vector<float>* > _landmarkWeights;
     
@@ -76,5 +79,20 @@ private:
         int num_point_ids);
     
     void set_default_hsne_params();
+};
+
+class HSneScale {
+    friend HSne;
+private:    
+    HSneScale(HSne::hsne_t::scale_type scale) : _scale(scale) {}
+public:    
+    virtual ~HSneScale() {}
+    
+    //get_selected_landmarks();
+    
+    
+private:
+    HSne::hsne_t::scale_type _scale;    
+    
 };
 
