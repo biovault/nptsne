@@ -1,4 +1,6 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
 #include "TextureTsne.h"
 #include "TextureTsneExtended.h"
 #include "HSne.h"
@@ -278,7 +280,7 @@ PYBIND11_MODULE(_nptsne, m) {
         
     hsne_class.def("get_scale", &HSne::get_scale, "Get the scale information at the index. 0 is the data scale",
         R"pbdoc(
-          Get the scale at indes
+          Get the scale at index
           
           :param scale_number
           :type scale_number unsigned int
@@ -287,7 +289,11 @@ PYBIND11_MODULE(_nptsne, m) {
           :rtype: HSneScale
 
         )pbdoc",
-        py::arg("scale_number"));        
+        py::arg("scale_number"));  
+
+    hsne_class.def_property_readonly("num_scales", &HSne::num_scales);
+    hsne_class.def_property_readonly("num_data_points", &HSne::num_data_points);
+    hsne_class.def_property_readonly("num_dimensions", &HSne::num_dimensions);
     
     // Scale data for Hsne
     py::class_<HSneScale> hsne_scale_class(m, "HSneScale", 
@@ -295,6 +301,10 @@ PYBIND11_MODULE(_nptsne, m) {
         HSneScale: a simple wrapper API for the HSNE data scale.
 
         )pbdoc");
+    
+    hsne_scale_class.def_property_readonly("num_points", &HSneScale::num_points, "The number of points in this scale");
+    
+    hsne_scale_class.def("get_landmark_weight", &HSneScale::getLandmarkWeight);
     
     // TODO scale navigation functions
     /*hsne_scale_class.def("get_selected_landmarks", &HSne::get_selected_landmarks, "Get the scale information at the index. 0 is the data scale",

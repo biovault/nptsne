@@ -2,6 +2,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <pybind11/stl_bind.h>
 namespace py = pybind11;
 #include "KnnAlgorithm.h"
 //#include "OffscreenBuffer.h"
@@ -48,6 +49,9 @@ public:
     // Return scale info in a wrapper class
     HSneScale get_scale(unsigned int scale_number);
 
+    int num_scales() { return _num_scales;}
+    int num_data_points() { return _num_data_points; }
+    int num_dimensions() { return _num_dimensions; }
 	
 private:
     int _num_scales;	
@@ -84,15 +88,21 @@ private:
 class HSneScale {
     friend HSne;
 private:    
-    HSneScale(HSne::hsne_t::scale_type scale) : _scale(scale) {}
+    HSneScale(HSne::hsne_t::scale_type scale) : 
+        _scale(scale)
+    {
+    }
 public:    
     virtual ~HSneScale() {}
     
-    //get_selected_landmarks();
+    // The length of the transition matrix is the number of points or landmarks
+    int num_points() { return _scale._transition_matrix.size();} 
     
+    py::array getLandmarkWeight() {
+        // TODO find a more efficient approach than copying
+        return py::array(py::cast(_scale._landmark_weight)); 
+    }
     
-private:
-    HSne::hsne_t::scale_type _scale;    
-    
+    HSne::hsne_t::scale_type _scale;       
 };
 
