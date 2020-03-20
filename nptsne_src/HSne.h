@@ -10,8 +10,10 @@ namespace py = pybind11;
 #include <hdi/utils/cout_log.h>
 
 class HSneScale;
+class Analysis;
 
 class HSne {
+    friend Analysis;
 public:
 
     typedef float scalar_type;
@@ -49,10 +51,10 @@ public:
     // Return scale info in a wrapper class
     HSneScale get_scale(unsigned int scale_number);
 
-    int num_scales() { return _num_scales;}
+    int num_scales() { return _num_scales; }
     int num_data_points() { return _num_data_points; }
     int num_dimensions() { return _num_dimensions; }
-	
+
 private:
     int _num_scales;	
 	int _num_data_points;
@@ -60,7 +62,6 @@ private:
     int _num_target_dimensions;    
     bool _verbose;
     int _seed;
-    
     // The Hierarchical SNE algorithm
     hsne_t* _hsne;
     
@@ -75,7 +76,6 @@ private:
     scalesContainer_t _derivedHierarchy;
     
     hdi::utils::CoutLog* _log;
-
   
     bool _init(
         py::array_t<float, py::array::c_style | py::array::forcecast> &X,
@@ -83,7 +83,9 @@ private:
         int num_point_ids);
     
     void set_default_hsne_params();
+
 };
+
 
 class HSneScale {
     friend HSne;

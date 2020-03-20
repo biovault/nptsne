@@ -72,10 +72,12 @@ set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(NPTSNE_FILES 
+	nptsne_src/nptSNEBind.cpp
+    nptsne_src/Analysis.cpp
+    nptsne_src/HSne.cpp
+    nptsne_src/SparseTsne.cpp    
 	nptsne_src/TextureTsne.cpp
 	nptsne_src/TextureTsneExtended.cpp
-    nptsne_src/HSne.cpp
-	nptsne_src/nptSNEBind.cpp
 )
 
 pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
