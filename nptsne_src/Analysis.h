@@ -8,7 +8,7 @@
 struct Analysis 
 { 
     // Analysis factory
-    static Analysis make_analysis(
+    static std::unique_ptr<Analysis> make_analysis(
         HSne &hsne,
         Analysis *parent,
         std::vector<uint32_t> parent_selection);

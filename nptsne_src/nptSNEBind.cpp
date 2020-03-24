@@ -1,9 +1,11 @@
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <pybind11/stl.h> // automatic conversion of STL to list, set, tuple, deict
 #include <pybind11/stl_bind.h>
 #include "TextureTsne.h"
 #include "TextureTsneExtended.h"
 #include "HSne.h"
+#include "Analysis.h"
+#include "SparseTsne.h"
 #include <tuple>
 namespace py = pybind11;
 
@@ -11,7 +13,7 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(_nptsne, m) {
     
-    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended", "HSne");    
+    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended", "HSne", "_hsne_analysis");    
     m.doc() = R"pbdoc(
         nptsne - A numpy compatible python extension for GPGPU linear complexity tSNE
         -----------------------------------------------------------------------------
@@ -309,7 +311,7 @@ PYBIND11_MODULE(_nptsne, m) {
     // TODO scale navigation functions
     /*hsne_scale_class.def("get_selected_landmarks", &HSne::get_selected_landmarks, "Get the scale information at the index. 0 is the data scale",
         R"pbdoc(
-          Get the scale at indes
+          Get the scale at index
           
           :param selection
           :type selection: ndarray
@@ -318,5 +320,81 @@ PYBIND11_MODULE(_nptsne, m) {
           :rtype: HSneScale
 
         )pbdoc",
-        py::arg("scale_number")); */   
+        py::arg("scale_number")); */  
+    
+    // Bind a submodule for the hsne_analysis to match the python
+    // layout:
+    //          nptsne
+    //               L hsne_analysis
+    //
+    
+    py::module submod_hsne_analysis = m.def_submodule(
+        "_hsne_analysis", "Extension functionality for navigating HSNE analysis");
+    
+    // TODO: Prototype shortcut: the hsne_analysis classes are defined here nested
+    // Consider moving to a separate file.
+    auto pybind_hsne_analysis = [](py::module &m_hsne) {
+        // ***** A selection driven hSNE analysis ******
+        // The classes are defined at the level of the submodule 
+        m_hsne.attr("__all__") = py::make_tuple("Analysis", "SparseTsne"); 
+        
+        // Note that parent None is allowed for creation of the top
+        // level analysis.
+        py::class_<Analysis> analysis_class(m_hsne, "Analysis", 
+            R"pbdoc(
+            Analysis: a simple wrapper for a selection based hSNE analysis.
+
+            )pbdoc");
+            
+        analysis_class.def(py::init([](
+            HSne& hsne, 
+            Analysis* parent, 
+            std::vector<uint32_t> parent_selection)
+            {
+                return Analysis::make_analysis(hsne, parent, parent_selection);
+            }, 
+            py::arg("hsne"),
+            py::arg("parent").none(true),
+            py::arg("parent_selection")
+        )
+        R"pbdoc(    
+         :param hsne: The hierarchical SNE being explored
+         :type hsne: HSne
+
+         :param parent: the parent Analysis (where the selection was performed) if any
+         :type parent: Analysis
+
+         :param parent_selection: List of parent selection indexes.
+         :type parent_selection: list
+
+        )pbdoc");        
+
+        // ***** tSNE embedder used in hSNE analyses (Analysis class above) ******
+        py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne", 
+            R"pbdoc(
+            Analysis: a simple wrapper for a selection based hSNE analysis.
+
+            )pbdoc");
+            
+        // Share the embedding without a copy    
+        sparsetsne_class.def_property_readonly(
+            "embedding", 
+            [](SparseTsne& self){
+                auto cols = self.getEmbedding().numDimensions();
+                auto rows = self.getEmbedding().numDataPoints();
+                auto data_size = sizeof(float);
+                return py::array_t<float>(
+                    {rows, cols}, 
+                    {cols * data_size, data_size},
+                    self.getEmbedding().getContainer().data(),
+                    py::cast(self)
+                );
+            },
+            py::return_value_policy::reference_internal,
+            "Embedding plot - shape embed dimensions x num points");
+    };
+    
+    // bind the classes into the submodule
+    pybind_hsne_analysis(submod_hsne_analysis);
+
 }

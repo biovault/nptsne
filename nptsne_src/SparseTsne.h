@@ -1,4 +1,7 @@
+#pragma once
+
 // Class is a pared down version of N Pezzotti's MultiscaleEmbedderSingleView
+// only the sparse tSNE embedder remains.
 
 #include <vector>
 #include <hdi/dimensionality_reduction/sparse_tsne_user_def_probabilities.h>

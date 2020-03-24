@@ -37,18 +37,9 @@ class NptsneConan(ConanFile):
     _source_subfolder = name
     # For now use conan and bincrafters - we may wish to host our own versions
     requires = (
-        "pybind11/2.2.4@conan/stable",
+        "pybind11/2.2.4@conan/stable",  # Prepackaged pybind11 has the needed pybind11Config.cmake
         "HDILib/latest@biovault/stable"
     )   
-    
-    def system_requirements(self):
-        if tools.os_info.is_linux:
-            if tools.os_info.with_apt:
-                installer = tools.SystemPackageTool()
-                installer.install('liblz4-dev')
-        if tools.os_info.is_macos:           
-            installer = tools.SystemPackageTool()  
-            installer.install('lz4')
 
     def requirements(self):
         if tools.os_info.is_windows:
@@ -74,16 +65,8 @@ class NptsneConan(ConanFile):
             del self.options.fPIC 
     
     def package_id(self):
-        self.info.options.python_version = "{}.{}".format(sys.version_info.major, sys.version_info.minor) 
-        
-    # def source(self):
-        # source_url = self.url
-        # self.run("git clone {0}.git".format(self.url))
-        # os.chdir("./{0}".format(self._source_subfolder))
-        # branch = os.getenv("CONAN_SOURCE_BRANCH", "master")
-        # print("Checking out branch: ", branch)
-        # self.run("git checkout {0}".format(branch))
-        # os.chdir("..")
+        self.info.options.python_version = "{}.{}".format(
+            sys.version_info.major, sys.version_info.minor) 
 
     def _configure_cmake(self):
         if self.settings.os == "Macos":
@@ -102,14 +85,17 @@ class NptsneConan(ConanFile):
     def build(self):
         # print("This conanfile should be invoked from python setup via cmake")
         # print("e.g. >python setup.py bdist_wheel")
-        # pass
+        # 1.) build the python extension
         cmake = self._configure_cmake()
         cmake.build()
+        # 2.) install the python binary extension and dependencies 
+        # into a dist directory under _package
         cmake.install()
-        # set the platform name 
+        # 3.) set the platform name 
         plat_names = {'Windows': 'win_amd64', 'Linux': 'linux_x86_64', "Macos": 'macosx-10.6-intel'}
         if self.settings.os == "Macos" or self.settings.os == "Linux":
             self.run('ls -l', cwd=os.path.join(self.package_folder, "_package"))
+        # 4.) Make the python wheel from the _package using python setup.py      
         self.run('python setup.py bdist_wheel --plat-name={0} --dist-dir={1} --python-tag={2}'.format(
             plat_names[str(self.settings.os)], 
             os.path.join(self.package_folder, 'dist'),

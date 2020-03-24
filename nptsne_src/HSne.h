@@ -10,7 +10,7 @@ namespace py = pybind11;
 #include <hdi/utils/cout_log.h>
 
 class HSneScale;
-class Analysis;
+struct Analysis;
 
 class HSne {
     friend Analysis;
