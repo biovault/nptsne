@@ -100,9 +100,9 @@ public:
     // The length of the transition matrix is the number of points or landmarks
     int num_points() { return _scale._transition_matrix.size();} 
     
-    py::array getLandmarkWeight() {
+    HSne::hsne_t::scalar_vector_type getLandmarkWeight() {
         // TODO find a more efficient approach than copying
-        return py::array(py::cast(_scale._landmark_weight)); 
+        return _scale._landmark_weight; 
     }
     
     HSne::hsne_t::scale_type _scale;       

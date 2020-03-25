@@ -346,17 +346,15 @@ PYBIND11_MODULE(_nptsne, m) {
 
             )pbdoc");
             
+        // Two possible init methods - one for a full analysis and one for the top level analysis (no parent)    
         analysis_class.def(py::init([](
             HSne& hsne, 
             Analysis* parent, 
             std::vector<uint32_t> parent_selection)
             {
                 return Analysis::make_analysis(hsne, parent, parent_selection);
-            }, 
-            py::arg("hsne"),
-            py::arg("parent").none(true),
-            py::arg("parent_selection")
-        )
+            }
+        ),
         R"pbdoc(    
          :param hsne: The hierarchical SNE being explored
          :type hsne: HSne
@@ -367,8 +365,28 @@ PYBIND11_MODULE(_nptsne, m) {
          :param parent_selection: List of parent selection indexes.
          :type parent_selection: list
 
-        )pbdoc");        
+        )pbdoc")        
+        .def(py::init([](
+            HSne& hsne,  
+            std::vector<uint32_t> parent_selection)
+            {
+                return Analysis::make_analysis(hsne, nullptr, parent_selection);
+            }
+        ),
+        R"pbdoc(    
+         :param hsne: The hierarchical SNE being explored
+         :type hsne: HSne
 
+         :param parent_selection: List of parent selection indexes.
+         :type parent_selection: list
+
+        )pbdoc");  
+        
+        // The analysis properties
+        analysis_class
+            .def_readwrite("id", &Analysis::id)
+            .def_readwrite("scale_id", &Analysis::scale_id);
+        
         // ***** tSNE embedder used in hSNE analyses (Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne", 
             R"pbdoc(

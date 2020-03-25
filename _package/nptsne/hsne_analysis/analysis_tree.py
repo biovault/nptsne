@@ -37,10 +37,8 @@ class AnalysisTree:
         # All the points at from the top scale are in the 
         landmark_indexes = np.arange(topscale.num_points, dtype=np.uint32)
         topAnalysis = Analysis(
-            self.top_scale_id, 
-            None,
-            landmark_indexes,
-            topscale.get_landmark_weight()) 
+            self.hsne, 
+            landmark_indexes) 
         self.top_analysis_id = topAnalysis.id
         self.analyses[topAnalysis.id] = topAnalysis
         
