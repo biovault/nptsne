@@ -25,7 +25,7 @@ public:
     
     typedef hdi::data::Embedding<scalar_type> embedding_type;
     
-    SparseTsne() {};
+    SparseTsne() : _logger(nullptr) {};
     // No virtual destructor - we are final
     
     void initialize(sparse_scalar_matrix_type& sparse_matrix, uint32_t analysis_id, hdi::dr::TsneParameters params = hdi::dr::TsneParameters());

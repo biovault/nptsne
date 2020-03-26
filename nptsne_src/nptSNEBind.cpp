@@ -385,7 +385,8 @@ PYBIND11_MODULE(_nptsne, m) {
         // The analysis properties
         analysis_class
             .def_readwrite("id", &Analysis::id)
-            .def_readwrite("scale_id", &Analysis::scale_id);
+            .def_readwrite("scale_id", &Analysis::scale_id)
+            .def_readwrite("embedder", &Analysis::embedder);
         
         // ***** tSNE embedder used in hSNE analyses (Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne", 
@@ -393,6 +394,12 @@ PYBIND11_MODULE(_nptsne, m) {
             Analysis: a simple wrapper for a selection based hSNE analysis.
 
             )pbdoc");
+            
+        sparsetsne_class.def("do_iteration", &SparseTsne::doAnIteration, "Perform a single tsne iteration",
+        R"pbdoc(
+          Perform a sinsle tSNE iteration on the sparse data. 
+          Once complete the embedding coordinates can be read via the embedding property  
+        )pbdoc");    
             
         // Share the embedding without a copy    
         sparsetsne_class.def_property_readonly(

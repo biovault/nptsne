@@ -1,5 +1,6 @@
 #include "Analysis.h"
 #include <hdi/utils/graph_algorithms.h>
+#include <iostream>
 
 uint32_t Analysis::id_counter = 0;
 
@@ -18,9 +19,14 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     if (nullptr == parent) {
         // making the toplevel analysis with
         // all toplevel landmarks
+        std::cout << "Initialize num scales: "<< hsne.num_scales() << "\n";
         result->scale_id = hsne.num_scales() - 1;
+        std::cout << "Get landmark weights\n";
         result->landmark_weights = hsne.get_scale(result->scale_id).getLandmarkWeight();
-        
+        std::cout << "Initialize embedder\n";
+        std::cout << "Top scale transition matrix size: " << result->hsne->top_scale()._transition_matrix.size() << "\n";
+        result->embedder.initialize(
+            result->hsne->scale(result->scale_id)._transition_matrix, result->id);        
     }
     else {
         // A sub-analysis derived from a parent
@@ -63,7 +69,7 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
         result->embedder.initialize(
             new_transition_matrix, result->id);
     }
-    
+    std::cout << "return new Analysis \n";
     return result;
 }
 

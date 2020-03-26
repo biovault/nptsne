@@ -25,10 +25,15 @@ class AnalysisTree:
         # The uppermost scale id can be derived from the 
         # total number of scales
         self.top_scale_id = hsne.num_scales - 1
-        # The lowsest scale is always 0 - data level
+        # The lowest scale is always 0 - data level
         self.bottom_scale_id = 0
+        self.top_analysis_id = None
         self._initialize_top_level()
-        self.top_analysis_id = 0
+    
+    @property
+    def top_analysis(self):
+        "Get the top level analysis"
+        return self.analyses[self.top_analysis_id]
         
     def _initialize_top_level(self):
         """The toplevel of the hsne_analysis.Model """
@@ -40,7 +45,7 @@ class AnalysisTree:
             self.hsne, 
             landmark_indexes) 
         self.top_analysis_id = topAnalysis.id
-        self.analyses[topAnalysis.id] = topAnalysis
+        self.analyses[self.top_analysis_id] = topAnalysis
         
     def add_new_analysis(self, parent, parent_selection):
         """Add a new analysis based on a selection in a parent analysis
