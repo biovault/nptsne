@@ -388,6 +388,20 @@ PYBIND11_MODULE(_nptsne, m) {
             .def_readwrite("scale_id", &Analysis::scale_id)
             .def_readwrite("embedder", &Analysis::embedder);
         
+        // Share the landmark weights without a copy     
+        analysis_class.def_property_readonly(
+            "landmark_weights",
+            [](Analysis& self) {
+                auto rows = self.landmark_weights.size();
+                return py::array_t<float>(
+                    {rows}, 
+                    {sizeof(float)},
+                    self.landmark_weights.data(),
+                    py::cast(self)
+                );
+            }
+        );    
+        
         // ***** tSNE embedder used in hSNE analyses (Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne", 
             R"pbdoc(
@@ -408,6 +422,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 auto cols = self.getEmbedding().numDimensions();
                 auto rows = self.getEmbedding().numDataPoints();
                 auto data_size = sizeof(float);
+                // as a numpy array 
                 return py::array_t<float>(
                     {rows, cols}, 
                     {cols * data_size, data_size},
