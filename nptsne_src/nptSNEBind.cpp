@@ -355,7 +355,10 @@ PYBIND11_MODULE(_nptsne, m) {
                 return Analysis::make_analysis(hsne, parent, parent_selection);
             }
         ),
-        R"pbdoc(    
+        R"pbdoc(  
+         A new analysis as a child of a parent analysis. The parent selection
+         are the landmark indexes in the parent analysis scale. 
+         
          :param hsne: The hierarchical SNE being explored
          :type hsne: HSne
 
@@ -367,18 +370,16 @@ PYBIND11_MODULE(_nptsne, m) {
 
         )pbdoc")        
         .def(py::init([](
-            HSne& hsne,  
-            std::vector<uint32_t> parent_selection)
+            HSne& hsne)
             {
-                return Analysis::make_analysis(hsne, nullptr, parent_selection);
+                return Analysis::make_analysis(hsne);
             }
         ),
-        R"pbdoc(    
+        R"pbdoc(   
+          A new top level analysis there is no parent analysis or parent selection.
+          
          :param hsne: The hierarchical SNE being explored
          :type hsne: HSne
-
-         :param parent_selection: List of parent selection indexes.
-         :type parent_selection: list
 
         )pbdoc");  
         
@@ -401,6 +402,20 @@ PYBIND11_MODULE(_nptsne, m) {
                 );
             }
         );    
+
+        // Share the landmark original indexes without a copy     
+        analysis_class.def_property_readonly(
+            "landmark_orig_indexes",
+            [](Analysis& self) {
+                auto rows = self.landmarks_orig_data.size();
+                return py::array_t<unsigned int>(
+                    {rows}, 
+                    {sizeof(unsigned int)},
+                    self.landmarks_orig_data.data(),
+                    py::cast(self)
+                );
+            }
+        ); 
         
         // ***** tSNE embedder used in hSNE analyses (Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne", 

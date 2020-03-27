@@ -10,8 +10,8 @@ struct Analysis
     // Analysis factory
     static std::unique_ptr<Analysis> make_analysis(
         HSne &hsne,
-        Analysis *parent,
-        std::vector<uint32_t> parent_selection);
+        Analysis *parent = nullptr,
+        std::vector<uint32_t> parent_selection = std::vector<uint32_t>());
 
     static void get_parent_landmark_selection(const Analysis& newAnalysis, std::vector<uint32_t>& parent_landmark_selection);
     
@@ -23,6 +23,7 @@ struct Analysis
     uint32_t id;
     uint32_t scale_id;
     std::vector<uint32_t> landmark_indexes; // indexes of landmarks at this scale
+    std::vector<unsigned int> landmarks_orig_data;
     std::vector<float> landmark_weights;
     Analysis *parent; // a selection the parent Analysis defined this analysis 
     std::vector<uint32_t> parent_selection; //indices of the selection within the parent analysis 

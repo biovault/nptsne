@@ -15,14 +15,16 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     result->parent = parent;
     result->parent_selection = parent_selection;
     result->hsne = hsne._hsne;
-    
     if (nullptr == parent) {
         // making the toplevel analysis with
         // all toplevel landmarks
         std::cout << "Initialize num scales: "<< hsne.num_scales() << "\n";
         result->scale_id = hsne.num_scales() - 1;
         std::cout << "Get landmark weights\n";
+        // all the landmarks in the scale are in the top level analysis
         result->landmark_weights = hsne.get_scale(result->scale_id).getLandmarkWeight();
+        result->landmark_indexes.resize(result->landmark_weights.size());
+        std::iota(result->landmark_indexes.begin(), result->landmark_indexes.end(), 0);
         std::cout << "Initialize embedder\n";
         std::cout << "Top scale transition matrix size: " << result->hsne->top_scale()._transition_matrix.size() << "\n";
         result->embedder.initialize(
@@ -68,6 +70,11 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
         // Initialize the tSNE embedder with this selection to create a 2D embedding
         result->embedder.initialize(
             new_transition_matrix, result->id);
+    }
+    // Get the indexes for the original data
+    for(auto& e: result->landmark_indexes){
+        result->landmarks_orig_data.push_back(
+            result->hsne->scale(result->scale_id)._landmark_to_original_data_idx[e]);
     }
     std::cout << "return new Analysis \n";
     return result;

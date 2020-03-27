@@ -38,12 +38,8 @@ class AnalysisTree:
     def _initialize_top_level(self):
         """The toplevel of the hsne_analysis.Model """
         
-        topscale = self.hsne.get_scale(self.top_scale_id)
-        # All the points at from the top scale are in the 
-        landmark_indexes = np.arange(topscale.num_points, dtype=np.uint32)
-        topAnalysis = Analysis(
-            self.hsne, 
-            landmark_indexes) 
+        # All the landmark points at from the top scale are in the 
+        topAnalysis = Analysis(self.hsne) 
         self.top_analysis_id = topAnalysis.id
         self.analyses[self.top_analysis_id] = topAnalysis
         
