@@ -388,6 +388,17 @@ PYBIND11_MODULE(_nptsne, m) {
             .def_readwrite("id", &Analysis::id)
             .def_readwrite("scale_id", &Analysis::scale_id)
             .def_readwrite("embedder", &Analysis::embedder);
+
+        // Share the landmark weights without a copy     
+        analysis_class.def_property_readonly(
+            "number_of_points",
+            [](Analysis& self) {
+                return self.landmark_indexes.size();
+            }
+        );
+        
+        analysis_class
+            .def("__str__", &Analysis::toString);
         
         // Share the landmark weights without a copy     
         analysis_class.def_property_readonly(

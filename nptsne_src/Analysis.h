@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <string>
 #include "HSne.h"
 #include "SparseTsne.h"
 
@@ -18,6 +19,11 @@ struct Analysis
     Analysis()
     {
         this->id = Analysis::get_new_id();
+    }
+    
+    std::string toString() 
+    {
+            return "Analysis[id=" + std::to_string(id) + ", num points=" + std::to_string(landmark_indexes.size()) + ", scale=" + std::to_string(scale_id) + "]"; 
     }
     
     uint32_t id;

@@ -11,15 +11,23 @@ class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
        It assumes the analysis is simple image data (this could be abstracted)"""
     
-    def __init__(self, data, analysis):
+    def __init__(self, data, analysis, make_new_analysis):
+        """Create a new analysis gui
+
+            
+        """
         self.data = data
         self.analysis = analysis
+        self.make_new_analysis = make_new_analysis
         
         # Plot and image definition
-        self.fig = plt.figure()
+        self.fig = plt.figure(num=str(analysis))
         # space for the plot and the digit display - spec is row,col
         gs = GridSpec(4,4)
         self.ax = self.fig.add_subplot(gs[:4,:3])
+        self.ax.margins(0.05, 0.05)
+        self.ax.set_xticks([])
+        self.ax.set_yticks([])
         self.ix = self.fig.add_subplot(gs[0,3])
         self.ix.set_xticks([])
         self.ix.set_yticks([])
@@ -56,11 +64,13 @@ class AnalysisGui:
         self.fig.canvas.start_event_loop(timeout=-1)
         
     def start_plot(self):
-        self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
+        # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
         embedding = self.analysis.embedder.embedding
         x = embedding[:,0]
         y = embedding[:,1]
-        self.scatter = self.ax.scatter(x,y,s=self.analysis.landmark_weights * 8, c='b', alpha=0.4, picker=1)
+        self.scatter = self.ax.scatter(x,y,s=self.analysis.landmark_weights * 8, c='b', alpha=0.4, picker=10)
+        #self.ax.relim()
+        #self.ax.autoscale_view()
         rt = patches.Rectangle((-self.extent,-self.extent),0.1,0.1,linewidth=0.5,edgecolor='r',facecolor='none', alpha=0)
         self.rect = self.ax.add_patch(rt)
         return self.scatter, self.rect, 
@@ -79,10 +89,21 @@ class AnalysisGui:
                 self.stop_iter = True
         
         # can auto scale the axes
-        # min = np.amin(embedding, axis=0)
-        # max = np.amax(embedding, axis=0)
-        # ax.set(xlim=(min[0], max[0]), ylim=(min[1], max[1]))
-        self.scatter.set_offsets(self.analysis.embedder.embedding)
+        embedding = self.analysis.embedder.embedding
+        min = np.amin(embedding, axis=0)
+        max = np.amax(embedding, axis=0)
+
+
+        #self.ax.autoscale_view()
+        #xlim = self.ax.get_xlim()
+        #ylim = self.ax.get_ylim()
+        #if (xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
+        #    self.ax.set(xlim=(min[0] - 1, max[0] + 1), ylim=(min[1] - 1, max[1] + 1))
+
+        self.scatter.set_offsets(embedding)
+        self.ax.set(xlim=(min[0] - 1, max[0] + 1), ylim=(min[1] - 1, max[1] + 1))
+        self.ax.relim()
+        self.ax.autoscale_view()
         digit = np.reshape(self.composite_digit, (28,28))
         self.digit_im.set_array(digit)
         # print("Digit data", digit)
@@ -129,7 +150,11 @@ class AnalysisGui:
         if not event.inaxes == self.scatter.axes: return
         self.rect_xy = (event.xdata, event.ydata)
         self.rorg_xy = self.rect_xy
-        print(self.rect_xy)
+        self.dim_xy = (0, 0)
+        self.rect.set_xy(self.rorg_xy)
+        self.rect.set_width(0)
+        self.rect.set_height(0)
+        self.rect.set_alpha(0.4)
 
         
     def on_end_select(self, event):
@@ -140,8 +165,12 @@ class AnalysisGui:
     def get_selected_indexes(self):
         """Get the embedding points that fall in the current selection rectangle"""
         embedding = self.analysis.embedder.embedding
+        # Get the ordered indexes at this analysis level 0 - n-1
         indexes = np.arange(embedding.shape[0])
         selected_indexes = indexes[(embedding[:,0] > self.rorg_xy[0]) & (embedding[:,0] < self.rorg_xy[0] + self.dim_xy[0]) 
             & (embedding[:,1] > self.rorg_xy[1]) & (embedding[:,1] < self.rorg_xy[1] + self.dim_xy[1])]
         print(selected_indexes)
+        if selected_indexes.shape[0] > 0:
+        # Call back the ananlysis model to create a new analysis
+            self.make_new_analysis(self.analysis, selected_indexes)
     

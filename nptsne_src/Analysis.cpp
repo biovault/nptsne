@@ -33,10 +33,12 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     else {
         // A sub-analysis derived from a parent
         result->scale_id = parent->scale_id - 1;
+        std::cout << "Sub-analysis at scale: " << result->scale_id << "\n";
         // get the landmarks corresponding to the parent selecton
         std::vector<uint32_t> parent_landmark_selection;
         Analysis::get_parent_landmark_selection(*result, parent_landmark_selection);
         
+        std::cout << "Get the influence of these landmarks at the lower scale " << "\n";
         // From the parent level landmarks perform random walks to 
         // determine the  neighbouring landmarks at the previous scale 
         std::map<uint32_t, float> parent_neighbor_landmarks;
@@ -45,6 +47,7 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
             parent_landmark_selection, 
             parent_neighbor_landmarks);
         
+        std::cout << "Filter landmarks with high relevance " << "\n";
         // Use a 0.5 threshold to select relevant landmarks from those found
         std::vector<uint32_t> relevant_landmarks;
         for (auto l: parent_neighbor_landmarks) {
@@ -54,9 +57,10 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
         }
         
         // Get a transition matrix and the landmark weights
+        std::cout << "Get the new transition matrix " << "\n";
         HSne::hsne_t::sparse_scalar_matrix_type new_transition_matrix;
         hdi::utils::extractSubGraph(
-            result->hsne->scale(parent->scale_id)._transition_matrix,
+            result->hsne->scale(result->scale_id)._transition_matrix,
             relevant_landmarks,
             new_transition_matrix,
             result->landmark_indexes,1);
@@ -66,7 +70,7 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
             result->landmark_weights.push_back(
                 result->hsne->scale(result->scale_id)._landmark_weight[id]);
         }  
-
+        std::cout << "Initialize the embedder" << "\n";
         // Initialize the tSNE embedder with this selection to create a 2D embedding
         result->embedder.initialize(
             new_transition_matrix, result->id);
@@ -84,6 +88,7 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
 
 void Analysis::get_parent_landmark_selection(const Analysis& newAnalysis, std::vector<uint32_t>& parent_landmark_selection)
 {
+    std::cout << "Get the landmark indexes of the parent selection \n";
     for(auto i :newAnalysis.parent_selection) {
         parent_landmark_selection.push_back(newAnalysis.parent->landmark_indexes[i]);
     }
