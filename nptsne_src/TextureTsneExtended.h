@@ -12,11 +12,13 @@ namespace py = pybind11;
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
+#include "Types.h"
 
 class TextureTsneExtended {
 public:
 
 	typedef float scalar_type;
+    typedef hdi::data::Embedding<scalar_type> embedding_type;
 	// constructor
 	TextureTsneExtended(
 		bool verbose=false,  
@@ -29,6 +31,8 @@ public:
 	bool init_transform(
 		py::array_t<float, py::array::c_style | py::array::forcecast> X,			
 		py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<scalar_type>({}));
+        
+    void init_transform_with_distribution(nptsne::sparse_scalar_matrix_type& sparse_matrix);      
 		
 	void start_exaggeration_decay();
 	
@@ -46,11 +50,12 @@ public:
     
 	void close();
 	
+    embedding_type& getEmbedding() {return _embedding;}
 private:
 
 	//OffscreenBuffer* _offscreen;
 	hdi::dr::HDJointProbabilityGenerator<scalar_type>::sparse_scalar_matrix_type _distributions;
-	hdi::data::Embedding<scalar_type> _embedding;
+	embedding_type _embedding;
 	hdi::dr::GradientDescentTSNETexture _tSNE;
 	//std::unique_ptr<QApplication> _app;
 	

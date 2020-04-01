@@ -2,7 +2,7 @@
 #include <hdi/utils/log_helper_functions.h>
 #include <iostream>
 
-void SparseTsne::initialize(sparse_scalar_matrix_type& sparse_matrix, uint32_t analysis_id, hdi::dr::TsneParameters params)
+void SparseTsne::initialize(nptsne::sparse_scalar_matrix_type& sparse_matrix, uint32_t analysis_id, hdi::dr::TsneParameters params)
 {
     _tSNE.setLogger(_logger);
     

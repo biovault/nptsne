@@ -107,6 +107,12 @@ bool TextureTsneExtended::init_transform(
 	return true;
 }
 
+void TextureTsneExtended::init_transform_with_distribution(nptsne::sparse_scalar_matrix_type& sparse_matrix)
+{
+    // use a default embedding
+    _distributions = sparse_matrix;    
+}
+
 void TextureTsneExtended::start_exaggeration_decay() 
 {
 	if (!_exaggeration_decay) {

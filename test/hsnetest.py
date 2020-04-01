@@ -30,6 +30,7 @@ def remove_analysis(id):
         gui = analysis_guis.get(id, None)
         if not gui is None:
             gui.kill()
+            del analysis_guis[id]
     return removed_ids
     
 def add_analysis(analysis, selected_indexes):
