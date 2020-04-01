@@ -7,6 +7,7 @@
 #include "Analysis.h"
 #include "SparseTsne.h"
 #include <tuple>
+#include <limits>
 namespace py = pybind11;
 
 // Maintainer note - this uses Google style docstrings
@@ -399,6 +400,17 @@ PYBIND11_MODULE(_nptsne, m) {
         
         analysis_class
             .def("__str__", &Analysis::toString);
+            
+        // id of the parent analysis (numeric_limits<uint32_t>::max if this is root)    
+        analysis_class.def_property_readonly(
+            "parent_id",
+            [](Analysis& self) {
+                if (self.parent == nullptr) {
+                    return std::numeric_limits<uint32_t>::max();
+                }
+                return self.parent->id;
+            }
+        );            
         
         // Share the landmark weights without a copy     
         analysis_class.def_property_readonly(

@@ -2,6 +2,7 @@ import nptsne
 import numpy as np 
 from nptsne import hsne_analysis
 import matplotlib.pyplot as plt
+import matplotlib.style as mplstyle 
 from matplotlib import animation
 from matplotlib.gridspec import GridSpec
 import matplotlib.cm as cm
@@ -11,14 +12,17 @@ class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
        It assumes the analysis is simple image data (this could be abstracted)"""
     
-    def __init__(self, data, analysis, make_new_analysis):
+    def __init__(self, data, analysis, make_new_analysis, remove_analysis):
         """Create a new analysis gui
 
             
         """
+        
+        mplstyle.use("fast")
         self.data = data
         self.analysis = analysis
         self.make_new_analysis = make_new_analysis
+        self.remove_analysis = remove_analysis
         
         # Plot and image definition
         self.fig = plt.figure(num=str(analysis))
@@ -34,12 +38,13 @@ class AnalysisGui:
         self.scatter = None
         self.rect = None
         self.extent = 2.8
+        self.cleanup = True
         
         # Animation support 
         # if matplot lib rendering is slow do a number of iterations per frame
         # Total iterations = num_frames X iters_per_frame
-        self.num_frames = 350
-        self.iters_per_frame = 1
+        self.num_frames = 70
+        self.iters_per_frame = 5
         self.stop_iter = False
         dummydata = np.zeros((28,28), dtype=np.float32)
         self.composite_digit = np.zeros((784,))
@@ -50,7 +55,8 @@ class AnalysisGui:
         self.fig.canvas.mpl_connect('key_press_event', self.on_keypress)
         self.fig.canvas.mpl_connect('close_event', self.stop_loop)
         self.fig.canvas.mpl_connect('button_press_event', self.on_start_select)
-        self.fig.canvas.mpl_connect('button_release_event', self.on_end_select)        
+        self.fig.canvas.mpl_connect('button_release_event', self.on_end_select)  
+        self.fig.canvas.mpl_connect('close_event', self.handle_close)        
         
         # Brush support values    
         self.in_selection = False
@@ -59,9 +65,9 @@ class AnalysisGui:
         self.rorg_xy = (None, None)  # The bottom left corner   
 
         # Fire up the plot - a continuous non blocking animation is run to refresh the GUI
-        self.ani = animation.FuncAnimation(self.fig, self.iterate_tSNE, init_func=self.start_plot, frames=range(self.num_frames), interval=0.5, repeat=True, blit=True)
-        plt.show(block=False)
-        self.fig.canvas.start_event_loop(timeout=-1)
+        self.ani = animation.FuncAnimation(self.fig, self.iterate_tSNE, init_func=self.start_plot, frames=range(self.num_frames), interval=100, repeat=True, blit=True)
+        plt.show()
+        #self.fig.canvas.start_event_loop(timeout=-1)
         
     def start_plot(self):
         # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
@@ -76,8 +82,19 @@ class AnalysisGui:
         return self.scatter, self.rect, 
 
     def quit(self):
-        plt.close()
-
+        """Close the plot and cleanup model"""
+        plt.close(self.fig)
+        
+    def kill(self):
+        """Close the plot with no cleanup of id in model"""
+        self.cleanup = False
+        plt.close(self.fig)
+        
+    def handle_close(self, evt):
+        if self.cleanup: 
+            self.remove_analysis(self.analysis.id)
+        del self.analysis
+    
     def stop_loop(self, event):
         self.fig.canvas.stop_event_loop()    
     
@@ -85,6 +102,7 @@ class AnalysisGui:
         if not self.stop_iter: 
             for j in range(self.iters_per_frame):
                 self.analysis.embedder.do_iteration()
+                self.fig.canvas.toolbar.set_message(f"Iteration: {i*self.iters_per_frame + j}")
             if i == self.num_frames - 1:
                 self.stop_iter = True
         
@@ -95,15 +113,16 @@ class AnalysisGui:
 
 
         #self.ax.autoscale_view()
-        #xlim = self.ax.get_xlim()
-        #ylim = self.ax.get_ylim()
-        #if (xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
+        xlim = self.ax.get_xlim()
+        ylim = self.ax.get_ylim()
+        
         #    self.ax.set(xlim=(min[0] - 1, max[0] + 1), ylim=(min[1] - 1, max[1] + 1))
 
         self.scatter.set_offsets(embedding)
-        self.ax.set(xlim=(min[0] - 1, max[0] + 1), ylim=(min[1] - 1, max[1] + 1))
-        self.ax.relim()
-        self.ax.autoscale_view()
+        if (xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
+            self.ax.set(xlim=(min[0] - 2, max[0] + 2), ylim=(min[1] - 2, max[1] + 2))
+            self.ax.relim()
+            self.ax.autoscale_view()
         digit = np.reshape(self.composite_digit, (28,28))
         self.digit_im.set_array(digit)
         # print("Digit data", digit)

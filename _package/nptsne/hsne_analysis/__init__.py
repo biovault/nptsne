@@ -4,11 +4,11 @@
 # The difference is that this module contains no visualization code
 # it simply presents a generic model for navigating an hsne analysis
 
-from .analysis_tree import AnalysisTree
+from .analysis_model import AnalysisModel
 from ..libs._nptsne._hsne_analysis import Analysis, SparseTsne 
 
 __all__ = (
-    'AnalysisTree',
+    'AnalysisModel',
     'Analysis',
     'SparseTsne'
 )
