@@ -17,8 +17,6 @@ namespace py = pybind11;
 class TextureTsneExtended {
 public:
 
-	typedef float scalar_type;
-    typedef hdi::data::Embedding<scalar_type> embedding_type;
 	// constructor
 	TextureTsneExtended(
 		bool verbose=false,  
@@ -30,7 +28,7 @@ public:
 	// Initialize the probabilities based on the data
 	bool init_transform(
 		py::array_t<float, py::array::c_style | py::array::forcecast> X,			
-		py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<scalar_type>({}));
+		py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<nptsne::scalar_type>({}));
         
     void init_transform_with_distribution(nptsne::sparse_scalar_matrix_type& sparse_matrix);      
 		
@@ -46,16 +44,16 @@ public:
         
     // Restart the transform with an optional initial embedding
     void reinitialize_transform(
-        py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<scalar_type>({}));
+        py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<nptsne::scalar_type>({}));
     
 	void close();
 	
-    embedding_type& getEmbedding() {return _embedding;}
+    nptsne::embedding_type& getEmbedding() {return _embedding;}
 private:
 
 	//OffscreenBuffer* _offscreen;
-	hdi::dr::HDJointProbabilityGenerator<scalar_type>::sparse_scalar_matrix_type _distributions;
-	embedding_type _embedding;
+	typename nptsne::prob_gen_type::sparse_scalar_matrix_type _distributions;
+	nptsne::embedding_type _embedding;
 	hdi::dr::GradientDescentTSNETexture _tSNE;
 	//std::unique_ptr<QApplication> _app;
 	

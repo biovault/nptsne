@@ -6,6 +6,7 @@
 #include "HSne.h"
 #include "Analysis.h"
 #include "SparseTsne.h"
+#include "Types.h"
 #include <tuple>
 #include <limits>
 namespace py = pybind11;
@@ -145,7 +146,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
     )pbdoc",
     py::arg("X"),
-    py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));
+    py::arg("initial_embedding")=py::array_t<nptsne::scalar_type>({}));
 
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform, 
         R"pbdoc(
@@ -175,7 +176,7 @@ PYBIND11_MODULE(_nptsne, m) {
           :type initial_embedding: ndarray
 
         )pbdoc",
-        py::arg("initial_embedding")=py::array_t<TextureTsneExtended::scalar_type>({}));    
+        py::arg("initial_embedding")=py::array_t<nptsne::scalar_type>({}));    
 
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay, 
         R"pbdoc(
@@ -208,7 +209,8 @@ PYBIND11_MODULE(_nptsne, m) {
           Release GPU resources for the transform
 
         )pbdoc");
-    
+
+    // ******************************************************************    
     // Hierarchical SNE wrapper
     py::class_<HSne> hsne_class(m, "HSne", 
         R"pbdoc(
@@ -298,6 +300,7 @@ PYBIND11_MODULE(_nptsne, m) {
     hsne_class.def_property_readonly("num_data_points", &HSne::num_data_points);
     hsne_class.def_property_readonly("num_dimensions", &HSne::num_dimensions);
     
+    // ******************************************************************    
     // Scale data for Hsne
     py::class_<HSneScale> hsne_scale_class(m, "HSneScale", 
         R"pbdoc(
@@ -309,26 +312,13 @@ PYBIND11_MODULE(_nptsne, m) {
     
     hsne_scale_class.def("get_landmark_weight", &HSneScale::getLandmarkWeight);
     
-    // TODO scale navigation functions
-    /*hsne_scale_class.def("get_selected_landmarks", &HSne::get_selected_landmarks, "Get the scale information at the index. 0 is the data scale",
-        R"pbdoc(
-          Get the scale at index
-          
-          :param selection
-          :type selection: ndarray
-            
-          :return: A numpy array contain a flatten (1D) embedding
-          :rtype: HSneScale
-
-        )pbdoc",
-        py::arg("scale_number")); */  
     
-    // Bind a submodule for the hsne_analysis to match the python
-    // layout:
-    //          nptsne
-    //               L hsne_analysis
-    //
-    
+    // ******************************************************************
+    // pybind wrappers for hSNE analysis support submodule: hsne_analysis
+    // The pybind submodule for the wrapped classes 
+    // has the _ prefix to mark it as private.
+    // Wrapped classes are re-exported in the hsne_analysis/__init__.py
+    // along with the pure python classes.
     py::module submod_hsne_analysis = m.def_submodule(
         "_hsne_analysis", "Extension functionality for navigating HSNE analysis");
     
@@ -338,7 +328,8 @@ PYBIND11_MODULE(_nptsne, m) {
         // ***** A selection driven hSNE analysis ******
         // The classes are defined at the level of the submodule 
         m_hsne.attr("__all__") = py::make_tuple("Analysis", "SparseTsne"); 
-        
+
+        // ******************************************************************            
         // Note that parent None is allowed for creation of the top
         // level analysis.
         py::class_<Analysis> analysis_class(m_hsne, "Analysis", 
@@ -387,8 +378,8 @@ PYBIND11_MODULE(_nptsne, m) {
         // The analysis properties
         analysis_class
             .def_readwrite("id", &Analysis::id)
-            .def_readwrite("scale_id", &Analysis::scale_id)
-            .def_readwrite("embedder", &Analysis::embedder);
+            .def_readwrite("scale_id", &Analysis::scale_id);
+
 
         // Share the landmark weights without a copy     
         analysis_class.def_property_readonly(
@@ -400,6 +391,9 @@ PYBIND11_MODULE(_nptsne, m) {
         
         analysis_class
             .def("__str__", &Analysis::toString);
+            
+        analysis_class
+            .def("do_iteration", &Analysis::doAnIteration);            
             
         // id of the parent analysis (numeric_limits<uint32_t>::max if this is root)    
         analysis_class.def_property_readonly(
@@ -438,8 +432,26 @@ PYBIND11_MODULE(_nptsne, m) {
                     py::cast(self)
                 );
             }
-        ); 
-        
+        );
+
+        // Share the embedding without a copy     
+        analysis_class.def_property_readonly(
+            "embedding",
+            [](Analysis& self) {
+                auto cols = self.getEmbedding().numDimensions();
+                auto rows = self.getEmbedding().numDataPoints();
+                auto data_size = sizeof(float);
+                // as a numpy array 
+                return py::array_t<float>(
+                    {rows, cols}, 
+                    {cols * data_size, data_size},
+                    self.getEmbedding().getContainer().data(),
+                    py::cast(self)
+                );
+            }
+        );        
+
+        // ******************************************************************        
         // ***** tSNE embedder used in hSNE analyses (Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne", 
             R"pbdoc(

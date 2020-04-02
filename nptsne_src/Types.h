@@ -19,5 +19,8 @@ namespace nptsne{
     typedef hdi::dr::GradientDescentTSNETexture texture_tsne_type;
 
     // The embedding holder 
-    typedef hdi::data::Embedding<scalar_type> embedding_type;    
+    typedef hdi::data::Embedding<scalar_type> embedding_type;   
+
+    // The probability generator
+    typedef hdi::dr::HDJointProbabilityGenerator<scalar_type> prob_gen_type;
 }

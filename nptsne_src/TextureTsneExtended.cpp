@@ -51,8 +51,8 @@ bool TextureTsneExtended::init_transform(
 		_have_preset_embedding = true;
 		float * emb_in = static_cast<float *>(emb_info.ptr);
 		// user provided default for embedding - overwrite the random def.
-		_embedding = hdi::data::Embedding<scalar_type>(emb_info.shape[0], emb_info.shape[1]);
-		typename hdi::data::Embedding<scalar_type>::scalar_vector_type* embedding_container = &(_embedding.getContainer());
+		_embedding = nptsne::embedding_type(emb_info.shape[0], emb_info.shape[1]);
+		typename nptsne::embedding_type::scalar_vector_type* embedding_container = &(_embedding.getContainer());
 		// simply replace the container by the input?
 		for(int p = 0; p < _num_data_points; p++) {
 			for(int d = 0; d < 2; d++) {
@@ -79,8 +79,8 @@ bool TextureTsneExtended::init_transform(
 		}
 
 		hdi::utils::CoutLog log;
-		hdi::dr::HDJointProbabilityGenerator<scalar_type> prob_gen;
-		hdi::dr::HDJointProbabilityGenerator<scalar_type>::Parameters prob_gen_param;
+		nptsne::prob_gen_type prob_gen;
+		nptsne::prob_gen_type::Parameters prob_gen_param;
 
 		{
 			hdi::utils::ScopedTimer<float,hdi::utils::Seconds> timer(similarities_comp_time);
@@ -109,8 +109,17 @@ bool TextureTsneExtended::init_transform(
 
 void TextureTsneExtended::init_transform_with_distribution(nptsne::sparse_scalar_matrix_type& sparse_matrix)
 {
+    _num_data_points = sparse_matrix.size();
+    _num_target_dimensions = 2;
+    _distributions.clear();
+    _embedding = nptsne::embedding_type();
     // use a default embedding
-    _distributions = sparse_matrix;    
+    for (auto map : sparse_matrix) {
+        _distributions.push_back(map);
+    } 
+    if (_verbose) {
+        std::cout << " Size of distribution " << _distributions.size() << "\n";
+    }    
 }
 
 void TextureTsneExtended::start_exaggeration_decay() 
@@ -152,13 +161,17 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 
 		int argc = 1;
 		float gradient_desc_comp_time = 0;
-	
-		std::cout << "grad descent tsne starting" << "\n";
+        if (_verbose) {
+            std::cout << "grad descent tsne starting" << "\n";
+        }
 		{
 			hdi::utils::ScopedTimer<float,hdi::utils::Seconds> timer(gradient_desc_comp_time);
 
 			bool continuing = _tSNE.isInitialized();
 			if (!continuing) {
+                if (_verbose) {
+                    std::cout << "start a new tSNE" << "\n";
+                }                 
 				// a new tSNE
 				hdi::dr::TsneParameters tSNE_param;
 				tSNE_param._embedding_dimensionality = _num_target_dimensions;
@@ -175,18 +188,23 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
                 glfwWindowHint (GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
                 glfwWindowHint (GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);   
 #endif                  
-                glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // inisible - ie offscreen, window
+                glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // invisible - ie offscreen, window
                 _offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
+                if (!_offscreen_context) {
+                    throw std::runtime_error("Failed to create GLFW offscreen window");
+                }                
                 glfwMakeContextCurrent(_offscreen_context);
 
-                if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-                {
+                if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
                     throw std::runtime_error("Failed to initialize OpenGL context");
                 } 				
 				std::cout << "initializing tSNE" << "\n";
 				_tSNE.initialize(_distributions,&_embedding,tSNE_param);
 			}
 			else {
+                if (_verbose) {
+                    std::cout << "continuing tSNE" << "\n";
+                }    
 				// continuing tSNE possibly with new params from start_exaggeration_decay
 				if (!_exaggeration_decay) {
 					// Continuing with no decay, maintain the disabled decay for this run
@@ -195,10 +213,8 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 					tSNE_param._mom_switching_iter = _iteration_count + iterations;
 					tSNE_param._remove_exaggeration_iter = _iteration_count + iterations;
 					tSNE_param._presetEmbedding = _have_preset_embedding;
-					_tSNE.updateParams(tSNE_param);
-					
-				}
-				std::cout << "continuing tSNE" << "\n";	
+					_tSNE.updateParams(tSNE_param);					
+				}                
 			}
 			
 			if (_have_preset_embedding) {
@@ -284,8 +300,8 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
             _have_preset_embedding = true;
             float * emb_in = static_cast<float *>(emb_info.ptr);
             // user provided default for embedding - overwrite the random def.
-            _embedding = hdi::data::Embedding<scalar_type>(emb_info.shape[0], emb_info.shape[1]);
-            typename hdi::data::Embedding<scalar_type>::scalar_vector_type* embedding_container = &(_embedding.getContainer());
+            _embedding = nptsne::embedding_type(emb_info.shape[0], emb_info.shape[1]);
+            typename nptsne::embedding_type::scalar_vector_type* embedding_container = &(_embedding.getContainer());
             // simply replace the container by the input?
             for(int p = 0; p < _num_data_points; p++) {
                 for(int d = 0; d < 2; d++) {
@@ -296,7 +312,7 @@ void TextureTsneExtended::reinitialize_transform(py::array_t<float, py::array::c
         else {
             // No user supplied embedding clear the current one.
             // std::cout << "Embedding size before clear: " << _embedding.getContainer().size() << std::endl;
-            _embedding = hdi::data::Embedding<scalar_type>();
+            _embedding = nptsne::embedding_type();
             // std::cout << "Embedding size after clear: " << _embedding.getContainer().size() << std::endl;            
         }
         hdi::dr::TsneParameters tSNE_param;

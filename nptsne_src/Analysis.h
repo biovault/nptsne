@@ -20,7 +20,7 @@ struct Analysis
 
     static void get_parent_landmark_selection(const Analysis& newAnalysis, std::vector<uint32_t>& parent_landmark_selection);
     
-    Analysis() {
+    Analysis(bool verbose = false) : textureEmbedder(verbose), remove_exaggeration_iter(170) {
         this->id = Analysis::get_new_id();
     }
     
@@ -31,16 +31,30 @@ struct Analysis
     void initialize_embedding() {
         if (ActiveEmbedder::Sparse == activeEmbedder) {
             embedder.initialize(
-                hsne->scale(scale_id)._transition_matrix, id); 
+                hsne->scale(scale_id)._transition_matrix, id);     
+        } else {
+            textureEmbedder.init_transform_with_distribution(hsne->scale(scale_id)._transition_matrix);
         }
-        textureEmbedder.init_transform_with_distribution(hsne->scale(scale_id)._transition_matrix);
     }
+    
+    void initialize_embedding(nptsne::sparse_scalar_matrix_type &new_transition_matrix) {
+        if (ActiveEmbedder::Sparse == activeEmbedder) {
+            embedder.initialize(
+                new_transition_matrix, id); 
+        } else {
+            textureEmbedder.init_transform_with_distribution(new_transition_matrix);
+        }
+    }    
     
     void doAnIteration() {
         if (ActiveEmbedder::Sparse == activeEmbedder) {
             embedder.doAnIteration();
+        } else {
+            if (remove_exaggeration_iter == textureEmbedder.get_iteration_count() + 1) {
+                textureEmbedder.start_exaggeration_decay();
+            }
+            textureEmbedder.run_transform(false, 1);
         }
-        textureEmbedder.run_transform(false, 1);
     }
     
     nptsne::embedding_type& getEmbedding() {
@@ -61,6 +75,7 @@ struct Analysis
     SparseTsne embedder;
     TextureTsneExtended textureEmbedder;
     HSne::hsne_t *hsne;
+    int remove_exaggeration_iter;
 
 private:
     static uint32_t get_new_id() {return id_counter++;}

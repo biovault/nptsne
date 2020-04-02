@@ -71,7 +71,10 @@ class AnalysisGui:
         
     def start_plot(self):
         # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
-        embedding = self.analysis.embedder.embedding
+        embedding = self.analysis.embedding
+        if 0 == embedding.shape[0]:
+            embedding = np.zeros((self.data.shape[0], 2))
+        # print("Embedding shape: ", embedding.shape)
         x = embedding[:,0]
         y = embedding[:,1]
         self.scatter = self.ax.scatter(x,y,s=self.analysis.landmark_weights * 8, c='b', alpha=0.4, picker=10)
@@ -101,13 +104,13 @@ class AnalysisGui:
     def iterate_tSNE(self, i):
         if not self.stop_iter: 
             for j in range(self.iters_per_frame):
-                self.analysis.embedder.do_iteration()
+                self.analysis.do_iteration()
                 self.fig.canvas.toolbar.set_message(f"Iteration: {i*self.iters_per_frame + j}")
             if i == self.num_frames - 1:
                 self.stop_iter = True
         
         # can auto scale the axes
-        embedding = self.analysis.embedder.embedding
+        embedding = self.analysis.embedding
         min = np.amin(embedding, axis=0)
         max = np.amax(embedding, axis=0)
 
@@ -183,7 +186,7 @@ class AnalysisGui:
         
     def get_selected_indexes(self):
         """Get the embedding points that fall in the current selection rectangle"""
-        embedding = self.analysis.embedder.embedding
+        embedding = self.analysis.embedding
         # Get the ordered indexes at this analysis level 0 - n-1
         indexes = np.arange(embedding.shape[0])
         selected_indexes = indexes[(embedding[:,0] > self.rorg_xy[0]) & (embedding[:,0] < self.rorg_xy[0] + self.dim_xy[0]) 

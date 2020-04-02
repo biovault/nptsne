@@ -15,6 +15,8 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     result->parent = parent;
     result->parent_selection = parent_selection;
     result->hsne = hsne._hsne;
+    // Test Sparse tSNE or everything
+    result->activeEmbedder = ActiveEmbedder::Texture;
     if (nullptr == parent) {
         // making the toplevel analysis with
         // all toplevel landmarks
@@ -27,8 +29,7 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
         std::iota(result->landmark_indexes.begin(), result->landmark_indexes.end(), 0);
         std::cout << "Initialize embedder\n";
         std::cout << "Top scale transition matrix size: " << result->hsne->top_scale()._transition_matrix.size() << "\n";
-        result->embedder.initialize(
-            result->hsne->scale(result->scale_id)._transition_matrix, result->id);        
+        result->initialize_embedding();        
     }
     else {
         // A sub-analysis derived from a parent
@@ -58,7 +59,7 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
         
         // Get a transition matrix and the landmark weights
         std::cout << "Get the new transition matrix " << "\n";
-        HSne::hsne_t::sparse_scalar_matrix_type new_transition_matrix;
+        nptsne::sparse_scalar_matrix_type new_transition_matrix;
         hdi::utils::extractSubGraph(
             result->hsne->scale(result->scale_id)._transition_matrix,
             relevant_landmarks,
@@ -72,8 +73,7 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
         }  
         std::cout << "Initialize the embedder" << "\n";
         // Initialize the tSNE embedder with this selection to create a 2D embedding
-        result->embedder.initialize(
-            new_transition_matrix, result->id);
+        result->initialize_embedding(new_transition_matrix);
     }
     // Get the indexes for the original data
     for(auto& e: result->landmark_indexes){
