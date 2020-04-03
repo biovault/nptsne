@@ -1,4 +1,4 @@
-from ..libs._nptsne._hsne_analysis import Analysis 
+from ..libs._nptsne._hsne_analysis import (EmbedderType, Analysis) 
 import numpy as np
 
 class AnalysisContainer:
@@ -66,7 +66,7 @@ class AnalysisModel:
         when exploring an hsne hierarchy. The AnalysisModel is created
         with a top level default analysis containing all top level landmarks.."""
     
-    def __init__(self, hsne):
+    def __init__(self, hsne, embedder_type):
         """Create an analysis model with the top level set up"""
         """Create a scale selection based
         
@@ -77,6 +77,7 @@ class AnalysisModel:
         """
         
         self.hsne = hsne
+        self.embedder_type = embedder_type
         # The analyses are stored in a dict of dicts
         # where the outer dict represents the scales and
         # the inner (scale level) dicts are indexed by the unique
@@ -100,7 +101,7 @@ class AnalysisModel:
         """The toplevel of the hsne_analysis.Model """
         
         # All the landmark points at from the top scale are in the 
-        topAnalysis = Analysis(self.hsne) 
+        topAnalysis = Analysis(self.hsne, self.embedder_type) 
         self.top_analysis_id = topAnalysis.id
         self._analysis_container = AnalysisContainer(topAnalysis)
         
@@ -116,7 +117,7 @@ class AnalysisModel:
                 The selection indices in the parent analysis
                 """
 
-        analysis = Analysis(self.hsne, parent, parent_selection)
+        analysis = Analysis(self.hsne, self.embedder_type, parent, parent_selection)
         self._analysis_container.add_analysis(analysis)
         return analysis
         

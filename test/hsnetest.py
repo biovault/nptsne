@@ -7,7 +7,29 @@ from matplotlib.gridspec import GridSpec
 import matplotlib.cm as cm
 import matplotlib.patches as patches
 from AnalysisGui import AnalysisGui
+import sys
 
+
+
+
+def get_default_embedding_type():
+    """GPU embedder will not work on remote desktop """
+    default_embedder_type = hsne_analysis.EmbedderType.GPU
+    if sys.platform == 'win32':
+        # pip install pywin32
+        try:
+            import win32api
+            isWindows = True
+            SM_REMOTESESSION = 0x1000
+            if 1 == win32api.GetSystemMetrics(SM_REMOTESESSION):
+               default_embedder_type = hsne_analysis.EmbedderType.CPU 
+        except ImportError as exception:
+            print(exception, exception.mess)
+            print("Assuming GPU")
+    return default_embedder_type       
+
+default_embedder_type = get_default_embedding_type()
+print("Embedder: ", default_embedder_type)
 
 raw = np.fromfile('MNIST_70000.bin', np.uint8)
 X = np.reshape(raw, (70000, 784))
@@ -15,7 +37,7 @@ hsne = nptsne.HSne(True)
 number_of_scales = 4
 hsne.create_hsne(X, number_of_scales)
 hsne.save('mnist_1000_hsne.bin')
-analysis_model = hsne_analysis.AnalysisModel(hsne)
+analysis_model = hsne_analysis.AnalysisModel(hsne, default_embedder_type)
 top_analysis = analysis_model.top_analysis
 
 all_analyses_per_scale = {top_analysis.scale_id: {top_analysis.id: top_analysis}}

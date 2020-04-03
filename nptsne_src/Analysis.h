@@ -2,21 +2,22 @@
 
 #include <cstdint>
 #include <vector>
-#include <string>
+#include <string> 
 #include <hdi/data/embedding.h>
 #include "HSne.h"
 #include "SparseTsne.h"
 #include "TextureTsneExtended.h"
+#include "EmbedderType.h"
 
 struct Analysis 
-{ 
-    enum class ActiveEmbedder{Sparse, Texture};
-    
+{  
     // Analysis factory
     static std::unique_ptr<Analysis> make_analysis(
         HSne &hsne,
+        EmbedderType embedderType = EmbedderType::CPU,
         Analysis *parent = nullptr,
-        std::vector<uint32_t> parent_selection = std::vector<uint32_t>());
+        std::vector<uint32_t> parent_selection = std::vector<uint32_t>()
+        );
 
     static void get_parent_landmark_selection(const Analysis& newAnalysis, std::vector<uint32_t>& parent_landmark_selection);
     
@@ -29,7 +30,7 @@ struct Analysis
     }
     
     void initialize_embedding() {
-        if (ActiveEmbedder::Sparse == activeEmbedder) {
+        if (EmbedderType::CPU == embedderType) {
             embedder.initialize(
                 hsne->scale(scale_id)._transition_matrix, id);     
         } else {
@@ -38,7 +39,7 @@ struct Analysis
     }
     
     void initialize_embedding(nptsne::sparse_scalar_matrix_type &new_transition_matrix) {
-        if (ActiveEmbedder::Sparse == activeEmbedder) {
+        if (EmbedderType::CPU == embedderType) {
             embedder.initialize(
                 new_transition_matrix, id); 
         } else {
@@ -47,7 +48,7 @@ struct Analysis
     }    
     
     void doAnIteration() {
-        if (ActiveEmbedder::Sparse == activeEmbedder) {
+        if (EmbedderType::CPU == embedderType) {
             embedder.doAnIteration();
         } else {
             if (remove_exaggeration_iter == textureEmbedder.get_iteration_count() + 1) {
@@ -58,7 +59,7 @@ struct Analysis
     }
     
     nptsne::embedding_type& getEmbedding() {
-        if (ActiveEmbedder::Sparse == activeEmbedder) {
+        if (EmbedderType::CPU == embedderType) {
             return embedder.getEmbedding();
         }
         return textureEmbedder.getEmbedding();
@@ -71,7 +72,7 @@ struct Analysis
     std::vector<float> landmark_weights;
     Analysis *parent; // a selection the parent Analysis defined this analysis 
     std::vector<uint32_t> parent_selection; //indices of the selection within the parent analysis 
-    ActiveEmbedder activeEmbedder = ActiveEmbedder::Sparse;  
+    EmbedderType embedderType;  
     SparseTsne embedder;
     TextureTsneExtended textureEmbedder;
     HSne::hsne_t *hsne;

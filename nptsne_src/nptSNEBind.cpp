@@ -41,15 +41,18 @@ PYBIND11_MODULE(_nptsne, m) {
      
     // ENUMS
     py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
-        Enumeration used to select the knn algorithm used. Two possibilities are
+        Enumeration used to select the knn algorithm used. Three possibilities are
         supported:
         
         :obj:`KnnAlgorithm.Flann`: Knn using FLANN - Fast Library for Approximate Nearest Neighbors
         
         :obj:`KnnAlgorithm.HNSW`: Knn using Hnswlib - fast approximate nearest neighbor search
+        
+        :obj:`KnnAlgorithm.Annoy`: Knn using Annoy - Spotify Approximate Nearest Neighbors Oh Yeah        
     )pbdoc")
     .value("Flann", KnnAlgorithm::Flann)
-    .value("HNSW", KnnAlgorithm::HNSW);
+    .value("HNSW", KnnAlgorithm::HNSW)
+    .value("Annoy", KnnAlgorithm::Annoy);
 
     // CLASSES
     // Basic interface for GPU Texture based tSNE
@@ -325,9 +328,23 @@ PYBIND11_MODULE(_nptsne, m) {
     // TODO: Prototype shortcut: the hsne_analysis classes are defined here nested
     // Consider moving to a separate file.
     auto pybind_hsne_analysis = [](py::module &m_hsne) {
+        
+        // ENUMS
+        py::enum_<EmbedderType>(m_hsne, "EmbedderType", py::arithmetic(), R"pbdoc(
+            Enumeration used to select the embedder used. Two possibilities are
+            supported:
+            
+            :obj:`EmbedderType.CPU`: CPU tSNE
+            
+            :obj:`EmbedderType.CPU`: GPU tSNE
+       
+        )pbdoc")
+        .value("CPU", EmbedderType::CPU)
+        .value("GPU", EmbedderType::GPU);
+    
         // ***** A selection driven hSNE analysis ******
         // The classes are defined at the level of the submodule 
-        m_hsne.attr("__all__") = py::make_tuple("Analysis", "SparseTsne"); 
+        m_hsne.attr("__all__") = py::make_tuple("Analysis", "SparseTsne", "EmbedderType"); 
 
         // ******************************************************************            
         // Note that parent None is allowed for creation of the top
@@ -341,10 +358,11 @@ PYBIND11_MODULE(_nptsne, m) {
         // Two possible init methods - one for a full analysis and one for the top level analysis (no parent)    
         analysis_class.def(py::init([](
             HSne& hsne, 
+            EmbedderType embedder_type,
             Analysis* parent, 
             std::vector<uint32_t> parent_selection)
             {
-                return Analysis::make_analysis(hsne, parent, parent_selection);
+                return Analysis::make_analysis(hsne, embedder_type, parent, parent_selection);
             }
         ),
         R"pbdoc(  
@@ -353,6 +371,9 @@ PYBIND11_MODULE(_nptsne, m) {
          
          :param hsne: The hierarchical SNE being explored
          :type hsne: HSne
+         
+         :param embedder_type: The tSNE to use CPU or GPU based
+         :type embedder_type: EmbedderType         
 
          :param parent: the parent Analysis (where the selection was performed) if any
          :type parent: Analysis
@@ -360,11 +381,16 @@ PYBIND11_MODULE(_nptsne, m) {
          :param parent_selection: List of parent selection indexes.
          :type parent_selection: list
 
-        )pbdoc")        
+        )pbdoc",
+        py::arg("hnse"),
+        py::arg("embedder_type"), 
+        py::arg("parent"),
+        py::arg("parent_selection"))      
         .def(py::init([](
-            HSne& hsne)
+            HSne& hsne, 
+            EmbedderType embedder_type)
             {
-                return Analysis::make_analysis(hsne);
+                return Analysis::make_analysis(hsne, embedder_type);
             }
         ),
         R"pbdoc(   
@@ -372,8 +398,12 @@ PYBIND11_MODULE(_nptsne, m) {
           
          :param hsne: The hierarchical SNE being explored
          :type hsne: HSne
-
-        )pbdoc");  
+         
+         :param embedder_type: The tSNE to use CPU or GPU based
+         :type embedder_type: EmbedderType 
+        )pbdoc",
+        py::arg("hnse"),
+        py::arg("embedder_type"));  
         
         // The analysis properties
         analysis_class

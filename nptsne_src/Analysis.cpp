@@ -7,6 +7,7 @@ uint32_t Analysis::id_counter = 0;
 // Factory method for analyses
 std::unique_ptr<Analysis> Analysis::make_analysis(
     HSne &hsne,
+    EmbedderType embedderType,
     Analysis *parent,
     std::vector<uint32_t> parent_selection) 
 {
@@ -15,8 +16,8 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     result->parent = parent;
     result->parent_selection = parent_selection;
     result->hsne = hsne._hsne;
-    // Test Sparse tSNE or everything
-    result->activeEmbedder = ActiveEmbedder::Texture;
+    // Test CPU or GPU
+    result->embedderType = embedderType;
     if (nullptr == parent) {
         // making the toplevel analysis with
         // all toplevel landmarks

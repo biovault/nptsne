@@ -112,7 +112,7 @@ void TextureTsneExtended::init_transform_with_distribution(nptsne::sparse_scalar
     _num_data_points = sparse_matrix.size();
     _num_target_dimensions = 2;
     _distributions.clear();
-    _embedding = nptsne::embedding_type();
+    _embedding = nptsne::embedding_type(_num_target_dimensions, _num_data_points);
     // use a default embedding
     for (auto map : sparse_matrix) {
         _distributions.push_back(map);

@@ -72,8 +72,8 @@ class AnalysisGui:
     def start_plot(self):
         # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
         embedding = self.analysis.embedding
-        if 0 == embedding.shape[0]:
-            embedding = np.zeros((self.data.shape[0], 2))
+        #if 0 == embedding.shape[0]:
+        #    embedding = np.zeros((self.data.shape[0], 2))
         # print("Embedding shape: ", embedding.shape)
         x = embedding[:,0]
         y = embedding[:,1]
@@ -122,7 +122,7 @@ class AnalysisGui:
         #    self.ax.set(xlim=(min[0] - 1, max[0] + 1), ylim=(min[1] - 1, max[1] + 1))
 
         self.scatter.set_offsets(embedding)
-        if (xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
+        if (i == 0 or xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
             self.ax.set(xlim=(min[0] - 2, max[0] + 2), ylim=(min[1] - 2, max[1] + 2))
             self.ax.relim()
             self.ax.autoscale_view()
