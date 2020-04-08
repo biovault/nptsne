@@ -9,6 +9,23 @@ class AnalysisContainer:
         self._scale_index = {top_analysis.id: top_analysis.scale_id}
         self._null_id = 0xffffffff
         
+
+    def __eq__(self, other): 
+        """To used for comparing an older copy with the current analysis container""" 
+        if not isinstance(other, AnalysisContainer):
+            # don't attempt to compare against unrelated types
+            return False
+
+        if not other._scale_index == self._scale_index:
+            return False
+        
+        for key, value in self._children:
+            other_value = other._children[key]
+            if not other_value == value:
+                return False
+        
+        return True    
+        
     def add_analysis(self, analysis):        
         if self._container.get(analysis.scale_id, None) is None: 
             self._container[analysis.scale_id] = {}

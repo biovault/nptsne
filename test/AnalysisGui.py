@@ -7,12 +7,15 @@ from matplotlib import animation
 from matplotlib.gridspec import GridSpec
 import matplotlib.cm as cm
 import matplotlib.patches as patches
+import io
+import time
+import threading
 
 class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
        It assumes the analysis is simple image data (this could be abstracted)"""
     
-    def __init__(self, data, analysis, make_new_analysis, remove_analysis):
+    def __init__(self, data, analysis, make_new_analysis, remove_analysis, analysis_stopped):
         """Create a new analysis gui
 
             
@@ -23,6 +26,7 @@ class AnalysisGui:
         self.analysis = analysis
         self.make_new_analysis = make_new_analysis
         self.remove_analysis = remove_analysis
+        self.analysis_stopped = analysis_stopped
         
         # Plot and image definition
         self.fig = plt.figure(num=str(analysis))
@@ -45,7 +49,8 @@ class AnalysisGui:
         # Total iterations = num_frames X iters_per_frame
         self.num_frames = 70
         self.iters_per_frame = 5
-        self.stop_iter = False
+        self._stop_iter = False
+        self._iter_count = 0
         dummydata = np.zeros((28,28), dtype=np.float32)
         self.composite_digit = np.zeros((784,))
         self.digit_im = self.ix.imshow(dummydata, interpolation='bilinear', cmap='gray', vmin=0, vmax=255)
@@ -66,8 +71,7 @@ class AnalysisGui:
 
         # Fire up the plot - a continuous non blocking animation is run to refresh the GUI
         self.ani = animation.FuncAnimation(self.fig, self.iterate_tSNE, init_func=self.start_plot, frames=range(self.num_frames), interval=100, repeat=True, blit=True)
-        plt.show()
-        #self.fig.canvas.start_event_loop(timeout=-1)
+        plt.show(block=False)
         
     def start_plot(self):
         # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
@@ -102,18 +106,21 @@ class AnalysisGui:
         self.fig.canvas.stop_event_loop()    
     
     def iterate_tSNE(self, i):
-        if not self.stop_iter: 
+        send_stop_event = False
+        if not self._stop_iter: 
             for j in range(self.iters_per_frame):
                 self.analysis.do_iteration()
-                self.fig.canvas.toolbar.set_message(f"Iteration: {i*self.iters_per_frame + j}")
+                self._iter_count = i*self.iters_per_frame + j
+                self.fig.canvas.toolbar.set_message(f"Iteration: {self._iter_count}")
+                
             if i == self.num_frames - 1:
-                self.stop_iter = True
+                self._stop_iter = True
+                send_stop_event = True
         
         # can auto scale the axes
         embedding = self.analysis.embedding
         min = np.amin(embedding, axis=0)
         max = np.amax(embedding, axis=0)
-
 
         #self.ax.autoscale_view()
         xlim = self.ax.get_xlim()
@@ -122,7 +129,7 @@ class AnalysisGui:
         #    self.ax.set(xlim=(min[0] - 1, max[0] + 1), ylim=(min[1] - 1, max[1] + 1))
 
         self.scatter.set_offsets(embedding)
-        if (i == 0 or xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
+        if (xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
             self.ax.set(xlim=(min[0] - 2, max[0] + 2), ylim=(min[1] - 2, max[1] + 2))
             self.ax.relim()
             self.ax.autoscale_view()
@@ -131,6 +138,12 @@ class AnalysisGui:
         # print("Digit data", digit)
         #ix.imshow(digit, interpolation='bilinear', cmap='gray', vmin=0, vmax=255)
         #plt.draw()
+        if send_stop_event:
+            def delayed_notification(analysis_gui):
+                time.sleep(0.5)
+                analysis_gui.analysis_stopped(analysis_gui)
+            t = threading.Thread(target=delayed_notification, args=(self,)) 
+            t.start()
         return [self.scatter, self.rect, self.digit_im, ]
 
     def on_over(self, event): 
@@ -195,4 +208,25 @@ class AnalysisGui:
         if selected_indexes.shape[0] > 0:
         # Call back the ananlysis model to create a new analysis
             self.make_new_analysis(self.analysis, selected_indexes)
+            
+    def get_figure_as_buffer(self):     
+        """Return the figure as a png image in a buffer"""
+        buf = io.BytesIO()
+        extent = self.ax.get_tightbbox(self.fig.canvas.renderer).transformed(self.fig.dpi_scale_trans.inverted())
+        self.fig.savefig(buf, bbox_inches=extent)
+        buf.seek(0)
+        return buf
+        
+    @property
+    def iter_stopped(self):
+        return self._stop_iter
+    
+    @property
+    def iter_count(self):
+        return self._iter_count
+        
+    @property    
+    def figure_id(self):
+        return str(self.analysis)
+        
     
