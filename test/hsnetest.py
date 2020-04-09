@@ -104,11 +104,13 @@ def analysis_stopped(analysis_gui):
 def tree_click(analysis_id):
     analysis_gui = analysis_guis[analysis_id]
     analysis_gui.win_raise()
-
-# 2.) deleting an item (the D key) removes the analysis (and children)    
-def tree_del(analysis_id): 
-    print('D on : ', analysis_id)
-    remove_analysis(analysis_id)
+    
+# 2.) Tree remove - returns a list of ananlysis ids to deleter
+def tree_del(analysis_ids):
+    for id in analysis_ids:
+        if id in analysis_guis:
+            remove_analysis(id)
+    
     
 # Display a tree of the scales/analyses
 model_gui = ModelGui(analysis_model, analysis_event_queue, tree_click, tree_del)
