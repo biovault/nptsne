@@ -17,7 +17,7 @@ class ModelGui():
     
     NO_PARENT_ID = 0xFFFFFFFF
     
-    def __init__(self, analysis_model, analysis_event_queue):
+    def __init__(self, analysis_model, analysis_event_queue, click, delete):
         """Create a new analysis model gui 
         """
 
@@ -26,13 +26,18 @@ class ModelGui():
         self.analysis_event_queue = analysis_event_queue
         self.root_id = str(0)
         self.images = [] # used to save image references otherwise they are GCed
+        self.click = click
+        self.delete = delete
+        
         
     def run(self):
         self.root = Tk()
         self.root.title("Analysis Tree")
+        self.treeframe = ttk.Frame(self.root, width=400, height=400, relief="groove") 
+        self.treeframe.pack(fill='both', expand=True)
         
         ttk.Style().configure('Treeview', rowheight=30)
-        self.tree = ttk.Treeview(self.root, height = 10)
+        self.tree = ttk.Treeview(self.treeframe, height = 10)
 
         self.tree["columns"] = ("id", "numpoints")
        
@@ -42,11 +47,33 @@ class ModelGui():
         self.tree.heading("id", text="Id")
         self.tree.heading("numpoints", text="# Points")
         
-        self.tree.pack(fill='both', expand=True)
+        self.tree.grid(column=0, row=0, sticky='nsew', in_=self.treeframe)
+        self.treeframe.grid_columnconfigure(0, weight=1)
+        self.treeframe.grid_rowconfigure(0, weight=1)
+        
+        self.tree.bind("<<TreeviewSelect>>", self.select)
+        self.treeframe.bind("<KeyPress-A>", self.on_delete, add='+')
         self.root.after(100, self.update)
         self.root.mainloop()
 
    
+    def select(self, event):
+        item = self.tree.item(self.tree.focus())
+        if not item: return
+        values = item["values"]
+        if len(values) == 0: return
+        self.click(int(values[0]))
+        self.root.lift()
+        self.tree.focus(values[0])
+        
+    def on_delete(self, event): 
+        print('pressed: ', event.char)
+        item = self.tree.item(self.tree.focus())
+        if not item: return        
+        values = item["values"]
+        if len(values) == 0: return
+        self.delete(int(values[0]))    
+        
     def update(self):
         self.update_tree()
         self.root.after(1000, self.update)

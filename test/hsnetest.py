@@ -99,8 +99,19 @@ def analysis_stopped(analysis_gui):
         'name': analysis_gui.figure_id,
         'image_buf': analysis_gui.get_figure_as_buffer()})    
 
+# Callbacks for the tree control
+# 1.) Clicking an item raises the window
+def tree_click(analysis_id):
+    analysis_gui = analysis_guis[analysis_id]
+    analysis_gui.win_raise()
+
+# 2.) deleting an item (the D key) removes the analysis (and children)    
+def tree_del(analysis_id): 
+    print('D on : ', analysis_id)
+    remove_analysis(analysis_id)
+    
 # Display a tree of the scales/analyses
-model_gui = ModelGui(analysis_model, analysis_event_queue)
+model_gui = ModelGui(analysis_model, analysis_event_queue, tree_click, tree_del)
 
 # The AnalysisGui is non-blocking  
 # start with an analysis GUI containing all top scale landmarks 

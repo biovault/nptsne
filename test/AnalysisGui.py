@@ -72,6 +72,12 @@ class AnalysisGui:
         # Fire up the plot - a continuous non blocking animation is run to refresh the GUI
         self.ani = animation.FuncAnimation(self.fig, self.iterate_tSNE, init_func=self.start_plot, frames=range(self.num_frames), interval=100, repeat=True, blit=True)
         plt.show(block=False)
+
+    def win_raise(self):
+        plt.figure(str(self.analysis))
+        cfm = plt.get_current_fig_manager()
+        #cfm.window.activateWindow()
+        cfm.window.raise_()
         
     def start_plot(self):
         # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
@@ -139,6 +145,7 @@ class AnalysisGui:
         #ix.imshow(digit, interpolation='bilinear', cmap='gray', vmin=0, vmax=255)
         #plt.draw()
         if send_stop_event:
+            plt.figure(str(self.analysis))
             def delayed_notification(analysis_gui):
                 time.sleep(0.5)
                 analysis_gui.analysis_stopped(analysis_gui)
