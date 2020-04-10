@@ -1,7 +1,7 @@
-from tkinter import *
-from tkinter import ttk
+from tkinter import (ttk, Tk, filedialog)
 import copy
 import queue
+import os
 import PIL
 from PIL import ImageTk
 
@@ -17,22 +17,26 @@ class ModelGui():
     
     NO_PARENT_ID = 0xFFFFFFFF
     
-    def __init__(self, analysis_model, analysis_event_queue, select, delete):
+    def __init__(self, analysis_event_queue, select, delete, load):
         """Create a new analysis model gui 
         """
-
-        self.model = analysis_model
-        self.top_scale =  analysis_model.top_scale_id
+        
         self.analysis_event_queue = analysis_event_queue
         self.root_id = str(0)
         self.images = [] # used to save image references otherwise they are GCed
         self.select_callback = select
         self.delete_callback = delete
-       
+        self.load_callback = load
+    
+    def set_analysis_model(self, analysis_model):
+        # TODO empt event queue
+        self.model = analysis_model
+        self.top_scale =  analysis_model.top_scale_id
+        
     def run(self):
         self.root = Tk()
         self.root.title("Analysis Tree")
-        self.treeframe = ttk.Frame(self.root, width=400, height=400, relief="groove") 
+        self.treeframe = ttk.Frame(self.root, width=700, height=400, relief="groove") 
         self.treeframe.pack(fill='both', expand=True)
         
         ttk.Style().configure('Treeview', rowheight=30)
@@ -55,6 +59,10 @@ class ModelGui():
         self.delbtn = ttk.Button(self.treeframe, text="Delete selected")
         self.delbtn.grid(column=0, row=4, columnspan=2, sticky='s', in_=self.treeframe)
         self.delbtn.bind('<Button-1>', self.delete)
+        
+        self.loadbtn = ttk.Button(self.treeframe, text="Load")
+        self.loadbtn.grid(column=6, row=0, columnspan=1, sticky='new', in_=self.treeframe)
+        self.loadbtn.bind('<Button-1>', self.load)
 
         self.root.after(100, self.update)
         self.root.mainloop()
@@ -72,6 +80,13 @@ class ModelGui():
     def delete(self, event):
         selection = self.tree.selection()
         self.delete_callback([int(x) for x in selection])
+        
+    def load(self, event):
+        workdir = os.path.dirname(os.path.abspath(__file__))
+        name = filedialog.askopenfilename(initialdir=workdir, filetypes=[("Numpy files", "*.npy")], title='Open a numpy file where each row is a data point and columns are dimensions' )
+        if name:
+            self.load_callback(name)
+            
         
     def update(self):
         self.update_tree()

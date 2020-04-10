@@ -7,6 +7,7 @@
 #include "Analysis.h"
 #include "SparseTsne.h"
 #include "Types.h"
+#include <string>
 #include <tuple>
 #include <limits>
 namespace py = pybind11;
@@ -242,12 +243,12 @@ PYBIND11_MODULE(_nptsne, m) {
             int
         >(&HSne::create_hsne), 
         R"pbdoc(
-          Create the data hierarchy using hierarchical SNE.
+          Create the hSNE analysis data hierarchy with 0 -n-1 as point ids.
 
           :param X: The iput data with shape (num. data points, num. dimensions)
           :type X: ndarray
 
-          :param num_scales: The iput data with shape (num. data points, num. dimensions)
+          :param num_scales: How many scales to create in the hsne analysis
           :type num_scales: int
         )pbdoc",
         py::arg("X"),
@@ -260,21 +261,39 @@ PYBIND11_MODULE(_nptsne, m) {
             py::array_t<uint64_t, py::array::c_style | py::array::forcecast>
         >(&HSne::create_hsne), 
         R"pbdoc(
-          Create the data hierarchy using hierarchical SNE.
+          Create the hSNE analysis data hierarchy with user assigned point ids.
 
           :param X: The iput data with shape (num. data points, num. dimensions)
           :type X: ndarray
 
-          :param num_scales: The iput data with shape (num. data points, num. dimensions)
+          :param num_scales: How many scales to create in the hsne analysis
           :type num_scales: int
           
-          :param point_ids: The iput data with shape (num. data points, num. dimensions)
+          :param point_ids: The ids associated with the data points
           :type point_ids: ndarray          
 
         )pbdoc",
         py::arg("X"),
         py::arg("num_scales"),
-        py::arg("point_ids"));
+        py::arg("point_ids")
+    )
+    .def("create_hsne", 
+        py::overload_cast<
+            py::array_t<float, py::array::c_style | py::array::forcecast>,
+            const std::string&
+        >(&HSne::create_hsne), 
+        R"pbdoc(
+          Create the hSNE analysis data hierarchy with a pre-existing hsne file.
+
+          :param X: The iput data with shape (num. data points, num. dimensions)
+          :type X: ndarray
+
+          :param file_path: Pre-calculates hsne file
+          :type file_path: string
+        )pbdoc",
+        py::arg("X"),
+        py::arg("file_path")
+    ); 
         
     hsne_class.def("save", &HSne::save_to_file, "Save the HSNE hierarchy to a file", 
         R"pbdoc(

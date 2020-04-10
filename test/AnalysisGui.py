@@ -149,8 +149,9 @@ class AnalysisGui:
             def delayed_notification(analysis_gui):
                 time.sleep(0.5)
                 analysis_gui.analysis_stopped(analysis_gui)
-            t = threading.Thread(target=delayed_notification, args=(self,)) 
-            t.start()
+            #t = threading.Thread(target=delayed_notification, args=(self,)) 
+            #t.start()
+            delayed_notification(self)
         return [self.scatter, self.rect, self.digit_im, ]
 
     def on_over(self, event): 
@@ -219,7 +220,7 @@ class AnalysisGui:
     def get_figure_as_buffer(self):     
         """Return the figure as a png image in a buffer"""
         buf = io.BytesIO()
-        extent = self.ax.get_tightbbox(self.fig.canvas.renderer).transformed(self.fig.dpi_scale_trans.inverted())
+        extent = self.ax.get_tightbbox(self.fig.canvas.get_renderer()).transformed(self.fig.dpi_scale_trans.inverted())
         self.fig.savefig(buf, bbox_inches=extent)
         buf.seek(0)
         return buf

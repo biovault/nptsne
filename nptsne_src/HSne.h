@@ -8,6 +8,7 @@ namespace py = pybind11;
 //#include "OffscreenBuffer.h"
 #include <hdi/dimensionality_reduction/hierarchical_sne.h>
 #include <hdi/utils/cout_log.h>
+#include "Types.h"
 
 class HSneScale;
 struct Analysis;
@@ -43,7 +44,11 @@ public:
     bool create_hsne(
         py::array_t<float, py::array::c_style | py::array::forcecast> X,
         int num_scales,
-        py::array_t<uint64_t, py::array::c_style | py::array::forcecast> point_ids);        
+        py::array_t<uint64_t, py::array::c_style | py::array::forcecast> point_ids);   
+
+    bool create_hsne(
+        py::array_t<float, py::array::c_style | py::array::forcecast> X,
+        const std::string &filePath);        
           
     // save the raw hierarchy data to a file
     void save_to_file(const std::string &filePath);
@@ -80,7 +85,8 @@ private:
     bool _init(
         py::array_t<float, py::array::c_style | py::array::forcecast> &X,
         uint64_t *point_ids,
-        int num_point_ids);
+        int num_point_ids,
+        nptsne::sparse_scalar_matrix_type *top_scale_matrix=nullptr);
     
     void set_default_hsne_params();
 
@@ -90,7 +96,7 @@ private:
 class HSneScale {
     friend HSne;
 private:    
-    HSneScale(HSne::hsne_t::scale_type scale) : 
+    HSneScale(nptsne::hsne_t::scale_type scale) : 
         _scale(scale)
     {
     }
@@ -100,11 +106,11 @@ public:
     // The length of the transition matrix is the number of points or landmarks
     int num_points() { return _scale._transition_matrix.size();} 
     
-    HSne::hsne_t::scalar_vector_type getLandmarkWeight() {
+    nptsne::hsne_t::scalar_vector_type getLandmarkWeight() {
         // TODO find a more efficient approach than copying
         return _scale._landmark_weight; 
     }
     
-    HSne::hsne_t::scale_type _scale;       
+    nptsne::hsne_t::scale_type _scale;       
 };
 

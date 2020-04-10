@@ -40,6 +40,29 @@ bool HSne::create_hsne(
     return _init(X, static_cast<uint64_t *>(point_id_info.ptr), num_point_ids);
 }
 
+bool HSne::create_hsne(
+    py::array_t<float, py::array::c_style | py::array::forcecast> X,
+    const std::string &filePath)
+{
+    py::buffer_info X_info = X.request();
+    _num_scales = 1; // dummy scale will be overwritten by loadHSNE
+    std::vector<uint64_t> point_ids(X_info.shape[0]);
+    std::iota(point_ids.begin(), point_ids.end(), 0); 
+    nptsne::sparse_scalar_matrix_type dummy_transition_matrix; // initialize without calculation    
+    if (!_init(X, point_ids.data(), X_info.shape[0], &dummy_transition_matrix)) {
+        return false;
+    } 
+    try {
+        std::ifstream in_stream(filePath, std::ios::binary);
+        hdi::dr::IO::loadHSNE(*_hsne, in_stream, _log);
+    }catch (const std::exception& e) {
+		std::cout << "Fatal error: " << e.what() << std::endl;
+		return false;
+	} 
+    return false;
+}
+    
+
 void HSne::save_to_file(const std::string &filePath)
 {
     if (_hsne == nullptr) {
@@ -58,7 +81,8 @@ HSneScale HSne::get_scale(unsigned int scale_number)
 bool HSne::_init(
     py::array_t<float, py::array::c_style | py::array::forcecast> &X,
     uint64_t *point_ids,
-    int num_point_ids) 
+    int num_point_ids,
+    nptsne::sparse_scalar_matrix_type *top_scale_matrix) 
 {
     _log = new hdi::utils::CoutLog();
     if (nullptr == point_ids) {
@@ -76,22 +100,28 @@ bool HSne::_init(
         
         if (_hsne) { delete _hsne; _hsne = NULL; }
 
-        _hsne = new hdi::dr::HierarchicalSNE<float, probabilityMatrix_t>();
+        _hsne = new nptsne::hsne_t();
         _hsne->setLogger(_log);
         _hsne->setDimensionality(_num_dimensions);
 
-        _hsne->initialize(static_cast<float *>(X_info.ptr), _num_data_points, _hsneParams);
-        _hsne->statistics().log(_log);
+        if (top_scale_matrix == nullptr) {
+            _hsne->initialize(static_cast<float *>(X_info.ptr), _num_data_points, _hsneParams);
+            _hsne->statistics().log(_log);
 
-        _landmarkWeights.resize(_num_scales);
+            _landmarkWeights.resize(_num_scales);
 
-        for (int s = 0; s < _num_scales; ++s){
-            _landmarkWeights[s] = NULL;
+            for (int s = 0; s < _num_scales; ++s){
+                _landmarkWeights[s] = NULL;
+            }
+
+            for (int s = 0; s < _num_scales-1; ++s){
+                _hsne->addScale();
+            }            
+        } 
+        else {
+            _hsne->initialize(*top_scale_matrix, _hsneParams);
         }
 
-        for (int s = 0; s < _num_scales-1; ++s){
-            _hsne->addScale();
-        }
 	} 
 	catch (const std::exception& e) {
 		std::cout << "Fatal error: " << e.what() << std::endl;
