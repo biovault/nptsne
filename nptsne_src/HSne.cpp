@@ -45,7 +45,7 @@ bool HSne::create_hsne(
     const std::string &filePath)
 {
     py::buffer_info X_info = X.request();
-    _num_scales = 1; // dummy scale will be overwritten by loadHSNE
+    _num_scales = 1; // Overwrite this when hsne is loaded
     std::vector<uint64_t> point_ids(X_info.shape[0]);
     std::iota(point_ids.begin(), point_ids.end(), 0); 
     nptsne::sparse_scalar_matrix_type dummy_transition_matrix; // initialize without calculation    
@@ -59,6 +59,8 @@ bool HSne::create_hsne(
 		std::cout << "Fatal error: " << e.what() << std::endl;
 		return false;
 	} 
+    // Get the correct number of scales fromthe loads hsne
+    _num_scales = _hsne->hierarchy().size();
     return false;
 }
     

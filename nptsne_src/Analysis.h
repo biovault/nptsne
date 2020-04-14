@@ -21,6 +21,8 @@ struct Analysis
 
     static void get_parent_landmark_selection(const Analysis& newAnalysis, std::vector<uint32_t>& parent_landmark_selection);
     
+    static void reset_id() {id_counter = 0;}
+    
     Analysis(bool verbose = false) : textureEmbedder(verbose), remove_exaggeration_iter(170) {
         this->id = Analysis::get_new_id();
     }

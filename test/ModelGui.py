@@ -1,4 +1,4 @@
-from tkinter import (ttk, Tk, filedialog)
+from tkinter import (ttk, Tk, filedialog, messagebox)
 import copy
 import queue
 import os
@@ -67,7 +67,12 @@ class ModelGui():
         self.root.after(100, self.update)
         self.root.mainloop()
 
-   
+    def ask_load_hsne(self, file_path):
+        return messagebox.askyesno(
+            title='Pre-existing hSNE file', 
+            message=f'Do you wish to load the pre-calculate hSNE file: {file_path} ?',
+            parent = self.root) 
+            
     def select(self, event):
         item = self.tree.item(self.tree.focus())
         if not item: return

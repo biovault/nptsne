@@ -9,13 +9,12 @@ import matplotlib.cm as cm
 import matplotlib.patches as patches
 import io
 import time
-import threading
 
 class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
        It assumes the analysis is simple image data (this could be abstracted)"""
     
-    def __init__(self, data, analysis, make_new_analysis, remove_analysis, analysis_stopped):
+    def __init__(self, data, analysis, make_new_analysis, remove_analysis, analysis_stopped, top_level=False):
         """Create a new analysis gui
 
             
@@ -27,6 +26,7 @@ class AnalysisGui:
         self.make_new_analysis = make_new_analysis
         self.remove_analysis = remove_analysis
         self.analysis_stopped = analysis_stopped
+        self.top_level = top_level
         
         # Plot and image definition
         self.fig = plt.figure(num=str(analysis))
@@ -39,6 +39,7 @@ class AnalysisGui:
         self.ix = self.fig.add_subplot(gs[0,3])
         self.ix.set_xticks([])
         self.ix.set_yticks([])
+        self.fig.tight_layout()
         self.scatter = None
         self.rect = None
         self.extent = 2.8
@@ -71,7 +72,8 @@ class AnalysisGui:
 
         # Fire up the plot - a continuous non blocking animation is run to refresh the GUI
         self.ani = animation.FuncAnimation(self.fig, self.iterate_tSNE, init_func=self.start_plot, frames=range(self.num_frames), interval=100, repeat=True, blit=True)
-        plt.show(block=False)
+
+        plt.show(block=False)    
 
     def win_raise(self):
         plt.figure(str(self.analysis))
@@ -148,10 +150,19 @@ class AnalysisGui:
             plt.figure(str(self.analysis))
             def delayed_notification(analysis_gui):
                 time.sleep(0.5)
+                # Force a redraw by resizing the figure
+                fig_size = plt.gcf().get_size_inches()
+                plt.gcf().set_size_inches(1.0 * fig_size)
                 analysis_gui.analysis_stopped(analysis_gui)
             #t = threading.Thread(target=delayed_notification, args=(self,)) 
             #t.start()
             delayed_notification(self)
+        # Quirk - when only the top level plot is visible 
+        # the screent is not correctly updated
+        if self.top_level == 0:
+            if i % 10 == 0:
+                fig_size = plt.gcf().get_size_inches()
+                plt.gcf().set_size_inches(1.0 * fig_size)            
         return [self.scatter, self.rect, self.digit_im, ]
 
     def on_over(self, event): 
@@ -219,10 +230,13 @@ class AnalysisGui:
             
     def get_figure_as_buffer(self):     
         """Return the figure as a png image in a buffer"""
+        # Force a redraw by resizing the figure
+        fig_size = plt.gcf().get_size_inches()
+        plt.gcf().set_size_inches(1.0 * fig_size)
         buf = io.BytesIO()
         extent = self.ax.get_tightbbox(self.fig.canvas.get_renderer()).transformed(self.fig.dpi_scale_trans.inverted())
+        
         self.fig.savefig(buf, bbox_inches=extent)
-        buf.seek(0)
         return buf
         
     @property

@@ -108,9 +108,7 @@ def tree_load(filename):
     hsne_file_path = None
     test_file_path = data_file_path.with_suffix('.hsne')
     if test_file_path.exists():
-        if messagebox.askyesno(
-            title='Pre-existing hSNE file', 
-            message=f'Do you wish toload the pre-calculate hSNE file: {test_file_path} ?') :
+        if  model_gui.ask_load_hsne(test_file_path):
             hsne_file_path = test_file_path
 
     data = np.load(data_file_path)
@@ -145,7 +143,9 @@ def start_hsne(X, data_file, hsne_file):
     
     # The AnalysisGui is non-blocking  
     # start with an analysis GUI containing all top scale landmarks 
-    top_analysis_gui = AnalysisGui(data, top_analysis, add_analysis, remove_analysis, analysis_stopped)
+    is_top_level = True
+    top_analysis_gui = AnalysisGui(data, top_analysis, add_analysis, remove_analysis, analysis_stopped, is_top_level)
+    print(f"Top analysis has {top_analysis.number_of_points} points")
     analysis_guis[top_analysis.id] = top_analysis_gui
     queue_new_analysis(top_analysis)
     # Queue is used to pass changes in the analyses to the ModelGui
