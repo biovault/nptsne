@@ -83,8 +83,6 @@ class NptsneConan(ConanFile):
         return cmake
 
     def build(self):
-        # print("This conanfile should be invoked from python setup via cmake")
-        # print("e.g. >python setup.py bdist_wheel")
         # 1.) build the python extension
         cmake = self._configure_cmake()
         cmake.build()

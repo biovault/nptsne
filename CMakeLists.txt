@@ -1,10 +1,7 @@
 cmake_minimum_required(VERSION 3.4.0)
 file (STRINGS "version.txt" VERSION)
 project(_nptsne LANGUAGES CXX)
-# Invoke this using the command: 
-#	python setup.py bdist_wheel
-# within an environment containing the targeted python interpreter version
-#
+
 # A PEP 440 version is set in version.txt - this is not compatible with the CMAKE config
 
 file(REMOVE_RECURSE ${CMAKE_CURRENT_SOURCE_DIR}/dist)

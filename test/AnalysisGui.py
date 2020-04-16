@@ -1,6 +1,7 @@
 import nptsne
 import numpy as np 
 from nptsne import hsne_analysis
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle 
 from matplotlib import animation
@@ -9,6 +10,9 @@ import matplotlib.cm as cm
 import matplotlib.patches as patches
 import io
 import time
+import threading
+
+matplotlib.use("Qt5Agg")
 
 class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
@@ -73,13 +77,15 @@ class AnalysisGui:
         # Fire up the plot - a continuous non blocking animation is run to refresh the GUI
         self.ani = animation.FuncAnimation(self.fig, self.iterate_tSNE, init_func=self.start_plot, frames=range(self.num_frames), interval=100, repeat=True, blit=True)
 
-        plt.show(block=False)    
+        plt.show(block=False)  # Need no block for cooperation with tkinter 
+   
 
     def win_raise(self):
-        plt.figure(str(self.analysis))
-        cfm = plt.get_current_fig_manager()
+        self.fig.show()
+        #plt.figure(str(self.analysis))
+        #cfm = plt.get_current_fig_manager()
         #cfm.window.activateWindow()
-        cfm.window.raise_()
+        #cfm.window.raise_()
         
     def start_plot(self):
         # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))
@@ -92,6 +98,7 @@ class AnalysisGui:
         self.scatter = self.ax.scatter(x,y,s=self.analysis.landmark_weights * 8, c='b', alpha=0.4, picker=10)
         #self.ax.relim()
         #self.ax.autoscale_view()
+        self.update_scatter_plot_limits()
         rt = patches.Rectangle((-self.extent,-self.extent),0.1,0.1,linewidth=0.5,edgecolor='r',facecolor='none', alpha=0)
         self.rect = self.ax.add_patch(rt)
         return self.scatter, self.rect, 
@@ -111,9 +118,26 @@ class AnalysisGui:
         del self.analysis
     
     def stop_loop(self, event):
-        self.fig.canvas.stop_event_loop()    
-    
+        self.fig.canvas.stop_event_loop()
+        
+    def update_scatter_plot_limits(self):    
+        embedding = self.analysis.embedding
+        min = np.amin(embedding, axis=0)
+        max = np.amax(embedding, axis=0)
+       
+        #if (xlim[1] - xlim[0]) < (max[0] - min[0]) or (ylim[1] - ylim[0]) < (max[1] - min[1]) : 
+        extent_x = (max[0]-min[0]) if (max[0]-min[0]) > 0 else 0.1
+        extent_y = (max[1]-min[1]) if (max[1]-min[1]) > 0 else 0.1
+        self.ax.set(xlim=(min[0]-0.1 * extent_x, max[0]+0.1 * extent_x), ylim=(min[1]-0.1 * extent_y, max[1]+0.1 * extent_y))
+        
+    def force_refresh(self):
+        fig_size = self.fig.get_size_inches()
+        self.fig.set_size_inches(fig_size)
+        # or plt.pause(0.00001) causes everything to be redrawn
+        
     def iterate_tSNE(self, i):
+        self.fig.canvas.flush_events()
+
         send_stop_event = False
         if not self._stop_iter: 
             for j in range(self.iters_per_frame):
@@ -125,44 +149,26 @@ class AnalysisGui:
                 self._stop_iter = True
                 send_stop_event = True
         
-        # can auto scale the axes
-        embedding = self.analysis.embedding
-        min = np.amin(embedding, axis=0)
-        max = np.amax(embedding, axis=0)
 
-        #self.ax.autoscale_view()
-        xlim = self.ax.get_xlim()
-        ylim = self.ax.get_ylim()
-        
-        #    self.ax.set(xlim=(min[0] - 1, max[0] + 1), ylim=(min[1] - 1, max[1] + 1))
-
-        self.scatter.set_offsets(embedding)
-        if (xlim[1] - xlim[0]) > (max[0] - min[0]) or (ylim[1] - ylim[0]) > (max[1] - min[1]) : 
-            self.ax.set(xlim=(min[0] - 2, max[0] + 2), ylim=(min[1] - 2, max[1] + 2))
-            self.ax.relim()
-            self.ax.autoscale_view()
+            # Update point positions    
+            self.scatter.set_offsets(self.analysis.embedding)
+            self.update_scatter_plot_limits()
+            self.force_refresh()
+        else:
+            if i%10 == 0:
+                self.force_refresh();
+            
         digit = np.reshape(self.composite_digit, (28,28))
         self.digit_im.set_array(digit)
         # print("Digit data", digit)
         #ix.imshow(digit, interpolation='bilinear', cmap='gray', vmin=0, vmax=255)
         #plt.draw()
         if send_stop_event:
-            plt.figure(str(self.analysis))
-            def delayed_notification(analysis_gui):
-                time.sleep(0.5)
-                # Force a redraw by resizing the figure
-                fig_size = plt.gcf().get_size_inches()
-                plt.gcf().set_size_inches(1.0 * fig_size)
-                analysis_gui.analysis_stopped(analysis_gui)
-            #t = threading.Thread(target=delayed_notification, args=(self,)) 
-            #t.start()
-            delayed_notification(self)
-        # Quirk - when only the top level plot is visible 
-        # the screent is not correctly updated
-        if self.top_level == 0:
-            if i % 10 == 0:
-                fig_size = plt.gcf().get_size_inches()
-                plt.gcf().set_size_inches(1.0 * fig_size)            
+            #plt.figure(str(self.analysis))
+            self.force_refresh()
+            time.sleep(0.1)
+            self.analysis_stopped(self)
+
         return [self.scatter, self.rect, self.digit_im, ]
 
     def on_over(self, event): 
@@ -230,13 +236,12 @@ class AnalysisGui:
             
     def get_figure_as_buffer(self):     
         """Return the figure as a png image in a buffer"""
-        # Force a redraw by resizing the figure
-        fig_size = plt.gcf().get_size_inches()
-        plt.gcf().set_size_inches(1.0 * fig_size)
+        self.force_refresh()
         buf = io.BytesIO()
-        extent = self.ax.get_tightbbox(self.fig.canvas.get_renderer()).transformed(self.fig.dpi_scale_trans.inverted())
+        extent = self.scatter.get_tightbbox(self.fig.canvas.get_renderer()).transformed(self.fig.dpi_scale_trans.inverted())
         
         self.fig.savefig(buf, bbox_inches=extent)
+        self.force_refresh()
         return buf
         
     @property
