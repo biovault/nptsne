@@ -18,7 +18,7 @@ class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
        It assumes the analysis is simple image data (this could be abstracted)"""
     
-    def __init__(self, data, analysis, make_new_analysis, remove_analysis, analysis_stopped, top_level=False):
+    def __init__(self, data, analysis, make_new_analysis, remove_analysis, analysis_stopped, top_level=False, labels=None, color_norm=None):
         """Create a new analysis gui
 
             
@@ -31,6 +31,10 @@ class AnalysisGui:
         self.remove_analysis = remove_analysis
         self.analysis_stopped = analysis_stopped
         self.top_level = top_level
+        self.labels = None
+        if not labels is None:
+            self.labels = labels[self.analysis.landmark_orig_indexes] 
+        self.color_norm = color_norm
         
         # Plot and image definition
         self.fig = plt.figure(num=str(analysis))
@@ -95,7 +99,10 @@ class AnalysisGui:
         # print("Embedding shape: ", embedding.shape)
         x = embedding[:,0]
         y = embedding[:,1]
-        self.scatter = self.ax.scatter(x,y,s=self.analysis.landmark_weights * 8, c='b', alpha=0.4, picker=10)
+        if self.labels is None:
+            self.scatter = self.ax.scatter(x,y,s=self.analysis.landmark_weights * 8, c='b', alpha=0.4, picker=10)
+        else:     
+            self.scatter = self.ax.scatter(x,y,s=self.analysis.landmark_weights * 8, c=self.labels, cmap="rainbow_r", norm=self.color_norm, alpha=0.4, picker=10)
         #self.ax.relim()
         #self.ax.autoscale_view()
         self.update_scatter_plot_limits()
@@ -204,8 +211,13 @@ class AnalysisGui:
     def on_keypress(self, event):
         if event.key in ['q', 'Q', 'escape']:
             self.quit()
+    
+    def in_zoom_or_pan(self):
+        return bool(self.fig.canvas.toolbar.mode)
 
     def on_start_select(self, event):
+        if self.analysis.scale_id == 0 or self.in_zoom_or_pan():
+            return
         self.in_selection = True
         if not event.inaxes == self.scatter.axes: return
         self.rect_xy = (event.xdata, event.ydata)
@@ -218,6 +230,8 @@ class AnalysisGui:
 
         
     def on_end_select(self, event):
+        if self.analysis.scale_id == 0 or self.in_zoom_or_pan():
+            return
         self.in_selection = False
         self.rect.set_alpha(0.0)
         self.get_selected_indexes()

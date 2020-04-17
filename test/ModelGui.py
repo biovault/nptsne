@@ -60,11 +60,27 @@ class ModelGui():
         self.delbtn.grid(column=0, row=4, columnspan=2, sticky='s', in_=self.treeframe)
         self.delbtn.bind('<Button-1>', self.delete)
         
-        self.loadbtn = ttk.Button(self.treeframe, text="Load")
-        self.loadbtn.grid(column=6, row=0, columnspan=1, sticky='new', in_=self.treeframe)
+        self.control_frame = ttk.Frame(self.treeframe)
+        self.control_frame.grid(column=6, row=0, rowspan=4, sticky='nsew', in_=self.treeframe)
+        
+        self.loadbtn = ttk.Button(self.control_frame, text="Load")
+        self.loadbtn.grid(column=0, row=0, columnspan=1, sticky='new', in_=self.control_frame)
         self.loadbtn.bind('<Button-1>', self.load)
+        
+        self.loadlabelbtn = ttk.Button(self.control_frame, text="Load labels")
+        self.loadlabelbtn.grid(column=0, row=1, columnspan=1, sticky='new', in_=self.control_frame)
+        self.loadlabelbtn.bind('<Button-1>', self.load_labels)
+        
+        self.control_frame.rowconfigure(2, weight=1)
 
+        self.gobtn = ttk.Button(self.control_frame, text="Start")
+        self.gobtn.grid(column=0, row=3, columnspan=1, rowspan=1, sticky='sew', in_=self.control_frame)
+        self.gobtn.bind('<Button-1>', self.go)         
+
+        
         self.root.after(100, self.update)
+        self.name = None
+        self.label_name = None
         self.root.mainloop()
 
     def ask_load_hsne(self, file_path):
@@ -88,10 +104,16 @@ class ModelGui():
         
     def load(self, event):
         workdir = os.path.dirname(os.path.abspath(__file__))
-        name = filedialog.askopenfilename(initialdir=workdir, filetypes=[("Numpy files", "*.npy")], title='Open a numpy file where each row is a data point and columns are dimensions' )
-        if name:
-            self.load_callback(name)
-            
+        self.name = filedialog.askopenfilename(initialdir=workdir, filetypes=[("Numpy files", "*.npy")], title='Open a numpy file where each row is a data point and columns are dimensions' )    
+    
+    def load_labels(self, event):
+        workdir = os.path.dirname(os.path.abspath(__file__))
+        self.label_name = filedialog.askopenfilename(initialdir=workdir, filetypes=[("Numpy files", "*.npy")], title='Open a numpy file where each row is an integer label' )
+        
+    def go(self, event):
+        if self.name:
+            self.load_callback(self.name, self.label_name)
+        
         
     def update(self):
         self.update_tree()

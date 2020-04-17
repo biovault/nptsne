@@ -12,6 +12,7 @@ from pathlib import Path
 import queue
 import sys
 from tkinter import messagebox
+from matplotlib import colors
 
 # Handle running this via Windows Remote Desktop (i.e. no GPU)
 def get_default_embedding_type():
@@ -37,6 +38,8 @@ print("Embedder: ", default_embedder_type)
 analysis_model = None
 data = None
 analysis_guis = {} 
+labels = None
+color_map = None  
     
 # Utility function for queuing an ADDED analysis
 def queue_new_analysis(analysis):
@@ -78,7 +81,7 @@ def add_analysis(analysis, selected_indexes):
     print("Updated analysis hierarchy: ")
     print(analysis_model.analysis_container)
     print("Starting analysis GUI")
-    analysis_guis[new_analysis.id] = AnalysisGui(data, new_analysis, add_analysis, remove_analysis, analysis_stopped)
+    analysis_guis[new_analysis.id] = AnalysisGui(data, new_analysis, add_analysis, remove_analysis, analysis_stopped, False, labels, color_norm)
     queue_new_analysis(new_analysis)
 
 # 3.) AnalysisEvent.FINISHED     
@@ -103,22 +106,37 @@ def tree_del(analysis_ids):
             remove_analysis(id)
 
 # 3.) Load an numpy file - offer the user the chance to preload an hsnefile if one is avaliable    
-def tree_load(filename):
+def tree_load(filename, label_filename):
     data_file_path = Path(filename)
     hsne_file_path = None
-    test_file_path = data_file_path.with_suffix('.hsne')
-    if test_file_path.exists():
-        if  model_gui.ask_load_hsne(test_file_path):
-            hsne_file_path = test_file_path
+    #test_file_path = data_file_path.with_suffix('.hsne')
+        
+    #if test_file_path.exists():
+    #    if  model_gui.ask_load_hsne(test_file_path):
+    #        hsne_file_path = test_file_path
 
     data = np.load(data_file_path)
-    start_hsne(data, data_file_path, hsne_file_path)
+    start_hsne(data, data_file_path, hsne_file_path, label_filename)
     
 model_gui = None
- 
-def start_hsne(X, data_file, hsne_file):
+
+def get_labels_and_color_norm(label_file):
+    if label_file is None:
+        return (None,None)
+        
+    labels = np.load(label_file)
+    bins = np.bincount(labels)
+    num_labels = bins.shape[0]
+    print(f'Making colormap for numlabels: {num_labels} min: {labels.min()} max: {labels.max()}')
+    norm = colors.Normalize(vmin=labels.min(), vmax=labels.max())
+    return (labels, norm)
+  
+    
+def start_hsne(X, data_file, hsne_file, label_file):
     global analysis_model
     global data
+    global labels
+    global color_norm
     # raw = np.fromfile('MNIST_70000.bin', np.uint8)
     # X = np.reshape(raw, (70000, 784))
     hsne = nptsne.HSne(True)
@@ -139,12 +157,13 @@ def start_hsne(X, data_file, hsne_file):
     top_analysis = analysis_model.top_analysis
 
     all_analyses_per_scale = {top_analysis.scale_id: {top_analysis.id: top_analysis}}
-
+    
+    labels, color_norm = get_labels_and_color_norm(label_file)
     
     # The AnalysisGui is non-blocking  
     # start with an analysis GUI containing all top scale landmarks 
     is_top_level = True
-    top_analysis_gui = AnalysisGui(data, top_analysis, add_analysis, remove_analysis, analysis_stopped, is_top_level)
+    top_analysis_gui = AnalysisGui(data, top_analysis, add_analysis, remove_analysis, analysis_stopped, is_top_level, labels, color_norm)
     print(f"Top analysis has {top_analysis.number_of_points} points")
     analysis_guis[top_analysis.id] = top_analysis_gui
     queue_new_analysis(top_analysis)
