@@ -84,6 +84,7 @@ class ModelGui():
         self.root.mainloop()
 
     def ask_load_hsne(self, file_path):
+        print(f"Found file: {file_path}")
         return messagebox.askyesno(
             title='Pre-existing hSNE file', 
             message=f'Do you wish to load the pre-calculated hSNE file: {file_path} ?',
@@ -183,10 +184,4 @@ class ModelGui():
     def clear(self):
         self.tree.delete(*self.tree.get_children())
 
-
-# Example Analysis
-# Scale: 3
-        # Analysis[id=0, num points=454, scale=3]
-
-# Scale: 2
-        # Analysis[id=1, num points=230, scale=2]    
+   

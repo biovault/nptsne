@@ -109,11 +109,11 @@ def tree_del(analysis_ids):
 def tree_load(filename, label_filename):
     data_file_path = Path(filename)
     hsne_file_path = None
-    #test_file_path = data_file_path.with_suffix('.hsne')
+    test_file_path = data_file_path.with_suffix('.hsne')
         
-    #if test_file_path.exists():
-    #    if  model_gui.ask_load_hsne(test_file_path):
-    #        hsne_file_path = test_file_path
+    if test_file_path.exists():
+        if  model_gui.ask_load_hsne(test_file_path):
+            hsne_file_path = test_file_path
 
     data = np.load(data_file_path)
     start_hsne(data, data_file_path, hsne_file_path, label_filename)
@@ -144,12 +144,13 @@ def start_hsne(X, data_file, hsne_file, label_file):
     if hsne_file is None:
         print("hSNE from scratch")
         hsne.create_hsne(X, number_of_scales)
+        hsne_file = data_file.with_suffix('.hsne')
+        hsne.save(str(hsne_file))
     else:
         print("existing hSNE")
         hsne.create_hsne(X, str(hsne_file))
-        hsne_file = data_file.with_suffix('.hsne')
-        hsne.save(str(hsne_file))
-    
+        
+   
     print("start analysis model")
     data = X
     analysis_model = hsne_analysis.AnalysisModel(hsne, default_embedder_type)
