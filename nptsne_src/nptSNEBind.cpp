@@ -8,6 +8,7 @@
 #include "SparseTsne.h"
 #include "Types.h"
 #include <string>
+#include <functional>
 #include <tuple>
 #include <limits>
 namespace py = pybind11;
@@ -334,6 +335,28 @@ PYBIND11_MODULE(_nptsne, m) {
     
     hsne_scale_class.def("get_landmark_weight", &HSneScale::getLandmarkWeight);
     
+    hsne_scale_class.def_property_readonly("transition_matrix",
+        [](HSneScale& self) {
+            nptsne::sparse_scalar_matrix_type& matrix = self.transition_matrix();
+            std::vector<std::reference_wrapper<nptsne::map_storage_type >> sparse;
+            for (uint32_t i = 0; i <  matrix.size(); ++i) {
+                sparse.push_back(matrix[i].memory());
+            }
+            return sparse;
+        }
+    );
+    
+    hsne_scale_class.def_property_readonly("landmark_orig_indexes",
+        [](HSneScale& self) {
+            auto rows = self._scale._landmark_to_original_data_idx.size();
+            return py::array_t<unsigned int>(
+                {rows}, 
+                {sizeof(unsigned int)},
+                self._scale._landmark_to_original_data_idx.data(),
+                py::cast(self)
+            );            
+        }
+    );   
     
     // ******************************************************************
     // pybind wrappers for hSNE analysis support submodule: hsne_analysis

@@ -77,7 +77,7 @@ struct Analysis
     EmbedderType embedderType;  
     SparseTsne embedder;
     TextureTsneExtended textureEmbedder;
-    HSne::hsne_t *hsne;
+    nptsne::hsne_t *hsne;
     int remove_exaggeration_iter;
 
 private:

@@ -27,7 +27,7 @@ def get_default_embedding_type():
             if 1 == win32api.GetSystemMetrics(SM_REMOTESESSION):
                default_embedder_type = hsne_analysis.EmbedderType.CPU 
         except ImportError as exception:
-            print(exception, exception.mess)
+            print(exception)
             print("Assuming GPU")
     return default_embedder_type       
 
@@ -40,6 +40,7 @@ data = None
 analysis_guis = {} 
 labels = None
 color_map = None  
+model_gui = None
     
 # Utility function for queuing an ADDED analysis
 def queue_new_analysis(analysis):
@@ -81,7 +82,7 @@ def add_analysis(analysis, selected_indexes):
     print("Updated analysis hierarchy: ")
     print(analysis_model.analysis_container)
     print("Starting analysis GUI")
-    analysis_guis[new_analysis.id] = AnalysisGui(data, new_analysis, add_analysis, remove_analysis, analysis_stopped, False, labels, color_norm)
+    analysis_guis[new_analysis.id] = AnalysisGui(data, new_analysis, add_analysis, remove_analysis, analysis_stopped,  model_gui.iterations, False, labels, color_norm)
     queue_new_analysis(new_analysis)
 
 # 3.) AnalysisEvent.FINISHED     
@@ -117,8 +118,6 @@ def tree_load(filename, label_filename):
 
     data = np.load(data_file_path)
     start_hsne(data, data_file_path, hsne_file_path, label_filename)
-    
-model_gui = None
 
 def get_labels_and_color_norm(label_file):
     if label_file is None:
@@ -140,7 +139,7 @@ def start_hsne(X, data_file, hsne_file, label_file):
     # raw = np.fromfile('MNIST_70000.bin', np.uint8)
     # X = np.reshape(raw, (70000, 784))
     hsne = nptsne.HSne(True)
-    number_of_scales = 4
+    number_of_scales = model_gui.scales
     if hsne_file is None:
         print("hSNE from scratch")
         hsne.create_hsne(X, number_of_scales)
@@ -164,7 +163,7 @@ def start_hsne(X, data_file, hsne_file, label_file):
     # The AnalysisGui is non-blocking  
     # start with an analysis GUI containing all top scale landmarks 
     is_top_level = True
-    top_analysis_gui = AnalysisGui(data, top_analysis, add_analysis, remove_analysis, analysis_stopped, is_top_level, labels, color_norm)
+    top_analysis_gui = AnalysisGui(data, top_analysis, add_analysis, remove_analysis, analysis_stopped, model_gui.iterations, is_top_level, labels, color_norm)
     print(f"Top analysis has {top_analysis.number_of_points} points")
     analysis_guis[top_analysis.id] = top_analysis_gui
     queue_new_analysis(top_analysis)

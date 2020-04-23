@@ -18,7 +18,7 @@ class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
        It assumes the analysis is simple image data (this could be abstracted)"""
     
-    def __init__(self, data, analysis, make_new_analysis, remove_analysis, analysis_stopped, top_level=False, labels=None, color_norm=None):
+    def __init__(self, data, analysis, make_new_analysis, remove_analysis, analysis_stopped, iterations, top_level=False, labels=None, color_norm=None):
         """Create a new analysis gui
 
             
@@ -31,6 +31,7 @@ class AnalysisGui:
         self.remove_analysis = remove_analysis
         self.analysis_stopped = analysis_stopped
         self.top_level = top_level
+        self.iterations = iterations
         self.labels = None
         if not labels is None:
             self.labels = labels[self.analysis.landmark_orig_indexes] 
@@ -56,8 +57,8 @@ class AnalysisGui:
         # Animation support 
         # if matplot lib rendering is slow do a number of iterations per frame
         # Total iterations = num_frames X iters_per_frame
-        self.num_frames = 70
         self.iters_per_frame = 5
+        self.num_frames = int(self.iterations/self.iters_per_frame)
         self._stop_iter = False
         self._iter_count = 0
         dummydata = np.zeros((28,28), dtype=np.float32)

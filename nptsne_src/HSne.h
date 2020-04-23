@@ -16,19 +16,6 @@ struct Analysis;
 class HSne {
     friend Analysis;
 public:
-
-    typedef float scalar_type;
-    typedef std::uint64_t DataPointID;
-    typedef std::vector<hdi::data::MapMemEff<uint32_t, scalar_type> > probabilityMatrix_t;
-    typedef hdi::dr::HierarchicalSNE<float, probabilityMatrix_t> hsne_t;
-    
-    // The scale hierarchy data structures defined from the bottom up 
-    // Data points...
-    typedef std::vector<DataPointID> pointIdContainer_t;
-    // ... are represented by landmarks ...
-    typedef std::vector<pointIdContainer_t> landmarkContainer_t;
-    // ... are contained at a different scales
-    typedef std::vector<landmarkContainer_t> scalesContainer_t;
     
 	// constructor
 	HSne(
@@ -68,17 +55,17 @@ private:
     bool _verbose;
     int _seed;
     // The Hierarchical SNE algorithm
-    hsne_t* _hsne;
+    nptsne::hsne_t* _hsne;
     
     // Hold the usersupplied or default point ids
     py::array_t<uint64_t, py::array::c_style | py::array::forcecast> *point_ids;
     
-    hsne_t::Parameters _hsneParams;
+    nptsne::hsne_t::Parameters _hsneParams;
     
     std::vector< std::vector<float>* > _landmarkWeights;
     
     // This container holds the landmarks created by HSNE
-    scalesContainer_t _derivedHierarchy;
+    nptsne::scalesContainer_t _derivedHierarchy;
     
     hdi::utils::CoutLog* _log;
   
@@ -105,6 +92,8 @@ public:
     
     // The length of the transition matrix is the number of points or landmarks
     int num_points() { return _scale._transition_matrix.size();} 
+    
+    nptsne::sparse_scalar_matrix_type& transition_matrix() { return _scale._transition_matrix; }
     
     nptsne::hsne_t::scalar_vector_type getLandmarkWeight() {
         // TODO find a more efficient approach than copying

@@ -10,6 +10,10 @@ namespace nptsne{
     typedef float scalar_type;
     // a memory-efficient key => value map
     typedef hdi::data::MapMemEff<uint32_t,scalar_type> map_type;
+    
+    // The memory type of the MapMemEff 
+    typedef map_type::storage_type map_storage_type;
+    
     // use the memory-efficient map to hold sparse data 
     typedef std::vector<map_type> sparse_scalar_matrix_type; // (probabilityMatrix_t)
 

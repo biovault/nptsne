@@ -49,6 +49,7 @@ public:
 	void close();
 	
     nptsne::embedding_type& getEmbedding() {return _embedding;}
+
 private:
 
 	//OffscreenBuffer* _offscreen;

@@ -16,7 +16,6 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     result->parent = parent;
     result->parent_selection = parent_selection;
     result->hsne = hsne._hsne;
-    // Test CPU or GPU
     result->embedderType = embedderType;
     if (nullptr == parent) {
         // making the toplevel analysis with
