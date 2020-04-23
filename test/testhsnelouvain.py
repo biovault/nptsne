@@ -7,7 +7,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib
 import networkx as nx
-from matplotlib.lines import Line2D
+from matplotlib.patches import Patch
 
 matplotlib.use("Qt5Agg")
 
@@ -46,7 +46,7 @@ graph = make_nxgraph_from_sparse_data(row, col, data)
 # sparse = coo_matrix((data, (row, col)), shape = (len(tmatrix), len(tmatrix)))
 
 markers = [r'$\alpha$', r'$\beta$', r'$\gamma$', r'$\delta$', r'$\epsilon$', \
-            r'$\zeta$', r'$\eta$', r'$\theta$', r'$\iota$' r'$\kappa$', \
+            r'$\zeta$', r'$\eta$', r'$\theta$', r'$\iota$', r'$\kappa$', \
             r'$\lambda$', r'$\mu$', r'$\nu$', r'$\xi$', \
             r'$\omicron$', r'$\pi$', r'\$\rho$', r'$\sigma$', \
             r'$\tau$', r'$\upsilon$', r'$\phi$', r'$chi$', \
@@ -88,7 +88,7 @@ legend_lines = []
 bins = np.bincount(lab)
 unique_lab = np.unique(lab).tolist()
 for l in unique_lab:
-    legend_lines.append(Line2D([0], [0], color=cmap(l/9.0)))
+    legend_lines.append(Patch(facecolor=cmap(l/9.0)))
 
 ax.legend(legend_lines, unique_lab, loc='lower right') 
 ax.set_title(f'{len(legend_coms)} Louvain communities: ' + ','.join(legend_coms))
