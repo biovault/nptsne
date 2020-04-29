@@ -1,45 +1,56 @@
-cmake_minimum_required(VERSION 3.4.0)
+cmake_minimum_required(VERSION 3.15.0)
+
 file (STRINGS "version.txt" VERSION)
 project(_nptsne LANGUAGES CXX)
 
-# A PEP 440 version is set in version.txt - this is not compatible with the CMAKE config
+# Disallow in-source builds. 
+# Build in sub dir e.g. source/build* is still allowed!
+if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
+   message(FATAL_ERROR "In-source builds are not allowed!\n"
+    "Make sure to remove CMakeCache.txt and CMakeFiles/ "
+    "from the source directory!")
+endif()
 
-file(REMOVE_RECURSE ${CMAKE_CURRENT_SOURCE_DIR}/dist)
+option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
+  "${PROJECT_SOURCE_DIR}/cmake")
+
+# A PEP 440 version is set in version.txt - this is not compatible with the CMAKE config
+message(STATUS "Building in ${CMAKE_BINARY_DIR}")
+
+file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/dist)
 file(REMOVE_RECURSE _nptsne.egg-info)
 file(REMOVE_RECURSE _skbuild)
 
-file(GENERATE OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/_package/nptsne/_version.txt CONTENT "${VERSION}")
+# The python files for the package
+file(COPY "${PROJECT_SOURCE_DIR}/dist_root" 
+    DESTINATION "${CMAKE_BINARY_DIR}" 
+    FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt|.*\.in")
+    
+file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/dist_root/nptsne/_version.txt CONTENT "${VERSION}")
+
+include(ConanSetup)
 
 # Conan declared variables
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
-
-# Download automatically, you can also just copy the conan.cmake file
-if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
-   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
-   file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.14/conan.cmake"
-                 "${CMAKE_BINARY_DIR}/conan.cmake")
-endif()
-
-include(${CMAKE_BINARY_DIR}/conan.cmake)
-
-conan_cmake_run(CONANFILE conanfile.py
-				BASIC_SETUP 
-                BUILD missing)
 
 message(STATUS "Conan CONAN_PYBIND11_ROOT***: ${CONAN_PYBIND11_ROOT} ***")
 message(STATUS "Conan CONAN_INCLUDE_DIRS_HDILIB***: ${CONAN_INCLUDE_DIRS_HDILIB} ***")
 message(STATUS "Conan CONAN_HDILIB_ROOT***: ${CONAN_HDILIB_ROOT} ***")
 
-find_package(pybind11 REQUIRED)
+find_package (Python3 COMPONENTS Interpreter Development)
 
-#set(BUILD_PYTHON_VERSION "" CACHE STRING "Python version to use for compiling the example library")
+if (WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
+endif()
+
+set(BUILD_PYTHON_VERSION "${Python3_VERSION}")
+set(PYBIND11_PYTHON_VERSION "${Python3_VERSION}")
+set(PY_TAG "cp${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
 
 message(STATUS "Build Python version ${BUILD_PYTHON_VERSION}")
-#include(FindPythonLibsNew)
-#find_package(PythonLibsNew ${BUILD_PYTHON_VERSION} REQUIRED)
-#include(FindPythonInterp)
-#find_package(PythonInterp REQUIRED)
-find_package(pybind11)
+find_package(pybind11 REQUIRED)
 
 MESSAGE(STATUS "Python : ${PYTHON_LIBRARY}")
 
@@ -115,6 +126,7 @@ if(UNIX)
 	find_package(LZ4 REQUIRED)
 endif(UNIX)	
 
+#flann is an HDILib dependency
 if(NOT DEFINED HDI_BLD_ROOT) 
     set(HDI_BLD_ROOT "${CONAN_HDILIB_ROOT}")
     set(HDI_INCLUDE_ROOT "${CONAN_INCLUDE_DIRS_HDILIB}/HDILib")
@@ -166,9 +178,6 @@ if(UNIX)
         INSTALL_RPATH ${_rpath_value}
         BUILD_WITH_INSTALL_RPATH ON)
     set(CMAKE_INSTALL_RPATH ${_rpath_value})
-    #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,origin")
-    #set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,origin")
-    #set(CMAKE_SHARED_LIBRARY_RUNTIME_C_FLAG "-Wl,-z,origin,-rpath")
 endif()
     
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
@@ -299,7 +308,8 @@ else()
     message(STATUS "Using static GLFW ")
 endif()
 
-message( STATUS "Command line project: " ${PROJECT_NAME} )
+set(PYTHON_EXTENSION_NAME "$<TARGET_FILE:${PROJECT_NAME}>")
+message( STATUS "Build python extension: " ${PYTHON_EXTENSION_NAME})
 
 
 message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
@@ -307,18 +317,19 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 # Install phase - move the extension plus and libraries necessary to
 # an install destination where they can be bundled in a separate invocation
 # of python setup.py bdist_wheel
+# P.S. This is abusing the CMake install for moving files around prior to bundling
+# the python wheel. 
 
+# Move the binary extension - .pyd, .so, or .dylib (depending on OS)
+install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/")
 
-# The binary extension
-install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_INSTALL_PREFIX}/_package/nptsne/libs/")
-
-# The binary extension needs to load the glfw flann and lz4 from its own directory
+#  For MacOs or Linux the binary extension needs to load the glfw flann and lz4 from its own directory
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
 # which are used to get the path to the extension and to modify it.
 if(APPLE)
 	install(CODE "
 		execute_process(
-			COMMAND sh -c \"echo 'A=`ls ${CMAKE_INSTALL_PREFIX}/_package/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
+			COMMAND sh -c \"echo 'A=`ls ${CMAKE_INSTALL_PREFIX}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
 			COMMAND sh -c \"chmod +x ~/getname.sh\"
@@ -337,25 +348,22 @@ if(APPLE)
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})	            
 	")
 endif()
-
-# The associated python module and wrappers    
-install(DIRECTORY "_package/" DESTINATION "_package"
-         FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt|MANIFEST.in")    
+  
 
 # Platform specific libs
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # In linux bundle prebuilt libflann and liblz4
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME liblz4.so)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME libflann_cpp.so)
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME libglfw.so)
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME liblz4.so)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME libflann_cpp.so)
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME libglfw.so)
 endif()	
 
 if(APPLE)
 	message(STATUS "Will deploy lz4, flann_cpp and glfw as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME}")
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME ${LZ4_SHORTNAME})
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "_package/nptsne/libs" RENAME ${GLFW_SHORTNAME})
-    file(GLOB_RECURSE PACKAGE_FILES RELATIVE "_package/nptsne" "*.*")
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${LZ4_SHORTNAME})
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${GLFW_SHORTNAME})
+    file(GLOB_RECURSE PACKAGE_FILES RELATIVE "dist_root/nptsne" "*.*")
     message(STATUS "Files in package: ${PACKAGE_FILES}")
 endif()
 
@@ -367,3 +375,21 @@ if(APPLE)
 			execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
 	")
 endif()
+
+if(APPLE)
+  set(PLAT_NAME "macosx-10.6-intel")
+elseif(UNIX)
+  set(PLAT_NAME "linux_x86_64")
+elseif(WIN32)
+  set(PLAT_NAME "win_amd64") 
+endif()
+
+# -- .whl creation
+add_custom_target (bdist_wheel
+    # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
+    COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    # Then run the python setup.py to build the wheel
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG}
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
+    DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
+)

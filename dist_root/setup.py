@@ -29,7 +29,8 @@ setup(
         "Documentation": "https://biovault.github.io/nptsne",
         "Source Code": "https://github.com/biovault/nptsne"
     },
-    include_package_data=True,
+    # Include files specified by MANIFEST.in
+    include_package_data=True, 
 	packages=find_packages(),
 # 	TODO add test_require for the behave tests see https://stackoverflow.com/questions/21698004/python-behave-integration-in-setuptools-setup-py
 	classifiers=[

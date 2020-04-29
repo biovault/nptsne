@@ -7,35 +7,39 @@
 #include <hdi/data/embedding.h>
 
 namespace nptsne{
-    typedef float scalar_type;
+    using ScalarType = float;
+
     // a memory-efficient key => value map
-    typedef hdi::data::MapMemEff<uint32_t,scalar_type> map_type;
+    using MapType = hdi::data::MapMemEff<uint32_t,ScalarType>;
     
     // The memory type of the MapMemEff 
-    typedef map_type::storage_type map_storage_type;
+    using MapStorageType = MapType::storage_type;
     
     // use the memory-efficient map to hold sparse data 
-    typedef std::vector<map_type> sparse_scalar_matrix_type; // (probabilityMatrix_t)
+    using SparseScalarMatrixType = std::vector<MapType>;
 
     // a tSNE embedder that works with sparse data
-    typedef hdi::dr::SparseTSNEUserDefProbabilities<scalar_type,sparse_scalar_matrix_type> sparse_tsne_type;
+    using SparseTsneType = hdi::dr::SparseTSNEUserDefProbabilities<ScalarType,SparseScalarMatrixType>;
     
     // a tSNE embedder based on the OpenGL texture acceleration
-    typedef hdi::dr::GradientDescentTSNETexture texture_tsne_type;
+    using TextureTsneType = hdi::dr::GradientDescentTSNETexture;
 
     // The embedding holder 
-    typedef hdi::data::Embedding<scalar_type> embedding_type;   
+    using EmbeddingType = hdi::data::Embedding<ScalarType>;
 
     // The probability generator
-    typedef hdi::dr::HDJointProbabilityGenerator<scalar_type> prob_gen_type;
-    
-    typedef hdi::dr::HierarchicalSNE<float, sparse_scalar_matrix_type> hsne_t;
-    
-    typedef std::uint64_t DataPointID;
+    using ProbGenType = hdi::dr::HDJointProbabilityGenerator<ScalarType>;
+   
+    using HsneType = hdi::dr::HierarchicalSNE<float, SparseScalarMatrixType>;
+ 
+    using DataPointID = std::uint64_t;
+
     // Data points...
-    typedef std::vector<DataPointID> pointIdContainer_t;
+    using PointIdContainerType = std::vector<DataPointID>;
+
     // ... are represented by landmarks ...
-    typedef std::vector<pointIdContainer_t> landmarkContainer_t;
+    using LandmarkContainerType = std::vector<PointIdContainerType>;
+
     // ... are contained at a different scales
-    typedef std::vector<landmarkContainer_t> scalesContainer_t;    
+    using ScalesContainerType = std::vector<LandmarkContainerType>;  
 }
