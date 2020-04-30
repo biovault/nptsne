@@ -26,10 +26,10 @@ environment:
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
           BUILD_SHARED: True
-          Python_ROOT_DIR: C:\Python36-x64
+          PYTHON_ROOT_DIR: C:\Python36-x64
           PYTHON_VERSION: 3.6
           CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
-          PATH: C:\Python36-x64;C:\Python36-x64\Scripts/;%PATH%
+          PATH: C:\Python36-x64;C:\Python36-x64\Scripts;%PATH%
 
         - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
           CONAN_VISUAL_VERSIONS: 15
@@ -37,12 +37,14 @@ environment:
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
           BUILD_SHARED: True
-          Python_ROOT_DIR: C:\Python37-x64
+          PYTHON_ROOT_DIR: C:\Python37-x64
           PYTHON_VERSION: 3.7
           CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"    
-          ATH: C:\Python37-x64;C:\Python37-x64\Scripts/;%PATH%          
+          PATH: C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%          
 
 install:
+  - set PYTHON_PATH=%PYTHON_ROOT_DIR%
+  - python --version
   - pip.exe install six==1.12.0
   - pip.exe install conan==1.19.3 
   - pip.exe install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0 scikit-build
