@@ -36,7 +36,7 @@ matrix:
          - CONAN_BUILD_TYPES=Release 
          - CONAN_ARCHS=x86_64
          - CONAN_LINUX_PYTHON=3.6.7
-         - CMAKE_GENERATOR=Unix Makefiles
+         - CMAKE_GENERATOR="Unix Makefiles"
          - CONAN_OPTIONS=nptsne:python_version=3.6
      - <<: *linux
        python: "3.7"        
@@ -46,7 +46,7 @@ matrix:
          - CONAN_BUILD_TYPES=Release
          - CONAN_ARCHS=x86_64 
          - CONAN_LINUX_PYTHON=3.7.1    
-         - CMAKE_GENERATOR=Unix Makefiles
+         - CMAKE_GENERATOR="Unix Makefiles"
          - CONAN_OPTIONS=nptsne:python_version=3.7             
    
      - <<: *osx
@@ -59,7 +59,7 @@ matrix:
          - CONAN_ARCHS=x86_64
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.6
-         - CMAKE_GENERATOR=Xcode 
+         - CMAKE_GENERATOR="Xcode" 
          - CONAN_OPTIONS=nptsne:python_version=3.6               
           
      - <<: *osx
@@ -72,13 +72,14 @@ matrix:
          - CONAN_ARCHS=x86_64
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.7
-         - CMAKE_GENERATOR=Xcode
+         - CMAKE_GENERATOR="Xcode"
          - CONAN_OPTIONS=nptsne:python_version=3.7                
 
 install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  - pip install cmake
 
 before_script:
    - mkdir _build
