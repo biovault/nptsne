@@ -73,6 +73,6 @@ before_build:
   
 build_script:
   - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release
-  - cmake build . --target ALL_BUILD
-  - cmake build . --target bdist_wheel
+  - cmake --build .
+  - cmake --build . --target bdist_wheel
  
