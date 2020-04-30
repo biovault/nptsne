@@ -26,7 +26,7 @@ environment:
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
           BUILD_SHARED: True
-          PYTHON_ROOT_DIR: C:\Python36-x64
+          Python3_ROOT_DIR: C:\Python36-x64
           PYTHON_VERSION: 3.6
           CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
           PATH: C:\Python36-x64;C:\Python36-x64\Scripts;%PATH%
@@ -37,13 +37,13 @@ environment:
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
           BUILD_SHARED: True
-          PYTHON_ROOT_DIR: C:\Python37-x64
+          Python3_ROOT_DIR: C:\Python37-x64
           PYTHON_VERSION: 3.7
           CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"    
           PATH: C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%          
 
 install:
-  - set PYTHON_PATH=%PYTHON_ROOT_DIR%
+  - set PYTHON_PATH=%Python3_ROOT_DIR%
   - python --version
   - pip.exe install six==1.12.0
   - pip.exe install conan==1.19.3 
