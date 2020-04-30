@@ -74,7 +74,7 @@ before_build:
 build_script:
   - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON # This will make the VS .sln and cal conan for download
   - cmake --build . --config Release
-  - pip uninstall conan
+  - pip uninstall -y conan
   - pip install distro>=1.4.0 scikit-build
   - cmake --build . --target bdist_wheel --config Release
  
