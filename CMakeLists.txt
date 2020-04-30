@@ -80,6 +80,7 @@ set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(NPTSNE_FILES 
+    nptsne_src/.editorconfig
 	nptsne_src/nptSNEBind.cpp
     nptsne_src/Analysis.cpp
     nptsne_src/HSne.cpp
