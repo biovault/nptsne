@@ -62,12 +62,14 @@ notifications:
     on_build_success: true
     on_build_failure: true
     on_build_status_changed: true     
-        
-build_script:
+
+before_build:
   - set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
   - md _build  -Force  # Build in separate directory
-  - cd _build
-  - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release
+  - cd _build   
+  
+build_script:
+  - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DPYTHON_EXECUTABLE=%PYTHON_HOME%\python.exe
   - cmake build . --target _nptsne
   - cmake build . --target bdist_wheel
  
