@@ -72,7 +72,7 @@ before_build:
   - cd _build   
   
 build_script:
-  - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release
-  - cmake --build .
-  - cmake --build . --target bdist_wheel
+  - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON # This will make the VS .sln and cal conan for download
+  - cmake --build . --config Release
+  - cmake --build . --target bdist_wheel --config Release
  
