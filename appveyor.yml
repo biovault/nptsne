@@ -67,6 +67,8 @@ notifications:
 before_build:
   - echo %PATH%
   - dir C:\
+  - ren c:\python38 python38-hide
+  - ren c:\python38-x64 python38-x64-hide
   - md _build  -Force  # Build in separate directory
   - cd _build   
   
