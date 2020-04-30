@@ -17,7 +17,7 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
     conda install -c conda-forge conan 
 else
     pip install six==1.12.0
-    pip install conan==1.19.3      
+    pip install conan==1.24.1      
 fi
 
 pip install scikit-build    
