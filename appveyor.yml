@@ -65,6 +65,8 @@ notifications:
     on_build_status_changed: true     
 
 before_build:
+  - echo %PATH%
+  - dir C:\
   - md _build  -Force  # Build in separate directory
   - cd _build   
   
