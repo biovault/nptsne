@@ -390,6 +390,7 @@ add_custom_target (bdist_wheel
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     # Then run the python setup.py to build the wheel
+    MESSAGE(STATUS "PLAT_NAME is ${PLAT_NAME}")
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
