@@ -70,7 +70,7 @@ before_build:
   - cd _build   
   
 build_script:
-  - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DPython_FIND_VERSION=%PYTHON_VERSION%
+  - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DPython_ROOT_DIR=%PYTHON_HOME%
   - cmake build . --target _nptsne
   - cmake build . --target bdist_wheel
  
