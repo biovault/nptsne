@@ -83,6 +83,7 @@ matrix:
 install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
+  - python --version
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - pip install cmake
 
