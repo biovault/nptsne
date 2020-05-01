@@ -59,6 +59,15 @@ if(MSVC)
     unset(ENV{CC}) # Disable clcache, e.g. for building qt
     unset(ENV{CXX})
 endif()
+
+set(CONAN_SETTINGS "")
+
+if(UNIX)
+    if(LIBCXX) 
+        set(CONAN_SETTINGS ${CONAN_SETTINGS} "compiler.libcxx=${LIBCXX}")
+    endif()    
+endif()
+
 conan_cmake_run(
     BASIC_SETUP
     ${CONAN_UPDATE}
@@ -69,6 +78,7 @@ conan_cmake_run(
     IMPORTS ${CONAN_IMPORTS}
     GENERATORS virtualrunenv
     BUILD_TYPE ${CMAKE_BUILD_TYPE}
+    SETTINGS ${CONAN_SETTINGS}
 )
 
 if(MSVC)
