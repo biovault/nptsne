@@ -217,6 +217,8 @@ if (APPLE)
    
     #### Check glfw - was found using PkgConfig
     if(UNIX AND NOT APPLE)   
+        message(STATUS "Linux glfw library: ${GLFW_LIBRARY}")
+        message(STATUS "Linux glfw3 library: ${GLFW3_LIBRARY}")
         set(GLFW_LIBRARY "${CONAN_LIBS_GLFW}")
     else()
         find_library(GLFW_LIBRARY glfw HINTS "${CONAN_LIB_DIRS_GLFW}") 
