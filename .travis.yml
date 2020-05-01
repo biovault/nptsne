@@ -83,8 +83,18 @@ matrix:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then pip3 install virtualenv; fi
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then virtualenv -p python${OSX_PYTHON} build_env; source build_env/bin/activate; fi  
+    # install Python on macOS
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+      env | sort
+      if ! which python$OSX_PYTHON; then
+        HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
+        HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${OSX_PYTHON/./}
+      fi
+      python3 -m pip install virtualenv
+      python3 -m virtualenv -p $(which python$OSX_PYTHON) ~/travis-env
+      source ~/travis-env/bin/activate
+    fi
+  - python --version 
 install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
