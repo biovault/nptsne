@@ -86,6 +86,7 @@ before_install:
 install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
+  - if [ $TRAVIS_OS_NAME == osx ]; then source activate build_env; fi  
   - python --version
   - pip show conan
   - pip show conan_package_tools
