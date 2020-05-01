@@ -216,7 +216,11 @@ if (APPLE)
     get_shorter_version_number(${LZ4_LIBRARY_PATH} LZ4_SHORTNAME)
    
     #### Check glfw - was found using PkgConfig
-    find_library(GLFW_LIBRARY glfw HINTS "${CONAN_LIB_DIRS_GLFW}") 
+    if(UNIX AND NOT APPLE)   
+        set(GLFW_LIBRARY "${CONAN_LIBS_GLFW}")
+    else()
+        find_library(GLFW_LIBRARY glfw HINTS "${CONAN_LIB_DIRS_GLFW}") 
+    endif()
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
     get_short_version_number(${GLFWLIBRARY_PATH} GLFW_SHORTNAME)    
     include_directories(${GLFW_INCLUDE_DIRS})     
