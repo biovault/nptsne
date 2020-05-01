@@ -83,10 +83,16 @@ matrix:
 
 before_install:
   - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
+  - if [ $TRAVIS_OS_NAME == osx ]; then 
+        brew update; brew install python3;
+        pip install --user --upgrade pip virtualenv
+        virtualenv -p python$OSX_PYTHON build_env
+        source build_env/bin/activate
+    fi  
 install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
-  - if [ $TRAVIS_OS_NAME == osx ]; then source activate build_env; fi  
+  
   - python --version
   - pip show conan
   - pip show conan_package_tools
