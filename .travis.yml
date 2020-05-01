@@ -37,7 +37,10 @@ matrix:
          - CONAN_ARCHS=x86_64
          - CONAN_LINUX_PYTHON=3.6.7
          - CMAKE_GENERATOR="Unix Makefiles"
-         - CONAN_OPTIONS=nptsne:python_version=3.6
+        - CONAN_OPTIONS=nptsne:python_version=3.6
+         - COMPILER=g++-5
+         - COMPILER_CC=gcc-5
+         - COMPILER_CXX=g++-5
      - <<: *linux
        python: "3.7"        
        env:       
@@ -47,7 +50,10 @@ matrix:
          - CONAN_ARCHS=x86_64 
          - CONAN_LINUX_PYTHON=3.7.1    
          - CMAKE_GENERATOR="Unix Makefiles"
-         - CONAN_OPTIONS=nptsne:python_version=3.7             
+        - CONAN_OPTIONS=nptsne:python_version=3.7  
+         - COMPILER=g++-5
+         - COMPILER_CC=gcc-5
+         - COMPILER_CXX=g++-5         
    
      - <<: *osx
        language: generic
@@ -60,7 +66,7 @@ matrix:
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.6
          - CMAKE_GENERATOR="Xcode" 
-         - CONAN_OPTIONS=nptsne:python_version=3.6               
+        - CONAN_OPTIONS=nptsne:python_version=3.6               
           
      - <<: *osx
        language: generic
@@ -73,7 +79,7 @@ matrix:
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.7
          - CMAKE_GENERATOR="Xcode"
-         - CONAN_OPTIONS=nptsne:python_version=3.7                
+        - CONAN_OPTIONS=nptsne:python_version=3.7                
 
 install:
   - chmod +x .ci/install.sh
