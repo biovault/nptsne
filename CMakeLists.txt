@@ -35,10 +35,6 @@ include(ConanSetup)
 # Conan declared variables
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-message(STATUS "Conan CONAN_PYBIND11_ROOT***: ${CONAN_PYBIND11_ROOT} ***")
-message(STATUS "Conan CONAN_INCLUDE_DIRS_HDILIB***: ${CONAN_INCLUDE_DIRS_HDILIB} ***")
-message(STATUS "Conan CONAN_HDILIB_ROOT***: ${CONAN_HDILIB_ROOT} ***")
-
 find_package (Python3 COMPONENTS Interpreter Development)
 
 if (WIN32)
@@ -92,15 +88,10 @@ set(NPTSNE_FILES
 pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
 
 find_package(OpenGL REQUIRED)
-find_package(glfw3 REQUIRED) 
-
-#if(UNIX)
-#    include(FindPkgConfig)
-#    find_package(PkgConfig REQUIRED)
-#    pkg_search_module(GLFW REQUIRED glfw3)
-#else()
-#    find_package(glfw3 REQUIRED)    
-#endif()    
+if (not APPLE)
+    find_package(glfw3 REQUIRED)
+endif()    
+  
 
 if(WIN32) 
 	set(PYBIND11_CPP_STANDARD "/std:c++14" CACHE STRING "" FORCE) 
