@@ -84,6 +84,9 @@ install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
   - python --version
+  - pip show conan
+  - pip show conan_package_tools
+  - pip show bincrafters_package_tools
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - pip install cmake
 
