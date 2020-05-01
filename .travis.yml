@@ -9,8 +9,7 @@ linux: &linux
     language: python
     sudo: required
     dist: xenial
-    services:
-      - docker
+
 osx: &osx 
     os: osx
     language: generic

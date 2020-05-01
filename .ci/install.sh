@@ -21,7 +21,7 @@ else
 fi
 
 pip install scikit-build    
-pip install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0
+pip install conan_package_tools==0.32.2 bincrafters_package_tools==0.26.3
 
 
 # Automatic detection of arch, compiler, etc. & create conan data dir.    
