@@ -83,8 +83,8 @@ matrix:
 
 before_install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
-
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+  - | 
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       env | sort
       if ! which python$OSX_PYTHON; then
         HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
