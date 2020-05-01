@@ -88,7 +88,7 @@ set(NPTSNE_FILES
 pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
 
 find_package(OpenGL REQUIRED)
-if (not APPLE)
+if(NOT APPLE)
     find_package(glfw3 REQUIRED)
 endif()    
   
