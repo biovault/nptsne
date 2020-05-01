@@ -40,6 +40,7 @@ matrix:
          - COMPILER=g++-5
          - CC=gcc-5
          - CXX=g++-5
+         - LIBCXX=libstdc++
      - <<: *linux
        python: "3.7"        
        env:       
@@ -53,7 +54,7 @@ matrix:
          - COMPILER=g++-5
          - CC=gcc-5
          - CXX=g++-5         
-   
+         - LIBCXX=libstdc++   
      - <<: *osx
        language: generic
        osx_image: xcode10.3
@@ -95,6 +96,6 @@ before_script:
    - cd _build
 
 script:
-  - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON
+  - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON -DCONAN_LIBCXX=${LIBCXX}
   - cmake --build . --config Release
   - cmake --build . --target bdist_wheel --config Release
