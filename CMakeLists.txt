@@ -191,7 +191,7 @@ if (APPLE)
     find_program(BREW NAMES brew)
     message(STATUS, "In Macos with ${BREW}")
     
-    #### Find LIBOMP
+    #### Install LIBOMP
     execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS, "BREW LIBOMP ${BREW_LIBOMP_PREFIX}")
     set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
@@ -199,14 +199,14 @@ if (APPLE)
     set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
     include_directories("${BREW_LIBOMP_PREFIX}/include") 
     
-    #### Find flann
+    #### Install flann
     execute_process(COMMAND ${BREW} --prefix flann OUTPUT_VARIABLE BREW_FLANN_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     include_directories("${BREW_FLANN_PREFIX}/include")  
 	find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${BREW_FLANN_PREFIX}")
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
     get_short_version_number(${FLANNCPP_LIBRARY_PATH} FLANNCPP_SHORTNAME)
     
-    #### Find lz4    
+    #### Install lz4    
     execute_process(COMMAND ${BREW} --prefix lz4 OUTPUT_VARIABLE BREW_LZ4_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     include_directories("${BREW_LZ4_PREFIX}/include") 
     find_library(LZ4_LIBRARY lz4 HINTS "${BREW_LZ4_PREFIX}")    
@@ -215,9 +215,10 @@ if (APPLE)
     # (this probably a bug due to the library name ending in a digit)
     get_shorter_version_number(${LZ4_LIBRARY_PATH} LZ4_SHORTNAME)
    
-    #### Check glfw - was found using PkgConfig
-
-    find_library(GLFW_LIBRARY glfw) 
+    #### Install glfw
+    execute_process(COMMAND ${BREW} --prefix glfw OUTPUT_VARIABLE BREW_GLFW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+    include_directories("${BREW_GLFW_PREFIX}/include") 
+    find_library(GLFW_LIBRARY glfw HINTS "${BREW_GLFW_PREFIX}")    
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
     get_short_version_number(${GLFWLIBRARY_PATH} GLFW_SHORTNAME)    
     include_directories(${GLFW_INCLUDE_DIRS})     
