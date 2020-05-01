@@ -38,8 +38,8 @@ matrix:
          - CMAKE_GENERATOR="Unix Makefiles"
          - CONAN_OPTIONS=nptsne:python_version=3.6
          - COMPILER=g++-5
-         - COMPILER_CC=gcc-5
-         - COMPILER_CXX=g++-5
+         - CC=gcc-5
+         - CXX=g++-5
      - <<: *linux
        python: "3.7"        
        env:       
@@ -51,8 +51,8 @@ matrix:
          - CMAKE_GENERATOR="Unix Makefiles"
          - CONAN_OPTIONS=nptsne:python_version=3.7  
          - COMPILER=g++-5
-         - COMPILER_CC=gcc-5
-         - COMPILER_CXX=g++-5         
+         - CC=gcc-5
+         - CXX=g++-5         
    
      - <<: *osx
        language: generic
