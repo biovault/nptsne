@@ -92,13 +92,15 @@ set(NPTSNE_FILES
 pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
 
 find_package(OpenGL REQUIRED)
-if(UNIX)
-    include(FindPkgConfig)
-    find_package(PkgConfig REQUIRED)
-    pkg_search_module(GLFW REQUIRED glfw3)
-else()
-    find_package(glfw3 REQUIRED)    
-endif()    
+find_package(glfw3 REQUIRED) 
+
+#if(UNIX)
+#    include(FindPkgConfig)
+#    find_package(PkgConfig REQUIRED)
+#    pkg_search_module(GLFW REQUIRED glfw3)
+#else()
+#    find_package(glfw3 REQUIRED)    
+#endif()    
 
 if(WIN32) 
 	set(PYBIND11_CPP_STANDARD "/std:c++14" CACHE STRING "" FORCE) 
