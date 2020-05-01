@@ -96,6 +96,6 @@ before_script:
    - cd _build
 
 script:
-  - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON -DCONAN_LIBCXX=${LIBCXX}
+  - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON -DLIBCXX=${LIBCXX}
   - cmake --build . --config Release
   - cmake --build . --target bdist_wheel --config Release
