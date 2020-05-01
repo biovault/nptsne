@@ -100,4 +100,4 @@ before_script:
 script:
   - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON -DLIBCXX=${LIBCXX}
   - cmake --build . --config Release
-  - sudo cmake --build . --target bdist_wheel --config Release  # Need sudo because this calls install
+  - cmake --build . --target bdist_wheel --config Release  # Need sudo because this calls install

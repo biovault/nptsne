@@ -13,7 +13,6 @@ if [[ "$(uname -s)" == 'Darwin' ]]; then
     conda install -q conda-build
     conda create -q -n build_env python=$OSX_PYTHON
     source activate build_env  
-    conda install -n build_env cmake
     conda install -c conda-forge conan 
 else
     pip install six==1.12.0
@@ -22,7 +21,9 @@ fi
 
 pip install scikit-build    
 pip install conan_package_tools==0.32.2 bincrafters_package_tools==0.26.3
-
+pip install cmake
+echo Python version:
+python --version 
 
 # Automatic detection of arch, compiler, etc. & create conan data dir.    
 conan user
