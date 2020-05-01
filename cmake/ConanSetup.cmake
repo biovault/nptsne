@@ -15,10 +15,17 @@ include(${CMAKE_BINARY_DIR}/cmake/conan.cmake)
 set(CONAN_REQUIRES
     pybind11/2.2.4@conan/stable
     HDILib/latest@biovault/stable
-    glfw/3.3.2@bincrafters/stable
     lz4/1.9.2
     CACHE INTERNAL ""
 )
+
+if(WIN32) 
+    set(CONAN_REQUIRES
+        ${CONAN_REQUIRES}
+        glfw/3.3@bincrafters/stable
+        CACHE INTERNAL ""
+    )
+endif()
 
 set(CONAN_OPTIONS
     HDILib:shared=False

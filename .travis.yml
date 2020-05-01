@@ -81,6 +81,8 @@ matrix:
          - CMAKE_GENERATOR="Xcode"
          - CONAN_OPTIONS="nptsne:python_version=3.7"                
 
+before_install:
+  - if [ $TRAVIS_OS_NAME == linux ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
 install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
