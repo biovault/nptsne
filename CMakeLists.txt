@@ -189,6 +189,7 @@ if (APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
   if(DEFINED ENV{CONAN_IS_TRAVIS_OSX})
     find_program(BREW NAMES brew)
+    set(BREW "HOMEBREW_NO_AUTO_UPDATE=1 ${BREW}")
     message(STATUS, "In Macos with ${BREW}")
     
     #### Install LIBOMP
