@@ -86,6 +86,8 @@ before_install:
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
         brew update
         brew install python3
+    fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then    
         pip install --user --upgrade pip virtualenv
         virtualenv -p python$OSX_PYTHON build_env
         source build_env/bin/activate
