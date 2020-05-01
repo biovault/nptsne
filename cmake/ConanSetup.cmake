@@ -22,6 +22,7 @@ set(CONAN_REQUIRES
 
 set(CONAN_OPTIONS
     HDILib:shared=False
+    CRoaring:shared=True 
     CACHE INTERNAL ""
 )  
 
