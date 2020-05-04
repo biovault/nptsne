@@ -323,7 +323,8 @@ install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsn
 if(APPLE)
 	install(CODE "
 		execute_process(
-            COMMAND ${CMAKE_COMMAND} -E echo "OSX: Fix up $<TARGET_FILE:${PROJECT_NAME}>"
+            COMMAND ${CMAKE_COMMAND} -E echo "Install target file:"
+            COMMAND ${CMAKE_COMMAND} -E echo $<TARGET_FILE:${PROJECT_NAME}>
 			COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
