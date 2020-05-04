@@ -321,12 +321,14 @@ install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsn
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
 # which are used to get the path to the extension and to modify it.
 if(APPLE)
+    message(STATUS "Otool fixup for OSX")
 	install(CODE "
 		execute_process(
             COMMAND ${CMAKE_COMMAND} -E echo "Install target file:"
-            COMMAND ${CMAKE_COMMAND} -E echo $<TARGET_FILE:${PROJECT_NAME}>
-			COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
-			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+            COMMAND ${CMAKE_COMMAND} -E echo $<TARGET_FILE:${PROJECT_NAME}>)
+        execute_process(    
+			COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh && cat ~/getname.sh\"
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
 			COMMAND sh -c \"chmod +x ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
