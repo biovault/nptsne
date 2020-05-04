@@ -11,7 +11,7 @@ namespace py = pybind11;
 #include "hdi/dimensionality_reduction/hd_joint_probability_generator.h"
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
 #include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 #include "Types.h"
 
 class TextureTsneExtended {
@@ -19,37 +19,37 @@ public:
 
 	// constructor
 	TextureTsneExtended(
-		bool verbose=false,  
+		bool verbose=false,
 		int num_target_dimensions=2,
 		int perplexity=30,
 		KnnAlgorithm knn_algorithm=KnnAlgorithm::Flann
 		);
-        
+
 	// Initialize the probabilities based on the data
 	bool init_transform(
-		py::array_t<float, py::array::c_style | py::array::forcecast> X,			
+		py::array_t<float, py::array::c_style | py::array::forcecast> X,
 		py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<nptsne::ScalarType>({}));
-        
-    void init_transform_with_distribution(nptsne::SparseScalarMatrixType& sparse_matrix);      
-		
+
+    void init_transform_with_distribution(nptsne::SparseScalarMatrixType& sparse_matrix);
+
 	void start_exaggeration_decay();
-	
+
 	int get_decay_started_at();
-	
-	int get_iteration_count();	
-	
+
+	int get_iteration_count();
+
 	py::array_t<float, py::array::c_style> run_transform(
-		bool verbose=false,  
+		bool verbose=false,
 		int iterations=1000);
-        
+
     // Restart the transform with an optional initial embedding
     void reinitialize_transform(
         py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding=py::array_t<nptsne::ScalarType>({}));
-    
+
 	void close();
-	
+
     nptsne::EmbeddingType& getEmbedding() {return _embedding;}
-    
+
     nptsne::SparseScalarMatrixType& getTransitionMatrix() {return _distributions;}
 
 private:
@@ -59,7 +59,7 @@ private:
 	nptsne::EmbeddingType _embedding;
 	hdi::dr::GradientDescentTSNETexture _tSNE;
 	//std::unique_ptr<QApplication> _app;
-	
+
 	int _num_data_points;
     int _num_dimensions;
 	int _iteration_count;
