@@ -213,7 +213,7 @@ if (APPLE)
     find_library(GLFW_LIBRARY glfw HINTS "${BREW_GLFW_PREFIX}")    
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
     get_short_version_number(${GLFWLIBRARY_PATH} GLFW_SHORTNAME)    
-    include_directories(${GLFW_INCLUDE_DIRS})     
+    include_directories(${GLFW_INCLUDE_DIRS} "/usr/local/include")     
 
     target_link_libraries(${PROJECT_NAME} PUBLIC ${LZ4_LIBRARY} )
     target_link_libraries(${PROJECT_NAME} PUBLIC ${FLANNCPP_LIBRARY} )   
