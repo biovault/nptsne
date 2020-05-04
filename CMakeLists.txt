@@ -306,10 +306,6 @@ else()
     message(STATUS "Using static GLFW ")
 endif()
 
-set(PYTHON_EXTENSION_NAME "$<TARGET_FILE:${PROJECT_NAME}>")
-message( STATUS "Build python extension: " ${PYTHON_EXTENSION_NAME})
-
-
 message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 
 # Install phase - move the extension plus and libraries necessary to
@@ -327,7 +323,7 @@ install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsn
 if(APPLE)
 	install(CODE "
 		execute_process(
-            COMMAND echo "OSX: Fix up $<TARGET_FILE:${PROJECT_NAME}>"
+            COMMAND ${CMAKE_COMMAND} -E echo "OSX: Fix up $<TARGET_FILE:${PROJECT_NAME}>"
 			COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
