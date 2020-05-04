@@ -113,5 +113,11 @@ before_script:
 
 script:
   - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON -DLIBCXX=${LIBCXX}
+  # This is a hack to remove an ünsupported platform darwin" error with distro when building wheel
+  - | 
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        pip uninstall -y conan distro
+        pip install distro>=1.4.0 scikit-build
+    fi    
   - cmake --build . --config Release
   - cmake --build . --target bdist_wheel --config Release  # Need sudo because this calls install
