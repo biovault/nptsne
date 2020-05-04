@@ -114,7 +114,8 @@ endif(WIN32)
 
 message(STATUS "${PYBIND11_CPP_STANDARD}")
 
-target_compile_definitions(${PROJECT_NAME} PUBLIC "-DPYBIND11_PYTHON_VERSION=${PYTHON_MAJ_MIN}")  
+target_compile_definitions(${PROJECT_NAME} 
+        PUBLIC "-DPYBIND11_PYTHON_VERSION=${PYTHON_MAJ_MIN}")  
 
 if(UNIX)
 	find_package(LZ4 REQUIRED)
@@ -314,7 +315,7 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 # Install phase - move the extension plus and libraries necessary to
 # an install destination where they can be bundled in a separate invocation
 # of python setup.py bdist_wheel
-# P.S. This is abusing the CMake install for moving files around prior to bundling
+# P.S. This is using the CMake install for moving files around prior to bundling
 # the python wheel. 
 
 # Move the binary extension - .pyd, .so, or .dylib (depending on OS)
@@ -326,7 +327,8 @@ install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsn
 if(APPLE)
 	install(CODE "
 		execute_process(
-			COMMAND sh -c \"echo 'A=`ls ${CMAKE_INSTALL_PREFIX}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
+            COMMAND sh -c \"echo OSX: Fix up $<TARGET_FILE:${PROJECT_NAME}>"
+			COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
 			COMMAND sh -c \"chmod +x ~/getname.sh\"
