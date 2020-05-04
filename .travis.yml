@@ -112,6 +112,7 @@ before_script:
    - cd _build
 
 script:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export SDKROOT=$(xcodebuild -version -sdk macosx Path); fi    
   - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON -DLIBCXX=${LIBCXX}
   # This is a hack to remove an ünsupported platform darwin" error with distro when building wheel
   - | 
