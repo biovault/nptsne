@@ -89,8 +89,8 @@ before_install:
       if ! which python$OSX_PYTHON; then
         HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
         HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${OSX_PYTHON/./}
-        HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
       fi
+      HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
       python3 -m pip install virtualenv
       python3 -m virtualenv -p $(which python$OSX_PYTHON) ~/travis-env
       source ~/travis-env/bin/activate
