@@ -374,8 +374,11 @@ if(APPLE)
 	")
 endif()
 
+set(INSTALL_FILE_CONTENT "")
 if(APPLE)
   set(PLAT_NAME "macosx-10.6-intel")
+  file(READ "/Users/travis/build/biovault/nptsne/_build/cmake_install.cmake" INSTALL_FILE_CONTENT)
+  message(STATUS "Installfile: ${INSTALL_FILE_CONTENT}")
 elseif(UNIX)
   set(PLAT_NAME "linux_x86_64")
 elseif(WIN32)
@@ -384,7 +387,8 @@ endif()
 
 # -- .whl creation
 add_custom_target (bdist_wheel
-    COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}" 
+    COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
+    COMMAND ${CMAKE_COMMAND} -E echo "Install file:: ${INSTALL_FILE_CONTENT}"
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
