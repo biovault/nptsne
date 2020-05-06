@@ -324,7 +324,7 @@ if(APPLE)
     message(STATUS "Otool fixup for OSX")
 	install(CODE "
 		execute_process(
-            COMMAND ${CMAKE_COMMAND} -E echo "Install target file:"
+            COMMAND ${CMAKE_COMMAND} -E echo \"Install target file:\"
             COMMAND ${CMAKE_COMMAND} -E echo $<TARGET_FILE:${PROJECT_NAME}>)
         execute_process(    
 			COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh && cat ~/getname.sh\"
@@ -381,7 +381,7 @@ elseif(UNIX)
   set(PLAT_NAME "linux_x86_64")
 elseif(WIN32)
   set(PLAT_NAME "win_amd64") 
-  set(CAT_COMMAND type)
+  set(CAT_COMMAND echo)
 endif()
 
 # -- .whl creation
