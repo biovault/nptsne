@@ -394,3 +394,10 @@ add_custom_target (bdist_wheel
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
 )
+
+# -- Upload of latest whl
+    
+
+add_custom_target (upload_wheel
+    COMMAND ${CMAKE_COMMAND} -D WHEEL_GLOB="${CMAKE_BINARY_DIR}/dist/*.whl" -P ${CMAKE_CURRENT_LIST_FILE}/cmake/UploadWheel.cmake
+)

@@ -97,6 +97,7 @@ before_install:
     fi
   - python --version 
 install:
+  - choco install -y curl
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
   
@@ -122,3 +123,4 @@ script:
     fi    
   - cmake --build . --config Release
   - cmake --build . --target bdist_wheel --config Release  # Need sudo because this calls install
+  - cmake --build . --target upload_wheel --config Release 

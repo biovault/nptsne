@@ -77,4 +77,5 @@ build_script:
   - pip uninstall -y conan distro  # This is a hack to remove an ünsupported platform win32" error with distro
   - pip install distro>=1.4.0 scikit-build
   - cmake --build . --target bdist_wheel --config Release
+  - cmake --build . --target upload_wheel --config Release 
  
