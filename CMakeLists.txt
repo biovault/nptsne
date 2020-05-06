@@ -332,12 +332,6 @@ if(APPLE)
 		execute_process(
 			COMMAND sh -c \"chmod +x ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
-        execute_process(
-			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|flann|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && echo ==$A=='\"
-            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})            
-        execute_process(
-			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|flann|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && A=`basename $A` && echo ==\${A}=='\"
-            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
 			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|flann|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && A=`basename $A` && echo install_name_tool -change $A @loader_path/$A `~/getname.sh` >> ~/fixup.sh'\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})			
@@ -393,7 +387,8 @@ endif()
 # -- .whl creation
 add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
-    COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
+    # To debug install uncomment the following
+    # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
