@@ -374,20 +374,20 @@ if(APPLE)
 	")
 endif()
 
-set(CAT_COMMAND "cat ")
+set(CAT_COMMAND cat)
 if(APPLE)
   set(PLAT_NAME "macosx-10.6-intel")
 elseif(UNIX)
   set(PLAT_NAME "linux_x86_64")
 elseif(WIN32)
   set(PLAT_NAME "win_amd64") 
-  set(CAT_COMMAND "type ")
+  set(CAT_COMMAND type)
 endif()
 
 # -- .whl creation
 add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
-    COMMAND ${CAT_COMMAND} "${CMAKE_BINARY_DIR}/cmake_install.cmake"
+    COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake"
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
