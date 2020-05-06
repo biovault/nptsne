@@ -333,6 +333,9 @@ if(APPLE)
 			COMMAND sh -c \"chmod +x ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
         execute_process(
+			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|flann|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && echo ==\${A}=='\"
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})            
+        execute_process(
 			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|flann|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && A=`basename $A` && echo ==\${A}=='\"
             WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
