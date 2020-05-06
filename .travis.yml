@@ -97,7 +97,6 @@ before_install:
     fi
   - python --version 
 install:
-  - choco install -y curl
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
   
