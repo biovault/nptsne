@@ -399,5 +399,5 @@ add_custom_target (bdist_wheel
     
 
 add_custom_target (upload_wheel
-    COMMAND ${CMAKE_COMMAND} -D WHEEL_GLOB="${CMAKE_BINARY_DIR}/dist/*.whl" -P ${CMAKE_CURRENT_LIST_DIR}/cmake/UploadWheel.cmake
+    COMMAND ${CMAKE_COMMAND} -D WHEEL_GLOB=${CMAKE_BINARY_DIR}/dist/*.whl -P ${CMAKE_CURRENT_LIST_DIR}/cmake/UploadWheel.cmake
 )
