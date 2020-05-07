@@ -30,9 +30,9 @@ file(COPY "${PROJECT_SOURCE_DIR}/dist_root"
     
 file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/dist_root/nptsne/_version.txt CONTENT "${VERSION}")
 
+# CONAN is only used if the NPTSNE_BUILD_WITH_CONAN is ON
 include(ConanSetup)
 
-# Conan declared variables
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 find_package (Python3 COMPONENTS Interpreter Development)
@@ -121,17 +121,17 @@ if(UNIX)
 	find_package(LZ4 REQUIRED)
 endif(UNIX)	
 
-#flann is an HDILib dependency
-if(NOT DEFINED HDI_BLD_ROOT) 
-    set(HDI_BLD_ROOT "${CONAN_HDILIB_ROOT}")
-    set(HDI_INCLUDE_ROOT "${CONAN_INCLUDE_DIRS_HDILIB}/HDILib")
+if(NOT DEFINED HDI_LIB_ROOT) 
+    #set the following variables to allow the build (building with conan does this)
+    set(HDI_LIB_ROOT "")
+    set(HDI_INCLUDE_ROOT "")
     if(WIN32)
-        set(FLANN_BUILD_DIR "${CONAN_FLANN_ROOT}")
-        set(GLFW_ROOT "${CONAN_GLFW_ROOT}")
+        set(FLANN_BUILD_DIR "")
+        set(GLFW_ROOT "")
     endif()
 endif()
 
-message( STATUS "HDI_BLD_ROOT: ${HDI_BLD_ROOT}" )
+message( STATUS "HDI_LIB_ROOT: ${HDI_LIB_ROOT}" )
 message( STATUS "HDI_INCLUDE_ROOT: ${HDI_INCLUDE_ROOT}" )
 
 include_directories ("${CMAKE_SOURCE_DIR}")
@@ -179,7 +179,7 @@ message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
 if (APPLE)
   add_definitions(-DGL_SILENCE_DEPRECATION)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
-  if(DEFINED ENV{CONAN_IS_TRAVIS_OSX})
+  if(DEFINED ENV{TRAVIS_OS_NAME} AND ("$ENV{TRAVIS_OS_NAME}" STREQUAL "osx"))
     find_program(BREW NAMES brew)
     set(BREW "HOMEBREW_NO_AUTO_UPDATE=1 ${BREW}")
     message(STATUS, "In Macos with ${BREW}")
@@ -251,9 +251,9 @@ if(OPENMP_FOUND)
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
 endif()
 
-set(HDIDR_BUILD_DIR "${HDI_BLD_ROOT}/dimensionality_reduction")  
-set(HDIDA_BUILD_DIR "${HDI_BLD_ROOT}/data") 
-set(HDIUI_BUILD_DIR "${HDI_BLD_ROOT}/utils") 
+set(HDIDR_BUILD_DIR "${HDI_LIB_ROOT}/dimensionality_reduction")  
+set(HDIDA_BUILD_DIR "${HDI_LIB_ROOT}/data") 
+set(HDIUI_BUILD_DIR "${HDI_LIB_ROOT}/utils") 
 
 if(WIN32)
 	find_library(HDIDR NAMES hdidimensionalityreduction.lib PATHS ${HDIDR_BUILD_DIR} PATH_SUFFIXES ${CMAKE_BUILD_TYPE}) 

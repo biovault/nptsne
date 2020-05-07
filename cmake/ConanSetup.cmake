@@ -88,6 +88,13 @@ conan_cmake_run(
     SETTINGS ${CONAN_SETTINGS}
 )
 
+set(HDI_LIB_ROOT "${CONAN_HDILIB_ROOT}")
+set(HDI_INCLUDE_ROOT "${CONAN_INCLUDE_DIRS_HDILIB}/HDILib")
+if(WIN32)
+    set(FLANN_BUILD_DIR "${CONAN_FLANN_ROOT}")
+    set(GLFW_ROOT "${CONAN_GLFW_ROOT}")
+endif()
+
 if(MSVC)
     set(ENV{CC} ${CC_CACHE}) # Restore vars
     set(ENV{CXX} ${CXX_CACHE})
