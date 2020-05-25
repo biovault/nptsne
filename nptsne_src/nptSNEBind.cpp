@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>  // automatic conversion of STL to list, set, tuple, dict
 #include <pybind11/stl_bind.h>
@@ -30,12 +32,12 @@ PYBIND11_MODULE(_nptsne, m) {
              TextureTsneExtended
 
 
-         The package contains classes that wrap linear complexity tSNE. 
+         The package contains classes that wrap linear complexity tSNE.
          The classes are:
-               
+
          TextureTsne : linear tSNE simple API
          TextureTsneExtended : linear tSNE advanced API
-               
+
          Reference:  https://doi.org/10.1109/TVCG.2019.2934307 or (https://arxiv.org/abs/1805.10817v2)
 
     )pbdoc";
@@ -44,12 +46,12 @@ PYBIND11_MODULE(_nptsne, m) {
     py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
         Enumeration used to select the knn algorithm used. Three possibilities are
         supported:
-        
+
         :obj:`KnnAlgorithm.Flann`: Knn using FLANN - Fast Library for Approximate Nearest Neighbors
-        
+
         :obj:`KnnAlgorithm.HNSW`: Knn using Hnswlib - fast approximate nearest neighbor search
-        
-        :obj:`KnnAlgorithm.Annoy`: Knn using Annoy - Spotify Approximate Nearest Neighbors Oh Yeah        
+
+        :obj:`KnnAlgorithm.Annoy`: Knn using Annoy - Spotify Approximate Nearest Neighbors Oh Yeah
     )pbdoc")
         .value("Flann", KnnAlgorithm::Flann)
         .value("HNSW", KnnAlgorithm::HNSW)
@@ -66,7 +68,7 @@ PYBIND11_MODULE(_nptsne, m) {
     )pbdoc");
 
     textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(),
-        R"pbdoc(    
+        R"pbdoc(
      :param verbose: Enable verbose logging to standard output
      :type verbose: bool
 
@@ -99,7 +101,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
       :param X: The iput data with shape (num. data points, num. dimensions)
       :type X: ndarray
-      
+
       :return: A numpy array contain a flatten (1D) embedding
       :rtype: ndarray
 
@@ -142,7 +144,7 @@ PYBIND11_MODULE(_nptsne, m) {
         "Initialize the transform with given data and optional initial embedding",
         R"pbdoc(
       Fit X into an embedded space and return that transformed output.
-        
+
       :param X: The iput data with shape (num. data points, num. dimensions)
       :type X: ndarray
 
@@ -163,7 +165,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
           :param iterations: the number of iterations to run
           :type iterations: int
-            
+
           :return: A numpy array contain a flatten (1D) embedding
           :rtype: ndarray
 
@@ -178,7 +180,7 @@ PYBIND11_MODULE(_nptsne, m) {
           Fit X into an embedded space and return that transformed output.
           Knn is not recomputed. If no initial_embedding is supplied the embedding
           is re-randomized.
-            
+
           :param initial_embedding: An optional initial embedding. Shape should be (num data points, num output dimensions)
           :type initial_embedding: ndarray
 
@@ -189,7 +191,7 @@ PYBIND11_MODULE(_nptsne, m) {
         R"pbdoc(
           Enable exaggeration decay. Effective on next call to run_transform.
           Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
-            
+
           Raises: RuntimeError if the decay is already active. This can be ignored.
 
         )pbdoc");
@@ -197,7 +199,7 @@ PYBIND11_MODULE(_nptsne, m) {
     textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at,
         R"pbdoc(
           The iteration number when exaggeration decay started.
-            
+
           :return: -1 if decays has not started.
           :rtype: int
 
@@ -206,7 +208,7 @@ PYBIND11_MODULE(_nptsne, m) {
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count,
         R"pbdoc(
           The number of completed iterations of tSNE gradient descent.
-            
+
           :return: iteration_count
           :rtype: int
         )pbdoc");
@@ -224,12 +226,12 @@ PYBIND11_MODULE(_nptsne, m) {
         HSne: a simple wrapper API for the Hierarchical SNE implementation.
 
             Hierarchical SNE is  is a GPU compute shader implementation of Hierarchical
-            Stochastic Neighborhood Embedding described in https://doi.org/10.1111/cgf.12878 
+            Stochastic Neighborhood Embedding described in https://doi.org/10.1111/cgf.12878
 
         )pbdoc");
 
     hsne_class.def(py::init<bool>(),
-        R"pbdoc(    
+        R"pbdoc(
          :param verbose: Enable verbose logging to standard output
          :type verbose: bool
         )pbdoc",
@@ -271,9 +273,9 @@ PYBIND11_MODULE(_nptsne, m) {
 
           :param num_scales: How many scales to create in the hsne analysis
           :type num_scales: int
-          
+
           :param point_ids: The ids associated with the data points
-          :type point_ids: ndarray          
+          :type point_ids: ndarray
 
         )pbdoc",
             py::arg("X"),
@@ -300,7 +302,7 @@ PYBIND11_MODULE(_nptsne, m) {
     hsne_class.def("save", &HSne::save_to_file, "Save the HSNE hierarchy to a file",
         R"pbdoc(
           Save the HSNE as a binary structure to a file
-            
+
           :param filename: The iput data with shape (num. data points, num. dimensions)
           :type filename: string
 
@@ -310,10 +312,10 @@ PYBIND11_MODULE(_nptsne, m) {
     hsne_class.def("get_scale", &HSne::get_scale, "Get the scale information at the index. 0 is the data scale",
         R"pbdoc(
           Get the scale at index
-          
+
           :param scale_number
           :type scale_number unsigned int
-            
+
           :return: A numpy array contain a flatten (1D) embedding
           :rtype: HSneScale
 
@@ -372,11 +374,11 @@ PYBIND11_MODULE(_nptsne, m) {
         py::enum_<EmbedderType>(m_hsne, "EmbedderType", py::arithmetic(), R"pbdoc(
             Enumeration used to select the embedder used. Two possibilities are
             supported:
-            
+
             :obj:`EmbedderType.CPU`: CPU tSNE
-            
+
             :obj:`EmbedderType.CPU`: GPU tSNE
-       
+
         )pbdoc")
             .value("CPU", EmbedderType::CPU)
             .value("GPU", EmbedderType::GPU);
@@ -402,15 +404,15 @@ PYBIND11_MODULE(_nptsne, m) {
             std::vector<uint32_t> parent_selection) {
             return Analysis::make_analysis(hsne, embedder_type, parent, parent_selection);
         }),
-            R"pbdoc(  
+            R"pbdoc(
          A new analysis as a child of a parent analysis. The parent selection
-         are the landmark indexes in the parent analysis scale. 
-         
+         are the landmark indexes in the parent analysis scale.
+
          :param hsne: The hierarchical SNE being explored
          :type hsne: HSne
-         
+
          :param embedder_type: The tSNE to use CPU or GPU based
-         :type embedder_type: EmbedderType         
+         :type embedder_type: EmbedderType
 
          :param parent: the parent Analysis (where the selection was performed) if any
          :type parent: Analysis
@@ -428,14 +430,14 @@ PYBIND11_MODULE(_nptsne, m) {
                 EmbedderType embedder_type) {
             return Analysis::make_analysis(hsne, embedder_type);
         }),
-                R"pbdoc(   
+                R"pbdoc(
           A new top level analysis there is no parent analysis or parent selection.
-          
+
          :param hsne: The hierarchical SNE being explored
          :type hsne: HSne
-         
+
          :param embedder_type: The tSNE to use CPU or GPU based
-         :type embedder_type: EmbedderType 
+         :type embedder_type: EmbedderType
         )pbdoc",
             py::arg("hnse"),
             py::arg("embedder_type"));
@@ -458,6 +460,21 @@ PYBIND11_MODULE(_nptsne, m) {
 
         analysis_class
             .def("do_iteration", &Analysis::doAnIteration);
+
+        analysis_class
+            .def("get_area_of_influence",
+                [](Analysis& self, std::vector<nptsne::UnsignedIntType> selection_list) {
+                    std::vector<nptsne::ScalarType> aoi;
+                    self.hsne->getAreaOfInfluenceTopDown(self.scale_id, selection_list, aoi);
+                    py::array_t<nptsne::ScalarType> result = py::array_t<nptsne::ScalarType>(aoi.size());
+                    auto result_info = result.request();
+                    nptsne::ScalarType *output = static_cast<nptsne::ScalarType *>(result_info.ptr);
+                    for (size_t i = 0; i < aoi.size(); ++i) {
+                        output[i] = aoi[i];
+                    }
+                    return result;
+            },
+            py::arg("select_list"));
 
         // id of the parent analysis (numeric_limits<uint32_t>::max if this is root)
         analysis_class.def_property_readonly(
@@ -488,6 +505,18 @@ PYBIND11_MODULE(_nptsne, m) {
                 { rows },
                 { sizeof(float) },
                 self.landmark_weights.data(),
+                py::cast(self));
+        });
+
+        // Share the landmark indexes without a copy
+        analysis_class.def_property_readonly(
+            "landmark_indexes",
+            [](Analysis& self) {
+            auto rows = self.landmark_indexes.size();
+            return py::array_t<unsigned int>(
+                { rows },
+                { sizeof(unsigned int) },
+                self.landmark_indexes.data(),
                 py::cast(self));
         });
 
@@ -528,8 +557,8 @@ PYBIND11_MODULE(_nptsne, m) {
 
         sparsetsne_class.def("do_iteration", &SparseTsne::doAnIteration, "Perform a single tsne iteration",
             R"pbdoc(
-          Perform a sinsle tSNE iteration on the sparse data. 
-          Once complete the embedding coordinates can be read via the embedding property  
+          Perform a sinsle tSNE iteration on the sparse data.
+          Once complete the embedding coordinates can be read via the embedding property
         )pbdoc");
 
         // Share the embedding without a copy

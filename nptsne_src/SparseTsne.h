@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #pragma once
 
 // Class is a pared down version of N Pezzotti's MultiscaleEmbedderSingleView

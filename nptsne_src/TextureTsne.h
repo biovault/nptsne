@@ -1,13 +1,15 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #pragma once
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
+#include "glad/glad.h"
+#include <GLFW/glfw3.h>
 #include "KnnAlgorithm.h"
 #include "hdi/dimensionality_reduction/tsne.h"
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
 #include "Types.h"
 
 class TextureTsne {

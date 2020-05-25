@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #include "TextureTsneExtended.h"
 #include <cstdio>
 #include <iostream>

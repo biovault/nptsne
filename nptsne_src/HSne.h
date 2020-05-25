@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #pragma once
 
 #include <pybind11/pybind11.h>

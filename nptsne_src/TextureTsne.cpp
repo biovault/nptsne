@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 // Interface is a simplified version of https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html
 #include "TextureTsne.h"
 #include <cstdio>

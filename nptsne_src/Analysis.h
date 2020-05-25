@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #pragma once
 
 #include <hdi/data/embedding.h>
@@ -5,6 +7,7 @@
 #include "SparseTsne.h"
 #include "TextureTsneExtended.h"
 #include "EmbedderType.h"
+#include "Types.h"
 #include <cstdint>
 #include <memory>
 #include <vector>
@@ -71,7 +74,7 @@ struct Analysis {
     }
 
     nptsne::SparseScalarMatrixType& getTransitionMatrix() {
-                if (EmbedderType::CPU == embedderType) {
+        if (EmbedderType::CPU == embedderType) {
             return embedder.getTransitionMatrix();
         }
         return textureEmbedder.getTransitionMatrix();

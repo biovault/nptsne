@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #include "Analysis.h"
 #include <hdi/utils/graph_algorithms.h>
 #include <iostream>
@@ -85,8 +87,6 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     return result;
 }
 
-
-
 void Analysis::get_parent_landmark_selection(const Analysis& newAnalysis,
     std::vector<uint32_t>& parent_landmark_selection) {
     std::cout << "Get the landmark indexes of the parent selection \n";
@@ -94,3 +94,4 @@ void Analysis::get_parent_landmark_selection(const Analysis& newAnalysis,
         parent_landmark_selection.push_back(newAnalysis.parent->landmark_indexes[i]);
     }
 }
+

@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #include "HSne.h"
 #include <iostream>
 #include <fstream>

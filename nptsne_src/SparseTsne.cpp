@@ -1,3 +1,5 @@
+// Copyright 2020 LKEB at LUMC
+// Author: B. van Lew
 #include "SparseTsne.h"
 #include <hdi/utils/log_helper_functions.h>
 #include <iostream>
