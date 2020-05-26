@@ -521,6 +521,9 @@ PYBIND11_MODULE(_nptsne, m) {
         });
 
         // Share the landmark original indexes without a copy
+        // TODO change name to orig_index. Since this translates
+        // selection indexes (not landmarks indexes) to original data
+        // indexes
         analysis_class.def_property_readonly(
             "landmark_orig_indexes",
             [](Analysis& self) {

@@ -38,13 +38,13 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
         // A sub-analysis derived from a parent
         result->scale_id = parent->scale_id - 1;
         std::cout << "Sub-analysis at scale: " << result->scale_id << "\n";
-        // get the landmarks corresponding to the parent selecton
+        // get the landmarks corresponding to the parent selection
         std::vector<uint32_t> parent_landmark_selection;
         Analysis::get_parent_landmark_selection(*result, parent_landmark_selection);
 
         std::cout << "Get the influence of these landmarks at the lower scale " << "\n";
         // From the parent level landmarks perform random walks to
-        // determine the neighbouring landmarks at the previous scale
+        // determine the neighboring landmarks at the previous scale
         std::map<uint32_t, float> parent_neighbor_landmarks;
         result->hsne->getInfluencedLandmarksInPreviousScale(
             parent->scale_id,
