@@ -13,11 +13,13 @@ Classes:
 
 """
 import time
+import numpy as np
 from PyQt5 import QtWidgets  # pylint: disable=no-name-in-module
 from EmbeddingGui import EmbeddingViewer
 from ModelGui import DemoType
 from CompositeImageViewer import CompositeImageViewer
 from HyperspectralImageViewer import HyperspectralImageViewer
+from MetaDataViewer import MetaDataViewer
 
 
 class AnalysisController(QtWidgets.QDialog):
@@ -35,18 +37,21 @@ class AnalysisController(QtWidgets.QDialog):
             analysis_stopped):
         super(QtWidgets.QDialog, self).__init__()
         self.embedding_viewer = EmbeddingViewer(self)
-        self.image_gui = None
+        self.data_gui = None
         self.demo_type = demo_type
         if demo_type == DemoType.LABELLED_DEMO:
-            self.image_gui = CompositeImageViewer()
+            self.data_gui = CompositeImageViewer()
         elif demo_type == DemoType.HYPERSPECTRAL_DEMO:
-            self.image_gui = HyperspectralImageViewer(self)
+            self.data_gui = HyperspectralImageViewer(self)
+        elif demo_type == DemoType.POINT_DEMO:
+            self.data_gui = MetaDataViewer(self)
 
         # Callbacks to the ModelController
         self.make_new_analysis = make_new_analysis
         self.remove_analysis = remove_analysis
         self.analysis_stopped = analysis_stopped
         self.cleanup = True
+        self.meta_path = None
 
         self.__init_ui()
 
@@ -54,9 +59,9 @@ class AnalysisController(QtWidgets.QDialog):
         # Define the layout
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.widget_layout = QtWidgets.QHBoxLayout(self)
-        self.widget_layout.addWidget(self.embedding_viewer)
-        if self.image_gui:
-            self.widget_layout.addWidget(self.image_gui)
+        self.widget_layout.addWidget(self.embedding_viewer, 1)
+        if self.data_gui:
+            self.widget_layout.addWidget(self.data_gui, 0)
         self.status = QtWidgets.QStatusBar()
 
         self.main_layout.addLayout(self.widget_layout)
@@ -65,6 +70,9 @@ class AnalysisController(QtWidgets.QDialog):
         self.setLayout(self.main_layout)
         self.show()
 
+    def set_metapath(self, meta_path):
+        self.meta_path = meta_path
+        
     def start_embedding(
             self,
             data,
@@ -90,9 +98,11 @@ class AnalysisController(QtWidgets.QDialog):
         self._stop_iter = False
         self._iter_count = 0
         self.timer_count = 0
-        if (self.demo_type == DemoType.LABELLED_DEMO or
-                self.demo_type == DemoType.HYPERSPECTRAL_DEMO):
-            self.image_gui.init_plot(data, image_dimensions)
+        if self.demo_type in [DemoType.LABELLED_DEMO, DemoType.HYPERSPECTRAL_DEMO]:
+            self.data_gui.init_plot(data, image_dimensions)
+        elif self.demo_type == DemoType.POINT_DEMO:
+            self.data_gui.init_metadata(self.meta_path, self.on_meta_colors, self.on_meta_select)
+        
 
         sub_labels = None
         if labels is not None:
@@ -165,7 +175,7 @@ class AnalysisController(QtWidgets.QDialog):
         landmark_indexes = self.landmark_index_from_selection(analysis_selection)
         if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
             # Pass area influenced to the hyperspectral viewer
-            self.image_gui.set_static_mask(
+            self.data_gui.set_static_mask(
                 self.analysis.get_area_of_influence(landmark_indexes))
 
         if make_new_analysis:
@@ -173,9 +183,29 @@ class AnalysisController(QtWidgets.QDialog):
         else:
             if self.demo_type == DemoType.LABELLED_DEMO:
                 # Pass data indexes to labelled viewer
-                self.image_gui.set_image_indexes(
+                self.data_gui.set_image_indexes(
                     self.data_index_from_selection(analysis_selection))
 
+    def on_meta_colors(self, color_array):
+        """Colors settings from a metadata viewer.
+            The color_array is a numpy array of #XXXXXX colors for all data points. This 
+            needs to be filtered for the landmarks in this analysis"""
+        
+        print(self.analysis.landmark_orig_indexes)
+        analysis_colors = color_array[self.analysis.landmark_orig_indexes]
+        print(analysis_colors)
+        self.embedding_viewer.set_face_colors(analysis_colors)
+
+    def on_meta_select(self, index_array):
+        """Selection index from a metadata viewer.
+            The index_array is a numpy array of indexes for all data points. This 
+            needs to be filtered for the landmarks in this analysis"""
+
+        select = np.isin(self.analysis.landmark_orig_indexes, index_array)
+        data_indexes = np.where(select)
+        print(f'selected indexes {data_indexes}')
+        self.embedding_viewer.set_selection(data_indexes)   
+            
     def win_raise(self):
         """Raise this dialog to the top of the z-order"""
         self.raise_()

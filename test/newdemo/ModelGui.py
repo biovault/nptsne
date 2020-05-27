@@ -22,7 +22,7 @@ from PIL import ImageQt, Image
 from PyQt5.QtWidgets import (QApplication, QTreeView,
                              QWidget, QGridLayout, QDialog, QGroupBox, QFormLayout,
                              QPushButton, QLabel, QSpinBox, QFileDialog, QAbstractItemView,
-                             QComboBox, QHBoxLayout, QLineEdit)
+                             QComboBox, QHBoxLayout, QLineEdit, QHeaderView)
 from PyQt5.QtCore import Qt, QTimer, QSize, pyqtSlot
 from PyQt5.QtGui import (QIcon, QStandardItemModel,
                          QStandardItem, QPixmap, QIntValidator)
@@ -85,6 +85,7 @@ class ModelGui(QDialog):
         # The analysis tree
         self.tree = QTreeView()
         self.tree.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.tree.header().setSectionResizeMode(QHeaderView.ResizeToContents);
         self.tree.setIconSize(QSize(*self.thumb_size))
         self.tree.setModel(self.model)
 

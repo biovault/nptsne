@@ -65,6 +65,9 @@ class EmbeddingGui(FigureCanvas):
         self.draw_state = (DrawingMode.NoDraw, DrawingShape.NoShape)
         self.selection_mask = np.full((0, 0), False)
         self.in_selection = False
+        self.facecolors = None
+        self.scatter = None
+        self.active_selector = None
         plt.show(block=False)
 
     def get_canvas_timer(self, interval):
@@ -92,7 +95,6 @@ class EmbeddingGui(FigureCanvas):
         self.selection_mask = np.full(weights.shape, False)
 
         # Plot and image definition
-        self.scatter = None
         # self.rect = None
         self.extent = 2.8
         self.cleanup = True
@@ -170,7 +172,7 @@ class EmbeddingGui(FigureCanvas):
         """Cleanup at the canvas close event"""
         self.fig.canvas.stop_event_loop()
         self.on_close()
-
+    
     def update_scatter_plot_limits(self, embedding):
         """Resize the plot te respect the extent of the updated embedding"""
         minp = np.amin(embedding, axis=0)
@@ -196,6 +198,8 @@ class EmbeddingGui(FigureCanvas):
 
     def force_refresh(self):
         """Force complete canvas redraw"""
+        if self.facecolors and self.scatter:
+            self.scatter.set_facecolors(self.facecolors)
         fig_size = self.fig.get_size_inches()
         self.fig.set_size_inches(fig_size)
         self.fig.canvas.draw()
@@ -207,6 +211,11 @@ class EmbeddingGui(FigureCanvas):
         self.embedding = embedding
         self.scatter.set_offsets(embedding)
         self.update_scatter_plot_limits(embedding)
+        self.force_refresh()
+
+    def set_face_colors(self, colors):
+        """Colors is a numpy array of #XXXXXX colors"""
+        self.facecolors = list(colors)
         self.force_refresh()
 
     def on_over(self, event):
@@ -229,9 +238,12 @@ class EmbeddingGui(FigureCanvas):
         ec = self.scatter.get_facecolors()
         if ec.shape[0] == 1:
             ec = np.tile(ec, (xys.shape[0], 1))
-        # Set selected edge colors to dark grey
+        lw = np.full((ec.shape[0]), 1)    
+        # Set selected edge colors to dark grey and 2 thickness
         ec[self.selection_mask] = (0.05, 0.05, 0.05, 1)
+        lw[self.selection_mask] = 2
         self.scatter.set_edgecolors(ec)
+        self.scatter.set_linewidths(lw)
         self.fig.canvas.draw_idle()
         # Emit a permanent selection
         # return the current selection indexes
@@ -330,6 +342,11 @@ class EmbeddingGui(FigureCanvas):
         if self.draw_state[0] == DrawingMode.Sub:
             self.selection_mask = self.selection_mask & ~selection_mask
         self.refresh_selection()
+    
+    def set_selection(self, indexes):
+        self.selection_mask.fill(False)
+        self.selection_mask[indexes] = True
+        self.refresh_selection()
 
     def get_figure_as_buffer(self):
         """Return the figure as a png image in a buffer"""
@@ -386,6 +403,12 @@ class EmbeddingViewer(QtWidgets.QWidget):
             color_norm)
         self.on_selection_callback = on_selection
 
+    def set_face_colors(self, color_array):
+        self.plot_widget.set_face_colors(color_array)
+
+    def set_selection(self, index_array):
+        self.plot_widget.set_selection(index_array)
+        
     @QtCore.pyqtSlot()
     def on_selection(self, indexes, selection_event):
         # print(f"indexes: {indexes.shape} selection size: {len(list(indexes))} perm: {permanent}")

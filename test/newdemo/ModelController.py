@@ -15,7 +15,7 @@ import numpy as np
 from PyQt5.QtWidgets import QApplication
 # The demo GUI
 from AnalysisController import AnalysisController
-from ModelGui import ModelGui, AnalysisEvent
+from ModelGui import ModelGui, AnalysisEvent, DemoType
 
 
 class ModelController():
@@ -88,6 +88,10 @@ class ModelController():
             self.add_analysis,
             self.remove_analysis,
             self.analysis_stopped)
+
+        if self.model_gui.demo_type is DemoType.POINT_DEMO:
+            analysis_gui.set_metapath(self.labelcolor_filename)
+            
         analysis_gui.start_embedding(
             self.data,
             new_analysis,
@@ -129,6 +133,7 @@ class ModelController():
         data_file_path = Path(filename)
         hsne_file_path = None
         test_file_path = data_file_path.with_suffix('.hsne')
+        self.labelcolor_filename = labelcolor_filename
 
         # TODO move to the ModelGui
         # if test_file_path.exists():
@@ -193,12 +198,17 @@ class ModelController():
         # The AnalysisGui is non-blocking
         # start with an analysis GUI containing all top scale landmarks
         is_top_level = True
-        self.im_size = (self.model_gui.im_size_x, self.model_gui.im_size_y)
+        self.im_size = (0, 0)
+        if self.model_gui.demo_type in [DemoType.LABELLED_DEMO, DemoType.HYPERSPECTRAL_DEMO]:
+            self.im_size = (self.model_gui.im_size_x, self.model_gui.im_size_y)
         top_analysis_gui = AnalysisController(
             self.model_gui.demo_type,
             self.add_analysis,
             self.remove_analysis,
             self.analysis_stopped)
+            
+        if self.model_gui.demo_type is DemoType.POINT_DEMO:
+            top_analysis_gui.set_metapath(self.labelcolor_filename)
             
         top_analysis_gui.start_embedding(
             self.data,
