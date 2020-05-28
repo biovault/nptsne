@@ -15,6 +15,8 @@ Classes:
 import time
 import numpy as np
 from PyQt5 import QtWidgets  # pylint: disable=no-name-in-module
+from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QCloseEvent
 from EmbeddingGui import EmbeddingViewer
 from ModelGui import DemoType
 from CompositeImageViewer import CompositeImageViewer
@@ -50,7 +52,6 @@ class AnalysisController(QtWidgets.QDialog):
         self.make_new_analysis = make_new_analysis
         self.remove_analysis = remove_analysis
         self.analysis_stopped = analysis_stopped
-        self.cleanup = True
         self.meta_path = None
 
         self.__init_ui()
@@ -116,7 +117,7 @@ class AnalysisController(QtWidgets.QDialog):
         disable_select = self.analysis.scale_id == 0
         self.embedding_viewer.init_plot(
             analysis.embedding, analysis.landmark_weights,
-            self.on_selection, self.on_close,
+            self.on_selection, self.do_close,
             disable_select,
             top_level, sub_labels, color_norm)
 
@@ -222,18 +223,34 @@ class AnalysisController(QtWidgets.QDialog):
         self.raise_()
         self.activateWindow()
 
-    def on_close(self, cleanup=True):
-        """Closing the dialog delete
-        the analysis (if required) and release it"""
-        if cleanup:
+    def do_close(self):
+        """Callbask to close the dialog"""
+        self.cleanup(True)
+        self.close()
+
+    def cleanup(self, remove_analysis=True):
+        """Cleanup while closing"""
+        if self.analysis is None:
+            return
+        if remove_analysis:
+            print('Deleting analysis on close')
             self.remove_analysis(self.analysis.id)
-        del self.analysis
+        del self.analysis    
+        self.analysis = None
+        
+    # Override closeEvent for the widget
+    def closeEvent(self, event):
+        """Make sure that closing the dialog cleans up the analysis"""
+        self.cleanup(True)
+        event.accept()
 
     def kill(self):
         """Someone else has deleted the analysis close
         this dialog"""
-        self.embedding_viewer.close()
-        self.close(False)
+        if not self.analysis is None:
+            del self.analysis
+        self.analysis = None
+        self.do_close()
 
     @property
     def iter_stopped(self):

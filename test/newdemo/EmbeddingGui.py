@@ -429,7 +429,8 @@ class EmbeddingViewer(QtWidgets.QWidget):
             # mouse over - dont change the selection list
             if len(indexes) == 0:
                 # restore the previous selection
-                self.on_selection_callback(self.selection_list, False)
+                if len(self.selection_list) > 0:
+                    self.on_selection_callback(self.selection_list, False)
             else:
                 self.on_selection_callback(indexes, False)
 
