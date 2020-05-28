@@ -71,8 +71,9 @@ class AnalysisController(QtWidgets.QDialog):
         self.show()
 
     def set_metapath(self, meta_path):
+        """The path to the optional meta data csv file"""
         self.meta_path = meta_path
-        
+
     def start_embedding(
             self,
             data,
@@ -98,11 +99,15 @@ class AnalysisController(QtWidgets.QDialog):
         self._stop_iter = False
         self._iter_count = 0
         self.timer_count = 0
-        if self.demo_type in [DemoType.LABELLED_DEMO, DemoType.HYPERSPECTRAL_DEMO]:
+        if self.demo_type in [
+                DemoType.LABELLED_DEMO,
+                DemoType.HYPERSPECTRAL_DEMO]:
             self.data_gui.init_plot(data, image_dimensions)
         elif self.demo_type == DemoType.POINT_DEMO:
-            self.data_gui.init_metadata(self.meta_path, self.on_meta_colors, self.on_meta_select)
-        
+            self.data_gui.init_metadata(
+                self.meta_path,
+                self.on_meta_colors,
+                self.on_meta_select)
 
         sub_labels = None
         if labels is not None:
@@ -167,12 +172,13 @@ class AnalysisController(QtWidgets.QDialog):
         for i in sel_indexes:
             landmark_indexes.append(self.analysis.landmark_indexes[i])
         return landmark_indexes
-        
+
     # Triggered by a selection in the embedding gui
     def on_selection(self, analysis_selection, make_new_analysis):
         """analysis_selection is a list of indexes at this analysis scale
             If make_new_analysis is true start a new analysis controller"""
-        landmark_indexes = self.landmark_index_from_selection(analysis_selection)
+        landmark_indexes = self.landmark_index_from_selection(
+            analysis_selection)
         if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
             # Pass area influenced to the hyperspectral viewer
             self.data_gui.set_static_mask(
@@ -186,26 +192,31 @@ class AnalysisController(QtWidgets.QDialog):
                 self.data_gui.set_image_indexes(
                     self.data_index_from_selection(analysis_selection))
 
+    #  Callbacks to be used by meta data manipulation GUIs
+    def on_meta_ids(self, ids):
+        """Point ids from the meta data (could extend to more metadata)"""
+        pass
+
     def on_meta_colors(self, color_array):
         """Colors settings from a metadata viewer.
-            The color_array is a numpy array of #XXXXXX colors for all data points. This 
+            The color_array is a numpy array of #XXXXXX colors for all data points. This
             needs to be filtered for the landmarks in this analysis"""
-        
-        print(self.analysis.landmark_orig_indexes)
+
+        # print(self.analysis.landmark_orig_indexes)
         analysis_colors = color_array[self.analysis.landmark_orig_indexes]
-        print(analysis_colors)
+        # print(analysis_colors)
         self.embedding_viewer.set_face_colors(analysis_colors)
 
-    def on_meta_select(self, index_array):
+    def on_meta_select(self, data_index_array):
         """Selection index from a metadata viewer.
-            The index_array is a numpy array of indexes for all data points. This 
+            The index_array is a numpy array of indexes for all data points. This
             needs to be filtered for the landmarks in this analysis"""
 
-        select = np.isin(self.analysis.landmark_orig_indexes, index_array)
-        data_indexes = np.where(select)
-        print(f'selected indexes {data_indexes}')
-        self.embedding_viewer.set_selection(data_indexes)   
-            
+        select = np.isin(self.analysis.landmark_orig_indexes, data_index_array)
+        selected_indexes = np.where(select)
+        # print(f'selected indexes {selected_indexes}')
+        self.embedding_viewer.set_selection(selected_indexes)
+
     def win_raise(self):
         """Raise this dialog to the top of the z-order"""
         self.raise_()

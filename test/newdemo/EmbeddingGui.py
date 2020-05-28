@@ -134,7 +134,7 @@ class EmbeddingGui(FigureCanvas):
                 norm=self.color_norm,
                 alpha=0.4,
                 picker=10)
-
+                
         self.update_scatter_plot_limits(embedding)
 
         # Drawing selectors
@@ -163,6 +163,9 @@ class EmbeddingGui(FigureCanvas):
             DrawingShape.Polygon: polygon_selector
         }
         self.set_selector()
+        # force rendering of facecolors
+        self.fig.canvas.draw()
+        self.facecolors = self.scatter.get_facecolors()
 
     def quit(self):
         """Close the plot and cleanup model"""
@@ -198,7 +201,8 @@ class EmbeddingGui(FigureCanvas):
 
     def force_refresh(self):
         """Force complete canvas redraw"""
-        if self.facecolors and self.scatter:
+        if (not self.facecolors is None and 
+            not self.scatter is None):
             self.scatter.set_facecolors(self.facecolors)
         fig_size = self.fig.get_size_inches()
         self.fig.set_size_inches(fig_size)
@@ -214,7 +218,8 @@ class EmbeddingGui(FigureCanvas):
         self.force_refresh()
 
     def set_face_colors(self, colors):
-        """Colors is a numpy array of #XXXXXX colors"""
+        """Colors is a numpy array of #XXXXXX
+            format string colors"""
         self.facecolors = list(colors)
         self.force_refresh()
 
@@ -344,12 +349,15 @@ class EmbeddingGui(FigureCanvas):
         self.refresh_selection()
     
     def set_selection(self, indexes):
+        """Set a non-interactive selection.
+            This could be a saved selection or one driven
+            by meta data"""
         self.selection_mask.fill(False)
         self.selection_mask[indexes] = True
         self.refresh_selection()
 
     def get_figure_as_buffer(self):
-        """Return the figure as a png image in a buffer"""
+        """Return the scatter plot as an image in a buffer"""
         self.force_refresh()
         buf = io.BytesIO()
         extent = self.scatter.get_tightbbox(
