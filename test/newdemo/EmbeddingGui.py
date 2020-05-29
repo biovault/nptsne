@@ -68,6 +68,27 @@ class EmbeddingGui(FigureCanvas):
         self.facecolors = None
         self.scatter = None
         self.active_selector = None
+        self.setWhatsThis("""
+    Select keys:
+    ============
+    A - select all
+    D - remove selection
+    I - invert selection
+    
+    Shaped selector keys:
+    =====================
+    E - ellipse
+    L - lasso
+    P - polygon
+    R - rectangle
+    Space - remove selector
+    
+    Selector modifier keys
+    ======================
+    <Shift> + <selector key> - add selection
+    <Ctrl> + <selector key> - subtract selection
+            """)
+            
         plt.show(block=False)
 
     def get_canvas_timer(self, interval):
@@ -144,8 +165,7 @@ class EmbeddingGui(FigureCanvas):
             button=[1, 3],
             rectprops=dict(facecolor=(1, 0, 0, 0.1), edgecolor=(1, 0, 0, 0.5), fill=False),
             minspanx=5, minspany=5,
-            spancoords='pixels',
-            interactive=True)
+            spancoords='pixels')
         lasso_selector = LassoSelector(
             self.ax, onselect=self.on_end_lasso_select,
             lineprops=dict(color=(1, 0, 0, 0.5)))
@@ -287,11 +307,14 @@ class EmbeddingGui(FigureCanvas):
         """Set the currently visible path selection widget"""
         self.active_selector = None
         for key, selector in self.selectors.items():
+            # Need to also set the visibility for the polygon selector
             if key == enable:
                 selector.set_active(True)
+                selector.set_visible(True)
                 self.active_selector = selector
             else:
                 selector.set_active(False)
+                selector.set_visible(False)
 
     def on_start_select(self, event):
         """Check that the user has started a selection and record that"""

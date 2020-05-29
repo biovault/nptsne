@@ -44,9 +44,9 @@ class AnalysisController(QtWidgets.QDialog):
         if demo_type == DemoType.LABELLED_DEMO:
             self.data_gui = CompositeImageViewer()
         elif demo_type == DemoType.HYPERSPECTRAL_DEMO:
-            self.data_gui = HyperspectralImageViewer(self)
+            self.data_gui = HyperspectralImageViewer()
         elif demo_type == DemoType.POINT_DEMO:
-            self.data_gui = MetaDataViewer(self)
+            self.data_gui = MetaDataViewer()
 
         # Callbacks to the ModelController
         self.make_new_analysis = make_new_analysis
@@ -131,6 +131,8 @@ class AnalysisController(QtWidgets.QDialog):
         """Develop the embedding by performing the tsne iterations
         and displaying the intermediate plots"""
         send_stop_event = False
+        if self.analysis is None:
+            return
         if not self._stop_iter:
             self.timer_count = self.timer_count + 1
             for j in range(self.iters_per_frame):

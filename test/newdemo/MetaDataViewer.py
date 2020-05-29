@@ -74,6 +74,7 @@ class MetaDataViewer(QWidget):
         for i in range(1, len(header_names), 2):
             self.meta_pairs.append([header_names[i], header_names[i + 1]])
             self.class_combo.addItem(header_names[i], i)
+        self.class_combo.setCurrentIndex(0)    
 
     def __fill_table(self):
         """The table allows the user to select labels"""

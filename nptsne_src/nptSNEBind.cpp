@@ -299,6 +299,17 @@ PYBIND11_MODULE(_nptsne, m) {
             py::arg("X"),
             py::arg("file_path") );
 
+    hsne_class.def_static("read_num_scales",
+        static_cast<int (*)(const std::string&)>(&HSne::read_num_scales),
+        R"pbdoc(
+          Read the number of scales defined in stored hSNE data.
+
+          :return: Number of scales in the saved hSNE 
+          :rtype: int
+
+        )pbdoc",
+        py::arg("file_path"));
+
     hsne_class.def("save", &HSne::save_to_file, "Save the HSNE hierarchy to a file",
         R"pbdoc(
           Save the HSNE as a binary structure to a file
@@ -340,13 +351,13 @@ PYBIND11_MODULE(_nptsne, m) {
 
     hsne_scale_class.def_property_readonly("transition_matrix",
         [](HSneScale& self) {
-        nptsne::SparseScalarMatrixType& matrix = self.transition_matrix();
-        std::vector<std::reference_wrapper<nptsne::MapStorageType >> sparse;
-        for (uint32_t i = 0; i < matrix.size(); ++i) {
-            sparse.push_back(matrix[i].memory());
-        }
-        return sparse;
-    });
+            nptsne::SparseScalarMatrixType& matrix = self.transition_matrix();
+            std::vector<std::reference_wrapper<nptsne::MapStorageType >> sparse;
+            for (uint32_t i = 0; i < matrix.size(); ++i) {
+                sparse.push_back(matrix[i].memory());
+            }
+            return sparse;
+        });
 
     hsne_scale_class.def_property_readonly("landmark_orig_indexes",
         [](HSneScale& self) {

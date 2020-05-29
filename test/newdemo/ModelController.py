@@ -128,17 +128,14 @@ class ModelController():
 
     # 3.) Load an numpy file - offer the user the chance to preload an
     # hsnefile if one is avaliable
-    def tree_load(self, filename, label_filename, labelcolor_filename):
+    def tree_load(self, filename, label_filename, labelcolor_filename, hsne_name):
         """Handle 3.) Load an numpy file"""
         data_file_path = Path(filename)
         hsne_file_path = None
+        if hsne_name:
+            hsne_file_path = Path(hsne_name)
         test_file_path = data_file_path.with_suffix('.hsne')
         self.labelcolor_filename = labelcolor_filename
-
-        # TODO move to the ModelGui
-        # if test_file_path.exists():
-        #    if self.model_gui.ask_load_hsne(test_file_path):
-        #        hsne_file_path = test_file_path
 
         data = np.load(data_file_path)
         self.start_hsne(data, data_file_path, hsne_file_path, label_filename)

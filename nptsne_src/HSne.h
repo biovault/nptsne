@@ -45,6 +45,9 @@ class HSne {
     // Return scale info in a wrapper class
     HSneScale get_scale(unsigned int scale_number);
 
+    // Check the version and read the number of scales from the hsne file 
+    static int HSne::read_num_scales(const std::string &filePath);
+
     int num_scales() { return _num_scales; }
     int num_data_points() { return _num_data_points; }
     int num_dimensions() { return _num_dimensions; }
@@ -59,7 +62,7 @@ class HSne {
     // The Hierarchical SNE algorithm
     nptsne::HsneType* _hsne;
 
-    // Hold the usersupplied or default point ids
+    // Hold the user supplied or default point ids
     py::array_t<uint64_t, py::array::c_style | py::array::forcecast> *point_ids;
 
     nptsne::HsneType::Parameters _hsneParams;

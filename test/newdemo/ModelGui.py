@@ -16,17 +16,32 @@ import queue
 from pathlib import Path
 import math
 from enum import Enum
+import nptsne
 import numpy as np
 import PIL
 from PIL import ImageQt, Image
-from PyQt5.QtWidgets import (QApplication, QTreeView,
-                             QWidget, QGridLayout, QDialog, QGroupBox, QFormLayout,
-                             QPushButton, QLabel, QSpinBox, QFileDialog, QAbstractItemView,
-                             QComboBox, QHBoxLayout, QLineEdit, QHeaderView)
+from PyQt5.QtWidgets import (
+    QApplication,
+    QTreeView,
+    QWidget,
+    QGridLayout,
+    QDialog,
+    QGroupBox,
+    QFormLayout,
+    QPushButton,
+    QLabel,
+    QSpinBox,
+    QFileDialog,
+    QAbstractItemView,
+    QComboBox,
+    QHBoxLayout,
+    QVBoxLayout,
+    QLineEdit,
+    QHeaderView)
 from PyQt5.QtCore import Qt, QTimer, QSize, pyqtSlot
 from PyQt5.QtGui import (QIcon, QStandardItemModel,
                          QStandardItem, QPixmap, QIntValidator)
-
+from DemoConfig import CONFIGS
 
 
 class AnalysisEvent(Enum):
@@ -60,7 +75,8 @@ class ModelGui(QDialog):
 
         self.name = None
         self.label_name = None
-        self.labelcolor_name = None
+        self.meta_name = None
+        self.hsne_name = None
 
         self.title = 'Analysis hierarchy viewer'
         self.left = 10
@@ -69,7 +85,7 @@ class ModelGui(QDialog):
         self.height = 400
         self.init_ui()
         self.id_item = {}
-        self.root_id = 0
+        self.root_id = None
 
     def init_ui(self):
         """All the ui layout in one place. Note: Part of the ui
@@ -85,7 +101,7 @@ class ModelGui(QDialog):
         # The analysis tree
         self.tree = QTreeView()
         self.tree.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.tree.header().setSectionResizeMode(QHeaderView.ResizeToContents);
+        self.tree.header().setSectionResizeMode(QHeaderView.ResizeToContents)
         self.tree.setIconSize(QSize(*self.thumb_size))
         self.tree.setModel(self.model)
 
@@ -95,36 +111,46 @@ class ModelGui(QDialog):
 
         self.tree.resize(640, 480)
 
+        # Control layout
+        controlLayout = QVBoxLayout()
+
+        self.preconfigured_group = QGroupBox("Preconfigured")
+        preconfigured_layout = QFormLayout(self)
+        self.preconfigured_combo = QComboBox(self)
+        self.preconfigured_combo.addItem('None', userData=None)
+        for config in CONFIGS:
+            self.preconfigured_combo.addItem(config.descriptor, userData=config)
+        self.preconfigured_combo.currentIndexChanged[int].connect(
+            self.on_preconfigured)    
+        preconfigured_layout.addRow(
+            QLabel("Load preset demo:"),
+            self.preconfigured_combo)
+        self.preconfigured_group.setLayout(preconfigured_layout)
+        controlLayout.addWidget(self.preconfigured_group)
+
         # Data type settings
-        self.demo_type_group = QGroupBox("Demo type")
+        self.demo_type_group = QGroupBox("Data type")
         data_type_layout = QFormLayout(self)
         self.data_type_combo = QComboBox(self)
         self.data_type_combo.addItem(
-            "Labelled image (e.g. MNIST)",
+            "Image is a data point",
             DemoType.LABELLED_DEMO)
         self.data_type_combo.addItem(
-            "Point and metadata (e.g. Cell genomic)",
+            "Point and metadata",
             DemoType.POINT_DEMO)
         self.data_type_combo.addItem(
-            "Hyperspectral image (e.g. Sun data)",
+            "Hyperspectral image",
             DemoType.HYPERSPECTRAL_DEMO)
-        data_type_layout.addRow(QLabel("Select demo style:"), self.data_type_combo)
-        self.demo_type_group.setLayout(data_type_layout)
-
-        self.data_type_combo.currentIndexChanged[int].connect(self.on_demo_style)
-
-        # Hsne settings
-        self.hsne_group = QGroupBox("hSNE settings")
-        self.hsne_form_layout = QFormLayout(self)
-        self.scale_spin = QSpinBox(self)
-        self.scale_spin.setRange(1, 10)
-        self.scale_spin.setValue(4)
-        self.hsne_form_layout.addRow(QLabel("Scales:"), self.scale_spin)
+        data_type_layout.addRow(
+            QLabel("Visualization style:"),
+            self.data_type_combo)
+        self.data_type_combo.currentIndexChanged[int].connect(
+            self.on_demo_style)
 
         data_button = QPushButton("Data")
         data_button.clicked.connect(self.on_load)
         self.data_label = QLabel("<choose data .npy>")
-        self.hsne_form_layout.addRow(data_button, self.data_label)
+        data_type_layout.addRow(data_button, self.data_label)
 
         self.xy_label = QLabel("Image size")
         self.label_x = QLabel("X:")
@@ -142,19 +168,36 @@ class ModelGui(QDialog):
         self.xy_layout.addWidget(self.label_y)
         self.xy_layout.addWidget(self.image_y)
         self.xy_container.setLayout(self.xy_layout)
-        self.hsne_form_layout.addRow(self.xy_label, self.xy_container)
+        data_type_layout.addRow(self.xy_label, self.xy_container)
 
         self.label_button = QPushButton("Labels")
         self.label_button.clicked.connect(self.on_load_labels)
-        self.label_label = QLabel("<optionally choose labels>")
-        self.hsne_form_layout.addRow(self.label_button, self.label_label)
+        self.label_label = QLabel("<optionally choose labels .npy>")
+        data_type_layout.addRow(self.label_button, self.label_label)
 
-        self.labcol_button = QPushButton("Label/Color pairs")
-        self.labcol_button.clicked.connect(self.on_load_labelscolors)
-        self.labcol_label = QLabel("<optionally choose label/color csv>")
-        self.hsne_form_layout.addRow(self.labcol_button, self.labcol_label)
+        self.meta_button = QPushButton("Label/Color metadata")
+        self.meta_button.clicked.connect(self.on_load_labelscolors)
+        self.meta_label = QLabel("<optionally choose label/color .csv>")
+        data_type_layout.addRow(self.meta_button, self.meta_label)
+        self.demo_type_group.setLayout(data_type_layout)
+        controlLayout.addWidget(self.demo_type_group)
+
+        # Hsne settings
+        self.hsne_group = QGroupBox("hSNE settings")
+        self.hsne_form_layout = QFormLayout(self)
+
+        hsne_button = QPushButton("Preload")
+        hsne_button.clicked.connect(self.on_load_hsne)
+        self.hsne_label = QLabel("<optionally choose existing .hsne>")
+        self.hsne_form_layout.addRow(hsne_button, self.hsne_label)
+
+        self.scale_spin = QSpinBox(self)
+        self.scale_spin.setRange(1, 10)
+        self.scale_spin.setValue(4)
+        self.hsne_form_layout.addRow(QLabel("Scales:"), self.scale_spin)
 
         self.hsne_group.setLayout(self.hsne_form_layout)
+        controlLayout.addWidget(self.hsne_group)
 
         # Embedding settings
         self.embedding_group = QGroupBox("Embedding settings")
@@ -166,9 +209,19 @@ class ModelGui(QDialog):
         embed_form_layout.addRow(QLabel("Iterations:"), self.iter_spin)
         self.embedding_group.setLayout(embed_form_layout)
 
+        controlLayout.addWidget(self.embedding_group)
+
+        clear_start_layout = QHBoxLayout()
         self.start_button = QPushButton("Start")
         self.start_button.clicked.connect(self.on_start)
         self.start_button.setDisabled(True)
+        self.clear_button = QPushButton("Clear")
+        self.clear_button.clicked.connect(self.on_clear)
+
+        clear_start_layout.addWidget(self.start_button)
+        clear_start_layout.addWidget(self.clear_button)
+
+        controlLayout.addLayout(clear_start_layout)
 
         self.delete_button = QPushButton("Delete selected")
         self.delete_button.clicked.connect(self.on_delete)
@@ -180,10 +233,8 @@ class ModelGui(QDialog):
         main_layout = QGridLayout()
         # row, col, rowSpan, colSpan
         main_layout.addWidget(self.tree, 0, 0, 10, 5)
-        main_layout.addWidget(self.demo_type_group, 0, 5, 2, 3)
-        main_layout.addWidget(self.hsne_group, 2, 5, 5, 3)
-        main_layout.addWidget(self.embedding_group, 7, 5, 2, 3)
-        main_layout.addWidget(self.start_button, 10, 5, 1, 3)
+        main_layout.addLayout(controlLayout, 0, 5, 10, 3)
+
         main_layout.addWidget(self.delete_button, 11, 2, 1, 2)
         self.setLayout(main_layout)
         self.counter = 0
@@ -201,12 +252,12 @@ class ModelGui(QDialog):
                     self.xy_container,
                     self.xy_label],
                 False: [
-                    self.labcol_button,
-                    self.labcol_label]},
+                    self.meta_button,
+                    self.meta_label]},
             DemoType.POINT_DEMO: {
                 True: [
-                    self.labcol_button,
-                    self.labcol_label],
+                    self.meta_button,
+                    self.meta_label],
                 False: [
                     self.label_button,
                     self.label_label,
@@ -219,8 +270,8 @@ class ModelGui(QDialog):
                 False: [
                     self.label_button,
                     self.label_label,
-                    self.labcol_button,
-                    self.labcol_label]}}
+                    self.meta_button,
+                    self.meta_label]}}
 
         self.show()
         self.on_demo_style(0)
@@ -249,6 +300,57 @@ class ModelGui(QDialog):
     @property
     def im_size_y(self):
         return int(self.image_y.text())
+        
+    @pyqtSlot(int)
+    def on_preconfigured(self, index):
+        config = self.preconfigured_combo.itemData(index)
+        self.on_clear()
+        if config is None:
+            return
+        if type(config).__name__ == "LabelledImage":
+            self.data_type_combo.setCurrentIndex(0)
+            self.name = config.data.data_file
+            self.data_label.setText(config.data.data_file)
+            self.label_name = config.data.label_file
+            self.label_label.setText(config.data.label_file)
+            if config.hsne.hsne_file != "":
+                self.hsne_name = config.hsne.hsne_file
+                self.__set_scale_from_hsne_file()
+                self.scale_spin.setDisabled(True)
+            elif config.hsne.scales > 0:
+                self.scale_spin.setValue(config.hsne.scales)        
+            if config.image.dim_x > 0 and config.image.dim_y > 0:
+                self.image_x.setText(str(config.image.dim_x))
+                self.image_y.setText(str(config.image.dim_y))   
+           
+        elif type(config).__name__ == "PointMeta":
+            self.data_type_combo.setCurrentIndex(1)
+            self.name = config.data.data_file
+            self.data_label.setText(config.data.data_file)
+            self.meta_name = config.data.meta_file
+            self.meta_label.setText(config.data.meta_file)
+            if config.hsne.hsne_file != "":
+                self.hsne_name = config.hsne.hsne_file
+                self.__set_scale_from_hsne_file()
+                self.scale_spin.setDisabled(True)
+            elif config.hsne.scales > 0:
+                self.scale_spin.setValue(config.hsne.scales)
+                
+        elif type(config).__name__ == "HyperspectralImage":
+            self.data_type_combo.setCurrentIndex(2)
+            self.name = config.data.data_file
+            self.data_label.setText(config.data.data_file)
+            if config.hsne.hsne_file != "":
+                self.hsne_name = config.hsne.hsne_file
+                self.__set_scale_from_hsne_file()
+                self.scale_spin.setDisabled(True)
+            elif config.hsne.scales > 0:
+                self.scale_spin.setValue(config.hsne.scales)        
+            if config.image.dim_x > 0 and config.image.dim_y > 0:
+                self.image_x.setText(str(config.image.dim_x))
+                self.image_y.setText(str(config.image.dim_y))
+                
+        self.start_button.setEnabled(True)    
 
     @pyqtSlot(int)
     def on_demo_style(self, index):
@@ -270,7 +372,7 @@ class ModelGui(QDialog):
             self.name = result[0]
             # print(f"Selected: {self.name}")
             self.start_button.setEnabled(True)
-            if (self.demo_type == DemoType.LABELLED_DEMO or 
+            if (self.demo_type == DemoType.LABELLED_DEMO or
                     self.demo_type == DemoType.HYPERSPECTRAL_DEMO):
                 # partial data load (in memory) to read the shape
                 the_data = np.load(self.name, mmap_mode='r')
@@ -282,6 +384,25 @@ class ModelGui(QDialog):
                 self.image_x.setText(str(xsize))
                 self.image_y.setText(str(ysize))
             self.data_label.setText(str(Path(self.name).name))
+    
+    def __set_scale_from_hsne_file(self):
+        scale_value = nptsne.HSne.read_num_scales(self.hsne_name)
+        self.hsne_label.setText(str(Path(self.hsne_name).name))
+        self.scale_spin.setValue(scale_value)
+        self.scale_spin.setDisabled(True)        
+
+    @pyqtSlot()
+    def on_load_hsne(self):
+        workdir = os.path.dirname(os.path.abspath(__file__))
+        result = QFileDialog.getOpenFileName(
+            self,
+            'Open a pre-calculated hSNE analysis file .hsne',
+            workdir,
+            "hSNE files (*.hsne)")
+        if result[0]:
+            self.hsne_name = result[0]
+            # print(f"Selected: {self.name}")
+            self.__set_scale_from_hsne_file()
 
     @pyqtSlot()
     def on_load_labels(self):
@@ -305,12 +426,16 @@ class ModelGui(QDialog):
             "CSV files (*.csv)")
 
         if result[0]:
-            self.labelcolor_name = result[0]
-            self.labcol_label.setText(Path(self.labelcolor_name).name)
+            self.meta_name = result[0]
+            self.meta_label.setText(Path(self.meta_name).name)
 
     @pyqtSlot()
     def on_start(self):
-        self.load_callback(self.name, self.label_name, self.labelcolor_name)
+        self.load_callback(
+            self.name,
+            self.label_name,
+            self.meta_name,
+            self.hsne_name)
 
     @pyqtSlot()
     def on_selected(self):
@@ -323,6 +448,25 @@ class ModelGui(QDialog):
         analysis_id = self._get_selected_id()
         if analysis_id:
             self.delete_callback([int(analysis_id)])
+
+    @pyqtSlot()
+    def on_clear(self):
+        if not self.root_id is None:
+            self.select_callback(int(self.root_id))
+        self.clear()
+        self.name = None
+        self.data_label.setText("<choose data .npy>")
+        self.label_name = None
+        self.label_label.setText("<optionally choose labels .npy>")
+        self.meta_name = None
+        self.meta_label.setText("<optionally choose label/color .csv>")
+        self.scale_spin.setValue(4)
+        self.scale_spin.setEnabled(True)
+        self.start_button.setDisabled(True)
+        self.hsne_name = None
+        self.hsne_label.setText("<optionally choose existing .hsne>")
+        self.image_x.setText("")
+        self.image_y.setText("")
 
     def _get_selected_id(self):
         index = self.tree.currentIndex()
@@ -431,6 +575,7 @@ class ModelGui(QDialog):
         # print('Reset bookkeeping')
         self.id_item = {}
         self.root_id = None
+
 
 # A main to allow inspection of layout
 if __name__ == '__main__':

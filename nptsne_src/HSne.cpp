@@ -60,11 +60,37 @@ bool HSne::create_hsne(
         std::cout << "Fatal error: " << e.what() << std::endl;
         return false;
     }
-    // Get the correct number of scales fromthe loads hsne
+    // Get the correct number of scales from the loads hsne
     _num_scales = _hsne->hierarchy().size();
     return false;
 }
 
+int HSne::read_num_scales(const std::string &filePath) {
+    using io_scalar_type = float ;
+    using io_unsigned_int_type = float;
+
+    std::ifstream stream(filePath, std::ios::binary);
+    //Version
+    io_unsigned_int_type major_version = 0;
+    io_unsigned_int_type minor_version = 0;
+    stream.read(reinterpret_cast<char*>(&major_version), sizeof(io_unsigned_int_type));
+    stream.read(reinterpret_cast<char*>(&minor_version), sizeof(io_unsigned_int_type));
+    if (major_version != 0) {
+        throw std::runtime_error("Invalid major version");
+    }
+    if (minor_version != 0) {
+        throw std::runtime_error("Invalid minor version");
+    }
+
+    //Number of scales
+    io_unsigned_int_type num_scales;
+    stream.read(reinterpret_cast<char*>(&num_scales), sizeof(io_unsigned_int_type));
+    if (num_scales <= 0) {
+        throw std::runtime_error("Cannot load an empty hierarchy");
+    }
+    int result = num_scales;
+    return result;
+}
 
 void HSne::save_to_file(const std::string &filePath) {
     if (_hsne == nullptr) {
