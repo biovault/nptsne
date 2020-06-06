@@ -18,76 +18,84 @@ namespace py = pybind11;
 // Maintainer note - this uses Google style docstrings
 
 PYBIND11_MODULE(_nptsne, m) {
-    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended", "HSne", "_hsne_analysis");
+    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended", "HSne", "HSneScale", "_hsne_analysis");
     m.doc() = R"pbdoc(
-        nptsne - A numpy compatible python extension for GPGPU linear complexity tSNE
+        A numpy compatible python extension for GPGPU linear complexity tSNE and hSNE
         -----------------------------------------------------------------------------
 
-        .. currentmodule:: nptsne
+        This module contains classes that wrap linear complexity t-SNE
+        and classes to support hierarchical SNE h-SNE.
+ 
+        The classes are:
+
+        .. currentmodule:: _nptsne
 
         .. autosummary::
-             :toctree: _generate
+           :toctree: _generate
 
-             TextureTsne
-             TextureTsneExtended
+            TextureTsne 
+            TextureTsneExtended
+            HSne
+            HSneScale
 
+        Additionally a submodule `hsne_analysis` provides support classes
+        for selection driven navigation of the hSNE model and mapping back
+        to the original data.
 
-         The package contains classes that wrap linear complexity tSNE.
-         The classes are:
-
-         TextureTsne : linear tSNE simple API
-         TextureTsneExtended : linear tSNE advanced API
-
-         Reference:  https://doi.org/10.1109/TVCG.2019.2934307 or (https://arxiv.org/abs/1805.10817v2)
+        References
+        ----------
+        Linear complexity t-SNE  https://doi.org/10.1109/TVCG.2019.2934307 or (https://arxiv.org/abs/1805.10817v2)
+        Hierarchical SNE https://doi.org/10.1111/cgf.12878
 
     )pbdoc";
 
     // ENUMS
     py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
-        Enumeration used to select the knn algorithm used. Three possibilities are
-        supported:
+            Enumeration used to select the knn algorithm used. Three possibilities are
+            supported:
 
-        :obj:`KnnAlgorithm.Flann`: Knn using FLANN - Fast Library for Approximate Nearest Neighbors
-
-        :obj:`KnnAlgorithm.HNSW`: Knn using Hnswlib - fast approximate nearest neighbor search
-
-        :obj:`KnnAlgorithm.Annoy`: Knn using Annoy - Spotify Approximate Nearest Neighbors Oh Yeah
-    )pbdoc")
+            `KnnAlgorithm.Flann`: Knn using FLANN - Fast Library for Approximate Nearest Neighbors
+            `KnnAlgorithm.HNSW`: Knn using Hnswlib - fast approximate nearest neighbor search
+            `KnnAlgorithm.Annoy`: Knn using Annoy - Spotify Approximate Nearest Neighbors Oh Yeah
+        )pbdoc")
         .value("Flann", KnnAlgorithm::Flann)
         .value("HNSW", KnnAlgorithm::HNSW)
         .value("Annoy", KnnAlgorithm::Annoy);
 
     // CLASSES
     // Basic interface for GPU Texture based tSNE
-    py::class_<TextureTsne> textureTsne(m, "TextureTsne", R"pbdoc(
-    TextureTsne: a simple wrapper API for the linear tSNE implementation.
+    py::class_<TextureTsne> textureTsne(m, "TextureTsne",
+        R"pbdoc(
+            TextureTsne: a simple wrapper API for the linear tSNE implementation.
 
-        TextureTsne is a GPU compute shader implementation of the gradient descent
-        linear tSNE described in https://doi.org/10.1109/TVCG.2019.2934307 or https://arxiv.org/abs/1805.10817v2
+            TextureTsne is a GPU compute shader implementation of the gradient descent
+            linear tSNE described in https://doi.org/10.1109/TVCG.2019.2934307 or https://arxiv.org/abs/1805.10817v2
 
-    )pbdoc");
+            TextureTsne(verbose, iterations, num_target_dimensions, perplexity, exaggeration_iter, knn_algorithm)
+
+            See Also
+            --------
+            TextureTsneExtended
+        )pbdoc");
 
     textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(),
         R"pbdoc(
-     :param verbose: Enable verbose logging to standard output
-     :type verbose: bool
-
-     :param iterations: The number of iterations to perform. This must be at least 1000.
-     :type iterations: int
-
-     :param num_target_dimensions: The number of dimensions for the output embedding. Default is 2.
-     :type num_target_dimensions: int
-
-     :param perplexity: The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
-     :type perplexity: int
-
-     :param exaggeration_iter: The iteration when force exaggeration starts to decay.
-     :type exaggeration_iter: int
-
-     :param knn_algorithm: The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
-     :type knn_algorithm: str
-
-    )pbdoc",
+            Parameters
+            ----------
+            verbose : bool
+                Enable verbose logging to standard output
+            iterations : int
+                The number of iterations to perform. This must be at least 1000.
+            num_target_dimensions : int
+                The number of dimensions for the output embedding. Default is 2.
+            perplexity : int
+                The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
+            exaggeration_iter : int
+                The iteration when force exaggeration starts to decay.
+            knn_algorithm : :class:`KnnAlgorithm`
+                The knn algorithm used for the nearest neighbor calculation.
+                The default is `Flann` for less than 50 dimensions `HNSW` may be faster
+        )pbdoc",
         py::arg("verbose") = false,
         py::arg("iterations") = 1000,
         py::arg("num_target_dimensions") = 2,
@@ -97,43 +105,52 @@ PYBIND11_MODULE(_nptsne, m) {
 
     textureTsne.def("fit_transform", &TextureTsne::fit_transform,
         R"pbdoc(
-      Fit X into an embedded space and return that transformed output.
+            Fit X into an embedded space and return that transformed output.
 
-      :param X: The iput data with shape (num. data points, num. dimensions)
-      :type X: ndarray
+            Parameters
+            ----------
+            X : :class:`ndarray`
+                The input data with shape (num. data points, num. dimensions)
 
-      :return: A numpy array contain a flatten (1D) embedding
-      :rtype: ndarray
-
-    )pbdoc",
+            Returns
+            -------
+            :class:`ndarray`
+                A numpy array contain a flatten (1D) embedding
+        )pbdoc",
         py::arg("X"));
 
     // Extended TextureTsne interface for advanced use of GPU texture tSNE
     py::class_<TextureTsneExtended> textureTsneExtended(m, "TextureTsneExtended",
         R"pbdoc(
-      TextureTsneExtended: an advanced wrapper API for the linear tSNE implementation.
+            `TextureTsneExtended` is an advanced wrapper API for the linear tSNE implementation.
 
-      TextureTsneExtended offers additional control over the exaggeration decay
-      along with the ability to input an initial embedding.
-      Based on the linear tSNE algorithm described in https://arxiv.org/abs/1805.10817v2/
+            `TextureTsneExtended` offers additional control over the exaggeration decay
+            compares to `TextureTsne`. Additionally it supports inputting an initial embedding.
+            Based on the linear tSNE algorithm described in https://arxiv.org/abs/1805.10817v2/
 
-    )pbdoc");
+            Attributes
+            ----------
+            decay_started_at
+            iteration_count
+
+            See Also
+            --------
+            `TextureTsne`
+        )pbdoc");
 
     textureTsneExtended.def(py::init<bool, int, int, KnnAlgorithm>(),
         R"pbdoc(
-      :param verbose: Enable verbose logging to standard output
-      :type verbose: bool
-
-      :param num_target_dimensions: The number of dimensions for the output embedding. Default is 2.
-      :type num_target_dimensions: int
-
-      :param perplexity: The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
-      :type perplexity: int
-
-      :param knn_algorithm: The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
-      :type knn_algorithm: str
-
-    )pbdoc",
+            Parameters
+            ----------
+            verbose : bool
+                Enable verbose logging to standard output, default is False
+            num_target_dimensions : int
+                The number of dimensions for the output embedding. Default is 2.
+            perplexity : int
+                The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
+            knn_algorithm : :class:`KnnAlgorithm`
+                The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
+        )pbdoc",
         py::arg("verbose") = false,
         py::arg("num_target_dimensions") = 2,
         py::arg("perplexity") = 30,
@@ -141,34 +158,37 @@ PYBIND11_MODULE(_nptsne, m) {
 
     textureTsneExtended.def("init_transform",
         &TextureTsneExtended::init_transform,
-        "Initialize the transform with given data and optional initial embedding",
         R"pbdoc(
-      Fit X into an embedded space and return that transformed output.
+            Initialize the transform with given data and optional initial embedding.
+            Fit X into an embedded space and return that transformed output.
 
-      :param X: The iput data with shape (num. data points, num. dimensions)
-      :type X: ndarray
-
-      :param initial_embedding: An optional initial embedding. Shape should be (num data points, num output dimensions)
-      :type initial_embedding: ndarray
-
-    )pbdoc",
+            Parameters
+            ----------
+            X : :class:`ndarray`
+                The input data with shape (num. data points, num. dimensions)
+            initial_embedding : :class:`ndarray`
+                An optional initial embedding. Shape should be (num data points, num output dimensions)
+        )pbdoc",
         py::arg("X"),
         py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform,
         R"pbdoc(
-          Run the transform gradient descent for a number of iterations
-          with the current settings for exaggeration.
+            Run the transform gradient descent for a number of iterations
+            with the current settings for exaggeration.
 
-          :param verbose: Enable verbose logging to standard output
-          :type verbose: bool
+            Parameters
+            ----------
+            verbose : bool
+                Enable verbose logging to standard output.
+            iterations : int
+                The number of iterations to run.
 
-          :param iterations: the number of iterations to run
-          :type iterations: int
-
-          :return: A numpy array contain a flatten (1D) embedding
-          :rtype: ndarray
-
+            Returns
+            -------
+            :class:`ndarray`
+                A numpy array contain a flatten (1D) embedding.
+                Coordinates are arranged: x0, y0, x, y1, ...
         )pbdoc",
         py::arg("verbose") = false,
         py::arg("iterations") = 1000);
@@ -177,63 +197,73 @@ PYBIND11_MODULE(_nptsne, m) {
         &TextureTsneExtended::reinitialize_transform,
         "Reinitialize the transform with optional initial embedding",
         R"pbdoc(
-          Fit X into an embedded space and return that transformed output.
-          Knn is not recomputed. If no initial_embedding is supplied the embedding
-          is re-randomized.
+            Fit X into an embedded space and return that transformed output.
+            Knn is not recomputed. If no initial_embedding is supplied the embedding
+            is re-randomized.
 
-          :param initial_embedding: An optional initial embedding. Shape should be (num data points, num output dimensions)
-          :type initial_embedding: ndarray
-
+            Parameters
+            ----------
+            initial_embedding : :class:`ndarray`
+                An optional initial embedding. Shape should be (num data points, num output dimensions)
         )pbdoc",
         py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay,
         R"pbdoc(
-          Enable exaggeration decay. Effective on next call to run_transform.
-          Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
+            Enable exaggeration decay. Effective on next call to run_transform.
+            Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
 
-          Raises: RuntimeError if the decay is already active. This can be ignored.
-
+            Raises
+            ------
+            RuntimeError
+                If the decay is already active. This can be ignored.
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at,
         R"pbdoc(
-          The iteration number when exaggeration decay started.
-
-          :return: -1 if decays has not started.
-          :rtype: int
-
+            int: The iteration number when exaggeration decay started.
+            Is -1 if decays has not started.
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count,
         R"pbdoc(
-          The number of completed iterations of tSNE gradient descent.
-
-          :return: iteration_count
-          :rtype: int
+            int: The number of completed iterations of tSNE gradient descent.
         )pbdoc");
 
     textureTsneExtended.def("close", &TextureTsneExtended::close,
         R"pbdoc(
-          Release GPU resources for the transform
-
+            Release GPU resources for the transform
         )pbdoc");
 
     // ******************************************************************
     // Hierarchical SNE wrapper
     py::class_<HSne> hsne_class(m, "HSne",
         R"pbdoc(
-        HSne: a simple wrapper API for the Hierarchical SNE implementation.
+            HSne: a simple wrapper API for the Hierarchical SNE implementation.
 
             Hierarchical SNE is  is a GPU compute shader implementation of Hierarchical
             Stochastic Neighborhood Embedding described in https://doi.org/10.1111/cgf.12878
 
+            Attributes
+            ----------
+            num_scales
+            num_data_points
+            num_dimensions
+
+            HSne(verbose)
+
+            Initialze an HSne wrapper with logging state. The wrapper can be
+            used to createa new or load an existing hSNE analysis. The hSNE
+            analysis is then held in the HSne instance and can be accessed through the
+            class api.
         )pbdoc");
 
     hsne_class.def(py::init<bool>(),
         R"pbdoc(
-         :param verbose: Enable verbose logging to standard output
-         :type verbose: bool
+            Parameters
+            ----------
+            verbose : bool
+                Enable verbose logging to standard output, default is False
         )pbdoc",
         py::arg("verbose") = false);
 
@@ -247,14 +277,15 @@ PYBIND11_MODULE(_nptsne, m) {
             py::array_t<float, py::array::c_style | py::array::forcecast>,
             int
             >(&HSne::create_hsne),
-            R"pbdoc(
-          Create the hSNE analysis data hierarchy with 0 -n-1 as point ids.
+        R"pbdoc(
+            Create the hSNE analysis data hierarchy with 0 -n-1 as point ids.
 
-          :param X: The iput data with shape (num. data points, num. dimensions)
-          :type X: ndarray
-
-          :param num_scales: How many scales to create in the hsne analysis
-          :type num_scales: int
+            Parameters
+            ----------
+            X : `ndarray`
+                The data used to create the saved file. Shape is : (num. data points, num. dimensions)
+            num_scales : int
+                How many scales to create in the hsne analysis
         )pbdoc",
             py::arg("X"),
             py::arg("num_scales")
@@ -265,18 +296,19 @@ PYBIND11_MODULE(_nptsne, m) {
             int,
             py::array_t<uint64_t, py::array::c_style | py::array::forcecast>
             >(&HSne::create_hsne),
-            R"pbdoc(
-          Create the hSNE analysis data hierarchy with user assigned point ids.
+        R"pbdoc(
+            Create the hSNE analysis data hierarchy with user assigned point ids
+            from the input data with the number of scales required.
 
-          :param X: The iput data with shape (num. data points, num. dimensions)
-          :type X: ndarray
+            Parameters
+            ----------
+            X : `ndarray`
+                The data used to create the saved file. Shape is : (num. data points, num. dimensions)
+            num_scales : int
+                How many scales to create in the hsne analysis
 
-          :param num_scales: How many scales to create in the hsne analysis
-          :type num_scales: int
-
-          :param point_ids: The ids associated with the data points
-          :type point_ids: ndarray
-
+            point_ids : :class:`ndarray`
+                Array of ids associated with the data points  
         )pbdoc",
             py::arg("X"),
             py::arg("num_scales"),
@@ -287,14 +319,15 @@ PYBIND11_MODULE(_nptsne, m) {
             py::array_t<float, py::array::c_style | py::array::forcecast>,
             const std::string&
             >(&HSne::create_hsne),
-            R"pbdoc(
-          Create the hSNE analysis data hierarchy with a pre-existing hsne file.
+        R"pbdoc(
+            Create the hSNE analysis data hierarchy from a pre-existing hsne file.
 
-          :param X: The iput data with shape (num. data points, num. dimensions)
-          :type X: ndarray
-
-          :param file_path: Pre-calculates hsne file
-          :type file_path: string
+            Parameters
+            ----------
+            X : `ndarray`
+                The data used to create the saved file. Shape is : (num. data points, num. dimensions)
+            file_path : str
+                Path to saved hSNE file
         )pbdoc",
             py::arg("X"),
             py::arg("file_path") );
@@ -302,52 +335,76 @@ PYBIND11_MODULE(_nptsne, m) {
     hsne_class.def_static("read_num_scales",
         static_cast<int (*)(const std::string&)>(&HSne::read_num_scales),
         R"pbdoc(
-          Read the number of scales defined in stored hSNE data.
+            Read the number of scales defined in stored hSNE data.
 
-          :return: Number of scales in the saved hSNE 
-          :rtype: int
+            Parameters
+            ----------
+            filename : str
+                The path to a saved hSNE
 
+            Returns
+            -------
+            int
+                The numberof scales in the saves hierarchy
         )pbdoc",
         py::arg("file_path"));
 
-    hsne_class.def("save", &HSne::save_to_file, "Save the HSNE hierarchy to a file",
+    hsne_class.def("save", &HSne::save_to_file, "Save the hSNE hierarchy to a file",
         R"pbdoc(
-          Save the HSNE as a binary structure to a file
+            Save the HSNE as a binary structure to a file
 
-          :param filename: The iput data with shape (num. data points, num. dimensions)
-          :type filename: string
-
+            Parameters
+            ----------
+            filename : str
+                The file to save to. If it already exists it is overwritten.
         )pbdoc",
         py::arg("file_path"));
 
     hsne_class.def("get_scale", &HSne::get_scale, "Get the scale information at the index. 0 is the data scale",
         R"pbdoc(
-          Get the scale at index
+            Get the scale at index
 
-          :param scale_number
-          :type scale_number unsigned int
+            Parameters
+            ----------
+            scale_index : int
+                Index of the scale to retrieve
 
-          :return: A numpy array contain a flatten (1D) embedding
-          :rtype: HSneScale
-
+            Returns
+            -------
+            :class:`HSneScale`
+                A numpy array contain a flatten (1D) embedding
         )pbdoc",
         py::arg("scale_number"));
 
-    hsne_class.def_property_readonly("num_scales", &HSne::num_scales);
-    hsne_class.def_property_readonly("num_data_points", &HSne::num_data_points);
-    hsne_class.def_property_readonly("num_dimensions", &HSne::num_dimensions);
+    hsne_class.def_property_readonly("num_scales", &HSne::num_scales, "The number of scales in the HSne.");
+    hsne_class.def_property_readonly("num_data_points", &HSne::num_data_points, "The number of original data points used to make the HSne.");
+    hsne_class.def_property_readonly("num_dimensions", &HSne::num_dimensions, "The number of dimensions associated with the original data.");
 
     // ******************************************************************
     // Scale data for Hsne
     py::class_<HSneScale> hsne_scale_class(m, "HSneScale",
         R"pbdoc(
-        HSneScale: a simple wrapper API for the HSNE data scale.
+            HSneScale: a simple wrapper API for the HSNE data scale.
+
+            Attributes
+            ----------
+            num_points
+            transition_matrix
+            landmark_orig_indexes
 
         )pbdoc");
 
-    hsne_scale_class.def_property_readonly("num_points", &HSneScale::num_points, "The number of points in this scale");
+    hsne_scale_class.def_property_readonly("num_points", &HSneScale::num_points,
+        "int: The number of landmark points in this scale");
 
-    hsne_scale_class.def("get_landmark_weight", &HSneScale::getLandmarkWeight);
+    hsne_scale_class.def("get_landmark_weight", &HSneScale::getLandmarkWeight,
+        R"pbdoc(
+            The weights per landmark in the scale.
+
+            Returns
+            -------
+            :class:`ndarray`
+        )pbdoc");
 
     hsne_scale_class.def_property_readonly("transition_matrix",
         [](HSneScale& self) {
@@ -357,7 +414,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 sparse.push_back(matrix[i].memory());
             }
             return sparse;
-        });
+        }, "list(dict): The transition (probability) matrix in this scale");
 
     hsne_scale_class.def_property_readonly("landmark_orig_indexes",
         [](HSneScale& self) {
@@ -367,7 +424,7 @@ PYBIND11_MODULE(_nptsne, m) {
             { sizeof(unsigned int) },
             self._scale._landmark_to_original_data_idx.data(),
             py::cast(self));
-    });
+        }, ":class:`ndarray` : An ndarray of the original data indexes for each landmark in the scale");
 
     // ******************************************************************
     // pybind wrappers for hSNE analysis support submodule: hsne_analysis
@@ -382,13 +439,13 @@ PYBIND11_MODULE(_nptsne, m) {
     // Consider moving to a separate file.
     auto pybind_hsne_analysis = [](py::module &m_hsne) {
         // ENUMS
-        py::enum_<EmbedderType>(m_hsne, "EmbedderType", py::arithmetic(), R"pbdoc(
+        py::enum_<EmbedderType>(m_hsne, "EmbedderType", py::arithmetic(),
+        R"pbdoc(
             Enumeration used to select the embedder used. Two possibilities are
             supported:
 
-            :obj:`EmbedderType.CPU`: CPU tSNE
-
-            :obj:`EmbedderType.CPU`: GPU tSNE
+            `EmbedderType.CPU`: CPU tSNE
+            `EmbedderType.CPU`: GPU tSNE
 
         )pbdoc")
             .value("CPU", EmbedderType::CPU)
@@ -402,10 +459,25 @@ PYBIND11_MODULE(_nptsne, m) {
         // Note that parent None is allowed for creation of the top
         // level analysis.
         py::class_<Analysis> analysis_class(m_hsne, "Analysis",
-            R"pbdoc(
-            Analysis: a simple wrapper for a selection based hSNE analysis.
+        R"pbdoc(
+            Analysis: Together with :class:`AnalysisModel` provides support for visual analytics of an hSNE.
 
-            )pbdoc");
+            The analysis class holds both the chosen landmarks at a particular
+            scale but also permits referencing back to the original data.
+            Additionally a t-SNE embedder is included (a choice is
+            provided between GPU and CPU implementations) which can be used to create
+            an embedding of the selected landmarks.
+
+            Attributes
+            ----------
+            number_of_points
+            parent_id
+            transition_matrix
+            landmark_weights
+            landmark_indexes
+            landmark_orig_indexes
+            embedding
+        )pbdoc");
 
         // Two possible init methods - one for a full analysis and one for the top level analysis (no parent)
         analysis_class.def(py::init([](
@@ -415,22 +487,20 @@ PYBIND11_MODULE(_nptsne, m) {
             std::vector<uint32_t> parent_selection) {
             return Analysis::make_analysis(hsne, embedder_type, parent, parent_selection);
         }),
-            R"pbdoc(
-         A new analysis as a child of a parent analysis. The parent selection
-         are the landmark indexes in the parent analysis scale.
+        R"pbdoc(
+            A new analysis as a child of a parent analysis. The parent selection
+            are the landmark indexes in the parent analysis scale.         
 
-         :param hsne: The hierarchical SNE being explored
-         :type hsne: HSne
-
-         :param embedder_type: The tSNE to use CPU or GPU based
-         :type embedder_type: EmbedderType
-
-         :param parent: the parent Analysis (where the selection was performed) if any
-         :type parent: Analysis
-
-         :param parent_selection: List of parent selection indexes.
-         :type parent_selection: list
-
+            Parameters
+            ----------
+            hsne : :class:`HSne`
+                The hierarchical SNE being explored
+            embedder_type : :class:`EmbedderType`
+                The tSNE to use CPU or GPU based
+            parent : :class:`Analysis`
+                The parent Analysis (where the selection was performed) if any
+            parent_selection : list
+                List of parent selection indexes.
         )pbdoc",
             py::arg("hnse"),
             py::arg("embedder_type"),
@@ -441,14 +511,15 @@ PYBIND11_MODULE(_nptsne, m) {
                 EmbedderType embedder_type) {
             return Analysis::make_analysis(hsne, embedder_type);
         }),
-                R"pbdoc(
-          A new top level analysis there is no parent analysis or parent selection.
+        R"pbdoc(
+            A new top level analysis there is no parent analysis or parent selection.
 
-         :param hsne: The hierarchical SNE being explored
-         :type hsne: HSne
-
-         :param embedder_type: The tSNE to use CPU or GPU based
-         :type embedder_type: EmbedderType
+            Parameters
+            ----------
+            hsne : :class:`HSne`
+                The hierarchical SNE being explored
+            embedder_type : EmbedderType
+                The tSNE to use CPU or GPU based
         )pbdoc",
             py::arg("hnse"),
             py::arg("embedder_type"));
@@ -460,17 +531,19 @@ PYBIND11_MODULE(_nptsne, m) {
 
 
         // Share the landmark weights without a copy
-        analysis_class.def_property_readonly(
-            "number_of_points",
-            [](Analysis& self) {
-            return self.landmark_indexes.size();
-        });
+        analysis_class
+            .def_property_readonly(
+                "number_of_points",
+                [](Analysis& self) {
+                return self.landmark_indexes.size();
+            }, "int : number of landmarks in this `Analysis`");
 
         analysis_class
             .def("__str__", &Analysis::toString);
 
         analysis_class
-            .def("do_iteration", &Analysis::doAnIteration);
+            .def("do_iteration", &Analysis::doAnIteration,
+                "Perform one iteration of the chosen embedder");
 
         analysis_class
             .def("get_area_of_influence",
@@ -485,6 +558,19 @@ PYBIND11_MODULE(_nptsne, m) {
                     }
                     return result;
             },
+            R"pbdoc(
+                Get the area of influence of the selection in the original data.
+
+                Parameters
+                ----------
+                select_list : list
+                    A list of selection indexes for landmarks in this analysis
+
+                Returns
+                -------
+                :class:`ndarray`
+                    The indexes for the original points represented by the selected landmarks 
+            )pbdoc",
             py::arg("select_list"));
 
         // id of the parent analysis (numeric_limits<uint32_t>::max if this is root)
@@ -495,7 +581,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 return std::numeric_limits<uint32_t>::max();
             }
             return self.parent->id;
-        });
+        }, "int : Unique id of the parent analysis");
 
         analysis_class.def_property_readonly("transition_matrix",
             [](Analysis& self) {
@@ -505,7 +591,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 sparse.push_back(matrix[i].memory());
             }
             return sparse;
-        });
+        }, "list(dict) : The transition (probability) matrix in this `Analysis`");
 
         // Share the landmark weights without a copy
         analysis_class.def_property_readonly(
@@ -517,7 +603,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 { sizeof(float) },
                 self.landmark_weights.data(),
                 py::cast(self));
-        });
+        }, ":class:`ndarray` : the weights for the landmarks in this `Analysis`");
 
         // Share the landmark indexes without a copy
         analysis_class.def_property_readonly(
@@ -529,7 +615,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 { sizeof(unsigned int) },
                 self.landmark_indexes.data(),
                 py::cast(self));
-        });
+        }, ":class:`ndarray` : the indexes for the landmarks in this `Analysis`");
 
         // Share the landmark original indexes without a copy
         // TODO change name to orig_index. Since this translates
@@ -544,7 +630,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 { sizeof(unsigned int) },
                 self.landmarks_orig_data.data(),
                 py::cast(self));
-        });
+        }, ":class:`ndarray` : the original data indexes for the landmarks in this `Analysis`");
 
         // Share the embedding without a copy
         analysis_class.def_property_readonly(
@@ -559,20 +645,25 @@ PYBIND11_MODULE(_nptsne, m) {
                 { cols * data_size, data_size },
                 self.getEmbedding().getContainer().data(),
                 py::cast(self));
-        });
+        }, ":class:`ndarray` : the tSNE embedding generated for this `Analysis`");
 
         // ******************************************************************
-        // ***** tSNE embedder used in hSNE analyses (Analysis class above) ******
+        // ***** CPU tSNE embedder mabe be used in hSNE analyses indtead of TextureTsne(Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne",
-            R"pbdoc(
-            Analysis: a simple wrapper for a selection based hSNE analysis.
+        R"pbdoc(
+            SparseTsne a wrapper for an approximating tSNE CPU implementation.
 
-            )pbdoc");
+            Forms an alternative to `TextureTsne` when GPU acceleration is not available
+
+            Attributes
+            ----------
+            embedding : :class:`ndarray`
+        )pbdoc");
 
         sparsetsne_class.def("do_iteration", &SparseTsne::doAnIteration, "Perform a single tsne iteration",
-            R"pbdoc(
-          Perform a sinsle tSNE iteration on the sparse data.
-          Once complete the embedding coordinates can be read via the embedding property
+        R"pbdoc(
+            Perform a sinsle tSNE iteration on the sparse data.
+            Once complete the embedding coordinates can be read via the embedding property
         )pbdoc");
 
         // Share the embedding without a copy

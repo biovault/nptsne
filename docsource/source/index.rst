@@ -5,6 +5,7 @@
 
 Welcome to the nptsne |version| documentation!
 ==============================================
+.. module:: numpy
 
 .. toctree::
    :maxdepth: 2
