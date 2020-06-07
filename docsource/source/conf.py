@@ -72,6 +72,15 @@ extlinks = {
 # Include class docstring and init docstring in the  class doc
 autoclass_content = 'both'
 
+autodoc_default_options = {
+    "members": True,              # All members (for module classes in __all__)
+    "undoc-members": True,        # Including those without doc strings
+    "inherited-members": True,    # Including inherited members
+    "imported-members": True,     # Including imported classes (imports from the extension)
+    "show-inheritance": False,    # Don't show base classes
+    "member-order": "groupwise",  # Logical groups not alphabetical
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
