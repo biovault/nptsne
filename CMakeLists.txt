@@ -435,6 +435,7 @@ add_custom_target (bdist_wheel
 if(WIN32)
 add_custom_target(extract_module_docstring
     # Install the wheel to allow docstring extraction with autodoc
+    COMMAND ${PYTHON_EXECUTABLE} -m ensurepip
     COMMAND ${PYTHON_EXECUTABLE} -m pip.exe install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}
     # Extract the package strings
     COMMAND cmd //c sphinx_rst_build WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource
