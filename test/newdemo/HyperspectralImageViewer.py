@@ -14,7 +14,7 @@ class HyperspectralImageCanvas(FigureCanvas):
     """This is the matplotlib based GUI for a single analysis
        It assumes the analysis is simple image data (this could be abstracted)"""
     
-    def __init__(self, width=2, height=2):
+    def __init__(self, parent=None, width=2, height=2):
         """View a composite image based
            on a subselection of the data 
         """
@@ -65,7 +65,7 @@ class HyperspectralImageViewer(QWidget):
     def __init__(self):
         super(QWidget, self).__init__()
         self.main_layout = QVBoxLayout(self)
-        self.image_widget = HyperspectralImageCanvas()
+        self.image_widget = HyperspectralImageCanvas(self)
         self.main_layout.addWidget(self.image_widget)
         self.control_layout = QHBoxLayout(self)
         self.control_layout.addWidget(QLabel("Select image dimension: "))

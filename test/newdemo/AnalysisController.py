@@ -61,8 +61,11 @@ class AnalysisController(QtWidgets.QDialog):
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.widget_layout = QtWidgets.QHBoxLayout(self)
         self.widget_layout.addWidget(self.embedding_viewer, 1)
+        data_gui_stretch = 0
+        if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
+            data_gui_stretch = 1
         if self.data_gui:
-            self.widget_layout.addWidget(self.data_gui, 0)
+            self.widget_layout.addWidget(self.data_gui, data_gui_stretch)
         self.status = QtWidgets.QStatusBar()
 
         self.main_layout.addLayout(self.widget_layout)
@@ -249,7 +252,7 @@ class AnalysisController(QtWidgets.QDialog):
     def kill(self):
         """Someone else has deleted the analysis close
         this dialog"""
-        if not self.analysis is None:
+        if self.analysis is not None:
             del self.analysis
         self.analysis = None
         self.do_close()

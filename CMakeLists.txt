@@ -16,17 +16,28 @@ option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${PROJECT_SOURCE_DIR}/cmake")
 
+set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
+
 # A PEP 440 version is set in version.txt - this is not compatible with the CMAKE config
 message(STATUS "Building in ${CMAKE_BINARY_DIR}")
+
+execute_process(
+  COMMAND git rev-parse --abbrev-ref HEAD
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_BRANCH
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+message(STATUS "Working on branch ${GIT_BRANCH}")
 
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/dist)
 file(REMOVE_RECURSE _nptsne.egg-info)
 file(REMOVE_RECURSE _skbuild)
 
 # The python files for the package
-file(COPY "${PROJECT_SOURCE_DIR}/dist_root" 
-    DESTINATION "${CMAKE_BINARY_DIR}" 
-    FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt|.*\.in")
+#file(COPY "${PROJECT_SOURCE_DIR}/dist_root" 
+#    DESTINATION "${CMAKE_BINARY_DIR}" 
+#    FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt|.*\.in")
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root)
     
 file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/dist_root/nptsne/_version.txt CONTENT "${VERSION}")
 
@@ -84,6 +95,29 @@ set(NPTSNE_FILES
 	nptsne_src/TextureTsne.cpp
 	nptsne_src/TextureTsneExtended.cpp
 )
+
+# In VisualStudio we show the python files in the bdist_wheel 
+# custom targetfor ease of editing and debug
+if(MSVC_IDE)
+    file(GLOB_RECURSE DIST_ROOT_FILES "dist_root/*.*")
+    macro(GroupSources curdir)
+       file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/${curdir} ${PROJECT_SOURCE_DIR}/${curdir}/*)
+       foreach(child ${children})
+              if(IS_DIRECTORY ${PROJECT_SOURCE_DIR}/${curdir}/${child})
+                      GroupSources(${curdir}/${child})
+              else()
+                      string(REPLACE "/" "\\" groupname ${curdir})
+                source_group(${groupname} FILES ${PROJECT_SOURCE_DIR}/${curdir}/${child})
+              endif()
+       endforeach()
+    endmacro()
+
+    GroupSources("dist_root")
+else()
+    set(DIST_ROOT_FILES "")    
+endif()    
+
+message(STATUS "DIST_ROOT_FILES: ${DIST_ROOT_FILES}")
 
 pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
 
@@ -314,7 +348,7 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 # P.S. This is using the CMake install for moving files around prior to bundling
 # the python wheel. 
 
-# Move the binary extension - .pyd, .so, or .dylib (depending on OS)
+# Move the binary extension - .pyd, .so, or .dylib (depending on OS) for wheel building
 install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/")
 
 #  For MacOs or Linux the binary extension needs to load the glfw flann and lz4 from its own directory
@@ -390,14 +424,36 @@ add_custom_target (bdist_wheel
     # To debug install uncomment the following
     # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
+    SOURCES ${DIST_ROOT_FILES}
 )
 
-# -- Upload of latest whl
-    
+# -- module docstring extraction and upload - only in the windows build - we only have to do this once
+if(WIN32)
+add_custom_target(extract_module_docstring
+    # Install the wheel to allow docstring extraction with autodoc
+    COMMAND ${PYTHON_EXECUTABLE} -m pip.exe install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}
+    # Extract the package strings
+    COMMAND cmd //c sphinx_rst_build WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource
+    DEPENDS bdist_wheel
+)
+endif()
 
+if(WIN32)
+find_package(Git REQUIRED)
+add_custom_target(commit_doc    
+    COMMAND ${GIT_EXECUTABLE} add -all . WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+    COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION}" WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+    COMMAND ${GIT_EXECUTABLE} push WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+    COMMENT "Add any new doc files and commit + push to the nptsnedoc"
+    DEPENDS extract_module_docstring
+)
+endif()
+
+# -- Upload of latest whl
 add_custom_target (upload_wheel
     COMMAND ${CMAKE_COMMAND} -D WHEEL_GLOB=${CMAKE_BINARY_DIR}/dist/nptsne*.whl -P ${CMAKE_CURRENT_LIST_DIR}/cmake/UploadWheel.cmake
 )

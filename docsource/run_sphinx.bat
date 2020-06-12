@@ -1,1 +1,0 @@
-sphinx-autobuild ./source ../docs

@@ -23,8 +23,8 @@ copyright = '2019, Baldur van Lew'
 author = 'Baldur van Lew'
 
 import sys, os
-sys.path.insert(0, os.path.abspath('../../_package'))
-sys.path.insert(0, os.path.abspath('../../_package/nptsne'))
+#sys.path.insert(0, os.path.abspath('../../_package'))
+#sys.path.insert(0, os.path.abspath('../../_package/nptsne'))
 with open('../../version.txt', 'r') as file:
     __version__=file.read().replace('\n', '')
 
@@ -57,7 +57,6 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.githubpages', 
     'sphinx.ext.extlinks',
-#    'sphinx_rtd_theme',
     'sphinx_rst_builder',
     'sphinx.ext.napoleon',
 ]
@@ -74,12 +73,15 @@ autoclass_content = 'both'
 
 autodoc_default_options = {
     "members": True,              # All members (for module classes in __all__)
-    "undoc-members": True,        # Including those without doc strings
+    "undoc-members": False,        # Including those without doc strings
     "inherited-members": True,    # Including inherited members
     "imported-members": True,     # Including imported classes (imports from the extension)
     "show-inheritance": False,    # Don't show base classes
     "member-order": "groupwise",  # Logical groups not alphabetical
 }
+
+autosummary_imported_members = True
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -103,7 +105,8 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
-exclude_patterns = ['changelogs/*.rst', 'modules.rst']
+# 'changelogs/*.rst', 
+exclude_patterns = ['modules.rst']
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'

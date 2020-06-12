@@ -13,7 +13,7 @@ LABELLED_EXAMPLE = LabelledImage(
 )
 
 POINT_EXAMPLE = PointMeta(
-    'Motor cortex cell data',
+    'MTG cell data',
     MetaData('data/datamat_overview.npy', 'data/metadata.csv'),
     Hsne('data/datamat_overview.hsne', 3),
     Embedding(500)
