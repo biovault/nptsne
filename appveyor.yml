@@ -43,6 +43,7 @@ environment:
           PATH: C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%          
 
 install:
+  - git submodule update --init --recursive
   - set PYTHON_PATH=%Python3_ROOT_DIR% # Python3_ROOT_DIR is required to hint the CMake find_package Python3 
   - python --version
   - pip.exe install six==1.12.0
