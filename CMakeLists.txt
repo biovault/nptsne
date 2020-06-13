@@ -443,9 +443,10 @@ endif()
 if(WIN32)
 find_package(Git REQUIRED)
 add_custom_target(commit_doc    
-    COMMAND ${GIT_EXECUTABLE} add -all . WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
-    COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION}" WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
-    COMMAND ${GIT_EXECUTABLE} push WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+    COMMAND ${GIT_EXECUTABLE} add --all . 
+    COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION}"
+    COMMAND ${GIT_EXECUTABLE} push WORKING_DIRECTORY
     COMMENT "Add any new doc files and commit + push to the nptsnedoc"
     DEPENDS extract_module_docstring
 )
