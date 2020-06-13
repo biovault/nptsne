@@ -435,7 +435,7 @@ add_custom_target (bdist_wheel
 if(WIN32)
 add_custom_target(extract_module_docstring
     # Install the wheel to allow docstring extraction with autodoc
-    COMMAND ${PYTHON_EXECUTABLE} -m ensurepip; ${PYTHON_EXECUTABLE} -m pip.exe install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}; cmd //c sphinx_rst_build WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource
+    COMMAND ${PYTHON_EXECUTABLE} -m ensurepip && ${PYTHON_EXECUTABLE} -m pip.exe install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION} && cmd //c sphinx_rst_build WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource
     DEPENDS bdist_wheel
 )
 endif()
