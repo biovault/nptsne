@@ -452,7 +452,7 @@ add_custom_target(commit_doc
     COMMAND ${PROJECT_SOURCE_DIR}/docsource/copy_generated_to_nptsnedoc.bat
     COMMAND ${GIT_EXECUTABLE} add --all . 
     COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION}"
-    COMMAND ${GIT_EXECUTABLE} push
+    COMMAND ${GIT_EXECUTABLE} push --set-upstream origin $ENV{APPVEYOR_REPO_BRANCH}
     COMMENT "Add any new doc files and commit + push to the nptsnedoc branch ${APPVEYOR_REPO_BRANCH} creating if necessary"
     DEPENDS extract_module_docstring
 )
