@@ -369,6 +369,9 @@ class ModelGui(QDialog):
             workdir,
             "Numpy files (*.npy)")
         if result[0]:
+            self.hsne_label.setText("")
+            self.hsne_name = None
+            self.scale_spin.setEnabled(True)
             self.name = result[0]
             # print(f"Selected: {self.name}")
             self.start_button.setEnabled(True)

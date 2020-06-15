@@ -286,6 +286,26 @@ PYBIND11_MODULE(_nptsne, m) {
                 The data used to create the saved file. Shape is : (num. data points, num. dimensions)
             num_scales : int
                 How many scales to create in the hsne analysis
+
+            Examples
+            --------
+            >>> import numpy as np
+            >>> import nptsne
+            >>> import doctest
+            >>> doctest.ELLIPSIS_MARKER = '-etc-'
+            >>> hsne = nptsne.HSne()
+            >>> X = np.random.randint(256, size=(10000,625))
+            >>> hsne.create_hsne(X, 3)  #doctest: +ELLIPSIS
+            Initializing Hierarchical-SNE...
+            Number of data points:  10000
+            Initializing the first scale...
+            Computing the neighborhood graph...
+                    Building the trees...
+                    AKNN queries...
+                    FMC computation...
+            Creating transition matrix...
+            -etc-
+            True            
         )pbdoc",
             py::arg("X"),
             py::arg("num_scales")
