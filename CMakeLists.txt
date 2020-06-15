@@ -449,6 +449,7 @@ add_custom_target(commit_doc
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
     # Make sure the nptsnedoc has a branch matching this one
     COMMAND ${GIT_EXECUTABLE} switch -c $ENV{APPVEYOR_REPO_BRANCH}
+    COMMAND ${GIT_EXECUTABLE} pull
     COMMAND ${PROJECT_SOURCE_DIR}/docsource/copy_generated_to_nptsnedoc.bat
     COMMAND ${GIT_EXECUTABLE} add --all . 
     COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION}"
