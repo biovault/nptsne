@@ -17,6 +17,8 @@ environment:
     CONAN_REMOTE: lkebconan
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
     CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
+    git_token:
+        secure: QWv3xZwtKaenz3mj6q8vHKMKfSFvM2GghbNyPIqg0HAHKBJSxP2fKTsVDUaLuH+M    
     
     matrix:
 ### Limit build to 2017, x64 , Release, Shared
@@ -78,6 +80,13 @@ build_script:
   - pip uninstall -y conan distro  # This is a hack to remove an ünsupported platform win32" error with distro
   - pip install distro>=1.4.0 scikit-build
   - cmake --build . --target bdist_wheel --config Release
+  
+on_success:
+  # Credential handling from http://www.appveyor.com/docs/how-to/git-push 
+  - git config --global credential.helper store 
+  - ps: Add-Content "$HOME\.git-credentials" "https://$($env:git_token):x-oauth-basic@github.com`n"
+  - git config --global user.email "%APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL%"
+  - git config --global user.name "%APPVEYOR_REPO_COMMIT_AUTHOR%"
   - cmake --build . --target commit_doc --config Release
   - cmake --build . --target upload_wheel --config Release 
  

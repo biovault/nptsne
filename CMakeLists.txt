@@ -435,19 +435,25 @@ add_custom_target (bdist_wheel
 if(WIN32)
 add_custom_target(extract_module_docstring
     # Install the wheel to allow docstring extraction with autodoc
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+    COMMAND ${GIT_EXECUTABLE} 
     COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && pip --version && pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION} && pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat
+    COMMENT "Extract the reStructuredText from the module" 
     DEPENDS bdist_wheel
 )
 endif()
 
-if(WIN32)
+if(WIN32 AND $ENV{CI})
 find_package(Git REQUIRED)
 add_custom_target(commit_doc    
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+    # Make sure the nptsnedoc has a branch matching this one
+    COMMAND ${GIT_EXECUTABLE} switch -c $ENV{APPVEYOR_REPO_BRANCH}
+    COMMAND ${PROJECT_SOURCE_DIR}/docsource/copy_generated_to_nptsnedoc.bat
     COMMAND ${GIT_EXECUTABLE} add --all . 
     COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION}"
-    COMMAND ${GIT_EXECUTABLE} push WORKING_DIRECTORY
-    COMMENT "Add any new doc files and commit + push to the nptsnedoc"
+    COMMAND ${GIT_EXECUTABLE} push
+    COMMENT "Add any new doc files and commit + push to the nptsnedoc branch ${APPVEYOR_REPO_BRANCH} creating if necessary"
     DEPENDS extract_module_docstring
 )
 endif()
