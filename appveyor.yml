@@ -87,7 +87,8 @@ build_script:
   - ps: if (Test-Path env:USE_FOR_DOC_GENERATION) {Add-Content "$HOME\.git-credentials" "https://$($env:git_token):x-oauth-basic@github.com`n"}
   - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global user.email "%APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL%")
   - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global user.name "%APPVEYOR_REPO_COMMIT_AUTHOR%")
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --verbose --config Release)
+  - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target extract_module_docstring --config Release)
+  - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --config Release)
   
 on_success:
 

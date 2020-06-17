@@ -449,7 +449,7 @@ add_custom_target(extract_module_docstring
 )
 endif()
 
-if(WIN32 AND ENV{CI})
+if(WIN32 AND $ENV{CI})
 find_package(Git REQUIRED)
 add_custom_target(commit_doc    
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
