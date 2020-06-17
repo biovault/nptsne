@@ -89,6 +89,6 @@ on_success:
   - git config --global user.email "%APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL%"
   - git config --global user.name "%APPVEYOR_REPO_COMMIT_AUTHOR%"
   - if "%USE_FOR_DOC_GENERATION%" == "True" (echo Generation documentation on Read the Docs)
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --config Release)
+  - if "%USE_FOR_DOC_GENERATION%" == "True" (cd %APPVEYOR_BUILD_FOLDER%\_build && cmake --build . --target commit_doc --config Release)
   - cmake --build . --target upload_wheel --config Release 
  
