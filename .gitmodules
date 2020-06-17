@@ -5,3 +5,4 @@
 	path = docsource/nptsnedoc
 	url = https://github.com/biovault/nptsnedoc
 	branch = feature/1.1.0-hsne
+    ignote = dirty

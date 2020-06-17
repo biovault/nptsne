@@ -177,7 +177,7 @@ class ModelController():
             hsne.save(str(hsne_file))
         else:
             print("existing hSNE")
-            hsne.create_hsne(data, str(hsne_file))
+            hsne.load_hsne(data, str(hsne_file))
 
         print("start analysis model")
         self.data = data

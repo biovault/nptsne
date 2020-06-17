@@ -99,7 +99,6 @@ set(NPTSNE_FILES
 # In VisualStudio we show the python files in the bdist_wheel 
 # custom targetfor ease of editing and debug
 if(MSVC_IDE)
-    file(GLOB_RECURSE DIST_ROOT_FILES "dist_root/*.*")
     macro(GroupSources curdir)
        file(GLOB children RELATIVE ${PROJECT_SOURCE_DIR}/${curdir} ${PROJECT_SOURCE_DIR}/${curdir}/*)
        foreach(child ${children})
@@ -111,13 +110,19 @@ if(MSVC_IDE)
               endif()
        endforeach()
     endmacro()
-
+    
+    file(GLOB_RECURSE DIST_ROOT_FILES "dist_root/*.*")
     GroupSources("dist_root")
+        
+    file(GLOB_RECURSE EXTERN_DOC_FILES "docsource/nptsnedoc/*.*")
+    GroupSources("docsource/nptsnedoc")
 else()
-    set(DIST_ROOT_FILES "")    
+    set(DIST_ROOT_FILES "")
+    set(EXTERN_DOC_FILES "")     
 endif()    
 
 message(STATUS "DIST_ROOT_FILES: ${DIST_ROOT_FILES}")
+message(STATUS "EXTERN_DOC_FILES: ${EXTERN_DOC_FILES}")
 
 pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
 
@@ -419,6 +424,7 @@ elseif(WIN32)
 endif()
 
 # -- .whl creation
+# Support editing of the python files in VS
 add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
     # To debug install uncomment the following
@@ -432,6 +438,7 @@ add_custom_target (bdist_wheel
 )
 
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
+# Support editing of the rst external doc files in VS
 if(WIN32)
 get_filename_component(PYROOT ${PYTHON_EXECUTABLE} DIRECTORY)
 set(SPHINX "${PYROOT}/Scripts/sphinx-build.exe")
@@ -442,6 +449,7 @@ add_custom_target(extract_module_docstring
     COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && ${PYTHON_EXECUTABLE} -m pip --version && ${PYTHON_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION} && ${PYTHON_EXECUTABLE} -m pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat ${SPHINX}
     COMMENT "Extract the reStructuredText from the module" 
     DEPENDS bdist_wheel
+    SOURCES ${EXTERN_DOC_FILES}
 )
 endif()
 
