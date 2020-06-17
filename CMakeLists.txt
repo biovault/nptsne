@@ -434,7 +434,7 @@ add_custom_target (bdist_wheel
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
 if(WIN32)
 get_filename_component(PYROOT ${PYTHON_EXECUTABLE} DIRECTORY)
-set(SPHINX "${PYROOT}/../Scripts/sphinx-build.exe")
+set(SPHINX "${PYROOT}/Scripts/sphinx-build.exe")
 MESSAGE(STATUS "Sphinx build: ${SPHINX}")
 add_custom_target(extract_module_docstring
     # Install the wheel to allow docstring extraction with autodoc
