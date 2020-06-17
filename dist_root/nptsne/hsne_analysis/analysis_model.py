@@ -2,6 +2,19 @@ from ..libs._nptsne._hsne_analysis import (EmbedderType, Analysis)
 import numpy as np
 
 class AnalysisContainer:
+    """ A dict of dicts to store analyses
+
+        Parameters
+        ----------
+        top_analysis: :class:`Analysis`
+            The Analysis at the hisgest scale level containing all landmarks
+            
+        Notes
+        -----
+        The outer dict represents the scales and
+        the inner dicts at scale level are indexed by the unique
+        self-generated Analysis ids.
+    """
 
     def __init__(self, top_analysis):
         self._container = {top_analysis.scale_id: {top_analysis.id: top_analysis}}
@@ -79,26 +92,28 @@ class AnalysisContainer:
         return result        
     
 class AnalysisModel:
-    """The hsne_analysis.AnalysisModel contains the user driven selections 
-        when exploring an hsne hierarchy. The AnalysisModel is created
-        with a top level default analysis containing all top level landmarks.."""
-    
-    def __init__(self, hsne, embedder_type):
-        """Create an analysis model with the top level set up"""
-        """Create a scale selection based
-        
+    """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
+
         Parameters
         ----------
         scale_id : HSne 
             The python HSne wrapper class
-        """
         
+        Attributes
+        ----------
+        top_analysis
+        analysis_container
+
+        Notes
+        -----
+        The hsne_analysis.AnalysisModel contains the user driven selections 
+        when exploring an hsne hierarchy. The AnalysisModel is created
+        with a top level default analysis containing all top level landmarks.."""
+    
+    def __init__(self, hsne, embedder_type):
         self.hsne = hsne
         self.embedder_type = embedder_type
-        # The analyses are stored in a dict of dicts
-        # where the outer dict represents the scales and
-        # the inner (scale level) dicts are indexed by the unique
-        # self-generated Analysis
+
 
         self._analysis_container = None
         # The uppermost scale id can be derived from the 
@@ -110,8 +125,8 @@ class AnalysisModel:
         self._initialize_top_level()
     
     @property
-    def top_analysis(self):
-        "Get the top level analysis"
+    def top_analysis(self) -> Analysis:
+        "The top level analysis"
         return self._analysis_container.get_analysis(self.top_analysis_id)
         
     def _initialize_top_level(self):
@@ -139,13 +154,38 @@ class AnalysisModel:
         return analysis
         
     def get_analysis(self, id):
+        """Get the `Analysis` for the given id 
+            
+            Parameters
+            ----------
+            id: int
+                An Analysis id
+        
+        """
+
         return self._analysis_container.get_analysis(id)
         
     @property
-    def analysis_container(self):
+    def analysis_container(self) -> AnalysisContainer:
+        """The container for all analyses"""
         return self._analysis_container
     
     def get_landmark_indexes(self, parent_id, parent_selection):
+        """Get the (scale) landmark indexes corresponding to selections in an parent analysis
+        
+            Parameters
+            ----------
+            parent_id: int
+                The parent Analysis id
+
+            parent_selection: list
+                Selection indexes in the parent Analysis landmarks
+
+            Returns
+            -------
+            list
+                A list of the corresponding (scale) landmark indexes
+        """
         parent = self.analyses[parent_id]
         landmark_indexes = np.array((parent_selection.shape[0]), dtype=np.uintc)
         for i, idx in np.ndenumerate(parent_selection): 

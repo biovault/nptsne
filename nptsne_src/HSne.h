@@ -35,7 +35,7 @@ class HSne {
         int num_scales,
         py::array_t<uint64_t, py::array::c_style | py::array::forcecast> point_ids);
 
-    bool create_hsne(
+    bool load_hsne(
         py::array_t<float, py::array::c_style | py::array::forcecast> X,
         const std::string &filePath);
 

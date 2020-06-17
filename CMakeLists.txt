@@ -433,17 +433,23 @@ add_custom_target (bdist_wheel
 
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
 if(WIN32)
+get_filename_component(PYROOT ${PYTHON_EXECUTABLE} DIRECTORY)
+set(SCRIPTS_ROOT "${PYROOT}../Scripts")
+find_program(SPHINX sphinx-build 
+	HINTS ${SCRIPTS_ROOT} 
+	DOC "Path to sphinx-build binary.")
+MESSAGE(STATUS "Sphinx build: ${SPHINX}")
 add_custom_target(extract_module_docstring
     # Install the wheel to allow docstring extraction with autodoc
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
     COMMAND ${GIT_EXECUTABLE} 
-    COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && pip --version && pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION} && pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat
+    COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && ${PYTHON_EXECUTABLE} -m pip --version && ${PYTHON_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION} && ${PYTHON_EXECUTABLE} -m pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat ${SPHINX}
     COMMENT "Extract the reStructuredText from the module" 
     DEPENDS bdist_wheel
 )
 endif()
 
-if(WIN32 AND $ENV{CI})
+if(WIN32 AND ENV{CI})
 find_package(Git REQUIRED)
 add_custom_target(commit_doc    
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc

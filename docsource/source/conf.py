@@ -52,17 +52,17 @@ needs_sphinx = '3.0'
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
+# Prefer numpydoc 1.0.0 to napoleon - it handles complex syntax better in Sphinx 3
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.githubpages', 
     'sphinx.ext.extlinks',
+    'numpydoc',    
     'sphinx_rst_builder',
-    'sphinx.ext.napoleon',
 ]
 
-napoleon_google_docstring = False
-napoleon_numpy_docstring = True
+numpydoc_show_class_members = False
 
 extlinks = {
     'linux_whl_url': ('{0}/nptsne-{1}-cp%s-none-linux_x86_64.whl'.format(base_arti_url, release), '')
@@ -74,13 +74,14 @@ autoclass_content = 'both'
 autodoc_default_options = {
     "members": True,              # All members (for module classes in __all__)
     "undoc-members": False,        # Including those without doc strings
-    "inherited-members": True,    # Including inherited members
-    "imported-members": True,     # Including imported classes (imports from the extension)
+    "inherited-members": False,    # Including inherited members
+    "imported-members": False,     # Including imported classes (imports from the extension)
     "show-inheritance": False,    # Don't show base classes
     "member-order": "groupwise",  # Logical groups not alphabetical
+    'exclude-members': '__init__'
 }
 
-autosummary_imported_members = True
+autosummary_imported_members = False
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
@@ -198,5 +199,12 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
+# add specific members to the undoc - we document __init__ in the class header
+def skip_members(app, what, name, obj, skip, options):
+    exclusions = ('__init__',)
+    exclude = name in exclusions
+    return skip or exclude
+    
 # -- Extension configuration -------------------------------------------------
+def setup(app): 
+    app.connect('autodoc-skip-member', skip_members)

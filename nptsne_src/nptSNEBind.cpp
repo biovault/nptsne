@@ -22,31 +22,6 @@ PYBIND11_MODULE(_nptsne, m) {
     m.doc() = R"pbdoc(
         A numpy compatible python extension for GPGPU linear complexity tSNE and hSNE
         -----------------------------------------------------------------------------
-
-        This module contains classes that wrap linear complexity t-SNE
-        and classes to support hierarchical SNE h-SNE.
- 
-        The classes are:
-
-        .. currentmodule:: _nptsne
-
-        .. autosummary::
-           :toctree: _generate
-
-            TextureTsne 
-            TextureTsneExtended
-            HSne
-            HSneScale
-
-        Additionally a submodule `hsne_analysis` provides support classes
-        for selection driven navigation of the hSNE model and mapping back
-        to the original data.
-
-        References
-        ----------
-        Linear complexity t-SNE  https://doi.org/10.1109/TVCG.2019.2934307 or (https://arxiv.org/abs/1805.10817v2)
-        Hierarchical SNE https://doi.org/10.1111/cgf.12878
-
     )pbdoc";
 
     // ENUMS
@@ -66,20 +41,8 @@ PYBIND11_MODULE(_nptsne, m) {
     // Basic interface for GPU Texture based tSNE
     py::class_<TextureTsne> textureTsne(m, "TextureTsne",
         R"pbdoc(
-            TextureTsne: a simple wrapper API for the linear tSNE implementation.
+            Create a wrapper class for the linear tSNE implementation.
 
-            TextureTsne is a GPU compute shader implementation of the gradient descent
-            linear tSNE described in https://doi.org/10.1109/TVCG.2019.2934307 or https://arxiv.org/abs/1805.10817v2
-
-            TextureTsne(verbose, iterations, num_target_dimensions, perplexity, exaggeration_iter, knn_algorithm)
-
-            See Also
-            --------
-            TextureTsneExtended
-        )pbdoc");
-
-    textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(),
-        R"pbdoc(
             Parameters
             ----------
             verbose : bool
@@ -95,6 +58,24 @@ PYBIND11_MODULE(_nptsne, m) {
             knn_algorithm : :class:`KnnAlgorithm`
                 The knn algorithm used for the nearest neighbor calculation.
                 The default is `Flann` for less than 50 dimensions `HNSW` may be faster
+
+            Notes
+            -----
+            TextureTsne is a GPU compute shader implementation of the gradient descent
+            linear tSNE. It is described in [1]_.
+
+            See Also
+            --------
+            TextureTsneExtended
+
+            References
+            ----------
+            .. [1] `GPGPU Linear Complexity t-SNE Optimization <https://doi.org/10.1109/TVCG.2019.2934307>`_
+
+        )pbdoc");
+
+    textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(),
+        R"pbdoc(
         )pbdoc",
         py::arg("verbose") = false,
         py::arg("iterations") = 1000,
@@ -122,24 +103,8 @@ PYBIND11_MODULE(_nptsne, m) {
     // Extended TextureTsne interface for advanced use of GPU texture tSNE
     py::class_<TextureTsneExtended> textureTsneExtended(m, "TextureTsneExtended",
         R"pbdoc(
-            `TextureTsneExtended` is an advanced wrapper API for the linear tSNE implementation.
+            Create an extended functionality wrapper for the linear tSNE implementation.
 
-            `TextureTsneExtended` offers additional control over the exaggeration decay
-            compares to `TextureTsne`. Additionally it supports inputting an initial embedding.
-            Based on the linear tSNE algorithm described in https://arxiv.org/abs/1805.10817v2/
-
-            Attributes
-            ----------
-            decay_started_at
-            iteration_count
-
-            See Also
-            --------
-            `TextureTsne`
-        )pbdoc");
-
-    textureTsneExtended.def(py::init<bool, int, int, KnnAlgorithm>(),
-        R"pbdoc(
             Parameters
             ----------
             verbose : bool
@@ -150,6 +115,31 @@ PYBIND11_MODULE(_nptsne, m) {
                 The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
             knn_algorithm : :class:`KnnAlgorithm`
                 The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
+
+            Attributes
+            ----------
+            decay_started_at
+            iteration_count
+
+            Notes
+            -----
+            `TextureTsneExtended` offers additional control over the exaggeration decay
+            compares to `TextureTsne`. Additionally it supports inputting an initial embedding.
+            Linear tSNE is described in [1]_.
+
+            See Also
+            --------
+            TextureTsne
+
+            References
+            ----------
+            .. [1] `GPGPU Linear Complexity t-SNE Optimization <https://doi.org/10.1109/TVCG.2019.2934307>`_
+
+        )pbdoc");
+
+    textureTsneExtended.def(py::init<bool, int, int, KnnAlgorithm>(),
+        R"pbdoc(
+
         )pbdoc",
         py::arg("verbose") = false,
         py::arg("num_target_dimensions") = 2,
@@ -237,34 +227,41 @@ PYBIND11_MODULE(_nptsne, m) {
 
     // ******************************************************************
     // Hierarchical SNE wrapper
-    py::class_<HSne> hsne_class(m, "HSne",
-        R"pbdoc(
-            HSne: a simple wrapper API for the Hierarchical SNE implementation.
+    py::class_<HSne> hsne_class(m, "HSne");
 
-            Hierarchical SNE is  is a GPU compute shader implementation of Hierarchical
-            Stochastic Neighborhood Embedding described in https://doi.org/10.1111/cgf.12878
+    hsne_class.doc() = R"pbdoc(
+        Initialize an HSne wrapper with logging state.
 
-            Attributes
-            ----------
-            num_scales
-            num_data_points
-            num_dimensions
+        Parameters
+        ----------
+        verbose : bool
+            Enable verbose logging to standard output, default is False
 
-            HSne(verbose)
+        Attributes
+        ----------
+        num_data_points
+        num_dimensions
+        num_scales
 
-            Initialze an HSne wrapper with logging state. The wrapper can be
-            used to createa new or load an existing hSNE analysis. The hSNE
-            analysis is then held in the HSne instance and can be accessed through the
-            class api.
-        )pbdoc");
+        Notes
+        -----
+        HSne is a simple wrapper API for the Hierarchical SNE implementation.
+
+        Hierarchical SNE is  is a GPU compute shader implementation of Hierarchical
+        Stochastic Neighborhood Embedding described in [1]_.
+
+        The wrapper can be
+        used to create a new or load an existing hSNE analysis. The hSNE
+        analysis is then held in the HSne instance and can be accessed through the
+        class api.
+
+        References
+        ----------
+        .. [1] `Hierarchical Stochastic Neighbor Embedding <https://doi.org/10.1111/cgf.12878>`_
+
+        )pbdoc";
 
     hsne_class.def(py::init<bool>(),
-        R"pbdoc(
-            Parameters
-            ----------
-            verbose : bool
-                Enable verbose logging to standard output, default is False
-        )pbdoc",
         py::arg("verbose") = false);
 
     // create_hsne is overloaded -
@@ -277,36 +274,6 @@ PYBIND11_MODULE(_nptsne, m) {
             py::array_t<float, py::array::c_style | py::array::forcecast>,
             int
             >(&HSne::create_hsne),
-        R"pbdoc(
-            Create the hSNE analysis data hierarchy with 0 -n-1 as point ids.
-
-            Parameters
-            ----------
-            X : `ndarray`
-                The data used to create the saved file. Shape is : (num. data points, num. dimensions)
-            num_scales : int
-                How many scales to create in the hsne analysis
-
-            Examples
-            --------
-            >>> import numpy as np
-            >>> import nptsne
-            >>> import doctest
-            >>> doctest.ELLIPSIS_MARKER = '-etc-'
-            >>> hsne = nptsne.HSne()
-            >>> X = np.random.randint(256, size=(10000,625))
-            >>> hsne.create_hsne(X, 3)  #doctest: +ELLIPSIS
-            Initializing Hierarchical-SNE...
-            Number of data points:  10000
-            Initializing the first scale...
-            Computing the neighborhood graph...
-                    Building the trees...
-                    AKNN queries...
-                    FMC computation...
-            Creating transition matrix...
-            -etc-
-            True            
-        )pbdoc",
             py::arg("X"),
             py::arg("num_scales")
         )
@@ -316,41 +283,59 @@ PYBIND11_MODULE(_nptsne, m) {
             int,
             py::array_t<uint64_t, py::array::c_style | py::array::forcecast>
             >(&HSne::create_hsne),
-        R"pbdoc(
-            Create the hSNE analysis data hierarchy with user assigned point ids
-            from the input data with the number of scales required.
+            R"pbdoc(
+                Create the hSNE analysis data hierarchy with user assigned point ids from the input data with the number of scales required.
 
-            Parameters
-            ----------
-            X : `ndarray`
-                The data used to create the saved file. Shape is : (num. data points, num. dimensions)
-            num_scales : int
-                How many scales to create in the hsne analysis
+                Parameters
+                ----------
+                X : :class:`ndarray`
+                    The data used to create the saved file. Shape is : (num. data points, num. dimensions)
 
-            point_ids : :class:`ndarray`
-                Array of ids associated with the data points  
-        )pbdoc",
+                num_scales : int
+                    How many scales to create in the hsne analysis
+
+                point_ids : :class:`ndarray`, optional
+                    Array of ids associated with the data points
+
+                Examples
+                --------
+                >>> import numpy as np
+                >>> import nptsne
+                >>> import doctest
+                >>> doctest.ELLIPSIS_MARKER = '-etc-'
+                >>> hsne = nptsne.HSne()
+                >>> X = np.random.randint(256, size=(10000,625))
+                >>> hsne.create_hsne(X, 3)  #doctest: +ELLIPSIS
+                Initializing Hierarchical-SNE...
+                Number of data points:  10000
+                Initializing the first scale...
+                Computing the neighborhood graph...
+                        Building the trees...
+                        AKNN queries...
+                        FMC computation...
+                Creating transition matrix...
+                -etc-
+                True
+            
+            )pbdoc",
             py::arg("X"),
             py::arg("num_scales"),
-            py::arg("point_ids")
-        )
-        .def("create_hsne",
-            py::overload_cast<
-            py::array_t<float, py::array::c_style | py::array::forcecast>,
-            const std::string&
-            >(&HSne::create_hsne),
-        R"pbdoc(
-            Create the hSNE analysis data hierarchy from a pre-existing hsne file.
+            py::arg("point_ids"))
+        .def("load_hsne",
+            &HSne::load_hsne,
+            R"pbdoc(
+                Load the hSNE analysis data hierarchy from a pre-existing hsne file.
 
-            Parameters
-            ----------
-            X : `ndarray`
-                The data used to create the saved file. Shape is : (num. data points, num. dimensions)
-            file_path : str
-                Path to saved hSNE file
-        )pbdoc",
+                Parameters
+                ----------
+                X : :class:`ndarray`
+                    The data used to create the saved file. Shape is : (num. data points, num. dimensions)
+                file_path : str
+                    Path to saved hSNE file
+
+            )pbdoc",
             py::arg("X"),
-            py::arg("file_path") );
+            py::arg("file_path"));
 
     hsne_class.def_static("read_num_scales",
         static_cast<int (*)(const std::string&)>(&HSne::read_num_scales),
@@ -365,7 +350,8 @@ PYBIND11_MODULE(_nptsne, m) {
             Returns
             -------
             int
-                The numberof scales in the saves hierarchy
+                The number of scales in the saves hierarchy
+
         )pbdoc",
         py::arg("file_path"));
 
@@ -402,28 +388,32 @@ PYBIND11_MODULE(_nptsne, m) {
 
     // ******************************************************************
     // Scale data for Hsne
-    py::class_<HSneScale> hsne_scale_class(m, "HSneScale",
-        R"pbdoc(
-            HSneScale: a simple wrapper API for the HSNE data scale.
+    py::class_<HSneScale> hsne_scale_class(m, "HSneScale");
 
-            Attributes
-            ----------
-            num_points
-            transition_matrix
-            landmark_orig_indexes
+    hsne_scale_class.doc() = R"pbdoc(
+        Wrap the HSNE data scale, returned from :func:`HSne.get_scale`.
 
-        )pbdoc");
+        Attributes
+        ----------
+        num_points
+        transition_matrix
+        landmark_orig_indexes
+
+        )pbdoc";
 
     hsne_scale_class.def_property_readonly("num_points", &HSneScale::num_points,
         "int: The number of landmark points in this scale");
 
-    hsne_scale_class.def("get_landmark_weight", &HSneScale::getLandmarkWeight,
+    hsne_scale_class
+        .def("get_landmark_weight", &HSneScale::getLandmarkWeight,
         R"pbdoc(
             The weights per landmark in the scale.
 
             Returns
             -------
             :class:`ndarray`
+                Weights array in landmark index order
+
         )pbdoc");
 
     hsne_scale_class.def_property_readonly("transition_matrix",
@@ -480,13 +470,18 @@ PYBIND11_MODULE(_nptsne, m) {
         // level analysis.
         py::class_<Analysis> analysis_class(m_hsne, "Analysis",
         R"pbdoc(
-            Analysis: Together with :class:`AnalysisModel` provides support for visual analytics of an hSNE.
+            Create a new analysis as a child of an (optional) parent analysis.          
 
-            The analysis class holds both the chosen landmarks at a particular
-            scale but also permits referencing back to the original data.
-            Additionally a t-SNE embedder is included (a choice is
-            provided between GPU and CPU implementations) which can be used to create
-            an embedding of the selected landmarks.
+            Parameters
+            ----------
+            hsne : :class:`HSne`
+                The hierarchical SNE being explored
+            embedder_type : :class:`EmbedderType`
+                The tSNE to use CPU or GPU based
+            parent : :class:`Analysis`, optional
+                The parent Analysis (where the selection was performed) if any
+            parent_selection : list, optional
+                List of selection indexes in the parent analysis.
 
             Attributes
             ----------
@@ -497,52 +492,29 @@ PYBIND11_MODULE(_nptsne, m) {
             landmark_indexes
             landmark_orig_indexes
             embedding
+
+            Notes
+            -----
+            Together with `AnalysisModel` provides support for visual analytics of an hSNE.
+            The Analysis class holds both the chosen landmarks at a particular
+            scale but also permits referencing back to the original data.
+            Additionally a t-SNE embedder is included (a choice is
+            provided between GPU and CPU implementations) which can be used to create
+            an embedding of the selected landmarks.
+
         )pbdoc");
 
-        // Two possible init methods - one for a full analysis and one for the top level analysis (no parent)
         analysis_class.def(py::init([](
             HSne& hsne,
             EmbedderType embedder_type,
-            Analysis* parent,
-            std::vector<uint32_t> parent_selection) {
+            Analysis* parent = nullptr,
+            std::vector<uint32_t> parent_selection = std::vector<uint32_t>()) {
             return Analysis::make_analysis(hsne, embedder_type, parent, parent_selection);
         }),
-        R"pbdoc(
-            A new analysis as a child of a parent analysis. The parent selection
-            are the landmark indexes in the parent analysis scale.         
-
-            Parameters
-            ----------
-            hsne : :class:`HSne`
-                The hierarchical SNE being explored
-            embedder_type : :class:`EmbedderType`
-                The tSNE to use CPU or GPU based
-            parent : :class:`Analysis`
-                The parent Analysis (where the selection was performed) if any
-            parent_selection : list
-                List of parent selection indexes.
-        )pbdoc",
             py::arg("hnse"),
             py::arg("embedder_type"),
             py::arg("parent"),
-            py::arg("parent_selection"))
-            .def(py::init([](
-                HSne& hsne,
-                EmbedderType embedder_type) {
-            return Analysis::make_analysis(hsne, embedder_type);
-        }),
-        R"pbdoc(
-            A new top level analysis there is no parent analysis or parent selection.
-
-            Parameters
-            ----------
-            hsne : :class:`HSne`
-                The hierarchical SNE being explored
-            embedder_type : EmbedderType
-                The tSNE to use CPU or GPU based
-        )pbdoc",
-            py::arg("hnse"),
-            py::arg("embedder_type"));
+            py::arg("parent_selection"));
 
         // The analysis properties
         analysis_class

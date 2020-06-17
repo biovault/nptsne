@@ -41,7 +41,7 @@ bool HSne::create_hsne(
     return _init(X, static_cast<uint64_t *>(point_id_info.ptr), num_point_ids);
 }
 
-bool HSne::create_hsne(
+bool HSne::load_hsne(
     py::array_t<float, py::array::c_style | py::array::forcecast> X,
     const std::string &filePath) {
     py::buffer_info X_info = X.request();
