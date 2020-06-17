@@ -1,8 +1,8 @@
 """
 A numpy compatible python extension for GPGPU linear complexity t-SNE and h-SNE
 
-This package contains classes that wrap linear complexity *t-SNE* [1]_
-and classes to support *h-SNE* [2]_.
+This package contains classes that wrap linear complexity `t-SNE` 
+and classes to support `h-SNE`.
     
 Available subpackages
 ---------------------
@@ -14,7 +14,7 @@ hsne_analysis
 Notes
 -----
 :class:`ndarray` types are the preferred parameters types for input 
-and where possible internal data in the wrapped t-SNE and h-SNE is returned without 
+and where possible internal data in the wrapped t-SNE [1]_ and h-SNE  [2]_ is returned without 
 a copy in a :class:`ndarray`.
 
 References
