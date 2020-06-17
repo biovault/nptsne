@@ -445,21 +445,23 @@ add_custom_target(extract_module_docstring
 )
 endif()
 
-if(WIN32 AND $ENV{CI})
-find_package(Git REQUIRED)
-add_custom_target(commit_doc    
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
-    # Make sure the nptsnedoc has a branch matching this one
-    COMMAND ${GIT_EXECUTABLE} switch -c $ENV{APPVEYOR_REPO_BRANCH}
-    COMMAND ${GIT_EXECUTABLE} pull origin $ENV{APPVEYOR_REPO_BRANCH}
-    COMMAND ${PROJECT_SOURCE_DIR}/docsource/copy_generated_to_nptsnedoc.bat
-    COMMAND ${GIT_EXECUTABLE} add --all . 
-    COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION} in build ${APPVEYOR_BUILD_NUMBER}"
-    COMMAND ${GIT_EXECUTABLE} push --set-upstream origin $ENV{APPVEYOR_REPO_BRANCH}
-    COMMENT "Add any new doc files and commit + push to the nptsnedoc branch ${APPVEYOR_REPO_BRANCH} creating if necessary"
-    DEPENDS extract_module_docstring
-)
-endif()
+if(DEFINED ENV{CI}) 
+    if(WIN32 AND $ENV{CI})
+    find_package(Git REQUIRED)
+    add_custom_target(commit_doc    
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc
+        # Make sure the nptsnedoc has a branch matching this one
+        COMMAND ${GIT_EXECUTABLE} switch -c $ENV{APPVEYOR_REPO_BRANCH}
+        COMMAND ${GIT_EXECUTABLE} pull origin $ENV{APPVEYOR_REPO_BRANCH}
+        COMMAND ${PROJECT_SOURCE_DIR}/docsource/copy_generated_to_nptsnedoc.bat
+        COMMAND ${GIT_EXECUTABLE} add --all . 
+        COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION} in build ${APPVEYOR_BUILD_NUMBER}"
+        COMMAND ${GIT_EXECUTABLE} push --set-upstream origin $ENV{APPVEYOR_REPO_BRANCH}
+        COMMENT "Add any new doc files and commit + push to the nptsnedoc branch ${APPVEYOR_REPO_BRANCH} creating if necessary"
+        DEPENDS extract_module_docstring
+    )
+    endif()
+endif()    
 
 # -- Upload of latest whl
 add_custom_target (upload_wheel
