@@ -507,14 +507,14 @@ PYBIND11_MODULE(_nptsne, m) {
         analysis_class.def(py::init([](
             HSne& hsne,
             EmbedderType embedder_type,
-            Analysis* parent = nullptr,
-            std::vector<uint32_t> parent_selection = std::vector<uint32_t>()) {
+            Analysis* parent,
+            std::vector<uint32_t> parent_selection) {
             return Analysis::make_analysis(hsne, embedder_type, parent, parent_selection);
         }),
             py::arg("hnse"),
             py::arg("embedder_type"),
-            py::arg("parent"),
-            py::arg("parent_selection"));
+            py::arg("parent")=nullptr,
+            py::arg("parent_selection")=std::vector<uint32_t>());
 
         // The analysis properties
         analysis_class
