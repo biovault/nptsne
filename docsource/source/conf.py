@@ -77,6 +77,7 @@ autodoc_default_options = {
     "inherited-members": False,    # Including inherited members
     "imported-members": False,     # Including imported classes (imports from the extension)
     "show-inheritance": False,    # Don't show base classes
+    'special-members': '',        # Dont show __init__() - this is covered in the class
     "member-order": "groupwise",  # Logical groups not alphabetical
     'exclude-members': '__init__'
 }

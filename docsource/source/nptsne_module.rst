@@ -22,7 +22,6 @@ Module summary
     HSne
     HSneScale
 
-   
 .. autosummary::
     :toctree: generated/hsne_analysis/
 
@@ -31,5 +30,5 @@ Module summary
     hsne_analysis.Analysis
     hsne_analysis.SparseTsne
 
-.. The output from processing this file with the contents of the generated/ folder
-    should be copied to the nptsnedoc/source directory and shecked in
+.. The output from processing this file, nptsne_module.rst, along with the contents of the generated/ folder
+    should be copied from the build dir to the nptsnedoc/source directory and checked in
