@@ -32,6 +32,7 @@ message(STATUS "Working on branch ${GIT_BRANCH}")
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/dist)
 file(REMOVE_RECURSE _nptsne.egg-info)
 file(REMOVE_RECURSE _skbuild)
+file(REMOVE_RECURSE dist_root/_skbuild)
 
 # The python files for the package
 #file(COPY "${PROJECT_SOURCE_DIR}/dist_root" 
@@ -427,6 +428,10 @@ endif()
 # Support editing of the python files in VS
 add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
+    # Cleanup old build copies
+    COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}/dist_root/_skbuild
+    COMMAND ${CMAKE_COMMAND} -E rm -rf ${PROJECT_SOURCE_DIR}/dist_root/_skbuild
+    COMMAND ${CMAKE_COMMAND} -E rm -rf ${PROJECT_SOURCE_DIR}/dist_root/nptsne/__pycache__
     # To debug install uncomment the following
     # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)

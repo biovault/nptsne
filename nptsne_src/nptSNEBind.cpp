@@ -237,6 +237,47 @@ PYBIND11_MODULE(_nptsne, m) {
         verbose : bool
             Enable verbose logging to standard output, default is False
 
+        Examples
+        --------
+        >>> import numpy as np
+        >>> import nptsne
+        >>> import doctest
+        >>> doctest.ELLIPSIS_MARKER = '-etc-'
+        >>> hsne = nptsne.HSne()
+        >>> X = np.random.randint(256, size=(2000,16))
+        >>> hsne.create_hsne(X, 2)  #doctest: +ELLIPSIS
+        Initializing Hierarchical-SNE...
+        Number of data points:  2000
+        Initializing the first scale...
+        Computing the neighborhood graph...
+                Building the trees...
+                AKNN queries...
+                FMC computation...
+        Creating transition matrix...
+        -etc-
+        True
+
+        Save the hsne to a file
+
+        >>> hsne.save("rnd2000x16.hsne")
+        Saving H-SNE hierarchy to file
+        Saving scale:   0
+                size
+                ... transition matrix ...
+        Saving scale:   1
+        -etc-
+
+        Reload the saved hsne and check the contents
+
+        >>> hsneReload = nptsne.HSne(True)
+        >>>hsneReload.load_hsne(X, "rnd2000x16.hsne")
+        >>> hsneReload.num_data_points
+        2000
+        >>> hsneReload.num_dimensions
+        16
+        >>> hsneReload.num_scales
+        2
+     
         Attributes
         ----------
         num_data_points
@@ -296,26 +337,6 @@ PYBIND11_MODULE(_nptsne, m) {
 
                 point_ids : :class:`ndarray`, optional
                     Array of ids associated with the data points
-
-                Examples
-                --------
-                >>> import numpy as np
-                >>> import nptsne
-                >>> import doctest
-                >>> doctest.ELLIPSIS_MARKER = '-etc-'
-                >>> hsne = nptsne.HSne()
-                >>> X = np.random.randint(256, size=(10000,625))
-                >>> hsne.create_hsne(X, 3)  #doctest: +ELLIPSIS
-                Initializing Hierarchical-SNE...
-                Number of data points:  10000
-                Initializing the first scale...
-                Computing the neighborhood graph...
-                        Building the trees...
-                        AKNN queries...
-                        FMC computation...
-                Creating transition matrix...
-                -etc-
-                True
             
             )pbdoc",
             py::arg("X"),
