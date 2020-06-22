@@ -46,7 +46,7 @@ class HSne {
     HSneScale get_scale(unsigned int scale_number);
 
     // Check the version and read the number of scales from the hsne file 
-    static int HSne::read_num_scales(const std::string &filePath);
+    static int read_num_scales(const std::string &filePath);
 
     int num_scales() { return _num_scales; }
     int num_data_points() { return _num_data_points; }
