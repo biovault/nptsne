@@ -239,44 +239,12 @@ PYBIND11_MODULE(_nptsne, m) {
 
         Examples
         --------
-        >>> import numpy as np
-        >>> import nptsne
+        Create an HSNE wrapper
+
         >>> import doctest
-        >>> doctest.ELLIPSIS_MARKER = '-etc-'
-        >>> hsne = nptsne.HSne()
-        >>> X = np.random.randint(256, size=(2000,16))
-        >>> hsne.create_hsne(X, 2)  #doctest: +ELLIPSIS
-        Initializing Hierarchical-SNE...
-        Number of data points:  2000
-        Initializing the first scale...
-        Computing the neighborhood graph...
-                Building the trees...
-                AKNN queries...
-                FMC computation...
-        Creating transition matrix...
-        -etc-
-        True
-
-        Save the hsne to a file
-
-        >>> hsne.save("rnd2000x16.hsne")
-        Saving H-SNE hierarchy to file
-        Saving scale:   0
-                size
-                ... transition matrix ...
-        Saving scale:   1
-        -etc-
-
-        Reload the saved hsne and check the contents
-
-        >>> hsneReload = nptsne.HSne(True)
-        >>>hsneReload.load_hsne(X, "rnd2000x16.hsne")
-        >>> hsneReload.num_data_points
-        2000
-        >>> hsneReload.num_dimensions
-        16
-        >>> hsneReload.num_scales
-        2
+        >>> import nptsne
+        >>> doctest.ELLIPSIS_MARKER = '----'
+        >>> hsne = nptsne.HSne(True)
      
         Attributes
         ----------
@@ -337,6 +305,19 @@ PYBIND11_MODULE(_nptsne, m) {
 
                 point_ids : :class:`ndarray`, optional
                     Array of ids associated with the data points
+
+                Examples
+                --------
+                >>> import nptsne
+                >>> hsne = nptsne.HSne(True)
+                >>> hsne.create_hsne(sample_data, 3)
+                True
+                >>> hsne.num_data_points
+                10000
+                >>> hsne.num_dimensions
+                16
+                >>> hsne.num_scales
+                3
             
             )pbdoc",
             py::arg("X"),
@@ -354,6 +335,22 @@ PYBIND11_MODULE(_nptsne, m) {
                 file_path : str
                     Path to saved hSNE file
 
+                Examples
+                --------
+                Load hsne from a file, and check that is contains the expected data
+
+                >>> import nptsne
+                >>> import doctest
+                >>> loaded_hsne = nptsne.HSne(True)
+                >>> loaded_hsne.load_hsne(sample_data, sample_hsne_file)  # doctest: +ELLIPSIS
+                True
+                >>> loaded_hsne.num_data_points
+                10000
+                >>> loaded_hsne.num_dimensions
+                16
+                >>> loaded_hsne.num_scales
+                3
+
             )pbdoc",
             py::arg("X"),
             py::arg("file_path"));
@@ -361,22 +358,30 @@ PYBIND11_MODULE(_nptsne, m) {
     hsne_class.def_static("read_num_scales",
         static_cast<int (*)(const std::string&)>(&HSne::read_num_scales),
         R"pbdoc(
-            Read the number of scales defined in stored hSNE data.
+            Read the number of scales defined in stored hSNE data without fully loading the file.
 
             Parameters
             ----------
             filename : str
                 The path to a saved hSNE
 
+            Examples
+            --------
+            Read the number of scales from a saved file
+
+            >>> import nptsne
+            >>> nptsne.HSne.read_num_scales(sample_hsne_file)
+            3
+
             Returns
             -------
             int
-                The number of scales in the saves hierarchy
+                The number of scales in the saved hierarchy
 
         )pbdoc",
         py::arg("file_path"));
 
-    hsne_class.def("save", &HSne::save_to_file, "Save the hSNE hierarchy to a file",
+    hsne_class.def("save", &HSne::save_to_file,
         R"pbdoc(
             Save the HSNE as a binary structure to a file
 
@@ -384,17 +389,35 @@ PYBIND11_MODULE(_nptsne, m) {
             ----------
             filename : str
                 The file to save to. If it already exists it is overwritten.
+
+            Examples
+            --------
+            Save the hsne to a file and check the number of scales was sved correctly.
+
+            >>> import nptsne
+            >>> sample_hsne.save("save_test.hsne")
+            >>> nptsne.HSne.read_num_scales("save_test.hsne")
+            3
+
         )pbdoc",
         py::arg("file_path"));
 
-    hsne_class.def("get_scale", &HSne::get_scale, "Get the scale information at the index. 0 is the data scale",
+    hsne_class.def("get_scale", &HSne::get_scale,
         R"pbdoc(
-            Get the scale at index
+            Get the scale information at the index. 0 is the HSNE data scale.
 
             Parameters
             ----------
             scale_index : int
                 Index of the scale to retrieve
+
+            Examples
+            -------
+            The number of landmarks in scale 0 is the number of data points.
+
+            >>> scale = sample_hsne.get_scale(0)
+            >>> scale.num_points
+            10000
 
             Returns
             -------
@@ -403,9 +426,36 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc",
         py::arg("scale_number"));
 
-    hsne_class.def_property_readonly("num_scales", &HSne::num_scales, "The number of scales in the HSne.");
-    hsne_class.def_property_readonly("num_data_points", &HSne::num_data_points, "The number of original data points used to make the HSne.");
-    hsne_class.def_property_readonly("num_dimensions", &HSne::num_dimensions, "The number of dimensions associated with the original data.");
+    hsne_class.def_property_readonly("num_scales", &HSne::num_scales,
+        R"pbdoc(
+            int: The number of scales in the HSne.
+
+            Examples
+            -------
+
+            >>> sample_hsne.num_scales
+            3
+        )pbdoc");
+    hsne_class.def_property_readonly("num_data_points", &HSne::num_data_points,
+        R"pbdoc(
+            int: The number of data points in the HSne.
+
+            Examples
+            -------
+
+            >>> sample_hsne.num_data_points
+            10000
+        )pbdoc");
+    hsne_class.def_property_readonly("num_dimensions", &HSne::num_dimensions,
+        R"pbdoc(
+            int: The number of dimensions associated with the original data.
+
+            Examples
+            -------
+
+            >>> sample_hsne.num_dimensions
+            16
+        )pbdoc");
 
     // ******************************************************************
     // Scale data for Hsne
@@ -419,16 +469,47 @@ PYBIND11_MODULE(_nptsne, m) {
         num_points
         transition_matrix
         landmark_orig_indexes
-
         )pbdoc";
 
     hsne_scale_class.def_property_readonly("num_points", &HSneScale::num_points,
-        "int: The number of landmark points in this scale");
+        R"pbdoc(
+            int: The number of landmark points in this scale
+
+            Examples
+            -------
+
+            >>> sample_scale0.num_points
+            10000
+        )pbdoc");
 
     hsne_scale_class
-        .def("get_landmark_weight", &HSneScale::getLandmarkWeight,
+        .def("get_landmark_weight",
+        [](HSneScale& self) {
+            auto rows = self._scale._landmark_weight.size();
+            return py::array_t<float>(
+                { rows },
+                { sizeof(float) },
+                self._scale._landmark_weight.data(),
+                py::cast(self));
+        },
         R"pbdoc(
             The weights per landmark in the scale.
+
+            Examples
+            -------
+            The size of landmark weights should match the number of points
+
+            >>> num_points = sample_scale2.num_points
+            >>> weights = sample_scale2.get_landmark_weight()
+            >>> weights.shape[0] == num_points
+            True
+
+            All weights at scale 0 should be 1.0
+
+            >>> weights = sample_scale0.get_landmark_weight()
+            >>> test = weights[0] == 1.0
+            >>> test.all()
+            True
 
             Returns
             -------
@@ -445,7 +526,33 @@ PYBIND11_MODULE(_nptsne, m) {
                 sparse.push_back(matrix[i].memory());
             }
             return sparse;
-        }, "list(dict): The transition (probability) matrix in this scale");
+        },
+        R"pbdoc(
+            The transition (probability) matrix in this scale.
+
+            Examples
+            -------
+            The size of landmark weights should match the number of points
+
+            >>> num_points = sample_scale2.num_points
+            >>> matrix = sample_scale2.transition_matrix
+            >>> len(matrix) == num_points
+            True
+
+            Notes
+            -----
+            The list returned has one entry for each landmark point, each entry is a list
+            The inner list contains tuples where the first item
+            is an integer landmark index in the scale and the second item
+            is the transition matrix value for the two points.
+            The resulting matrix is sparse
+
+            Returns
+            -------
+            list(list(tuple)):
+                The transition (probability) matrix in this scale
+
+        )pbdoc");
 
     hsne_scale_class.def_property_readonly("landmark_orig_indexes",
         [](HSneScale& self) {

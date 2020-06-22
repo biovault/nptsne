@@ -98,7 +98,7 @@ class HSneScale {
 
     nptsne::SparseScalarMatrixType& transition_matrix() { return _scale._transition_matrix; }
 
-    nptsne::HsneType::scalar_vector_type getLandmarkWeight() {
+    nptsne::HsneType::scalar_vector_type& getLandmarkWeight() {
         return _scale._landmark_weight;
     }
 

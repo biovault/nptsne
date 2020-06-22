@@ -62,7 +62,7 @@ bool HSne::load_hsne(
     }
     // Get the correct number of scales from the loads hsne
     _num_scales = _hsne->hierarchy().size();
-    return false;
+    return true;
 }
 
 int HSne::read_num_scales(const std::string &filePath) {

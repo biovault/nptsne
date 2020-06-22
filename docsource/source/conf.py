@@ -38,6 +38,8 @@ html_title = release
 base_arti_url = 'http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne'  # base url for the artifactory repo
 rst_epilog = """
 .. |version| replace:: {0}
+.. |HSNE| replace:: HSNE
+.. |TSNE| replace:: t-SNE
  """.format(release, base_arti_url)  
  
 # .. |linux_36_whl| replace:: {1}/nptsne-{0}-cp36-none-linux_x86_64.whl
