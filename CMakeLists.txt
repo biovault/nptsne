@@ -429,9 +429,9 @@ endif()
 add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
     # Cleanup old build copies
-    COMMAND ${CMAKE_COMMAND} -E rm -rf ${CMAKE_BINARY_DIR}/dist_root/_skbuild
-    COMMAND ${CMAKE_COMMAND} -E rm -rf ${PROJECT_SOURCE_DIR}/dist_root/_skbuild
-    COMMAND ${CMAKE_COMMAND} -E rm -rf ${PROJECT_SOURCE_DIR}/dist_root/nptsne/__pycache__
+    COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${CMAKE_BINARY_DIR}/dist_root/_skbuild
+    COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/_skbuild
+    COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/nptsne/__pycache__
     # To debug install uncomment the following
     # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
