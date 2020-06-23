@@ -6,6 +6,7 @@
 #include <pybind11/numpy.h>
 namespace py = pybind11;
 #ifdef __APPLE__
+    #define __gl_h_ 
     #include "glad/glad_3_3.h"
 #endif
 #include <GLFW/glfw3.h>
