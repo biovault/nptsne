@@ -5,7 +5,9 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
-//#include "glad/glad.h"
+#ifdef __APPLE__
+    #include "glad/glad_3_3.h"
+#endif
 #include <GLFW/glfw3.h>
 #include "KnnAlgorithm.h"
 #include "hdi/dimensionality_reduction/tsne.h"
