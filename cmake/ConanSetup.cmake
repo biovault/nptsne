@@ -12,38 +12,6 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/cmake/conan.cmake)
 
-set(CONAN_REQUIRES
-    pybind11/2.2.4@conan/stable
-    HDILib/latest@biovault/stable
-    lz4/1.9.2
-    CACHE INTERNAL ""
-)
-
-if(WIN32) 
-    set(CONAN_REQUIRES
-        ${CONAN_REQUIRES}
-        glfw/3.3@bincrafters/stable
-        CACHE INTERNAL ""
-    )
-endif()
-
-set(CONAN_OPTIONS
-    HDILib:shared=False
-    CRoaring:shared=True 
-    CACHE INTERNAL ""
-)  
-
-set(CONAN_IMPORTS "")
-if(APPLE)
-    set(CONAN_IMPORTS ${CONAN_IMPORTS} "lib, *.dylib* -> ./lib")
-endif()
-if(MSVC)
-    set(CONAN_IMPORTS ${CONAN_IMPORTS} "bin, *.dll* -> ./bin")
-endif()
-if(UNIX AND NOT APPLE)
-    set(CONAN_IMPORTS ${CONAN_IMPORTS} "lib, *.so* -> ./lib")
-    set(CONAN_IMPORTS ${CONAN_IMPORTS} "plugins/platforms, *.so* -> ./bin/platforms")
-endif()
 
 file(TIMESTAMP ${CMAKE_BINARY_DIR}/conan_install_timestamp.txt file_timestamp "%Y.%m.%d")
 string(TIMESTAMP timestamp "%Y.%m.%d")
@@ -63,7 +31,7 @@ endif()
 if(MSVC)
     set(CC_CACHE $ENV{CC})
     set(CXX_CACHE $ENV{CXX})
-    unset(ENV{CC}) # Disable clcache, e.g. for building qt
+    unset(ENV{CC}) # Disable cl cache, e.g. for building qt
     unset(ENV{CXX})
 endif()
 
@@ -75,15 +43,11 @@ if(UNIX)
     endif()    
 endif()
 
+message(STATUS "Install dependencies with conan")
 conan_cmake_run(
-    BASIC_SETUP
-    ${CONAN_UPDATE}
+    CONANFILE conanfile.py
+    BASIC_SETUP ${CONAN_UPDATE}
     KEEP_RPATHS
-    REQUIRES ${CONAN_REQUIRES}
-    OPTIONS ${CONAN_OPTIONS}
-    BUILD ${OGS_CONAN_BUILD}
-    IMPORTS ${CONAN_IMPORTS}
-    GENERATORS virtualrunenv
     BUILD_TYPE ${CMAKE_BUILD_TYPE}
     SETTINGS ${CONAN_SETTINGS}
 )
