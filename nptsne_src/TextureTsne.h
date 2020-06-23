@@ -12,7 +12,7 @@ namespace py = pybind11;
 #include "KnnAlgorithm.h"
 #include "hdi/dimensionality_reduction/tsne.h"
 #ifdef __APPLE__
-    #define __gl_h_
+    #define __gl3_h_
 #endif
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
 #include "Types.h"
