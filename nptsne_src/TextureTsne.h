@@ -5,9 +5,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
-// Prevent double include of gl.h and gl3.h on Apple
+// Prevent double include of gl.h and gl3.h on Apple and suppress the #error caused by defining __gl_h_
 #ifdef __APPLE__
 # define __gl_h_
+# define GL_DO_NOT_WARN_IF_MULTI_GL_VERSION_HEADERS_INCLUDED
 #endif
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
