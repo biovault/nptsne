@@ -30,6 +30,20 @@ class TextureTsneExtended {
         py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding =
             py::array_t<nptsne::ScalarType>({}));
 
+    // Initialize the probabilities based on a distance matrix
+    bool init_transform_with_distance_matrix(
+        py::array_t<float, py::array::c_style | py::array::forcecast> dist_mat,
+        py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding =
+        py::array_t<nptsne::ScalarType>({}));
+
+    // Initialize the probabilities based on a nearest neighbors 
+    bool init_transform_with_kNN(
+        py::array_t<float, py::array::c_style | py::array::forcecast> neighbor_dists,
+        py::array_t<int, py::array::c_style | py::array::forcecast> neighbor_inds,
+        py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding =
+        py::array_t<nptsne::ScalarType>({}),
+        bool allow_kNN_perplexity_mismatch = false);
+
     void init_transform_with_distribution(nptsne::SparseScalarMatrixType& sparse_matrix);
 
     void start_exaggeration_decay();
@@ -60,6 +74,7 @@ class TextureTsneExtended {
 
     int _num_data_points;
     int _num_dimensions;
+    int _num_neighbors;
     int _iteration_count;
     bool _exaggeration_decay;
     int _decay_started_at;

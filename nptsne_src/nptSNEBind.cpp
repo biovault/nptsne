@@ -150,7 +150,6 @@ PYBIND11_MODULE(_nptsne, m) {
         &TextureTsneExtended::init_transform,
         R"pbdoc(
             Initialize the transform with given data and optional initial embedding.
-            Fit X into an embedded space and return that transformed output.
 
             Parameters
             ----------
@@ -161,6 +160,43 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc",
         py::arg("X"),
         py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
+
+    textureTsneExtended.def("init_transform_with_distance_matrix",
+        &TextureTsneExtended::init_transform_with_distance_matrix,
+        R"pbdoc(
+            Initialize the transform with a disatnce matrix and optional initial embedding.
+
+            Parameters
+            ----------
+            dist_mat : :class:`ndarray`
+                Distance matrix with squared distances between all data points (num. data points, num. data points)
+            initial_embedding : :class:`ndarray`
+                An optional initial embedding. Shape should be (num data points, num output dimensions)
+        )pbdoc",
+        py::arg("dist_mat"),
+        py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
+
+    textureTsneExtended.def("init_transform_with_kNN",
+        &TextureTsneExtended::init_transform_with_kNN,
+        R"pbdoc(
+            Initialize the transform with given pre-calculated nearest neighbors.
+
+            Parameters
+            ----------
+            neighbor_dists : :class:`ndarray`
+                The squared kNN distances (num. data points, num. kNN). Since the nearest neighbors is a data point itself, the first distance is 0 and will internally ingnored
+            neighbor_inds : :class:`ndarray`
+                The kNN distances labels (num. data points, num. kNN). Since the nearest neighbors is a data point itself, the first label should be the data point's indices itself.
+            initial_embedding : :class:`ndarray`
+                An optional initial embedding. Shape should be (num data points, num output dimensions)
+            allow_kNN_perplexity_mismatch : bool
+                The number of kNN should be k = perplexity*3 + 1 to match the kNN calcualtion that is automatically performed with e.g. fit_transform().
+        )pbdoc",
+        py::arg("neighbor_dists"),
+        py::arg("neighbor_inds"),
+        py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}),
+        py::arg("allow_kNN_perplexity_mismatch") = false);
+
 
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform,
         R"pbdoc(
