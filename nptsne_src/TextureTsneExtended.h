@@ -5,7 +5,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
-#include "glad/glad.h"
+//#include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include <tuple>
 #include "KnnAlgorithm.h"

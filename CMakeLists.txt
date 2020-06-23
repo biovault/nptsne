@@ -200,6 +200,10 @@ endfunction()
 # VisualStudio (or similar IDE) folder
 set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Python bindings")
 
+# Prevent glfw including the OpenGL headers
+# On Windows and Linux these come from glad in the HDILib
+add_definitions(-DGLFW_INCLUDE_NONE)
+
 # Setup RPATHs for loading the python extension dependencies on Linux and Macos
 # Path is relative to the extension.
 if(APPLE)
