@@ -241,9 +241,7 @@ PYBIND11_MODULE(_nptsne, m) {
         --------
         Create an HSNE wrapper
 
-        >>> import doctest
         >>> import nptsne
-        >>> doctest.ELLIPSIS_MARKER = '----'
         >>> hsne = nptsne.HSne(True)
      
         Attributes

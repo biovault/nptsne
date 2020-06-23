@@ -5,6 +5,10 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
+// Prevent double include of gl.h and gl3.h on Apple
+#ifdef __APPLE__
+# define __gl_h_
+#endif
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 #include "KnnAlgorithm.h"
