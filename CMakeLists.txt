@@ -440,7 +440,9 @@ add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     # check the contents of ${CMAKE_BINARY}/dist_root
-    COMMAND ${PYTHON_EXECUTABLE} -c "import glob; for filename in glob.iglob('${CMAKE_BINARY_DIR}/dist_root/' + '**/*', recursive=True): print(filename)"
+    COMMAND ${PYTHON_EXECUTABLE} -c "import glob
+        for filename in glob.iglob('${CMAKE_BINARY_DIR}/dist_root/' + '**/*', recursive=True):
+            print(filename)"
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
     SOURCES ${DIST_ROOT_FILES}
