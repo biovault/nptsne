@@ -237,9 +237,14 @@ if (APPLE)
     include_directories("${BREW_LIBOMP_PREFIX}/include") 
     
     #### Install flann
-    execute_process(COMMAND ${BREW} --prefix flann OUTPUT_VARIABLE BREW_FLANN_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-    include_directories("${BREW_FLANN_PREFIX}/include")  
-	find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${BREW_FLANN_PREFIX}")
+    if(NOT NPTSNE_BUILD_WITH_CONAN)
+        execute_process(COMMAND ${BREW} --prefix flann OUTPUT_VARIABLE BREW_FLANN_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+        include_directories("${BREW_FLANN_PREFIX}/include")  
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${BREW_FLANN_PREFIX}")
+    else()
+        # Conan brings flann via HDILib requirements
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${CONAN_FLANN_ROOT}")
+    endif()
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
     get_short_version_number(${FLANNCPP_LIBRARY_PATH} FLANNCPP_SHORTNAME)
     message(STATUS, "Flann path: long - ${FLANNCPP_LIBRARY_PATH}, truncated - ${FLANNCPP_SHORTNAME}") 
