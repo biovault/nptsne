@@ -242,6 +242,7 @@ if (APPLE)
 	find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${BREW_FLANN_PREFIX}")
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
     get_short_version_number(${FLANNCPP_LIBRARY_PATH} FLANNCPP_SHORTNAME)
+    message(STATUS, "Flann path: long - ${FLANNCPP_LIBRARY_PATH}, truncated - ${FLANNCPP_SHORTNAME}") 
     
     #### Install lz4    
     execute_process(COMMAND ${BREW} --prefix lz4 OUTPUT_VARIABLE BREW_LZ4_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
