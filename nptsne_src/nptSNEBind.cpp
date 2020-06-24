@@ -181,6 +181,8 @@ PYBIND11_MODULE(_nptsne, m) {
         R"pbdoc(
             Initialize the transform with given pre-calculated nearest neighbors.
 
+            After initializing a t-SNE object with TextureTsneExtended(), use perplexity_matched_nn to determine the recommended number k of nearest neighbors before pre-calculating the kNN.
+
             Parameters
             ----------
             neighbor_dists : :class:`ndarray`
@@ -254,6 +256,11 @@ PYBIND11_MODULE(_nptsne, m) {
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count,
         R"pbdoc(
             int: The number of completed iterations of tSNE gradient descent.
+        )pbdoc");
+
+    textureTsneExtended.def_property_readonly("perplexity_matched_nn", &TextureTsneExtended::get_perplexity_matched_nn,
+        R"pbdoc(
+            int: The number of nearest neighbors used internally and recommended for external computation based on the perplexity value.
         )pbdoc");
 
     textureTsneExtended.def("close", &TextureTsneExtended::close,

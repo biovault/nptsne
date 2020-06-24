@@ -52,6 +52,9 @@ class TextureTsneExtended {
 
     int get_iteration_count();
 
+    // Returns the recommended number of nearest neighbors based on perplexity
+    int get_perplexity_matched_nn();
+    
     py::array_t<float, py::array::c_style> run_transform(
         bool verbose = false,
         int iterations = 1000);
