@@ -267,7 +267,7 @@ if (APPLE)
     include_directories(${GLFW_INCLUDE_DIRS} "/usr/local/include")     
 
     target_link_libraries(${PROJECT_NAME} PUBLIC ${LZ4_LIBRARY} )
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${FLANNCPP_LIBRARY} )   
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${FLANNCPP_LIBRARY_PATH} )   
     target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARY})     
   else() 
       find_package(LLVM)
