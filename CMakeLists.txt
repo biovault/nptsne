@@ -359,7 +359,7 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 # the python wheel. 
 
 # Move the binary extension - .pyd, .so, or .dylib (depending on OS) for wheel building
-install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/")
+install(TARGETS ${PROJECT_NAME} DESTINATION "./dist_root/nptsne/libs/")
 
 #  For MacOs or Linux the binary extension needs to load the glfw flann and lz4 from its own directory
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
@@ -395,18 +395,16 @@ endif()
 # Platform specific libs
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # In linux bundle prebuilt libflann and liblz4
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs" RENAME liblz4.so)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs" RENAME libflann_cpp.so)
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs" RENAME libglfw.so)
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME liblz4.so)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME libflann_cpp.so)
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME libglfw.so)
 endif()	
 
 if(APPLE)
 	message(STATUS "Will deploy lz4, flann_cpp and glfw as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME}")
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs" RENAME ${LZ4_SHORTNAME})
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "${CMAKE_BINARY_DIR}/dist_root/nptsne/libs" RENAME ${GLFW_SHORTNAME})
-    file(GLOB_RECURSE PACKAGE_FILES RELATIVE "${CMAKE_BINARY_DIR}/dist_root/nptsne" "*.*")
-    message(STATUS "Files in package: ${PACKAGE_FILES}")
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME ${LZ4_SHORTNAME})
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME ${GLFW_SHORTNAME})
 endif()
 
 # For APPLE now fixup the binary extension to load the dylibs from a relative @loader_path
@@ -441,6 +439,8 @@ add_custom_target (bdist_wheel
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
+    # check the contents of ${CMAKE_BINARY}/dist_root
+    COMMAND ${PYTHON_EXECUTABLE} -c "exec(\"import glob\nfor filename in glob.iglob('${CMAKE_BINARY_DIR}/dist_root/' + '**/*', recursive=True): print(filename)\")"
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
     SOURCES ${DIST_ROOT_FILES}
@@ -472,9 +472,9 @@ if(DEFINED ENV{CI})
         COMMAND ${GIT_EXECUTABLE} pull origin $ENV{APPVEYOR_REPO_BRANCH}
         COMMAND ${PROJECT_SOURCE_DIR}/docsource/copy_generated_to_nptsnedoc.bat
         COMMAND ${GIT_EXECUTABLE} add --all . 
-        COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION} in build ${APPVEYOR_BUILD_NUMBER}"
+        COMMAND ${GIT_EXECUTABLE} commit --allow-empty -m "Update to nptsne ${VERSION} in build $ENV{APPVEYOR_BUILD_NUMBER}"
         COMMAND ${GIT_EXECUTABLE} push --set-upstream origin $ENV{APPVEYOR_REPO_BRANCH}
-        COMMENT "Add any new doc files and commit + push to the nptsnedoc branch ${APPVEYOR_REPO_BRANCH} creating if necessary"
+        COMMENT "Add any new doc files and commit + push to the nptsnedoc branch $ENV{APPVEYOR_REPO_BRANCH} creating if necessary"
         DEPENDS extract_module_docstring
     )
     endif()
