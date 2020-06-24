@@ -359,7 +359,7 @@ message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 # the python wheel. 
 
 # Move the binary extension - .pyd, .so, or .dylib (depending on OS) for wheel building
-install(TARGETS ${PROJECT_NAME} DESTINATION "./dist_root/nptsne/libs/")
+install(TARGETS ${PROJECT_NAME} DESTINATION "dist_root/nptsne/libs/")
 
 #  For MacOs or Linux the binary extension needs to load the glfw flann and lz4 from its own directory
 # use the intall_name_tool to fix this. This code makes two scripts getname.sh and fixup.sh
@@ -395,16 +395,16 @@ endif()
 # Platform specific libs
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # In linux bundle prebuilt libflann and liblz4
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME liblz4.so)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME libflann_cpp.so)
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME libglfw.so)
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME liblz4.so)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME libflann_cpp.so)
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME libglfw.so)
 endif()	
 
 if(APPLE)
 	message(STATUS "Will deploy lz4, flann_cpp and glfw as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME}")
-    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME ${LZ4_SHORTNAME})
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
-    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "./dist_root/nptsne/libs" RENAME ${GLFW_SHORTNAME})
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${LZ4_SHORTNAME})
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${GLFW_SHORTNAME})
 endif()
 
 # For APPLE now fixup the binary extension to load the dylibs from a relative @loader_path
@@ -426,6 +426,12 @@ elseif(WIN32)
   set(CAT_COMMAND echo)
 endif()
 
+if(WIN32)
+    set(DIR_LIST_CMD cmd /c dir /b /s /a:-D)
+elseif(WIN32)
+    set(DIR_LIST_CMD bash -c "ls -lR")
+endif(WIN32)
+
 # -- .whl creation
 # Support editing of the python files in VS
 add_custom_target (bdist_wheel
@@ -439,12 +445,12 @@ add_custom_target (bdist_wheel
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
+    COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
     # check the contents of ${CMAKE_BINARY}/dist_root
-    COMMAND ${PYTHON_EXECUTABLE} -c "import glob
-        for filename in glob.iglob('${CMAKE_BINARY_DIR}/dist_root/' + '**/*', recursive=True):
-            print(filename)"
+    COMMAND ${DIR_LIST_CMD}
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     SOURCES ${DIST_ROOT_FILES}
 )
 
