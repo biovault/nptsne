@@ -16,7 +16,9 @@ option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${PROJECT_SOURCE_DIR}/cmake")
 
-set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
+if(WIN32)
+    set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
+endif()    
 
 # A PEP 440 version is set in version.txt - this is not compatible with the CMAKE config
 message(STATUS "Building in ${CMAKE_BINARY_DIR}")
