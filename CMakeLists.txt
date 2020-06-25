@@ -453,15 +453,14 @@ add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${CMAKE_BINARY_DIR}/dist_root/_skbuild
     COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/_skbuild
     COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/nptsne/__pycache__
-    # To debug install uncomment the following
-    # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
+
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
     COMMAND ${CMAKE_COMMAND} -E cat ${CMAKE_BINARY_DIR}/cmake_install.cmake
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
-    # check the contents of ${CMAKE_BINARY}/dist_root
-    COMMAND ${DIR_LIST_CMD}
+    # To debug install uncomment the following
+    COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
