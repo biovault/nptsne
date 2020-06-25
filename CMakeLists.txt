@@ -225,11 +225,13 @@ if (APPLE)
   set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
   if(DEFINED ENV{TRAVIS_OS_NAME} AND ("$ENV{TRAVIS_OS_NAME}" STREQUAL "osx"))
     find_program(BREW NAMES brew)
+    # Prevent brew from updating when called
     set(BREW "HOMEBREW_NO_AUTO_UPDATE=1 ${BREW}")
     message(STATUS, "In Macos with ${BREW}")
     
     #### Install LIBOMP
     execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+    execute_process(COMMAND ${BREW} link --overwrite libomp)
     message(STATUS, "BREW LIBOMP ${BREW_LIBOMP_PREFIX}")
     set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -lomp")
     set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -lomp")
@@ -237,6 +239,7 @@ if (APPLE)
     set(OpenMP_CXX_LIB_NAMES "omp")
     set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
     include_directories("${BREW_LIBOMP_PREFIX}/include") 
+    link_directories("${BREW_LIBOMP_PREFIX}/lib/")
         
     #### Install flann
     if(NOT NPTSNE_BUILD_WITH_CONAN)
