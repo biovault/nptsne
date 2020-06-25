@@ -235,7 +235,9 @@ if (APPLE)
     set(OpenMP_CXX_LIB_NAMES "omp")
     set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
     include_directories("${BREW_LIBOMP_PREFIX}/include") 
-    
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+        
     #### Install flann
     if(NOT NPTSNE_BUILD_WITH_CONAN)
         execute_process(COMMAND ${BREW} --prefix flann OUTPUT_VARIABLE BREW_FLANN_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -383,16 +385,20 @@ if(APPLE)
 			COMMAND sh -c \"chmod +x ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
-			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|flann|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && B=`basename $A` && echo install_name_tool -change $A @loader_path/$B `~/getname.sh` >> ~/fixup.sh'\"
+			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && B=`basename $A` && echo install_name_tool -change $A @loader_path/$B `~/getname.sh` >> ~/fixup.sh'\"
+		execute_process(
+			COMMAND sh -c \"rm -f ~/fixup_flann.sh && otool -L `~/getname.sh` | grep -E 'flann' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && echo install_name_tool -change $A @loader_path/${FLANNCPP_SHORTNAME} `~/getname.sh` >> ~/fixup_flann.sh'\"            
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})			
 		execute_process(
 			COMMAND sh -c \"chmod +x ~/fixup.sh\"
+			COMMAND sh -c \"chmod +x ~/fixup_flann.sh\"            
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
 			COMMAND sh -c \"cat ~/getname.sh\"
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})		
 		execute_process(
 			COMMAND sh -c \"cat ~/fixup.sh\"
+			COMMAND sh -c \"cat ~/fixup_flann.sh\"            
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})	            
 	")
 endif()
@@ -418,6 +424,7 @@ if(APPLE)
 	install(CODE "
 			execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
 			execute_process(COMMAND sh -c \"~/fixup.sh\")
+			execute_process(COMMAND sh -c \"~/fixup_flann.sh\")            
 			execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
 	")
 endif()
