@@ -231,12 +231,12 @@ if (APPLE)
     #### Install LIBOMP
     execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS, "BREW LIBOMP ${BREW_LIBOMP_PREFIX}")
-    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
+    set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp -lomp")
+    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -lomp")
+    set(OpenMP_C_LIB_NAMES "omp")
     set(OpenMP_CXX_LIB_NAMES "omp")
     set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
     include_directories("${BREW_LIBOMP_PREFIX}/include") 
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
         
     #### Install flann
     if(NOT NPTSNE_BUILD_WITH_CONAN)
