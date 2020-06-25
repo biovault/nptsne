@@ -386,6 +386,7 @@ if(APPLE)
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 		execute_process(
 			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && B=`basename $A` && echo install_name_tool -change $A @loader_path/$B `~/getname.sh` >> ~/fixup.sh'\"
+			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})            
 		execute_process(
 			COMMAND sh -c \"rm -f ~/fixup_flann.sh && otool -L `~/getname.sh` | grep -E 'flann' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && echo install_name_tool -change $A @loader_path/${FLANNCPP_SHORTNAME} `~/getname.sh` >> ~/fixup_flann.sh'\"            
 			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})			
@@ -457,7 +458,7 @@ add_custom_target (bdist_wheel
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
     # To debug install uncomment the following
-    COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
+    # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
 
