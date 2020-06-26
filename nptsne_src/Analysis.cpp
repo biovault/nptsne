@@ -22,7 +22,11 @@ std::unique_ptr<Analysis> Analysis::make_analysis(
     EmbedderType embedderType,
     Analysis *parent,
     std::vector<uint32_t> parent_selection) {
+#ifdef __APPLE__
+    auto result = make_unique<Analysis>();
+#else
     auto result = std::make_unique<Analysis>();
+#endif
 
     result->parent = parent;
     result->parent_selection = parent_selection;
