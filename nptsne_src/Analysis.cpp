@@ -8,6 +8,14 @@
 
 uint32_t Analysis::id_counter = 0;
 
+#ifdef __APPLE__
+// building using C++11 on macOS 
+template<typename T, typename... Args>
+std::unique_ptr<T> make_unique(Args&&... args)
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+#endif
 // Factory method for analyses
 std::unique_ptr<Analysis> Analysis::make_analysis(
     HSne &hsne,
