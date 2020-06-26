@@ -277,19 +277,17 @@ PYBIND11_MODULE(_nptsne, m) {
     //
     hsne_class
         .def("create_hsne",
-            py::overload_cast<
-            py::array_t<float, py::array::c_style | py::array::forcecast>,
-            int
-            >(&HSne::create_hsne),
+            (bool (HSne::*)(
+                py::array_t<float, py::array::c_style | py::array::forcecast>,
+                int)) &HSne::create_hsne,
             py::arg("X"),
             py::arg("num_scales")
         )
         .def("create_hsne",
-            py::overload_cast<
-            py::array_t<float, py::array::c_style | py::array::forcecast>,
-            int,
-            py::array_t<uint64_t, py::array::c_style | py::array::forcecast>
-            >(&HSne::create_hsne),
+            (bool (HSne::*)(
+                py::array_t<float, py::array::c_style | py::array::forcecast>,
+                int,
+                py::array_t<uint64_t, py::array::c_style | py::array::forcecast>)) &HSne::create_hsne,
             R"pbdoc(
                 Create the hSNE analysis data hierarchy with user assigned point ids from the input data with the number of scales required.
 

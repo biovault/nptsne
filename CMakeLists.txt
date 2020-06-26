@@ -78,7 +78,7 @@ if(WIN32)
 endif() 
 set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
  
-# Need at least C++14
+# Prefer C++14
 if (APPLE)
     set(CMAKE_CXX_STANDARD 11)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
