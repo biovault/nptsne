@@ -54,7 +54,7 @@ class NptsneConan(ConanFile):
                 installer.install('libglfw3-dev')
         if tools.os_info.is_macos:           
             installer = tools.SystemPackageTool() 
-            installer.install('llvm@9')
+            installer.install('llvm')
             installer.install('libomp')            
             installer.install('lz4')
             installer.install('glfw')

@@ -237,7 +237,7 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     find_program(BREW NAMES brew)
     if("${BREW}" STRGREATER "")
         message(STATUS "Running on macOS Darwin using ${BREW}")
-        execute_process(COMMAND ${BREW} --prefix llvm@9 OUTPUT_VARIABLE BREW_LLVM_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+        execute_process(COMMAND ${BREW} --prefix llvm OUTPUT_VARIABLE BREW_LLVM_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
         execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     endif("${BREW}" STRGREATER "")
     
