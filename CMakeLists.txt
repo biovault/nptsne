@@ -256,7 +256,8 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
         set(CMAKE_CXX_COMPILER "${LLVM_INSTALL_PREFIX}/bin/clang++")
         set(CMAKE_XCODE_ATTRIBUTE_CC "${LLVM_INSTALL_PREFIX}/bin/clang")
         set(CMAKE_XCODE_ATTRIBUTE_CXX "${LLVM_INSTALL_PREFIX}/bin/clang++")
-        set(CMAKE_LD "${LLVM_INSTALL_PREFIX}/bin/clang++") 
+        set(CMAKE_CXX_LINK_EXECUTABLE "${LLVM_INSTALL_PREFIX}/bin/clang++") 
+        set(CMAKE_C_LINK_EXECUTABLE "${LLVM_INSTALL_PREFIX}/bin/clang++") 
         
         set(CMAKE_XCODE_ATTRIBUTE_COMPILER_INDEX_STORE_ENABLE "NO")
 
