@@ -23,6 +23,7 @@ endif()
 # A PEP 440 version is set in version.txt - this is not compatible with the CMAKE config
 message(STATUS "Building in ${CMAKE_BINARY_DIR}")
 
+# Find and the git branch name for tracing purposes
 execute_process(
   COMMAND git rev-parse --abbrev-ref HEAD
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -49,7 +50,7 @@ include(ConanSetup)
 
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-find_package (Python3 COMPONENTS Interpreter Development)
+find_package (Python3 REQUIRED COMPONENTS Interpreter Development)
 
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
@@ -223,30 +224,32 @@ endif()
     
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
 if (CMAKE_GENERATOR STREQUAL Xcode)
+    # Silences OpenGL deprecation warnings (in GLFW)
+    add_definitions(-DGL_SILENCE_DEPRECATION)
     find_program(BREW NAMES brew)
     if("${BREW}" STRGREATER "")
         message(STATUS "Running on macOS Darwin using ${BREW}")
-        execute_process(COMMAND ${BREW} --prefix llvm OUTPUT_VARIABLE BREW_LLVM_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+        #execute_process(COMMAND ${BREW} --prefix llvm OUTPUT_VARIABLE BREW_LLVM_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
         execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     endif("${BREW}" STRGREATER "")
     
-    message(STATUS "Trying to find llvm using ${BREW_LLVM_PREFIX}/lib/cmake/llvm")
-    find_package(LLVM REQUIRED CONFIG HINTS "${BREW_LLVM_PREFIX}/lib/cmake/llvm")
-    if(EXISTS ${LLVM_INSTALL_PREFIX})
-        message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION} in ${LLVM_INSTALL_PREFIX}")
+    #message(STATUS "Trying to find llvm using ${BREW_LLVM_PREFIX}/lib/cmake/llvm")
+    #find_package(LLVM REQUIRED CONFIG HINTS "${BREW_LLVM_PREFIX}/lib/cmake/llvm")
+    #if(EXISTS ${LLVM_INSTALL_PREFIX})
+        #message(STATUS "Found LLVM ${LLVM_PACKAGE_VERSION} in ${LLVM_INSTALL_PREFIX}")
         #message(STATUS "Using LLVMConfig.cmake in ${LLVM_DIR}")
         #message(STATUS "Found LLVM headers in ${LLVM_INCLUDE_DIRS}")
 
-        find_package(Clang REQUIRED CONFIG HINTS "${BREW_LLVM_PREFIX}/lib/cmake/clang")
-        message(STATUS "Found Clang in ${CLANG_INSTALL_PREFIX}")
+        #find_package(Clang REQUIRED CONFIG HINTS "${BREW_LLVM_PREFIX}/lib/cmake/clang")
+        #message(STATUS "Found Clang in ${CLANG_INSTALL_PREFIX}")
         #message(STATUS "Found Clang headers in ${CLANG_INCLUDE_DIRS}")
 
-        set(CMAKE_C_COMPILER "${LLVM_INSTALL_PREFIX}/bin/clang")
-        set(CMAKE_CXX_COMPILER "${LLVM_INSTALL_PREFIX}/bin/clang++")
-        set(CMAKE_XCODE_ATTRIBUTE_CC "${LLVM_INSTALL_PREFIX}/bin/clang")
-        set(CMAKE_XCODE_ATTRIBUTE_CXX "${LLVM_INSTALL_PREFIX}/bin/clang++")
+        #set(CMAKE_C_COMPILER "${LLVM_INSTALL_PREFIX}/bin/clang")
+        #set(CMAKE_CXX_COMPILER "${LLVM_INSTALL_PREFIX}/bin/clang++")
+        #set(CMAKE_XCODE_ATTRIBUTE_CC "${LLVM_INSTALL_PREFIX}/bin/clang")
+        #set(CMAKE_XCODE_ATTRIBUTE_CXX "${LLVM_INSTALL_PREFIX}/bin/clang++")
         
-        set(CMAKE_XCODE_ATTRIBUTE_COMPILER_INDEX_STORE_ENABLE "NO")
+        #set(CMAKE_XCODE_ATTRIBUTE_COMPILER_INDEX_STORE_ENABLE "NO")
 
         if(EXISTS ${BREW_LIBOMP_PREFIX})
             message(STATUS "Found OpenMP in ${BREW_LIBOMP_PREFIX}")
@@ -262,11 +265,11 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
             message(WARNING "Brew found, but OpenMP support could not be detected, using Grand Central Dispatch instead.")
             add_definitions( -D__USE_GCD__)
         endif(EXISTS ${BREW_LIBOMP_PREFIX})
-    else()
-        message(WARNING "Could not find custom llvm using base install.")
-        message(WARNING "No OpenMP support detected, using Grand Central Dispatch instead.")
-        add_definitions( -D__USE_GCD__)
-    endif(EXISTS ${LLVM_INSTALL_PREFIX})
+    #else()
+    #    message(WARNING "Could not find custom llvm using base install.")
+    #    message(WARNING "No OpenMP support detected, using Grand Central Dispatch instead.")
+    #    add_definitions( -D__USE_GCD__)
+    #endif(EXISTS ${LLVM_INSTALL_PREFIX})
     
     #### Install flann
     if(NOT NPTSNE_BUILD_WITH_CONAN)
