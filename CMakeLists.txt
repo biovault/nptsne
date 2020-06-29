@@ -242,12 +242,14 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     
     if(EXISTS ${BREW_LIBOMP_PREFIX})
         message(STATUS "Found OpenMP in ${BREW_LIBOMP_PREFIX}")
-        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")
         set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
-        set(OpenMP_CXX_LIB_NAMES "omp")
         set(OpenMP_C_LIB_NAMES "omp")
+
+        set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")        
+        set(OpenMP_CXX_LIB_NAMES "omp")
+
         set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+
         include_directories("${BREW_LIBOMP_PREFIX}/include")
         link_directories("${BREW_LIBOMP_PREFIX}/lib/")
     else()
@@ -301,8 +303,8 @@ find_package(OpenMP REQUIRED)
 
 if(OPENMP_FOUND)
 	message (STATUS "OpenMP found libname: ${OpenMP_CXX_LIB_NAMES}")
-	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}") 
+	#set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+	#set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}") 
     target_link_libraries(${PROJECT} OpenMP::OpenMP_CXX)
 else()
     message(WARNING, "OpenMP not found!")    
