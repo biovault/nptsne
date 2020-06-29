@@ -122,4 +122,7 @@ script:
     fi    
   - cmake --build . --config Release
   - cmake --build . --target bdist_wheel --config Release  # Need sudo because this calls install
+  - cmake --build . --target run_doctest --config Release
+
+after_success:  
   - cmake --build . --target upload_wheel --config Release 

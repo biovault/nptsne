@@ -476,20 +476,34 @@ add_custom_target (bdist_wheel
     SOURCES ${DIST_ROOT_FILES}
 )
 
+add_custom_target(install_nptsne
+    # Install the wheel 
+    ${PYTHON_EXECUTABLE} -m pip --version && ${PYTHON_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}
+
+    COMMENT "Install nptsne" 
+    DEPENDS bdist_wheel
+)    
+
+add_custom_target(run_doctest
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
+    ${PYTHON_EXECUTABLE} run_doctest.py
+    COMMENT "Check whell with doctest" 
+    DEPENDS install_nptsne    
+)
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
 # Support editing of the rst external doc files in VS
 if(WIN32)
-get_filename_component(PYROOT ${PYTHON_EXECUTABLE} DIRECTORY)
-set(SPHINX "${PYROOT}/Scripts/sphinx-build.exe")
-MESSAGE(STATUS "Sphinx build: ${SPHINX}")
-add_custom_target(extract_module_docstring
-    # Install the wheel to allow docstring extraction with autodoc
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc 
-    COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && ${PYTHON_EXECUTABLE} -m pip --version && ${PYTHON_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION} && ${PYTHON_EXECUTABLE} -m pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat ${SPHINX}
-    COMMENT "Extract the reStructuredText from the module" 
-    DEPENDS bdist_wheel
-    SOURCES ${EXTERN_DOC_FILES}
-)
+    get_filename_component(PYROOT ${PYTHON_EXECUTABLE} DIRECTORY)
+    set(SPHINX "${PYROOT}/Scripts/sphinx-build.exe")
+    MESSAGE(STATUS "Sphinx build: ${SPHINX}")
+    add_custom_target(extract_module_docstring
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc 
+        # Install requirements and perform docstring extraction with autodoc
+        COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && ${PYTHON_EXECUTABLE} -m pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat ${SPHINX}
+        COMMENT "Extract the reStructuredText from the module" 
+        DEPENDS install_nptsne
+        SOURCES ${EXTERN_DOC_FILES}
+    )
 endif()
 
 if(DEFINED ENV{CI}) 
