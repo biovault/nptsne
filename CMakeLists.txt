@@ -322,7 +322,7 @@ endif()
 find_package(OpenMP REQUIRED)
 
 if(OPENMP_FOUND)
-	message (STATUS "OpenMP found")
+	message (STATUS "OpenMP found ${OpenMP_CXX_LIB_NAMES}")
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}") 
     target_link_libraries(${PROJECT} OpenMP::OpenMP_CXX)
