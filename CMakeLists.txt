@@ -252,6 +252,7 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
 
         include_directories("${BREW_LIBOMP_PREFIX}/include")
         link_directories("${BREW_LIBOMP_PREFIX}/lib/")
+        target_link_libraries(${PROJECT_NAME} PUBLIC "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
     else()
         message(WARNING "Brew found, but OpenMP support could not be detected, using Grand Central Dispatch instead.")
         add_definitions( -D__USE_GCD__)
