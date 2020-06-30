@@ -3,6 +3,7 @@ import numpy as np
 
 def make_test_globals():
 
+    print("Prepare doctest globals")
     # Test using a small data sample of 10000 random integers 0-255
     # with 16 dimensions    
     data = np.random.randint(256, size=(10000,16))
@@ -13,6 +14,7 @@ def make_test_globals():
     file_name = "rnd10000x16.hsne"
     hsne.save(file_name)
     
+    print("End prepare doctest globals")
     return {
         "sample_hsne": hsne,
         "sample_scale0": hsne.get_scale(0),      
@@ -20,7 +22,6 @@ def make_test_globals():
         "sample_scale2": hsne.get_scale(2),         
         "sample_hsne_file": file_name,
         "sample_data": data
-        
     }
 
 if __name__ == "__main__":
@@ -29,6 +30,7 @@ if __name__ == "__main__":
     doctest.testmod(nptsne, verbose=True)
     # Doctest will not find the extension library
     import nptsne.libs._nptsne
+    print("Starting doctest")
     doctest.testmod(nptsne.libs._nptsne, 
         verbose=True, 
         optionflags=REPORT_NDIFF|ELLIPSIS, 
