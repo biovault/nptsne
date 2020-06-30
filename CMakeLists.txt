@@ -72,7 +72,7 @@ include(FindOpenGL)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 if(WIN32)
 	get_filename_component(PYDIR "${PYTHON_EXECUTABLE}" DIRECTORY) 
-	set (PYCMAKE "${PYDib/cmake")
+	set (PYCMAKE "${PYDIR}/../../Library/lib/cmake")
 	list(APPEND CMAKE_PREFIX_PATH  "${PYCMAKE}")
 	message (STATUS "Prefix path ${CMAKE_PREFIX_PATH}")
 endif() 
@@ -486,8 +486,8 @@ add_custom_target(install_nptsne
 
 add_custom_target(run_doctest
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-    ${PYTHON_EXECUTABLE} run_doctest.py
-    COMMENT "Check whell with doctest" 
+    COMMAND ${PYTHON_EXECUTABLE} run_doctest.py
+    COMMENT "Check wheel with doctest" 
     DEPENDS install_nptsne    
 )
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
