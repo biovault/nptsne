@@ -240,25 +240,7 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
         execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
     endif("${BREW}" STRGREATER "")
     
-    #if(EXISTS ${BREW_LIBOMP_PREFIX})
-    #    message(STATUS "Found OpenMP in ${BREW_LIBOMP_PREFIX}")
-    #    set(OpenMP_C_FLAGS "-Xpreprocessor -fopenmp")
-    #    set(OpenMP_C_LIB_NAMES "omp")
-
-    #    set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp")        
-    #    set(OpenMP_CXX_LIB_NAMES "omp")
-
-    #    set(OpenMP_omp_LIBRARY "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
-
-    #    include_directories("${BREW_LIBOMP_PREFIX}/include")
-    #    link_directories("${BREW_LIBOMP_PREFIX}/lib/")
-    #    target_link_libraries(${PROJECT_NAME} PUBLIC "${BREW_LIBOMP_PREFIX}/lib/libomp.dylib")
-    #else()
-    #    message(WARNING "Brew found, but OpenMP support could not be detected, using Grand Central Dispatch instead.")
-    #    add_definitions( -D__USE_GCD__)
-    #endif(EXISTS ${BREW_LIBOMP_PREFIX})
-
-    #### Install flann
+     #### Install flann
     if(NOT NPTSNE_BUILD_WITH_CONAN)
         execute_process(COMMAND ${BREW} --prefix flann OUTPUT_VARIABLE BREW_FLANN_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
         include_directories("${BREW_FLANN_PREFIX}/include")  
@@ -495,7 +477,7 @@ add_custom_target(install_nptsne
 
 add_custom_target(run_doctest
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-    COMMAND ${PYTHON_EXECUTABLE} run_doctest.py
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
     COMMENT "Check wheel with doctest" 
     DEPENDS install_nptsne    
 )
