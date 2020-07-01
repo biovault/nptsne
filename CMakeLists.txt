@@ -230,21 +230,19 @@ endif()
     
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
 if (CMAKE_GENERATOR STREQUAL Xcode)
+    # Assumption libomp, glfw and have been installed
+    # probably using brew.
+    # If using conan we use the conan build flann
+    set(MAC_INSTALL_PREFIX "/usr/local")
+    
     # Silences OpenGL deprecation warnings (in GLFW)
     add_definitions(-DGL_SILENCE_DEPRECATION)
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
     
-    find_program(BREW NAMES brew)
-    if("${BREW}" STRGREATER "")
-        message(STATUS "Running on macOS Darwin using ${BREW}")
-        execute_process(COMMAND ${BREW} --prefix libomp OUTPUT_VARIABLE BREW_LIBOMP_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-    endif("${BREW}" STRGREATER "")
-    
-     #### Install flann
+     #### Find flann
     if(NOT NPTSNE_BUILD_WITH_CONAN)
-        execute_process(COMMAND ${BREW} --prefix flann OUTPUT_VARIABLE BREW_FLANN_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-        include_directories("${BREW_FLANN_PREFIX}/include")  
-        find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${BREW_FLANN_PREFIX}")
+        include_directories("${MAC_INSTALL_PREFIX}/opt/flann/include")  
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${MAC_INSTALL_PREFIX}/lib")
     else()
         # Conan brings flann via HDILib requirements
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${CONAN_FLANN_ROOT}")
@@ -253,22 +251,19 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     get_short_version_number(${FLANNCPP_LIBRARY_PATH} FLANNCPP_SHORTNAME)
     message(STATUS, "Flann path: long - ${FLANNCPP_LIBRARY_PATH}, truncated - ${FLANNCPP_SHORTNAME}") 
     
-    #### Install lz4    
-    execute_process(COMMAND ${BREW} --prefix lz4 OUTPUT_VARIABLE BREW_LZ4_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-    include_directories("${BREW_LZ4_PREFIX}/include") 
-    find_library(LZ4_LIBRARY lz4 HINTS "${BREW_LZ4_PREFIX}")    
+    #### Find lz4    
+    include_directories("${MAC_INSTALL_PREFIX}/opt/lz4/include") 
+    find_library(LZ4_LIBRARY lz4 HINTS "${MAC_INSTALL_PREFIX}/lib")    
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     # lz4 link chops two digits from the version 
     # (this probably a bug due to the library name ending in a digit)
     get_shorter_version_number(${LZ4_LIBRARY_PATH} LZ4_SHORTNAME)
    
-    #### Install glfw
-    execute_process(COMMAND ${BREW} --prefix glfw OUTPUT_VARIABLE BREW_GLFW_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
-    include_directories("${BREW_GLFW_PREFIX}/include") 
-    find_library(GLFW_LIBRARY glfw HINTS "${BREW_GLFW_PREFIX}")    
+    #### Find glfw
+    find_library(GLFW_LIBRARY glfw HINTS "${MAC_INSTALL_PREFIX}/lib")    
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
     get_short_version_number(${GLFWLIBRARY_PATH} GLFW_SHORTNAME)    
-    include_directories(${GLFW_INCLUDE_DIRS} "/usr/local/include")     
+    include_directories(${GLFW_INCLUDE_DIRS} "${MAC_INSTALL_PREFIX}/opt/glfw/include")     
 
     get_filename_component(LZ4_LINK_PATH ${LZ4_LIBRARY} DIRECTORY)
     get_filename_component(FLANN_LINK_PATH ${FLANNCPP_LIBRARY_PATH} DIRECTORY)
@@ -281,7 +276,6 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARY}) 
 endif()
 
-# Should support brew
 find_package(OpenMP REQUIRED)
 
 if(OPENMP_FOUND)
@@ -289,8 +283,7 @@ if(OPENMP_FOUND)
     include_directories(${OpenMP_CXX_INCLUDE_DIRS})
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}") 
     if (APPLE) 
-        message (STATUS "APPLE target Linking to : ${OpenMP_libomp_LIBRARY}")
-        target_link_libraries(${PROJECT_NAME} PUBLIC "${OpenMP_libomp_LIBRARY}")
+        target_link_libraries(${PROJECT_NAME} PUBLIC "${OpenMP_CXX_LIBRARIES}")
     else()
         target_link_libraries(${PROJECT} OpenMP::OpenMP_CXX)
     endif()

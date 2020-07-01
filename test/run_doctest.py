@@ -1,9 +1,9 @@
 """Doctests for nptsne"""
 import doctest
 from doctest import REPORT_NDIFF, ELLIPSIS
+import numpy as np
 import nptsne
 import nptsne.libs._nptsne
-import numpy as np
 
 def make_test_globals():
     """Prepare global objects used in the doctests"""
