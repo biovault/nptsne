@@ -5,10 +5,9 @@ import nptsne
 import nptsne.libs._nptsne
 import numpy as np
 
-
 def make_test_globals():
     """Prepare global objects used in the doctests"""
-    print("Prepare doctest globals")
+    print("Prepare doctest globals", flush=True)
     # Test using a small data sample of 10000 random integers 0-255
     # with 16 dimensions
     data = np.random.randint(256, size=(10000, 16))
@@ -19,7 +18,7 @@ def make_test_globals():
     file_name = "rnd10000x16.hsne"
     hsne.save(file_name)
 
-    print("End prepare doctest globals")
+    print("End prepare doctest globals", flush=True)
     return {
         "sample_hsne": hsne,
         "sample_scale0": hsne.get_scale(0),
@@ -31,10 +30,9 @@ def make_test_globals():
 
 
 if __name__ == "__main__":
-    print("Starting doctest")
+    print("Starting doctest", flush=True)
     doctest.testmod(nptsne, verbose=True)
     # Doctest will not find the extension library
-    print("Starting doctest")
     doctest.testmod(nptsne.libs._nptsne,
                     verbose=True,
                     optionflags=REPORT_NDIFF | ELLIPSIS,
