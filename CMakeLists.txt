@@ -406,12 +406,12 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
 endif()	
 
 if(APPLE)
-    get_filename_component(OMP_NAME ${OpenMP_CXX_LIBRARIES} NAME)
+    get_filename_component(OMP_NAME ${OpenMP_libomp_LIBRARY} NAME)
 	message(STATUS "Will deploy lz4, flann_cpp and glfw and libomp as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME} ${OMP_NAME}")
     install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${LZ4_SHORTNAME})
     install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
     install(FILES ${GLFWLIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${GLFW_SHORTNAME})
-    install(FILES ${OpenMP_CXX_LIBRARIES} DESTINATION "dist_root/nptsne/libs")
+    install(FILES ${OpenMP_libomp_LIBRARY} DESTINATION "dist_root/nptsne/libs")
 endif()
 
 # For APPLE now fixup the binary extension to load the dylibs from a relative @loader_path
