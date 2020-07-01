@@ -477,7 +477,7 @@ add_custom_target(install_nptsne
 
 add_custom_target(run_doctest
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-    COMMAND ${PYTHON_EXECUTABLE} -c "print('Pre doctest')"
+    COMMAND ${PYTHON_EXECUTABLE} -c \"print('Pre doctest')\"
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
     COMMENT "Check wheel with doctest" 
     DEPENDS install_nptsne    
