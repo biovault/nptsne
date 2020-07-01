@@ -121,7 +121,7 @@ script:
         pip install distro>=1.4.0 scikit-build
     fi    
   #- cmake --build . --config Release
-  #- cmake --build . --target bdist_wheel --config Release  # Need sudo because this calls install
+  - cmake --build . --target bdist_wheel --config Release  # Need sudo because this calls install
   - cmake --build . --target run_doctest --config Release
 
 after_success:  

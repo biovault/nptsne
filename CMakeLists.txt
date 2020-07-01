@@ -467,7 +467,6 @@ add_custom_target(install_nptsne
     ${PYTHON_EXECUTABLE} -m pip --version && ${PYTHON_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}
 
     COMMENT "Install nptsne" 
-    DEPENDS bdist_wheel
 )    
 
 add_custom_target(run_doctest
