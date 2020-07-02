@@ -30,6 +30,7 @@ environment:
           BUILD_SHARED: True
           Python3_ROOT_DIR: C:\Python36-x64
           PYTHON_VERSION: 3.6
+          USE_FOR_DOC_GENERATION: False
           CMAKE_GENERATOR: "Visual Studio 15 2017 Win64"
           PATH: C:\Python36-x64;C:\Python36-x64\Scripts;%PATH%
 
@@ -89,6 +90,8 @@ build_script:
   - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global user.name "%APPVEYOR_REPO_COMMIT_AUTHOR%")
   - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target extract_module_docstring --config Release)
   - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --config Release)
+  - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
+  - ctest --verbose -C Release
   
 on_success:
 

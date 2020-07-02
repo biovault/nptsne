@@ -465,17 +465,15 @@ add_custom_target (bdist_wheel
 add_custom_target(install_nptsne
     # Install the wheel 
     ${PYTHON_EXECUTABLE} -m pip --version && ${PYTHON_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}
-
     COMMENT "Install nptsne" 
 )    
 
-add_custom_target(run_doctest
-    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
-    COMMAND ${PYTHON_EXECUTABLE} -c \"print('Pre doctest')\"
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
-    COMMENT "Check wheel with doctest" 
-    DEPENDS install_nptsne    
+enable_testing()
+add_test(NAME py_doctest 
+	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
 )
+
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
 # Support editing of the rst external doc files in VS
 if(WIN32)
