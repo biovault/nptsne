@@ -50,6 +50,9 @@ install:
   - git submodule update --init --recursive
   - set PYTHON_PATH=%Python3_ROOT_DIR% # Python3_ROOT_DIR is required to hint the CMake find_package Python3 
   - python --version
+  # Set up a virtual Mesa GL display for the OpenGl code
+  - "git clone --depth 1 git://github.com/pyvista/gl-ci-helpers.git"
+  - "powershell gl-ci-helpers/appveyor/install_opengl.ps1"
   - pip.exe install six==1.12.0
   - pip.exe install conan==1.24.1 
   - pip.exe install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0 
