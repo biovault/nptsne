@@ -32,6 +32,13 @@ class TextureTsne {
     py::array_t<float, py::array::c_style> fit_transform(
         py::array_t<float, py::array::c_style | py::array::forcecast> X);
 
+    bool get_verbose() { return _verbose;  }
+    int get_num_target_dimensions() { return _num_target_dimensions; }
+    int get_iterations() { return _iterations; }
+    int get_perplexity() { return _perplexity;  }
+    int get_exaggeration_iter() { return _exaggeration_iter; }
+    KnnAlgorithm get_knn_algorithm() { return _knn_algorithm; }
+
  private:
     int _num_data_points;
     int _num_dimensions;

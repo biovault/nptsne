@@ -10,11 +10,12 @@ def make_test_globals():
     print("Prepare doctest globals", flush=True)
     # Test using a small data sample of 10000 random integers 0-255
     # with 16 dimensions
-    data = np.random.randint(256, size=(10000, 16))
+    hsne_data = np.random.randint(256, size=(10000, 16))
+    tsne_data = np.random.randint(256, size=(2000, 16))
     # Create a sample hsne with 3 levels and
     # save this to a sample file
     hsne = nptsne.HSne(True)
-    hsne.create_hsne(data, 3)
+    hsne.create_hsne(hsne_data, 3)
     file_name = "rnd10000x16.hsne"
     hsne.save(file_name)
 
@@ -25,7 +26,9 @@ def make_test_globals():
         "sample_scale1": hsne.get_scale(1),
         "sample_scale2": hsne.get_scale(2),
         "sample_hsne_file": file_name,
-        "sample_data": data
+        "sample_hsne_data": hsne_data,
+        "sample_tsne_data": tsne_data,
+        "sample_texture_tsne": nptsne.TextureTsne()
     }
 
 

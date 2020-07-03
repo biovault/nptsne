@@ -59,10 +59,28 @@ PYBIND11_MODULE(_nptsne, m) {
                 The knn algorithm used for the nearest neighbor calculation.
                 The default is `Flann` for less than 50 dimensions `HNSW` may be faster
 
+            Examples
+            --------
+            Create an TextureTsne wrapper
+
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsne(verbose=True)
+            >>> tsne.verbose
+            True
+            >>> tsne.iterations
+            1000
+            >>> tsne.num_target_dimensions
+            2
+            >>> tsne.perplexity
+            30
+            >>> tsne.exaggeration_iter
+            250
+
             Notes
             -----
             TextureTsne is a GPU compute shader implementation of the gradient descent
-            linear tSNE. It is described in [1]_.
+            linear tSNE. If the system does not support OpenGL 4.3 an abover the implementation
+            falls back to the a Texture rendering approach as described in [1]_.
 
             See Also
             --------
@@ -93,12 +111,88 @@ PYBIND11_MODULE(_nptsne, m) {
             X : :class:`ndarray`
                 The input data with shape (num. data points, num. dimensions)
 
+            Example
+            -------
+            An 2D embedding is returned in the form of a numpy array
+            [x0, y0, x1, y1, ...].  
+
+            >>> embedding = sample_texture_tsne.fit_transform(sample_tsne_data)  # doctest: +ELLIPSIS
+            >>> embedding.shape
+            (4000,)
+            >>> import numpy
+            >>> embedding.dtype == numpy.float32
+            True
+
             Returns
             -------
             :class:`ndarray`
                 A numpy array contain a flatten (1D) embedding
         )pbdoc",
         py::arg("X"));
+
+    textureTsne.def_property_readonly("verbose", &TextureTsne::get_verbose,
+        R"pbdoc(
+            bool: True if verbose logging is enabled. Set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne.verbose
+            False
+        )pbdoc");
+
+    textureTsne.def_property_readonly("num_target_dimensions", &TextureTsne::get_num_target_dimensions,
+        R"pbdoc(
+            int: The number of target dimensions, set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne.num_target_dimensions
+            2
+        )pbdoc");
+
+
+    textureTsne.def_property_readonly("iterations", &TextureTsne::get_iterations,
+        R"pbdoc(
+            int: The number of iterations, set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne.iterations
+            1000
+        )pbdoc");
+
+    textureTsne.def_property_readonly("perplexity", &TextureTsne::get_perplexity,
+        R"pbdoc(
+            int: The tsne perplexity, set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne.perplexity
+            30
+        )pbdoc");
+
+    textureTsne.def_property_readonly("exaggeration_iter", &TextureTsne::get_exaggeration_iter,
+        R"pbdoc(
+            int: The iteration where attractive force exaggeration starts to decay, set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne.exaggeration_iter
+            250
+
+            Notes
+            -----
+            The gradient of the cost function used to iteratively optimize the embedding points \:math\:\`y_i\`
+            is a sum of an attractive and repulsive force \:math\:\`\\frac{\\delta C} {\\delta y_i} = 4(\\phi * F_i ^{attr} - F_i ^{rep})\`
+            The iterations up to exaggeration_iter increase the \:math\:\`F_i ^{attr}\` term by the factor \:math\:\`\\phi\`
+            which then decays to 1.
+               
+        )pbdoc");
 
     // Extended TextureTsne interface for advanced use of GPU texture tSNE
     py::class_<TextureTsneExtended> textureTsneExtended(m, "TextureTsneExtended",
@@ -212,7 +306,7 @@ PYBIND11_MODULE(_nptsne, m) {
     textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at,
         R"pbdoc(
             int: The iteration number when exaggeration decay started.
-            Is -1 if decays has not started.
+            Is -1 if exaggeration decay has not started.
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count,
@@ -306,7 +400,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 --------
                 >>> import nptsne
                 >>> hsne = nptsne.HSne(True)
-                >>> hsne.create_hsne(sample_data, 3)
+                >>> hsne.create_hsne(sample_hsne_data, 3)
                 True
                 >>> hsne.num_data_points
                 10000
@@ -338,7 +432,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 >>> import nptsne
                 >>> import doctest
                 >>> loaded_hsne = nptsne.HSne(True)
-                >>> loaded_hsne.load_hsne(sample_data, sample_hsne_file)  # doctest: +ELLIPSIS
+                >>> loaded_hsne.load_hsne(sample_hsne_data, sample_hsne_file)  # doctest: +ELLIPSIS
                 True
                 >>> loaded_hsne.num_data_points
                 10000
