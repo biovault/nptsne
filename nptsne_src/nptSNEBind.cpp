@@ -116,11 +116,11 @@ PYBIND11_MODULE(_nptsne, m) {
             An 2D embedding is returned in the form of a numpy array
             [x0, y0, x1, y1, ...].  
 
-            >>> embedding = sample_texture_tsne.fit_transform(sample_tsne_data)  # doctest: +ELLIPSIS
-            >>> embedding.shape
+            >>> embedding = sample_texture_tsne.fit_transform(sample_tsne_data)  # doctest: +SKIP_IN_CI
+            >>> embedding.shape  # doctest: +SKIP_IN_CI
             (4000,)
-            >>> import numpy
-            >>> embedding.dtype == numpy.float32
+            >>> import numpy  # doctest: +SKIP_IN_CI
+            >>> embedding.dtype == numpy.float32  # doctest: +SKIP_IN_CI
             True
 
             Returns

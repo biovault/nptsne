@@ -4,6 +4,23 @@ from doctest import REPORT_NDIFF, ELLIPSIS
 import numpy as np
 import nptsne
 import nptsne.libs._nptsne
+import os
+
+_skip = object()
+SKIP_IN_CI = doctest.register_optionflag('SKIP_IN_CI')
+is_ci = os.environ.get('CI', 'false').lower() == 'true'
+
+#  Monkey patch the OutputChecker to handle extra SKIP_IN_CI
+
+def check_output(self, want, got, optionflags):
+    if optionflags & SKIP_IN_CI and is_ci:
+        return True
+    else:
+        return self.__base_check_output(want, got, optionflags)
+         
+doctest.OutputChecker.__base_check_output = doctest.OutputChecker.check_output
+doctest.OutputChecker.check_output = check_output
+
 
 def make_test_globals():
     """Prepare global objects used in the doctests"""
