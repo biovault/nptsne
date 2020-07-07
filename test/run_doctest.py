@@ -1,6 +1,7 @@
 """Doctests for nptsne"""
 import doctest
 from doctest import REPORT_NDIFF, ELLIPSIS
+from doctest import DocTestRunner
 import numpy as np
 import nptsne
 import nptsne.libs._nptsne
@@ -10,17 +11,21 @@ _skip = object()
 SKIP_IN_CI = doctest.register_optionflag('SKIP_IN_CI')
 is_ci = os.environ.get('CI', 'false').lower() == 'true'
 
-#  Monkey patch the OutputChecker to handle extra SKIP_IN_CI
+if is_ci:
+    print("CI detected")
+#  Monkey patch the DocTestRunner to handle extra SKIP_IN_CI
 
-def check_output(self, want, got, optionflags):
-    if optionflags & SKIP_IN_CI and is_ci:
-        return True
-    else:
-        return self.__base_check_output(want, got, optionflags)
-         
-doctest.OutputChecker.__base_check_output = doctest.OutputChecker.check_output
-doctest.OutputChecker.check_output = check_output
+doctest_base_run = DocTestRunner.run
+def doctest_patch_run(self, test, compileflags=None, out=None, clear_globs=True):
+    if is_ci:
+        # Filter out any SKIP_IN_CI examples on the CI
+        not_skipped_examples = [example for example in test.examples if SKIP_IN_CI not in example.options ]
+        if len(test.examples) > len(not_skipped_examples):
+            print(f"Skipping {len(test.examples) - len(not_skipped_examples)} test examples in CI")
+        test.examples = not_skipped_examples
+    doctest_base_run(self, test, compileflags=None, out=None, clear_globs=True)
 
+DocTestRunner.run = doctest_patch_run   
 
 def make_test_globals():
     """Prepare global objects used in the doctests"""
