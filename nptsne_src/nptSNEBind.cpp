@@ -116,7 +116,9 @@ PYBIND11_MODULE(_nptsne, m) {
             An 2D embedding is returned in the form of a numpy array
             [x0, y0, x1, y1, ...].  
 
-            >>> embedding = sample_texture_tsne.fit_transform(sample_tsne_data)  # doctest: +SKIP_IN_CI
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsne()
+            >>> embedding = tsne.fit_transform(sample_tsne_data)  # doctest: +SKIP_IN_CI
             >>> embedding.shape  # doctest: +SKIP_IN_CI
             (4000,)
             >>> import numpy  # doctest: +SKIP_IN_CI
@@ -215,6 +217,21 @@ PYBIND11_MODULE(_nptsne, m) {
             decay_started_at
             iteration_count
 
+            Examples
+            --------
+            Create an TextureTsneExtended wrapper
+
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsneExtended(verbose=True, num_target_dimensions=2, perplexity=35, knn_algorithm=nptsne.KnnAlgorithm.Annoy)
+            >>> tsne.verbose
+            True
+            >>> tsne.num_target_dimensions
+            2
+            >>> tsne.perplexity
+            35
+            >>> tsne.knn_algorithm
+            KnnAlgorithm.Annoy
+
             Notes
             -----
             `TextureTsneExtended` offers additional control over the exaggeration decay
@@ -252,6 +269,21 @@ PYBIND11_MODULE(_nptsne, m) {
                 The input data with shape (num. data points, num. dimensions)
             initial_embedding : :class:`ndarray`
                 An optional initial embedding. Shape should be (num data points, num output dimensions)
+
+            Returns
+            -------
+            bool
+                True if successful, False otherwise
+
+            Examples
+            --------
+            Create an TextureTsneExtended wrapper and initialize the data. This step performs the knn.
+
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsneExtended()
+            >>> tsne.init_transform(sample_tsne_data)
+            True
+
         )pbdoc",
         py::arg("X"),
         py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
@@ -267,6 +299,21 @@ PYBIND11_MODULE(_nptsne, m) {
                 Enable verbose logging to standard output.
             iterations : int
                 The number of iterations to run.
+
+
+            Examples
+            --------
+            Create an TextureTsneExtended wrapper and initialize the data and run for 250 iterations.
+
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsneExtended()
+            >>> tsne.init_transform(sample_tsne_data)
+            True
+            >>> embedding = tsne.run_transform(iterations=250)    # doctest: +SKIP_IN_CI
+            >>> embedding.shape    # doctest: +SKIP_IN_CI
+            (4000,)
+            >>> tsne.iteration_count    # doctest: +SKIP_IN_CI
+            250
 
             Returns
             -------
@@ -289,13 +336,46 @@ PYBIND11_MODULE(_nptsne, m) {
             ----------
             initial_embedding : :class:`ndarray`
                 An optional initial embedding. Shape should be (num data points, num output dimensions)
+
+            Examples
+            --------
+            Create an TextureTsneExtended wrapper and initialize the data and run for 250 iterations.
+
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsneExtended()
+            >>> tsne.init_transform(sample_tsne_data)
+            True
+            >>> embedding = tsne.run_transform(iterations=100)    # doctest: +SKIP_IN_CI
+            >>> tsne.iteration_count    # doctest: +SKIP_IN_CI
+            100
+            >>> tsne.reinitialize_transform()    # doctest: +SKIP_IN_CI
+            >>> tsne.iteration_count    # doctest: +SKIP_IN_CI
+            0
+
         )pbdoc",
         py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay,
         R"pbdoc(
             Enable exaggeration decay. Effective on next call to run_transform.
-            Exaggeration decay is fixed at 150 iterations. This call is ony effective once.
+            From this point exaggeration decays over the following 150 iterations,
+            the decay this is a fixed parameter.
+            This call is ony effective once.
+
+            Examples
+            --------
+            Starting decay exaggeration is recorded in the decay_started_at property.
+
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsneExtended()
+            >>> tsne.init_transform(sample_tsne_data)
+            True
+            >>> tsne.decay_started_at
+            -1
+            >>> embedding = tsne.run_transform(iterations=100)    # doctest: +SKIP_IN_CI
+            >>> tsne.start_exaggeration_decay()    # doctest: +SKIP_IN_CI
+            >>> tsne.decay_started_at    # doctest: +SKIP_IN_CI
+            100
 
             Raises
             ------
@@ -307,16 +387,72 @@ PYBIND11_MODULE(_nptsne, m) {
         R"pbdoc(
             int: The iteration number when exaggeration decay started.
             Is -1 if exaggeration decay has not started.
+
+            Examples
+            --------
+            Starting decay exaggeration is recorded in the decay_started_at property.
+
+            >>> sample_texture_tsne_extended.decay_started_at
+            -1
+
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count,
         R"pbdoc(
             int: The number of completed iterations of tSNE gradient descent.
+
+            >>> sample_texture_tsne_extended.iteration_count
+            0
         )pbdoc");
 
     textureTsneExtended.def("close", &TextureTsneExtended::close,
         R"pbdoc(
             Release GPU resources for the transform
+        )pbdoc");
+
+    textureTsneExtended.def_property_readonly("verbose", &TextureTsneExtended::get_verbose,
+        R"pbdoc(
+            bool: True if verbose logging is enabled. Set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne_extended.verbose
+            False
+        )pbdoc");
+
+    textureTsneExtended.def_property_readonly("num_target_dimensions", &TextureTsneExtended::get_num_target_dimensions,
+        R"pbdoc(
+            int: The number of target dimensions, set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne_extended.num_target_dimensions
+            2
+        )pbdoc");
+
+
+    textureTsneExtended.def_property_readonly("knn_algorithm", &TextureTsneExtended::get_knn_algorithm,
+        R"pbdoc(
+            int: The number of iterations, set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne_extended.knn_algorithm
+            KnnAlgorithm.Flann
+        )pbdoc");
+
+    textureTsneExtended.def_property_readonly("perplexity", &TextureTsneExtended::get_perplexity,
+        R"pbdoc(
+            int: The tsne perplexity, set at initialization.
+
+            Examples
+            -------
+
+            >>> sample_texture_tsne_extended.perplexity
+            30
         )pbdoc");
 
     // ******************************************************************
@@ -652,7 +788,26 @@ PYBIND11_MODULE(_nptsne, m) {
             { sizeof(unsigned int) },
             self._scale._landmark_to_original_data_idx.data(),
             py::cast(self));
-        }, ":class:`ndarray` : An ndarray of the original data indexes for each landmark in the scale");
+        },
+        R"pbdoc(
+            Original data indexes for each landmark in this scale.
+
+            Examples
+            --------
+            At scale 0 the landmarks are all the data points.
+
+            >>> sample_scale0.landmark_orig_indexes.shape
+            (10000,)
+            >>> sample_scale0.landmark_orig_indexes[0]
+            0
+            >>> sample_scale0.landmark_orig_indexes[9999]
+            9999
+            
+            Returns
+            -------
+            ":class:`ndarray`:
+                An ndarray of the original data indexes.
+        )pbdoc");
 
     // ******************************************************************
     // pybind wrappers for hSNE analysis support submodule: hsne_analysis

@@ -10,18 +10,22 @@ import os
 _skip = object()
 SKIP_IN_CI = doctest.register_optionflag('SKIP_IN_CI')
 is_ci = os.environ.get('CI', 'false').lower() == 'true'
+glob_total_skipped = 0
 
 if is_ci:
     print("CI detected")
-#  Monkey patch the DocTestRunner to handle extra SKIP_IN_CI
-
+    
+#  Monkey patch the DocTestRunner to filter SKIP_IN_CI examples
 doctest_base_run = DocTestRunner.run
 def doctest_patch_run(self, test, compileflags=None, out=None, clear_globs=True):
+    global glob_total_skipped
     if is_ci:
         # Filter out any SKIP_IN_CI examples on the CI
         not_skipped_examples = [example for example in test.examples if SKIP_IN_CI not in example.options ]
-        if len(test.examples) > len(not_skipped_examples):
-            print(f"Skipping {len(test.examples) - len(not_skipped_examples)} test examples in CI")
+        tot_skipped = len(test.examples) - len(not_skipped_examples)
+        glob_total_skipped += tot_skipped
+        if tot_skipped:
+            print(f"Skipping {tot_skipped} test examples in CI")
         test.examples = not_skipped_examples
     doctest_base_run(self, test, compileflags=None, out=None, clear_globs=True)
 
@@ -50,15 +54,22 @@ def make_test_globals():
         "sample_hsne_file": file_name,
         "sample_hsne_data": hsne_data,
         "sample_tsne_data": tsne_data,
-        "sample_texture_tsne": nptsne.TextureTsne()
+        "sample_texture_tsne": nptsne.TextureTsne(),
+        "sample_texture_tsne_extended": nptsne.TextureTsneExtended()
     }
 
 
 if __name__ == "__main__":
     print("Starting doctest", flush=True)
-    doctest.testmod(nptsne, verbose=True)
-    # Doctest will not find the extension library
-    doctest.testmod(nptsne.libs._nptsne,
+    failures_nptsne, tests_nptsne = doctest.testmod(nptsne, verbose=True)
+    # Must explicitly test the extension library
+    failures_nptsne_ex, tests_nptsne_ex = doctest.testmod(nptsne.libs._nptsne,
                     verbose=True,
                     optionflags=REPORT_NDIFF | ELLIPSIS,
                     globs=make_test_globals())
+    total_failures =  failures_nptsne + failures_nptsne_ex 
+    if glob_total_skipped:
+        print(f"{glob_total_skipped} tests were skipped in the CI environment.")
+    if total_failures:
+        exit(1)
+    exit(0)

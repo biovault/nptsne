@@ -43,6 +43,12 @@ class TextureTsneExtended {
 
     int get_iteration_count();
 
+    bool get_verbose() { return _verbose; }
+    int get_num_target_dimensions() { return _num_target_dimensions; }
+    int get_iterations() { return _iterations; }
+    int get_perplexity() { return _perplexity; }
+    KnnAlgorithm get_knn_algorithm() { return _knn_algorithm; }
+
     py::array_t<float, py::array::c_style> run_transform(
         bool verbose = false,
         int iterations = 1000);

@@ -23,7 +23,8 @@ TextureTsneExtended::TextureTsneExtended(
     int num_target_dimensions,
     int perplexity,
     KnnAlgorithm knn_algorithm
-) : _verbose(verbose),
+) : _decay_started_at(-1),
+    _verbose(verbose),
     _num_target_dimensions(num_target_dimensions),
     _perplexity(perplexity),
     _knn_algorithm(knn_algorithm),
