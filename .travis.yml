@@ -82,21 +82,19 @@ matrix:
          - CONAN_OPTIONS="nptsne:python_version=3.7"                
 
 before_install:
-  - |
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      brew unlink python@2
-      brew update || brew update
+  - if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
+    brew update;
     fi
+  - if [ "${TRAVIS_OS_NAME:-}" -ne "osx" ]; then
+    sudo apt install libpython3.6-dev;
+    fi
+    
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
   - | 
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      env | sort
-      if ! which python$OSX_PYTHON; then
-        HOMEBREW_NO_AUTO_UPDATE=1 brew tap minrk/homebrew-python-frameworks
-        HOMEBREW_NO_AUTO_UPDATE=1 brew cask install python-framework-${OSX_PYTHON/./}
-      fi
       HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
-      python3 -m pip install virtualenv
+      # Configure the requested python in a virtual env
+      python3 -m pip install virtualenv --ignore-installed
       python3 -m virtualenv -p $(which python$OSX_PYTHON) ~/travis-env
       source ~/travis-env/bin/activate
     fi
@@ -111,7 +109,6 @@ install:
   - pip show bincrafters_package_tools
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - pip install cmake 
-  # Removal of python 2 from homebrew causes an error updating python3
 
 
 before_script:
