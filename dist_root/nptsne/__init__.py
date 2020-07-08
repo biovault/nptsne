@@ -19,10 +19,8 @@ a copy in a :class:`ndarray`.
 
 References
 ----------
-..[1] Pezzotti, N. et al., "GPGPU Linear Complexity 
-      t-SNE Optimization", https://doi.org/10.1109/TVCG.2019.2934307>
-..[2] Pezzotti, N. et al., "Hierarchical Stochastic 
-      Neighbor Embedding", https://doi.org/10.1111/cgf.12878>
+..[1] Pezzotti, N. et al., `GPGPU Linear Complexity t-SNE Optimization <https://doi.org/10.1109/TVCG.2019.2934307>`_
+..[2] Pezzotti, N. et al., `Hierarchical Stochastic Neighbor Embedding <https://doi.org/10.1111/cgf.12878>`_
 
 """        
 from .libs._nptsne import (TextureTsne, TextureTsneExtended, KnnAlgorithm, HSne, HSneScale)

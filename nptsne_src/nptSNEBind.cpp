@@ -25,7 +25,7 @@ PYBIND11_MODULE(_nptsne, m) {
     )pbdoc";
 
     // ENUMS
-    py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
+    py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", R"pbdoc(
             Enumeration used to select the knn algorithm used. Three possibilities are
             supported:
 
@@ -638,7 +638,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 Index of the scale to retrieve
 
             Examples
-            -------
+            --------
             The number of landmarks in scale 0 is the number of data points.
 
             >>> scale = sample_hsne.get_scale(0)
@@ -688,7 +688,24 @@ PYBIND11_MODULE(_nptsne, m) {
     py::class_<HSneScale> hsne_scale_class(m, "HSneScale");
 
     hsne_scale_class.doc() = R"pbdoc(
-        Wrap the HSNE data scale, returned from :func:`HSne.get_scale`.
+        Create a wrapper for the HSNE data scale. The function :func:`HSne.get_scale` works more directly than
+        calling the constructor on this class.
+        
+        Parameters
+        ----------
+        hsne : :class:`HSne`
+            The hierarchical SNE being explored
+        scale_number : int
+            The scale from the nsne to wrap
+
+        Examples
+        --------
+        Using the initializer to create an HSneScale wrapper
+        Scale 0 is the datapoints.  (Prefer the HSne.get_scale function)
+
+        >>> scale = HSneScale(sample_hsne, 0)
+        >>> scale.num_points
+        10000
 
         Attributes
         ----------
@@ -696,6 +713,15 @@ PYBIND11_MODULE(_nptsne, m) {
         transition_matrix
         landmark_orig_indexes
         )pbdoc";
+
+    hsne_scale_class.def(
+        py::init([](
+            HSne& hsne,
+            int scale_number) {
+        return hsne.get_scale(scale_number);
+    }),
+        py::arg("hsne"),
+        py::arg("scale_number"));
 
     hsne_scale_class.def_property_readonly("num_points", &HSneScale::num_points,
         R"pbdoc(
