@@ -108,8 +108,8 @@ install:
   - pip install cmake 
   # Removal of python 2 from homebrew causes an error updating python3
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
-        brew unlink python@2
-        rm '/usr/local/bin/2to3'
+      brew unlink python@2
+      rm /usr/local/bin/2to3
     fi 
 
 before_script:
