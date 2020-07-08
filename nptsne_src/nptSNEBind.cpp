@@ -703,7 +703,8 @@ PYBIND11_MODULE(_nptsne, m) {
         Using the initializer to create an HSneScale wrapper
         Scale 0 is the datapoints.  (Prefer the HSne.get_scale function)
 
-        >>> scale = HSneScale(sample_hsne, 0)
+        >>> import nptsne
+        >>> scale = nptsne.HSneScale(sample_hsne, 0)
         >>> scale.num_points
         10000
 
