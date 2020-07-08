@@ -107,10 +107,11 @@ install:
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - pip install cmake 
   # Removal of python 2 from homebrew causes an error updating python3
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then 
+  - 
+    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       brew unlink python@2
       rm /usr/local/bin/2to3
-    fi 
+    fi
 
 before_script:
    - mkdir _build
