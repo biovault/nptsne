@@ -475,7 +475,12 @@ endif()
 if(ENV{CI})
     set(CI_BUILD ENV{CIBW_BUILD})
 else()
-    set(CI_BUILD cp37-win_amd64)
+    if(WIN32)
+        set(CI_BUILD cp37-win_amd64)
+    elseif(APPLE)
+        set(CI_BUILD cp37-macosx_x86_64)
+    else()
+        set(CI_BUILD cp37-manylinux_x86_64)
 endif()
 
 # Support editing of the python files in VS
