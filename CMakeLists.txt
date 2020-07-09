@@ -442,6 +442,43 @@ endif(WIN32)
 
 # -- .whl creation
 # Support editing of the python files in VS
+# add_custom_target (bdist_wheel
+    # COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
+    # # Cleanup old build copies
+    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${CMAKE_BINARY_DIR}/dist_root/_skbuild
+    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/_skbuild
+    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/nptsne/__pycache__
+
+    # # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
+    # COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
+    # # To debug install uncomment the following
+    # # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
+    # COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
+    # COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
+
+    # COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
+    # DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
+    # WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
+    # SOURCES ${DIST_ROOT_FILES}
+# )
+
+# If building on the CI pick up the cibuildwheel environment variables
+# Otherwise define a default
+if(WIN32)
+    set(CI_PLATFORM windows)
+elseif(APPLE)
+    set(CI_PLATFORM macos)
+else()
+    set(CI_PLATFORM linux)
+endif()
+  
+if(ENV{CI})
+    set(CI_BUILD ENV{CIBW_BUILD})
+else()
+    set(CI_BUILD cp37-win_amd64)
+endif()
+
+# Support editing of the python files in VS
 add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
     # Cleanup old build copies
@@ -455,8 +492,9 @@ add_custom_target (bdist_wheel
     # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
-
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
+    
+    # Use cibuildwheel to handle the python versions
+    COMMAND ${CMAKE_COMMAND} -E env "CIBW_BUILD=${CI_BUILD}" "CIBW_PLATFORM=${CI_PLATFORM}" "CIBW_BUILD_VERBOSITY=3" ${PYTHON_EXECUTABLE} -m cibuildwheel --output-dir ${CMAKE_BINARY_DIR}/dist
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     SOURCES ${DIST_ROOT_FILES}

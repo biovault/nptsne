@@ -41,6 +41,8 @@ matrix:
          - CC=gcc-5
          - CXX=g++-5
          - LIBCXX=libstdc++
+         - CIBW_BUILD=cp36-manylinux_x86_64
+         
      - <<: *linux
        python: "3.7"        
        env:       
@@ -54,7 +56,9 @@ matrix:
          - COMPILER=g++-5
          - CC=gcc-5
          - CXX=g++-5         
-         - LIBCXX=libstdc++   
+         - LIBCXX=libstdc++ 
+         - CIBW_BUILD=cp37-manylinux_x86_64
+         
      - <<: *osx
        language: generic
        osx_image: xcode10.3
@@ -66,7 +70,8 @@ matrix:
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.6
          - CMAKE_GENERATOR="Xcode" 
-         - CONAN_OPTIONS="nptsne:python_version=3.6"               
+         - CONAN_OPTIONS="nptsne:python_version=3.6"     
+         - CIBW_BUILD=cp36-macosx_x86_64         
           
      - <<: *osx
        language: generic
@@ -79,7 +84,8 @@ matrix:
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.7
          - CMAKE_GENERATOR="Xcode"
-         - CONAN_OPTIONS="nptsne:python_version=3.7"                
+         - CONAN_OPTIONS="nptsne:python_version=3.7"
+         - CIBW_BUILD=cp37-macosx_x86_64         
 
 before_install:
   - | 
@@ -88,17 +94,12 @@ before_install:
       brew cleanup
     fi
   - if [ "${TRAVIS_OS_NAME:-}" -ne "osx" ]; then
-    sudo apt install libpython3.6-dev;
+      sudo apt install libpython3.6-dev;
     fi
-    
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
   - | 
     if [ "$TRAVIS_OS_NAME" = "osx" ]; then
       HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
-      # Configure the requested python in a virtual env
-      python3 -m pip install virtualenv --ignore-installed
-      python3 -m virtualenv -p $(which python$OSX_PYTHON) ~travis-env
-      source ~travis-env/bin/activate
     fi
   - python --version 
 install:
