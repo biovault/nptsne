@@ -17,6 +17,7 @@ environment:
     CONAN_REMOTE: lkebconan
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
     CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
+    CIBW_BEFORE_BUILD: pip install scikit-build
     git_token:
         secure: QWv3xZwtKaenz3mj6q8vHKMKfSFvM2GghbNyPIqg0HAHKBJSxP2fKTsVDUaLuH+M    
     

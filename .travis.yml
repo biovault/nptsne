@@ -20,6 +20,7 @@ env:
      - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
      - CONAN_STABLE_BRANCH_PATTERN="release/*"
      - CONAN_UPLOAD_ONLY_WHEN_STABLE=1"
+     - CIBW_BEFORE_BUILD="pip install scikit-build"
 
 ignore:
     - README.md
