@@ -82,9 +82,10 @@ matrix:
          - CONAN_OPTIONS="nptsne:python_version=3.7"                
 
 before_install:
-  - if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
-    brew update;
-    brew cleanup
+  - | 
+    if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
+      brew update
+      brew cleanup
     fi
   - if [ "${TRAVIS_OS_NAME:-}" -ne "osx" ]; then
     sudo apt install libpython3.6-dev;
