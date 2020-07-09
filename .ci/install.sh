@@ -23,7 +23,7 @@ pip install conan==1.24.1
 pip install scikit-build    
 pip install conan_package_tools==0.32.2 bincrafters_package_tools==0.26.3
 pip install cmake
-pip install cibuildwheels==1.5.2
+pip install cibuildwheels
 echo Python version:
 python --version 
 
