@@ -481,6 +481,7 @@ else()
         set(CI_BUILD cp37-macosx_x86_64)
     else()
         set(CI_BUILD cp37-manylinux_x86_64)
+    endif()
 endif()
 
 # Support editing of the python files in VS
