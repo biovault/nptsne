@@ -498,7 +498,7 @@ add_custom_target (bdist_wheel
     # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
-    COMMAND ${CMAKE_COMMAND} -E chdir "${CMAKE_BINARY_DIR}/dist_root" "${DIR_LIST_CMD}"
+    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/dist_root ${DIR_LIST_CMD}
     # Use cibuildwheel to handle the python versions
     COMMAND ${CMAKE_COMMAND} -E env "CIBW_BUILD=${CI_BUILD}" "CIBW_PLATFORM=${CI_PLATFORM}" "CIBW_BUILD_VERBOSITY=3" python3 -m cibuildwheel --output-dir ${CMAKE_BINARY_DIR}/dist
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
