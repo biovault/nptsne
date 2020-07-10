@@ -495,10 +495,6 @@ endif()
 # Support editing of the python files in VS
 add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
-    # Cleanup old build copies
-    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${CMAKE_BINARY_DIR}/dist_root/_skbuild
-    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/_skbuild
-    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/nptsne/__pycache__
 
     # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
