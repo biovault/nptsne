@@ -508,7 +508,7 @@ add_custom_target (bdist_wheel
     COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
     COMMAND ${DIR_LIST_CMD} ${DIR_LIST_ARGS}
     # Use cibuildwheel to handle the python versions
-    COMMAND ${CMAKE_COMMAND} -E env "CIBW_BUILD=${CI_BUILD}" "CIBW_PLATFORM=${CI_PLATFORM}" "CIBW_BUILD_VERBOSITY=3" ${PYCMD} "-m cibuildwheel --output-dir ${CMAKE_BINARY_DIR}/dist"
+    COMMAND ${CMAKE_COMMAND} -E env "CIBW_BUILD=${CI_BUILD}" "CIBW_PLATFORM=${CI_PLATFORM}" "CIBW_BUILD_VERBOSITY=3" "${Python3_EXECUTABLE}" -m cibuildwheel --output-dir ${CMAKE_BINARY_DIR}/dist
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
     SOURCES ${DIST_ROOT_FILES}
@@ -516,26 +516,26 @@ add_custom_target (bdist_wheel
 
 add_custom_target(install_nptsne
     # Install the wheel 
-    ${PYTHON_EXECUTABLE} -m pip --version && ${PYTHON_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}
+    ${Python3_EXECUTABLE} -m pip --version && ${Python3_EXECUTABLE} -m pip install --force-reinstall --find-links ${CMAKE_BINARY_DIR}/dist nptsne==${VERSION}
     COMMENT "Install nptsne" 
 )    
 
 enable_testing()
 add_test(NAME py_doctest 
-	COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
+	COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
 	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
 )
 
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
 # Support editing of the rst external doc files in VS
 if(WIN32)
-    get_filename_component(PYROOT ${PYTHON_EXECUTABLE} DIRECTORY)
+    get_filename_component(PYROOT ${Python3_EXECUTABLE} DIRECTORY)
     set(SPHINX "${PYROOT}/Scripts/sphinx-build.exe")
     MESSAGE(STATUS "Sphinx build: ${SPHINX}")
     add_custom_target(extract_module_docstring
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/docsource/nptsnedoc 
         # Install requirements and perform docstring extraction with autodoc
-        COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && ${PYTHON_EXECUTABLE} -m pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat ${SPHINX}
+        COMMAND cmd //c cd ${PROJECT_SOURCE_DIR}/docsource && ${Python3_EXECUTABLE} -m pip install -r ${PROJECT_SOURCE_DIR}/docsource/requirements.txt && ${PROJECT_SOURCE_DIR}/docsource/sphinx_rst_build.bat ${SPHINX}
         COMMENT "Extract the reStructuredText from the module" 
         DEPENDS install_nptsne
         SOURCES ${EXTERN_DOC_FILES}
