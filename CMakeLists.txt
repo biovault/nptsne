@@ -435,9 +435,17 @@ elseif(WIN32)
 endif()
 
 if(WIN32)
-    set(DIR_LIST_CMD "cmd /c dir /b /s /a:-D")
+    set(DIR_LIST_CMD cmd)
+    set(DIR_LIST_ARGS /c dir /b /s /a:-D)
 elseif(WIN32)
-    set(DIR_LIST_CMD "bash -c \"ls -lR\"")
+    set(DIR_LIST_CMD bash)
+    set(DIR_LIST_ARGS -c \"ls -lR\")
+endif(WIN32)
+
+if(WIN32)
+    
+elseif(WIN32)
+    
 endif(WIN32)
 
 # -- .whl creation
@@ -498,7 +506,7 @@ add_custom_target (bdist_wheel
     # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
     COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
-    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/dist_root ${DIR_LIST_CMD}
+    COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/dist_root ${DIR_LIST_CMD} ${DIR_LIST_ARGS}
     # Use cibuildwheel to handle the python versions
     COMMAND ${CMAKE_COMMAND} -E env "CIBW_BUILD=${CI_BUILD}" "CIBW_PLATFORM=${CI_PLATFORM}" "CIBW_BUILD_VERBOSITY=3" python3 -m cibuildwheel --output-dir ${CMAKE_BINARY_DIR}/dist
     DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
