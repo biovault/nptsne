@@ -128,6 +128,7 @@ script:
         pip3 uninstall -y conan distro
         pip3 install distro>=1.4.0 scikit-build
     fi    
+  - which python3
   - cmake --build . --verbose --target bdist_wheel --config Release
   - cmake --build . --target install_nptsne --config Release
   - ctest --verbose -C release
