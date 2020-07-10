@@ -93,9 +93,7 @@ before_install:
     if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
       brew update
       brew cleanup
-    fi
-  - if [ "${TRAVIS_OS_NAME:-}" -ne "osx" ]; then
-      sudo apt install libpython3.6-dev;
+      brew upgrade python;
     fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
   - | 
