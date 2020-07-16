@@ -62,37 +62,67 @@ matrix:
          
      - <<: *osx
        language: generic
-       osx_image: xcode9.3
+       osx_image: xcode9.4
        python: "3.6" 
        env: 
-         - CONAN_APPLE_CLANG_VERSIONS=10.0
+#         - CONAN_APPLE_CLANG_VERSIONS=10.0
          - CONAN_BUILD_TYPES=Release
          - CONAN_ARCHS=x86_64
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.6
          - CMAKE_GENERATOR="Xcode" 
          - CONAN_OPTIONS="nptsne:python_version=3.6"     
-         - CIBW_BUILD=cp36-macosx_x86_64         
+         - CIBW_BUILD=cp36-macosx_x86_64
+         - HOMEBREW_NO_AUTO_UPDATE=1
           
      - <<: *osx
        language: generic
-       osx_image: xcode9.3
+       osx_image: xcode9.4
        python: "3.7" 
        env: 
-         - CONAN_APPLE_CLANG_VERSIONS=10.0
+#         - CONAN_APPLE_CLANG_VERSIONS=10.0
          - CONAN_BUILD_TYPES=Release
          - CONAN_ARCHS=x86_64
          - CONAN_IS_TRAVIS_OSX=1 
          - OSX_PYTHON=3.7
          - CMAKE_GENERATOR="Xcode"
          - CONAN_OPTIONS="nptsne:python_version=3.7"
-         - CIBW_BUILD=cp37-macosx_x86_64         
+         - CIBW_BUILD=cp37-macosx_x86_64
+         - HOMEBREW_NO_AUTO_UPDATE=1         
 
+     - <<: *osx
+       language: generic
+       osx_image: xcode10.3
+       python: "3.6" 
+       env: 
+#         - CONAN_APPLE_CLANG_VERSIONS=10.0
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64
+         - CONAN_IS_TRAVIS_OSX=1 
+         - OSX_PYTHON=3.6
+         - CMAKE_GENERATOR="Xcode" 
+         - CONAN_OPTIONS="nptsne:python_version=3.6"     
+         - CIBW_BUILD=cp36-macosx_x86_64
+         - HOMEBREW_NO_AUTO_UPDATE=1
+          
+     - <<: *osx
+       language: generic
+       osx_image: xcode10.3
+       python: "3.7" 
+       env: 
+#         - CONAN_APPLE_CLANG_VERSIONS=10.0
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64
+         - CONAN_IS_TRAVIS_OSX=1 
+         - OSX_PYTHON=3.7
+         - CMAKE_GENERATOR="Xcode"
+         - CONAN_OPTIONS="nptsne:python_version=3.7"
+         - CIBW_BUILD=cp37-macosx_x86_64
+         - HOMEBREW_NO_AUTO_UPDATE=1         
+         
 before_install:
   - | 
     if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
-      brew update
-      brew cleanup
       brew upgrade python;
     fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi

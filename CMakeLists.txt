@@ -71,10 +71,10 @@ message (STATUS "The python executable is at ${PYTHON_EXECUTABLE}")
 include(FindOpenGL)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 if(WIN32)
-	get_filename_component(PYDIR "${PYTHON_EXECUTABLE}" DIRECTORY) 
-	set (PYCMAKE "${PYDIR}/../../Library/lib/cmake")
-	list(APPEND CMAKE_PREFIX_PATH  "${PYCMAKE}")
-	message (STATUS "Prefix path ${CMAKE_PREFIX_PATH}")
+    get_filename_component(PYDIR "${PYTHON_EXECUTABLE}" DIRECTORY) 
+    set (PYCMAKE "${PYDIR}/../../Library/lib/cmake")
+    list(APPEND CMAKE_PREFIX_PATH  "${PYCMAKE}")
+    message (STATUS "Prefix path ${CMAKE_PREFIX_PATH}")
 endif() 
 set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
  
@@ -98,12 +98,12 @@ set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(NPTSNE_FILES 
     nptsne_src/.editorconfig
-	nptsne_src/nptSNEBind.cpp
+    nptsne_src/nptSNEBind.cpp
     nptsne_src/Analysis.cpp
     nptsne_src/HSne.cpp
     nptsne_src/SparseTsne.cpp    
-	nptsne_src/TextureTsne.cpp
-	nptsne_src/TextureTsneExtended.cpp
+    nptsne_src/TextureTsne.cpp
+    nptsne_src/TextureTsneExtended.cpp
 )
 
 # In VisualStudio we show the python files in the bdist_wheel 
@@ -143,22 +143,22 @@ endif()
   
 
 if(WIN32) 
-	set(PYBIND11_CPP_STANDARD "/std:c++14" CACHE STRING "" FORCE) 
+    set(PYBIND11_CPP_STANDARD "/std:c++14" CACHE STRING "" FORCE) 
 else(WIN32)
-	set(PYBIND11_CPP_STANDARD "-std=c++14" CACHE STRING "" FORCE)
-	if(EXISTS "/etc/centos-release")
-		set(GCC_EXPECTED_VERSION 7.3.1)
-		set(PLATFORM_IS_CENTOS TRUE CACHE BOOL "TRUE if build platform is centOS" FORCE)
-	else()
-		set(GCC_EXPECTED_VERSION 5.4.0)
-		set(PLATFORM_IS_CENTOS FALSE CACHE BOOL "TRUE if build platform is centOS" FORCE)		 
-	endif()
-	if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_EXPECTED_VERSION)
-		message(FATAL_ERROR "GCC: nptsne requires version ${GCC_EXPECTED_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
-		if(PLATFORM_IS_CENTOS)
-			message(FATAL_ERROR "GCC: On CentOS remember to scl enable devtoolset-7")
-		endif()
-	endif()
+    set(PYBIND11_CPP_STANDARD "-std=c++14" CACHE STRING "" FORCE)
+    if(EXISTS "/etc/centos-release")
+        set(GCC_EXPECTED_VERSION 7.3.1)
+        set(PLATFORM_IS_CENTOS TRUE CACHE BOOL "TRUE if build platform is centOS" FORCE)
+    else()
+        set(GCC_EXPECTED_VERSION 5.4.0)
+        set(PLATFORM_IS_CENTOS FALSE CACHE BOOL "TRUE if build platform is centOS" FORCE)         
+    endif()
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS GCC_EXPECTED_VERSION)
+        message(FATAL_ERROR "GCC: nptsne requires version ${GCC_EXPECTED_VERSION} to build but found ${CMAKE_CXX_COMPILER_VERSION}")
+        if(PLATFORM_IS_CENTOS)
+            message(FATAL_ERROR "GCC: On CentOS remember to scl enable devtoolset-7")
+        endif()
+    endif()
 endif(WIN32)
 
 message(STATUS "${PYBIND11_CPP_STANDARD}")
@@ -167,8 +167,8 @@ target_compile_definitions(${PROJECT_NAME}
         PUBLIC "-DPYBIND11_PYTHON_VERSION=${PYTHON_MAJ_MIN}")  
 
 if(UNIX)
-	find_package(LZ4 REQUIRED)
-endif(UNIX)	
+    find_package(LZ4 REQUIRED)
+endif(UNIX)    
 
 if(NOT DEFINED HDI_LIB_ROOT) 
     #set the following variables to allow the build (building with conan does this)
@@ -276,10 +276,10 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARY}) 
 endif()
 
-find_package(OpenMP REQUIRED)
+find_package(OpenMP)
 
 if(OPENMP_FOUND)
-	message (STATUS "OpenMP found libname: ${OpenMP_CXX_LIBRARIES}")
+    message (STATUS "OpenMP found libname: ${OpenMP_CXX_LIBRARIES}")
     include_directories(${OpenMP_CXX_INCLUDE_DIRS})
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}") 
     if (APPLE) 
@@ -301,38 +301,38 @@ set(HDIDA_BUILD_DIR "${HDI_LIB_ROOT}/data")
 set(HDIUI_BUILD_DIR "${HDI_LIB_ROOT}/utils") 
 
 if(WIN32)
-	find_library(HDIDR NAMES hdidimensionalityreduction.lib PATHS ${HDIDR_BUILD_DIR}) 
-	find_library(HDIDA NAMES hdidata.lib PATHS ${HDIDA_BUILD_DIR})
-	find_library(HDIUI NAMES hdiutils.lib PATHS ${HDIUI_BUILD_DIR})
+    find_library(HDIDR NAMES hdidimensionalityreduction.lib PATHS ${HDIDR_BUILD_DIR}) 
+    find_library(HDIDA NAMES hdidata.lib PATHS ${HDIDA_BUILD_DIR})
+    find_library(HDIUI NAMES hdiutils.lib PATHS ${HDIUI_BUILD_DIR})
 else(WIN32)
-	find_library(HDIDR NAMES libhdidimensionalityreduction.a PATHS ${HDIDR_BUILD_DIR} ) 
-	find_library(HDIDA NAMES libhdidata.a PATHS ${HDIDA_BUILD_DIR})
-	find_library(HDIUI NAMES libhdiutils.a PATHS ${HDIUI_BUILD_DIR})	
+    find_library(HDIDR NAMES libhdidimensionalityreduction.a PATHS ${HDIDR_BUILD_DIR} ) 
+    find_library(HDIDA NAMES libhdidata.a PATHS ${HDIDA_BUILD_DIR})
+    find_library(HDIUI NAMES libhdiutils.a PATHS ${HDIUI_BUILD_DIR})    
 endif(WIN32)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${HDIDR} ${HDIDA} ${HDIUI})
 target_link_libraries(${PROJECT_NAME} PUBLIC pybind11::module)
 
 if(WIN32)
-	target_link_libraries (${PROJECT_NAME} PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
+    target_link_libraries (${PROJECT_NAME} PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
     target_link_libraries(${PROJECT_NAME} PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
     #static GLFW
     target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_STATIC_LIBRARIES})    
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-	target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES}) 
-	if(PLATFORM_IS_CENTOS)
-		# centos
-		find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
-		find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
-		find_library(GLFW_LIBRARY glfw HINTS /usr/lib64)
-	else()
-		# ubuntu
-		find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
-		find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
-		find_library(GLFW_LIBRARY glfw HINTS /usr/lib/x86_64-linux-gnu)        
-	endif()
+    target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES}) 
+    if(PLATFORM_IS_CENTOS)
+        # centos
+        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
+        find_library(GLFW_LIBRARY glfw HINTS /usr/lib64)
+    else()
+        # ubuntu
+        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
+        find_library(GLFW_LIBRARY glfw HINTS /usr/lib/x86_64-linux-gnu)        
+    endif()
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
@@ -367,34 +367,34 @@ install(TARGETS ${PROJECT_NAME} DESTINATION "dist_root/nptsne/libs/")
 # which are used to get the path to the extension and to modify it.
 if(APPLE)
     message(STATUS "Otool fixup for OSX")
-	install(CODE "
-		execute_process(
+    install(CODE "
+        execute_process(
             COMMAND ${CMAKE_COMMAND} -E echo \"Install target file:\"
             COMMAND ${CMAKE_COMMAND} -E echo $<TARGET_FILE:${PROJECT_NAME}>)
         execute_process(    
-			COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh && cat ~/getname.sh\"
+            COMMAND sh -c \"echo 'A=`ls ${CMAKE_BINARY_DIR}/dist_root/nptsne/libs/*.so` && echo $A' > ~/getname.sh && cat ~/getname.sh\"
             WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
-		execute_process(
-			COMMAND sh -c \"chmod +x ~/getname.sh\"
-			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
-		execute_process(
-			COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|libomp|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && B=`basename $A` && echo install_name_tool -change $A @loader_path/$B `~/getname.sh` >> ~/fixup.sh'\"
-			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})            
-		execute_process(
-			COMMAND sh -c \"rm -f ~/fixup_flann.sh && otool -L `~/getname.sh` | grep -E 'flann' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && echo install_name_tool -change $A @loader_path/${FLANNCPP_SHORTNAME} `~/getname.sh` >> ~/fixup_flann.sh'\"            
-			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})			
-		execute_process(
-			COMMAND sh -c \"chmod +x ~/fixup.sh\"
-			COMMAND sh -c \"chmod +x ~/fixup_flann.sh\"            
-			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
-		execute_process(
-			COMMAND sh -c \"cat ~/getname.sh\"
-			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})		
-		execute_process(
-			COMMAND sh -c \"cat ~/fixup.sh\"
-			COMMAND sh -c \"cat ~/fixup_flann.sh\"            
-			WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})	            
-	")
+        execute_process(
+            COMMAND sh -c \"chmod +x ~/getname.sh\"
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+        execute_process(
+            COMMAND sh -c \"rm -f ~/fixup.sh && otool -L `~/getname.sh` | grep -E 'glfw|libomp|lz4' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && B=`basename $A` && echo install_name_tool -change $A @loader_path/$B `~/getname.sh` >> ~/fixup.sh'\"
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+        execute_process(
+            COMMAND sh -c \"rm -f ~/fixup_flann.sh && otool -L `~/getname.sh` | grep -E 'flann' | cut -f 1 -d ' ' | xargs -I ! sh -c 'A=! && echo install_name_tool -change $A @loader_path/${FLANNCPP_SHORTNAME} `~/getname.sh` >> ~/fixup_flann.sh'\" 
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+        execute_process(
+            COMMAND sh -c \"chmod +x ~/fixup.sh\"
+            COMMAND sh -c \"chmod +x ~/fixup_flann.sh\"
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+        execute_process(
+            COMMAND sh -c \"cat ~/getname.sh\"
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+        execute_process(
+            COMMAND sh -c \"cat ~/fixup.sh\"
+            COMMAND sh -c \"cat ~/fixup_flann.sh\"
+            WORKING_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+    ")
 endif()
   
 
@@ -404,10 +404,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME liblz4.so)
     install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME libflann_cpp.so)
     install(FILES ${GLFWLIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME libglfw.so.3)
-endif()	
+endif()    
 
 if(APPLE)
-	message(STATUS "Will deploy lz4, flann_cpp and glfw and libomp as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME} ${OpenMP_REALPATH}")
+    message(STATUS "Will deploy lz4, flann_cpp and glfw and libomp as: ${LZ4_SHORTNAME} ${FLANNCPP_SHORTNAME} ${GLFW_SHORTNAME} ${OpenMP_REALPATH}")
     install(FILES ${LZ4_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${LZ4_SHORTNAME})
     install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${FLANNCPP_SHORTNAME})
     install(FILES ${GLFWLIBRARY_PATH} DESTINATION "dist_root/nptsne/libs" RENAME ${GLFW_SHORTNAME})
@@ -416,12 +416,12 @@ endif()
 
 # For APPLE now fixup the binary extension to load the dylibs from a relative @loader_path
 if(APPLE)
-	install(CODE "
-			execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
-			execute_process(COMMAND sh -c \"~/fixup.sh\")
-			execute_process(COMMAND sh -c \"~/fixup_flann.sh\")            
-			execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
-	")
+    install(CODE "
+            execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
+            execute_process(COMMAND sh -c \"~/fixup.sh\")
+            execute_process(COMMAND sh -c \"~/fixup_flann.sh\")
+            execute_process(COMMAND sh -c \"otool -L `~/getname.sh`\")
+    ")
 endif()
 
 set(CAT_COMMAND cat)
@@ -448,27 +448,6 @@ elseif()
     set(PYCMD ${PYTHON_EXECUTABLE})
 endif(WIN32)
 
-# -- .whl creation
-# Support editing of the python files in VS
-# add_custom_target (bdist_wheel
-    # COMMAND ${CMAKE_COMMAND} -E echo "Building wheel for platform: ${PLAT_NAME} and python version: ${BUILD_PYTHON_VERSION}"
-    # # Cleanup old build copies
-    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${CMAKE_BINARY_DIR}/dist_root/_skbuild
-    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/_skbuild
-    # COMMAND ${CMAKE_COMMAND} -E remove_directory -rf ${PROJECT_SOURCE_DIR}/dist_root/nptsne/__pycache__
-
-    # # First use install to move all the build outputs and libraries to the dist_root dir (needs at least CMake 3.15)
-    # COMMAND ${CMAKE_COMMAND} -E copy_directory ${PROJECT_SOURCE_DIR}/dist_root ${CMAKE_BINARY_DIR}/dist_root
-    # # To debug install uncomment the following
-    # # COMMAND ${CAT_COMMAND} \"${CMAKE_BINARY_DIR}/cmake_install.cmake\"
-    # COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${CMAKE_BINARY_DIR} 
-    # COMMAND ${CMAKE_COMMAND} -E echo "Install step done. build/dist_root contains: "
-
-    # COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_BINARY_DIR}/dist_root/setup.py bdist_wheel --plat-name=${PLAT_NAME} --dist-dir=${CMAKE_BINARY_DIR}/dist --python-tag=${PY_TAG} WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
-    # DEPENDS ${PROJECT_NAME}  #depends on the pybind11 module (see pybind11_add_module above)
-    # WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root
-    # SOURCES ${DIST_ROOT_FILES}
-# )
 
 # If building on the CI pick up the cibuildwheel environment variables
 # Otherwise define a default
@@ -518,8 +497,8 @@ add_custom_target(install_nptsne
 
 enable_testing()
 add_test(NAME py_doctest 
-	COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
-	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/test/run_doctest.py
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/test
 )
 
 # -- module docstring extraction and upload - only in the windows build - we only have to do this once
