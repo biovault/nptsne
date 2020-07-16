@@ -89,7 +89,8 @@ bool TextureTsneExtended::init_transform(
         {
             hdi::utils::ScopedTimer<float, hdi::utils::Seconds> timer(similarities_comp_time);
             prob_gen_param._perplexity = _perplexity;
-            prob_gen_param._aknn_algorithm = static_cast<hdi::utils::knn_library>(_knn_algorithm);
+            prob_gen_param._aknn_metric = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN;
+            prob_gen_param._aknn_algorithm = static_cast<hdi::dr::knn_library>(_knn_algorithm);
             prob_gen.computeProbabilityDistributions(
                 static_cast<float *>(X_info.ptr),
                 _num_dimensions,

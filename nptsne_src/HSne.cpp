@@ -165,7 +165,8 @@ void HSne::set_default_hsne_params() {
     _hsneParams._transition_matrix_prune_thresh = 0;
     _hsneParams._aknn_num_checks = 512;
     _hsneParams._out_of_core_computation = true;  // to keep memory footprint small
-    _hsneParams._aknn_algorithm = hdi::utils::knn_library::KNN_FLANN;
+    _hsneParams._aknn_algorithm = hdi::dr::knn_library::KNN_FLANN;
+    _hsneParame._aknn_metric = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN;
     _hsneParams._num_neighbors = 90;  // TODO(B.van_lew): set this value via interface or not at all
     _hsneParams._aknn_num_checks = 256;
     _hsneParams._aknn_num_trees = 3;
