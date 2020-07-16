@@ -34,8 +34,6 @@ message(STATUS "Working on branch ${GIT_BRANCH}")
 
 file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/dist)
 file(REMOVE_RECURSE _nptsne.egg-info)
-file(REMOVE_RECURSE _skbuild)
-file(REMOVE_RECURSE dist_root/_skbuild)
 
 # The python files for the package
 #file(COPY "${PROJECT_SOURCE_DIR}/dist_root" 
@@ -87,11 +85,6 @@ else()
     set(CMAKE_CXX_STANDARD 14)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
 endif()
-
-if(SKBUILD)
-  message(STATUS "The project is built using scikit-build")
-endif()
-
 
 set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 

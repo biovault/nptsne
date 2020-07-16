@@ -17,7 +17,6 @@ environment:
     CONAN_REMOTE: lkebconan
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
     CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
-    CIBW_BEFORE_BUILD: pip install scikit-build
     git_token:
         secure: QWv3xZwtKaenz3mj6q8vHKMKfSFvM2GghbNyPIqg0HAHKBJSxP2fKTsVDUaLuH+M    
     
@@ -86,7 +85,7 @@ build_script:
   - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON # This will make the VS .sln and cal conan for download
   - cmake --build . --config Release
   - pip uninstall -y conan distro  # This is a hack to remove an ünsupported platform win32" error with distro
-  - pip install distro>=1.4.0 scikit-build
+  - pip install distro>=1.4.0
   - cmake --build . --target bdist_wheel --config Release
   # Credential handling from http://www.appveyor.com/docs/how-to/git-push 
   - if "%USE_FOR_DOC_GENERATION%" == "True" (echo Generate documentation on Read the Docs)

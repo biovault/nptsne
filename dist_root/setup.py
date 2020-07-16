@@ -1,5 +1,4 @@
-from skbuild import setup  # This line replaces 'from setuptools import setup'
-from skbuild.setuptools_wrap import upstream_Distribution
+from setuptools import setup
 from setuptools import find_packages
 import sys
 import os
