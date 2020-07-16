@@ -123,7 +123,7 @@ matrix:
 before_install:
   - | 
     if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
-      brew upgrade python;
+      brew outdated python || brew upgrade python;
     fi
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
   - | 
