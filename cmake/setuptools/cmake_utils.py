@@ -8,6 +8,8 @@ import sys
 import subprocess
 
 from setuptools import Extension
+from setuptools.command.build_ext import build_ext
+from distutils.version import LooseVersion
 
 class CMakeExtension(Extension):
     def __init__(self, name, sourcedir='', exclude_arch=False):
@@ -58,5 +60,15 @@ class CMakeBuild(build_ext):
                                                               self.distribution.get_version())
         if not os.path.exists(self.build_temp):
             os.makedirs(self.build_temp)
-        subprocess.check_call(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
+        process = subprocess.run(['cmake', ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
+        while True:
+            output = process.stdout.readline()
+            err = process.stderr.readline()
+            if process.poll() is not None:
+                break
+            if output:
+                print(output.strip())
+            if err:
+                print(err.strip())
+                
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)

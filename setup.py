@@ -2,13 +2,13 @@ from setuptools import setup
 from setuptools import find_packages
 import sys
 import os
-from cmake_utils import CMakeExtension, CMakeBuild
+from cmake.setuptools.cmake_utils import CMakeExtension, CMakeBuild
 
-with open(os.path.join(os.path.dirname(__file__), "nptsne", "_version.txt")) as fp:
+with open(os.path.join(os.path.dirname(__file__), "dist_root", "nptsne", "_version.txt")) as fp:
     __version__ = fp.read().strip()
 # from setuptools.dist import Distribution
 
-with open("./docs/PyPI_README.md", "r") as fh:
+with open("./dist_root/docs/PyPI_README.md", "r") as fh:
     long_description = fh.read()
     # Inject current version into README (replace ${version} tag)
     long_description = long_description.replace("${version}", __version__)
@@ -47,7 +47,6 @@ setup(
         "Programming Language :: Python :: 3.7",
         "Programming Language :: C++"
     ],
-    python_requires='>=3.6',
     ext_modules=[CMakeExtension('cmake_example')],
     cmdclass=dict(build_ext=CMakeBuild),
     install_requires=[
