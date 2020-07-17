@@ -48,22 +48,23 @@ include(ConanSetup)
 
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-find_package (Python3 REQUIRED COMPONENTS Interpreter Development)
+#find_package (Python3 REQUIRED COMPONENTS Interpreter Development)
 
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 endif()
 
-set(BUILD_PYTHON_VERSION "${Python3_VERSION}")
-set(PYBIND11_PYTHON_VERSION "${Python3_VERSION}")
-set(PY_TAG "cp${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
+#set(BUILD_PYTHON_VERSION "${Python3_VERSION}")
+#set(PYBIND11_PYTHON_VERSION "${Python3_VERSION}")
+#set(PY_TAG "cp${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
 
-message(STATUS "Build Python version ${BUILD_PYTHON_VERSION}")
-find_package(pybind11 REQUIRED)
+#message(STATUS "Build Python version ${BUILD_PYTHON_VERSION}")
+add_subdirectory(pybind11)
+#find_package(pybind11 REQUIRED)
 
-MESSAGE(STATUS "Python : ${PYTHON_LIBRARY}")
+#MESSAGE(STATUS "Python : ${PYTHON_LIBRARY}")
 
-message (STATUS "The pybind version is ${PYBIND11_PYTHON_VERSION}") 
+#message (STATUS "The pybind version is ${PYBIND11_PYTHON_VERSION}") 
 message (STATUS "The python executable is at ${PYTHON_EXECUTABLE}") 
 
 include(FindOpenGL)

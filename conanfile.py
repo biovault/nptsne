@@ -37,7 +37,7 @@ class NptsneConan(ConanFile):
     _source_subfolder = name
     # For now use conan and bincrafters - we may wish to host our own versions
     requires = (
-        "pybind11/2.2.4@conan/stable",  # Prepackaged pybind11 has the needed pybind11Config.cmake
+#        "pybind11/2.3.0@conan/stable",  # Prepackaged pybind11 has the needed pybind11Config.cmake
         "HDILib/latest@biovault/stable"
     )   
 
