@@ -1,124 +1,43 @@
+os: linux
+language: python
+python:
+  - 3.6
+  - 3.7
+  - 3.8
+  
 branches:
     only:
      - /feature\/.*/
      - release/1.0.0
      - master
-     
+
+# No build on these echanges
+ignore:
+    - README.md
+    - appveyor.yml  
+
+stages:
+    -name: build
+    -name: build
+
 linux: &linux
     os: linux
     language: python
     sudo: required
-    dist: xenial
 
 osx: &osx 
     os: osx
     language: generic
 env:
    global:  
+     - CIBW_TEST_COMMAND="'python {project}/test/run_doctest.py'"
+     - CIBW_SKIP=pp*
      - CONAN_LOGIN_USERNAME="admin"
      - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET  
      - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
      - CONAN_STABLE_BRANCH_PATTERN="release/*"
      - CONAN_UPLOAD_ONLY_WHEN_STABLE=1"
 
-ignore:
-    - README.md
-    - appveyor.yml  
-
-matrix:
-   include:
-     - <<: *linux
-       python: "3.6" 
-       env: 
-         - CONAN_GCC_VERSIONS=5 
-         - CONAN_DOCKER_IMAGE=conanio/gcc5 
-         - CONAN_BUILD_TYPES=Release 
-         - CONAN_ARCHS=x86_64
-         - CONAN_LINUX_PYTHON=3.6.7
-         - CMAKE_GENERATOR="Unix Makefiles"
-         - CONAN_OPTIONS="nptsne:python_version=3.6"
-         - COMPILER=g++-5
-         - CC=gcc-5
-         - CXX=g++-5
-         - LIBCXX=libstdc++
-         - CIBW_BUILD=cp36-manylinux_x86_64
-         
-     - <<: *linux
-       python: "3.7"        
-       env:       
-         - CONAN_GCC_VERSIONS=5 
-         - CONAN_DOCKER_IMAGE=conanio/gcc5
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64 
-         - CONAN_LINUX_PYTHON=3.7.1    
-         - CMAKE_GENERATOR="Unix Makefiles"
-         - CONAN_OPTIONS="nptsne:python_version=3.7:  
-         - COMPILER=g++-5
-         - CC=gcc-5
-         - CXX=g++-5         
-         - LIBCXX=libstdc++ 
-         - CIBW_BUILD=cp37-manylinux_x86_64
-         
-     - <<: *osx
-       language: generic
-       osx_image: xcode9.4
-       python: "3.6" 
-       env: 
-#         - CONAN_APPLE_CLANG_VERSIONS=10.0
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64
-         - CONAN_IS_TRAVIS_OSX=1 
-         - OSX_PYTHON=3.6
-         - CMAKE_GENERATOR="Xcode" 
-         - CONAN_OPTIONS="nptsne:python_version=3.6"     
-         - CIBW_BUILD=cp36-macosx_x86_64
-         - HOMEBREW_NO_AUTO_UPDATE=1
-          
-     - <<: *osx
-       language: generic
-       osx_image: xcode9.4
-       python: "3.7" 
-       env: 
-#         - CONAN_APPLE_CLANG_VERSIONS=10.0
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64
-         - CONAN_IS_TRAVIS_OSX=1 
-         - OSX_PYTHON=3.7
-         - CMAKE_GENERATOR="Xcode"
-         - CONAN_OPTIONS="nptsne:python_version=3.7"
-         - CIBW_BUILD=cp37-macosx_x86_64
-         - HOMEBREW_NO_AUTO_UPDATE=1         
-
-     - <<: *osx
-       language: generic
-       osx_image: xcode10.3
-       python: "3.6" 
-       env: 
-#         - CONAN_APPLE_CLANG_VERSIONS=10.0
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64
-         - CONAN_IS_TRAVIS_OSX=1 
-         - OSX_PYTHON=3.6
-         - CMAKE_GENERATOR="Xcode" 
-         - CONAN_OPTIONS="nptsne:python_version=3.6"     
-         - CIBW_BUILD=cp36-macosx_x86_64
-         - HOMEBREW_NO_AUTO_UPDATE=1
-          
-     - <<: *osx
-       language: generic
-       osx_image: xcode10.3
-       python: "3.7" 
-       env: 
-#         - CONAN_APPLE_CLANG_VERSIONS=10.0
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64
-         - CONAN_IS_TRAVIS_OSX=1 
-         - OSX_PYTHON=3.7
-         - CMAKE_GENERATOR="Xcode"
-         - CONAN_OPTIONS="nptsne:python_version=3.7"
-         - CIBW_BUILD=cp37-macosx_x86_64
-         - HOMEBREW_NO_AUTO_UPDATE=1         
-         
 before_install:
   - | 
     if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
@@ -130,6 +49,7 @@ before_install:
       HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
     fi
   - python --version 
+
 install:
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
@@ -146,19 +66,65 @@ before_script:
    - mkdir _build
    - cd _build
 
-script:
-  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export SDKROOT=$(xcodebuild -version -sdk macosx Path); fi    
-  - cmake .. -G "${CMAKE_GENERATOR}" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON -DLIBCXX=${LIBCXX}
-  # This is a hack to remove an ünsupported platform darwin" error with distro when building wheel
-  - | 
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-        pip3 uninstall -y conan distro
-        pip3 install distro>=1.4.0
-    fi    
-  - which python3
-  - cmake --build . --verbose --target bdist_wheel --config Release
-  - cmake --build . --target install_nptsne --config Release
-  - ctest --verbose -C release
-
 after_success:  
   - cmake --build . --target upload_wheel --config Release 
+
+jobs:
+   include:
+     - stage: build
+       name: Build Linux wheels
+       <<: *linux
+       python: "3.7"
+       services: docker
+       install: python3 -m pip install cibuildwheel==1.3.0
+       script: python3 -m cibuildwheel --output-dir dist
+       env:
+         - CONAN_GCC_VERSIONS=5 
+         - CONAN_DOCKER_IMAGE=conanio/gcc5
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64 
+         - CONAN_LINUX_PYTHON=3.7.1
+         - CMAKE_GENERATOR="Unix Makefiles"
+         - CONAN_OPTIONS="nptsne:python_version=3.7"
+         - COMPILER=g++-5
+         - CC=gcc-5
+         - CXX=g++-5
+         - LIBCXX=libstdc++ 
+         - CIBW_BUILD=cp37-manylinux_x86_64
+         
+     - stage: build
+       name: Build macOS wheels without OpenMP
+       <<: *osx
+       language: generic
+       osx_image: xcode9.4
+       python: "3.7"
+       script: python3 -m cibuildwheel --output-dir dist
+       env: 
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64
+         - CONAN_IS_TRAVIS_OSX=1 
+         - OSX_PYTHON=3.7
+         - CMAKE_GENERATOR="Xcode"
+         - CONAN_OPTIONS="nptsne:python_version=3.7"
+         - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
+         - CIBW_BUILD=cp37-macosx_x86_64
+         - HOMEBREW_NO_AUTO_UPDATE=1
+
+
+     - stage: build
+       name: Build macOS wheels with OpenMP
+       <<: *osx
+       language: generic
+       osx_image: xcode10.3
+       python: "3.7"
+       script: python3 -m cibuildwheel --output-dir dist
+       env: 
+         - CONAN_BUILD_TYPES=Release
+         - CONAN_ARCHS=x86_64
+         - CONAN_IS_TRAVIS_OSX=1 
+         - OSX_PYTHON=3.7
+         - CMAKE_GENERATOR="Xcode"
+         - CONAN_OPTIONS="nptsne:python_version=3.7"
+         - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
+         - CIBW_BUILD=cp37-macosx_x86_64
+         - HOMEBREW_NO_AUTO_UPDATE=1

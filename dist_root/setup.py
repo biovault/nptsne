@@ -2,6 +2,7 @@ from setuptools import setup
 from setuptools import find_packages
 import sys
 import os
+from cmake_utils import CMakeExtension, CMakeBuild
 
 with open(os.path.join(os.path.dirname(__file__), "nptsne", "_version.txt")) as fp:
     __version__ = fp.read().strip()
@@ -25,7 +26,7 @@ setup(
     url='https://biovault.github.io/nptsne',
     project_urls={
         "Bug Tracker": "https://github.com/biovault/nptsne/issues",
-        "Documentation": "https://biovault.github.io/nptsne",
+        "Documentation": "https://bldrvnlw.readthedocs.io",
         "Source Code": "https://github.com/biovault/nptsne"
     },
     # Include files specified by MANIFEST.in
@@ -47,8 +48,12 @@ setup(
         "Programming Language :: C++"
     ],
     python_requires='>=3.6',
+    ext_modules=[CMakeExtension('cmake_example')],
+    cmdclass=dict(build_ext=CMakeBuild),
     install_requires=[
         'numpy>=1.11.0'
-    ]
+    ],
+    # won't run from zip file
+    zip_safe=False
 
 )
