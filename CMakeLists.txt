@@ -5,11 +5,11 @@ project(_nptsne LANGUAGES CXX)
 
 # Disallow in-source builds. 
 # Build in sub dir e.g. source/build* is still allowed!
-if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
-   message(FATAL_ERROR "In-source builds are not allowed!\n"
-    "Make sure to remove CMakeCache.txt and CMakeFiles/ "
-    "from the source directory!")
-endif()
+#if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
+#   message(FATAL_ERROR "In-source builds are not allowed!\n"
+#    "Make sure to remove CMakeCache.txt and CMakeFiles/ "
+#    "from the source directory!")
+#endif()
 
 option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
 
