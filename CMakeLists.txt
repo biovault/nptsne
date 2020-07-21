@@ -91,14 +91,14 @@ set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
 #set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-pybind11_add_module(${PROJECT_NAME}
-    src/cpp/.editorconfig
-    src/cpp/nptSNEBind.cpp
-    src/cpp/Analysis.cpp
-    src/cpp/HSne.cpp
-    src/cpp/SparseTsne.cpp
-    src/cpp/TextureTsne.cpp
-    src/cpp/TextureTsneExtended.cpp
+pybind11_add_module(_nptsne
+    ${CMAKE_PROJECT_DIR}/src/cpp/.editorconfig
+    ${CMAKE_PROJECT_DIR}/src/cpp/nptSNEBind.cpp
+    ${CMAKE_PROJECT_DIR}/src/cpp/Analysis.cpp
+    ${CMAKE_PROJECT_DIR}/src/cpp/HSne.cpp
+    ${CMAKE_PROJECT_DIR}/src/cpp/SparseTsne.cpp
+    ${CMAKE_PROJECT_DIR}/src/cpp/TextureTsne.cpp
+    ${CMAKE_PROJECT_DIR}/src/cpp/TextureTsneExtended.cpp
 )
 
 # In VisualStudio we show the python files in the bdist_wheel 
@@ -158,7 +158,7 @@ endif(WIN32)
 
 message(STATUS "${PYBIND11_CPP_STANDARD}")
 
-target_compile_definitions(${PROJECT_NAME} 
+target_compile_definitions(_nptsne 
         PUBLIC "-DPYBIND11_PYTHON_VERSION=${PYTHON_MAJ_MIN}")  
 
 if(UNIX)
@@ -202,7 +202,7 @@ function(get_shorter_version_number libname resultVar)
 endfunction()  
 
 # VisualStudio (or similar IDE) folder
-set_target_properties(${PROJECT_NAME} PROPERTIES FOLDER "Python bindings")
+set_target_properties(_nptsne PROPERTIES FOLDER "Python bindings")
 
 # Prevent glfw including the OpenGL headers
 # On Windows and Linux these come from glad in the HDILib
@@ -251,9 +251,9 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     link_directories(${FLANN_LINK_PATH})
     link_directories(${LZ4_LINK_PATH})
     link_directories(${GLFW_LINK_PATH})
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${LZ4_LIBRARY} )
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${FLANNCPP_LIBRARY_PATH} )   
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARY}) 
+    target_link_libraries(_nptsne PUBLIC ${LZ4_LIBRARY} )
+    target_link_libraries(_nptsne PUBLIC ${FLANNCPP_LIBRARY_PATH} )   
+    target_link_libraries(_nptsne PUBLIC ${GLFW_LIBRARY}) 
 endif()
 
 find_package(OpenMP)
@@ -263,10 +263,10 @@ if(OPENMP_FOUND)
     include_directories(${OpenMP_CXX_INCLUDE_DIRS})
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}") 
     if (APPLE) 
-        target_link_libraries(${PROJECT_NAME} PUBLIC "${OpenMP_CXX_LIBRARIES}")
+        target_link_libraries(_nptsne PUBLIC "${OpenMP_CXX_LIBRARIES}")
         get_filename_component(OpenMP_REALPATH "${OpenMP_CXX_LIBRARIES}" REALPATH)
     else()
-        target_link_libraries(${PROJECT} OpenMP::OpenMP_CXX)
+        target_link_libraries(_nptsne PUBLIC OpenMP::OpenMP_CXX)
     endif()
 else()
     message(WARNING, "OpenMP not found!") 
@@ -290,18 +290,18 @@ else(WIN32)
     find_library(HDIUI NAMES libhdiutils.a PATHS ${HDIUI_BUILD_DIR})
 endif(WIN32)
 
-target_link_libraries(${PROJECT_NAME} PUBLIC ${HDIDR} ${HDIDA} ${HDIUI})
-target_link_libraries(${PROJECT_NAME} PUBLIC pybind11::module)
+target_link_libraries(_nptsne PUBLIC ${HDIDR} ${HDIDA} ${HDIUI})
+target_link_libraries(_nptsne PUBLIC pybind11::module)
 
 if(WIN32)
-    target_link_libraries (${PROJECT_NAME} PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
-    target_link_libraries(${PROJECT_NAME} PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
+    target_link_libraries (_nptsne PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
+    target_link_libraries(_nptsne PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
     #static GLFW
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_STATIC_LIBRARIES})
+    target_link_libraries(_nptsne PUBLIC ${GLFW_STATIC_LIBRARIES})
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${OPENGL_LIBRARIES}) 
+    target_link_libraries(_nptsne PUBLIC ${OPENGL_LIBRARIES}) 
     if(PLATFORM_IS_CENTOS)
         # centos
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
@@ -316,10 +316,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${LZ4_LIBRARY} )
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${FLANNCPP_LIBRARY} )
-    target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARY}) 
-    target_link_libraries(${PROJECT_NAME} PUBLIC "${OPENGL_gl_LIBRARY}")
+    target_link_libraries(_nptsne PUBLIC ${LZ4_LIBRARY} )
+    target_link_libraries(_nptsne PUBLIC ${FLANNCPP_LIBRARY} )
+    target_link_libraries(_nptsne PUBLIC ${GLFW_LIBRARY}) 
+    target_link_libraries(_nptsne PUBLIC "${OPENGL_gl_LIBRARY}")
 endif()
 
 if (UNIX)
