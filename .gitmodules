@@ -3,3 +3,6 @@
 	url = https://github.com/biovault/nptsnedoc
 	branch = feature/1.1.0-hsne
     ignote = dirty
+[submodule "external/pybind11"]
+	path = external/pybind11
+	url = https://github.com/pybind/pybind11.git
