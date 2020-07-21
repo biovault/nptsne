@@ -12,7 +12,7 @@ environment:
     CONAN_LOGIN_USERNAME: "admin"
     CONAN_PASSWORD:
         secure: g+1lNdgrCLmyKNf3KvbHSln5A1H7BsVhsMsIbwgo+UU=
-    VS140COMNTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2015\\Community\\Common7\\Tools\\"
+    VS150COMNTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\"
     CONAN_UPLOAD: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
     CONAN_REMOTE: lkebconan
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
@@ -40,6 +40,9 @@ environment:
 
 stack: python 3.7
 
+init:
+  - cmd: set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
+  
 install:
   - git submodule update --init --recursive
   - set PYTHON_PATH=%Python3_ROOT_DIR% # Python3_ROOT_DIR is required to hint the CMake find_package Python3 
