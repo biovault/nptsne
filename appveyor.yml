@@ -24,15 +24,14 @@ environment:
     
     matrix:
 ### Limit build to 2015, x64 , Release, Shared
-
-          CONAN_VISUAL_VERSIONS: 15
+        - CONAN_VISUAL_VERSIONS: 15
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
           BUILD_SHARED: True
           Python3_ROOT_DIR: C:\Python37-x64
           PYTHON_VERSION: 3.7
-          USE_FOR_DOC_GENERATION: True
+          USE_FOR_DOC_GENERATION: False
           CMAKE_GENERATOR: "Visual Studio 15 2017 Win64" 
           CIBW_BUILD: cp3*
           CIBW_SKIP: cp35-*
