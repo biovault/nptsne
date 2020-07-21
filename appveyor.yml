@@ -78,12 +78,12 @@ notifications:
 
 before_build:
   - echo %PATH%
-  - md _build  -Force  # Build in separate directory
-  - cd _build   
+  #- md _build  -Force  # Build in separate directory
+  #- cd _build   
   
 build_script:
   - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON # This will make the VS .sln and cal conan for download
-  - cmake --build . --config Release
+   #- cmake --build . --config Release
   - pip uninstall -y conan distro  # This is a hack to remove an ünsupported platform win32" error with distro
   - pip install distro>=1.4.0
   - python setup.py sdist -d wheelhouse --formats=gztar
