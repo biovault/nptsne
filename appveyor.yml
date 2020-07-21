@@ -68,8 +68,6 @@ before_build:
   - echo %PATH%
   
 build_script:
-  - pip uninstall -y conan distro  # This is a hack to remove an ünsupported platform win32" error with distro
-  - pip install distro>=1.4.0
   - python setup.py sdist -d wheelhouse --formats=gztar
   - python -m cibuildwheel --output-dir wheelhouse
   - if "%USE_FOR_DOC_GENERATION%" == "True" (echo Generate documentation on Read the Docs)
