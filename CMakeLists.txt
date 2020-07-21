@@ -92,13 +92,13 @@ set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 #set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 pybind11_add_module(_nptsne
-    ${CMAKE_PROJECT_DIR}/src/cpp/.editorconfig
-    ${CMAKE_PROJECT_DIR}/src/cpp/nptSNEBind.cpp
-    ${CMAKE_PROJECT_DIR}/src/cpp/Analysis.cpp
-    ${CMAKE_PROJECT_DIR}/src/cpp/HSne.cpp
-    ${CMAKE_PROJECT_DIR}/src/cpp/SparseTsne.cpp
-    ${CMAKE_PROJECT_DIR}/src/cpp/TextureTsne.cpp
-    ${CMAKE_PROJECT_DIR}/src/cpp/TextureTsneExtended.cpp
+    ${PROJECT_SOURCE_DIR}/src/cpp/.editorconfig
+    ${PROJECT_SOURCE_DIR}/src/cpp/nptSNEBind.cpp
+    ${PROJECT_SOURCE_DIR}/src/cpp/Analysis.cpp
+    ${PROJECT_SOURCE_DIR}/src/cpp/HSne.cpp
+    ${PROJECT_SOURCE_DIR}/src/cpp/SparseTsne.cpp
+    ${PROJECT_SOURCE_DIR}/src/cpp/TextureTsne.cpp
+    ${PROJECT_SOURCE_DIR}/src/cpp/TextureTsneExtended.cpp
 )
 
 # In VisualStudio we show the python files in the bdist_wheel 
