@@ -86,7 +86,9 @@ build_script:
   - cmake --build . --config Release
   - pip uninstall -y conan distro  # This is a hack to remove an ünsupported platform win32" error with distro
   - pip install distro>=1.4.0
-  - cmake --build . --target bdist_wheel --config Release
+  - python setup.py sdist -d wheelhouse --formats=gztar
+  - python -m cibuildwheel --output-dir wheelhouse
+  #- cmake --build . --target bdist_wheel --config Release
   # Credential handling from http://www.appveyor.com/docs/how-to/git-push 
   - if "%USE_FOR_DOC_GENERATION%" == "True" (echo Generate documentation on Read the Docs)
   - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global credential.helper store) 
