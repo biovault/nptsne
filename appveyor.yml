@@ -24,7 +24,8 @@ environment:
     
     matrix:
 ### Limit build to 2015, x64 , Release, Shared
-        - CONAN_VISUAL_VERSIONS: 15
+        - PYTHON: "C:\\Python37-x64"
+          CONAN_VISUAL_VERSIONS: 15
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
@@ -38,7 +39,6 @@ environment:
           CIBW_BUILD_VERBOSITY: 3
           PATH: C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%          
 
-stack: python 3.7
 
 init:
   - cmd: set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
