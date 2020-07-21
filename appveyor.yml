@@ -82,7 +82,7 @@ before_build:
   #- cd _build   
   
 build_script:
-  - cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON # This will make the VS .sln and cal conan for download
+  #- cmake .. -G "%CMAKE_GENERATOR%" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON # This will make the VS .sln and cal conan for download
    #- cmake --build . --config Release
   - pip uninstall -y conan distro  # This is a hack to remove an ünsupported platform win32" error with distro
   - pip install distro>=1.4.0
