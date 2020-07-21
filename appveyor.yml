@@ -84,6 +84,8 @@ build_script:
 #  - ctest --verbose -C Release
   
 on_success:
+  - cmake -D WHEEL_GLOB=wheelhouse\nptsne*.whl -P cmake/UploadWheel.cmake
 
-  - cmake -D WHEEL_GLOB=wheelhouse/nptsne*.whl -P cmake/UploadWheel.cmake
- 
+artifacts:
+  - path: "wheelhouse\\*"
+    name: Wheels
