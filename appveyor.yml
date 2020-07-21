@@ -34,6 +34,7 @@ environment:
           USE_FOR_DOC_GENERATION: True
           CMAKE_GENERATOR: "Visual Studio 15 2017 Win64" 
           CIBW_BUILD: cp3*
+          CIBW_SKIP: cp35-*
           CIBW_BUILD_VERBOSITY: 3
           PATH: C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%          
 
