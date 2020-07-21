@@ -1,2 +1,0 @@
-graft nptsne
-global-exclude nptsne/__pycache__ *.pyc
