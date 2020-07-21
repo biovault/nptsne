@@ -89,8 +89,9 @@ endif()
 
 set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
-set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set(NPTSNE_FILES 
+#set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
+pybind11_add_module(${PROJECT_NAME}
     src/cpp/.editorconfig
     src/cpp/nptSNEBind.cpp
     src/cpp/Analysis.cpp
@@ -127,8 +128,6 @@ endif()
 
 message(STATUS "DIST_ROOT_FILES: ${DIST_ROOT_FILES}")
 message(STATUS "EXTERN_DOC_FILES: ${EXTERN_DOC_FILES}")
-
-pybind11_add_module(${PROJECT_NAME} ${NPTSNE_FILES})
 
 find_package(OpenGL REQUIRED)
 if(NOT APPLE)
