@@ -51,7 +51,7 @@ class CMakeBuild(build_ext):
                       '-DPYTHON_EXECUTABLE=' + sys.executable]
 
         cfg = 'Debug' if self.debug else 'Release'
-        print(f"CMake configuration {cfg}")
+        print("CMake configuration ", cfg)
         build_args = ['--config', cfg]
 
         # Also limit Windows to single config build - building both Release &
