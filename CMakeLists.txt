@@ -1,15 +1,10 @@
 cmake_minimum_required(VERSION 3.15.0)
 
-file (STRINGS "version.txt" VERSION)
-project(_nptsne LANGUAGES CXX)
+message(STATUS "1 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+message(STATUS "1 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 
-# Disallow in-source builds. 
-# Build in sub dir e.g. source/build* is still allowed!
-#if("${PROJECT_SOURCE_DIR}" STREQUAL "${PROJECT_BINARY_DIR}")
-#   message(FATAL_ERROR "In-source builds are not allowed!\n"
-#    "Make sure to remove CMakeCache.txt and CMakeFiles/ "
-#    "from the source directory!")
-#endif()
+file (STRINGS "version.txt" VERSION)
+project(_nptsne)
 
 option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
 
@@ -32,49 +27,23 @@ execute_process(
 )
 message(STATUS "Working on branch ${GIT_BRANCH}")
 
-file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/dist)
-file(REMOVE_RECURSE _nptsne.egg-info)
-
-# The python files for the package
-#file(COPY "${PROJECT_SOURCE_DIR}/dist_root" 
-#    DESTINATION "${CMAKE_BINARY_DIR}" 
-#    FILES_MATCHING REGEX ".*\.py|.*\.md|.*\.txt|.*\.in")
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/dist_root)
-    
-file(GENERATE OUTPUT ${CMAKE_BINARY_DIR}/dist_root/nptsne/_version.txt CONTENT "${VERSION}")
-
 # CONAN is only used if the NPTSNE_BUILD_WITH_CONAN is ON
 include(ConanSetup)
 
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
-#find_package (Python3 REQUIRED COMPONENTS Interpreter Development)
-
 if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 endif()
 
-#set(BUILD_PYTHON_VERSION "${Python3_VERSION}")
-#set(PYBIND11_PYTHON_VERSION "${Python3_VERSION}")
-#set(PY_TAG "cp${Python3_VERSION_MAJOR}${Python3_VERSION_MINOR}")
-
-#message(STATUS "Build Python version ${BUILD_PYTHON_VERSION}")
 add_subdirectory(external/pybind11)
-#find_package(pybind11 REQUIRED)
-
-#MESSAGE(STATUS "Python : ${PYTHON_LIBRARY}")
-
-#message (STATUS "The pybind version is ${PYBIND11_PYTHON_VERSION}") 
+#
 message (STATUS "The python executable is at ${PYTHON_EXECUTABLE}") 
+message(STATUS "2 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+message(STATUS "2 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 
 include(FindOpenGL)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-if(WIN32)
-    get_filename_component(PYDIR "${PYTHON_EXECUTABLE}" DIRECTORY) 
-    set (PYCMAKE "${PYDIR}/../../Library/lib/cmake")
-    list(APPEND CMAKE_PREFIX_PATH  "${PYCMAKE}")
-    message (STATUS "Prefix path ${CMAKE_PREFIX_PATH}")
-endif() 
 set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
  
 # Prefer C++14
@@ -89,18 +58,18 @@ endif()
 
 set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
-#set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-
 pybind11_add_module(_nptsne
-    ${PROJECT_SOURCE_DIR}/src/cpp/.editorconfig
-    ${PROJECT_SOURCE_DIR}/src/cpp/nptSNEBind.cpp
-    ${PROJECT_SOURCE_DIR}/src/cpp/Analysis.cpp
-    ${PROJECT_SOURCE_DIR}/src/cpp/HSne.cpp
-    ${PROJECT_SOURCE_DIR}/src/cpp/SparseTsne.cpp
-    ${PROJECT_SOURCE_DIR}/src/cpp/TextureTsne.cpp
-    ${PROJECT_SOURCE_DIR}/src/cpp/TextureTsneExtended.cpp
+    src/cpp/.editorconfig
+    src/cpp/nptSNEBind.cpp
+    src/cpp/Analysis.cpp
+    src/cpp/HSne.cpp
+    src/cpp/SparseTsne.cpp
+    src/cpp/TextureTsne.cpp
+    src/cpp/TextureTsneExtended.cpp
 )
 
+message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+message(STATUS "3 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 # In VisualStudio we show the python files in the bdist_wheel 
 # custom targetfor ease of editing and debug
 if(MSVC_IDE)
@@ -251,9 +220,9 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     link_directories(${FLANN_LINK_PATH})
     link_directories(${LZ4_LINK_PATH})
     link_directories(${GLFW_LINK_PATH})
-    target_link_libraries(_nptsne PUBLIC ${LZ4_LIBRARY} )
-    target_link_libraries(_nptsne PUBLIC ${FLANNCPP_LIBRARY_PATH} )   
-    target_link_libraries(_nptsne PUBLIC ${GLFW_LIBRARY}) 
+    target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
+    target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY_PATH} )   
+    target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
 endif()
 
 find_package(OpenMP)
@@ -263,10 +232,10 @@ if(OPENMP_FOUND)
     include_directories(${OpenMP_CXX_INCLUDE_DIRS})
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}") 
     if (APPLE) 
-        target_link_libraries(_nptsne PUBLIC "${OpenMP_CXX_LIBRARIES}")
+        target_link_libraries(_nptsne PRIVATE "${OpenMP_CXX_LIBRARIES}")
         get_filename_component(OpenMP_REALPATH "${OpenMP_CXX_LIBRARIES}" REALPATH)
     else()
-        target_link_libraries(_nptsne PUBLIC OpenMP::OpenMP_CXX)
+        target_link_libraries(_nptsne PRIVATE OpenMP::OpenMP_CXX)
     endif()
 else()
     message(WARNING, "OpenMP not found!") 
@@ -290,18 +259,18 @@ else(WIN32)
     find_library(HDIUI NAMES libhdiutils.a PATHS ${HDIUI_BUILD_DIR})
 endif(WIN32)
 
-target_link_libraries(_nptsne PUBLIC ${HDIDR} ${HDIDA} ${HDIUI})
-target_link_libraries(_nptsne PUBLIC pybind11::module)
+target_link_libraries(_nptsne PRIVATE ${HDIDR} ${HDIDA} ${HDIUI})
+target_link_libraries(_nptsne PRIVATE pybind11::module)
 
 if(WIN32)
-    target_link_libraries (_nptsne PUBLIC "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
+    target_link_libraries (_nptsne PRIVATE "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
     target_link_libraries(_nptsne PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
     #static GLFW
-    target_link_libraries(_nptsne PUBLIC ${GLFW_STATIC_LIBRARIES})
+    target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-    target_link_libraries(_nptsne PUBLIC ${OPENGL_LIBRARIES}) 
+    target_link_libraries(_nptsne PRIVATE ${OPENGL_LIBRARIES}) 
     if(PLATFORM_IS_CENTOS)
         # centos
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
@@ -316,10 +285,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
-    target_link_libraries(_nptsne PUBLIC ${LZ4_LIBRARY} )
-    target_link_libraries(_nptsne PUBLIC ${FLANNCPP_LIBRARY} )
-    target_link_libraries(_nptsne PUBLIC ${GLFW_LIBRARY}) 
-    target_link_libraries(_nptsne PUBLIC "${OPENGL_gl_LIBRARY}")
+    target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
+    target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
+    target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
+    target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")
 endif()
 
 if (UNIX)
@@ -332,3 +301,5 @@ else()
 endif()
 
 message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
+message(STATUS "4 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
+message(STATUS "4 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")

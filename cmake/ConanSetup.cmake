@@ -44,10 +44,13 @@ if(UNIX)
 endif()
 
 message(STATUS "Install dependencies with conan")
+# NO_OUTPUT_DIRS - ensures that the output dirs (e.g. CMAKE_LIBRARY_OUTPUT_DIRECTORY) 
+# which are set in setup.py are left alone
 conan_cmake_run(
     CONANFILE conanfile.py
     BASIC_SETUP ${CONAN_UPDATE}
     KEEP_RPATHS
+    NO_OUTPUT_DIRS
     CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE}
     SETTINGS ${CONAN_SETTINGS}
 )

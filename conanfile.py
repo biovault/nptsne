@@ -52,9 +52,9 @@ class NptsneConan(ConanFile):
                 installer.install('liblz4-dev')
                 installer.install('libglfw3')
                 installer.install('libglfw3-dev')
-        if tools.os_info.is_macos:           
+        if tools.os_info.is_macos:
             installer = tools.SystemPackageTool() 
-            installer.install('libomp')            
+            installer.install('libomp')
             installer.install('lz4')
             installer.install('glfw')
             
@@ -106,7 +106,7 @@ class NptsneConan(ConanFile):
         # If the CMakeLists.txt has a proper install method, the steps below may be redundant
         # If so, you can just remove the lines below
         self.copy("*.h", dst="include", keep_path=True)
-        self.copy("*.hpp", dst="include", keep_path=True)       
+        self.copy("*.hpp", dst="include", keep_path=True)
         self.copy("*.dll", dst="bin", keep_path=False)
         self.copy("*.so", dst="lib", keep_path=False)
         self.copy("*.dylib", dst="lib", keep_path=False)
