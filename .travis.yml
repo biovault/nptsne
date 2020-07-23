@@ -51,6 +51,7 @@ before_install:
   - python --version 
 
 install:
+  #  Place the package installs in the install.sh script
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
   
@@ -59,8 +60,8 @@ install:
   - pip3 show conan_package_tools
   - pip3 show bincrafters_package_tools
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - pip3 install cmake 
 
+script: python3 -m cibuildwheel --output-dir wheelhouse
 
 after_success:  
   - cmake --build . --target upload_wheel --config Release 
