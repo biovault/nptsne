@@ -50,12 +50,8 @@ before_install:
     fi
   - python --version 
 
-install:
-  #  Place the package installs in the install.sh script
   - chmod +x .ci/install.sh
   - ./.ci/install.sh
-  
-  - python --version
   - pip3 show conan
   - pip3 show conan_package_tools
   - pip3 show bincrafters_package_tools
