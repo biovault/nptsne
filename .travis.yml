@@ -85,9 +85,10 @@ jobs:
          - CC=gcc-5
          - CXX=g++-5
          - LIBCXX=libstdc++ 
-         - CIBW_SKIP="cp2* cp35-*"
+         - CIBW_SKIP="cp2* cp35-* pp*"
          - CIBW_BUILD=cp37-manylinux_x86_64
-         - CIBW_BEFORE_BUILD="pip3 install cmake conan"
+         - CIBW_BUILD_VERBOSITY=3
+         - CIBW_BEFORE_BUILD="pip3 install cmake conan && conan user && conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan"
          
      - stage: build
        name: Build macOS wheels without OpenMP
