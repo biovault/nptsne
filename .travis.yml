@@ -64,6 +64,10 @@ after_success:
 
 jobs:
    include:
+      addons:
+        apt:
+          packages:
+            - cmake
      - stage: build
        name: Build Linux wheels
        <<: *linux

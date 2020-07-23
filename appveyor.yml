@@ -36,8 +36,6 @@ environment:
           CIBW_BUILD: cp3*-win_amd64
           CIBW_SKIP: cp35-*
           CIBW_BUILD_VERBOSITY: 3
-          PATH: C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%          
-
 
 init:
   - cmd: set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
