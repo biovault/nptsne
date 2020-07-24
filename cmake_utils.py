@@ -80,7 +80,8 @@ class CMakeBuild(build_ext):
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
             env.get('CXXFLAGS', ''), self.distribution.get_version())
-
+        self.announce("CXXFLAGS: {}".format(self.distribution.get_version()), log.INFO)
+        
         #CMake configure
         subprocess.check_call(['cmake', ext.sourcedir] +
                               cmake_args, cwd=self.build_temp, env=env)
