@@ -36,6 +36,11 @@ if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 endif()
 
+if(ENV{BUILD_GLFW})
+    add_subdirectory(external/glfw)
+endif()
+
+
 add_subdirectory(external/pybind11)
 #
 message (STATUS "The python executable is at ${PYTHON_EXECUTABLE}") 
