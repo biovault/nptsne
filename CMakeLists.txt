@@ -38,6 +38,7 @@ endif()
 
 if(ENV{BUILD_GLFW})
     add_subdirectory(external/glfw)
+    install_headers(external/glfw)
 endif()
 
 
@@ -280,19 +281,24 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
         # centos
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
-        find_library(GLFW_LIBRARY glfw HINTS /usr/lib64)
+        find_package(PkgConfig REQUIRED)
+        #Search for the glfw3 module
+        pkg_search_module(GLFW REQUIRED glfw3)
+        list(APPEND GLFW_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+        include_directories(GLFW_INCLUDE_DIRS)
+        target_link_libraries(_nptsne PRIVATE glfw) 
     else()
         # ubuntu
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
         find_library(GLFW_LIBRARY glfw HINTS /usr/lib/x86_64-linux-gnu)
+        get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
+        target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
     endif()
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 
-    get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
     target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
     target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
-    target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
     target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")
 endif()
 

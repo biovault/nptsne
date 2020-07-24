@@ -68,3 +68,15 @@ if(MSVC)
 endif()
 
 message(STATUS "End ConanSetup")
+
+macro(install_headers source)
+    install(DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/${source}"
+            DESTINATION "${CMAKE_INSTALL_PREFIX}/include/${CMAKE_PROJECT_NAME}/3rdparty"
+            PATTERN     "*.c"           EXCLUDE
+            PATTERN     "*.cmake"       EXCLUDE
+            PATTERN     "*.cpp"         EXCLUDE
+            PATTERN     "*.in"          EXCLUDE
+            PATTERN     "*.m"           EXCLUDE
+            PATTERN     "*.txt"         EXCLUDE
+            PATTERN     ".gitignore"    EXCLUDE)
+endmacro()
