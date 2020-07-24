@@ -66,7 +66,6 @@ jobs:
       - CONAN_LINUX_PYTHON=3.7.1
       - CMAKE_GENERATOR="Unix Makefiles"
       - CONAN_OPTIONS="nptsne:python_version=3.7"
-      - BUILD_GLFW=True
       - COMPILER=g++-8
       - CC=gcc-8
       - CXX=g++-8
@@ -74,6 +73,7 @@ jobs:
       - CIBW_SKIP="cp2* cp35-* pp*"
       - CIBW_BUILD=cp37-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
+      - CIBW_ENVIRONMENT: "BUILD_GLFW=True"
       - CIBW_BEFORE_BUILD="yum remove -y cmake; yum install -y lz4-devel; ./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; ln -s `which g++` /usr/bin/c++ && ln -s `which gcc` /usr/bin/cc"
          
 
