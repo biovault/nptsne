@@ -9,7 +9,7 @@ project(_nptsne)
 option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-  "${PROJECT_SOURCE_DIR}/cmake")
+  "${CMAKE_SOURCE_DIR}/cmake")
 
 if(WIN32)
     set(CMAKE_CONFIGURATION_TYPES ${CMAKE_BUILD_TYPE})
@@ -49,7 +49,7 @@ message(STATUS "2 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "2 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 
 include(FindOpenGL)
-list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
  
 # Prefer C++14
@@ -283,6 +283,7 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
         find_package(PkgConfig REQUIRED)
         #Search for the glfw3 module
+        set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/external/glfw)
         pkg_search_module(GLFW REQUIRED glfw3)
         list(APPEND GLFW_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
         include_directories(GLFW_INCLUDE_DIRS)
