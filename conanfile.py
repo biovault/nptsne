@@ -55,6 +55,7 @@ class NptsneConan(ConanFile):
             # Centos like without glfw
             # Specifically manylinux2010 is Centos 6 and there is no glfw available in EPEL
             if tools.os_info.with_yum and (os.environ.get('BUILD_GLFW', 'False') == 'True'):
+                installer = tools.SystemPackageTool()
                 installer.install('libXrandr-devel')
                 installer.install('libXinerama-devel')
                 installer.install('libXcursor-devel')
