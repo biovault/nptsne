@@ -23,7 +23,7 @@ before_install:
       if [ "$TRAVIS_OS_NAME" = "osx" ]; then
         HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
       fi
-  - chmod +x .ci/run.sh
+  - chmod +x .ci/install.sh
   - python3 --version
   
 branches: 
