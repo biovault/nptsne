@@ -1,5 +1,9 @@
-os: linux
+os:
+  - linux
+  - osx
+
 language: python
+
 python:
   - 3.6
   - 3.7
@@ -16,19 +20,27 @@ ignore:
     - README.md
     - appveyor.yml  
 
+# Stage order
 stages:
-    -name: build
-    -name: build
+    - build
 
-linux: &linux
-    os: linux
-    dist: xenial
-    language: python
-    sudo: required
+_cibw_common: &cibw_common
+  addons: {}
+  install:
+    - python3 -m pip install cibuildwheel>=1.5.2 
+  script:
+    - set -e
+    - cibuildwheel --output-dir wheelhouse
 
-osx: &osx 
-    os: osx
-    language: generic
+_cibw_linux: &cibw_linux
+  stage: deploy
+  os: linux
+  language: python
+  python: '3.5'
+  services:
+    - docker
+  <<: *cibw_common
+  
 env:
    global:  
      - CIBW_TEST_COMMAND="'python {project}/test/run_doctest.py'"
@@ -50,15 +62,7 @@ before_install:
       HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
     fi
   - python3 --version 
-
-  - chmod +x .ci/install.sh
-  - ./.ci/install.sh
-  - pip3 show conan
-  - pip3 show conan_package_tools
-  - pip3 show bincrafters_package_tools
   - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-
-script: python3 -m cibuildwheel --output-dir wheelhouse
 
 after_success:  
   - cmake --build . --target upload_wheel --config Release 
@@ -68,61 +72,61 @@ jobs:
 
      - stage: build
        name: Build Linux wheels
-       <<: *linux
+       os: linux
        python: "3.7"
-       services: docker
-       install: python3 -m pip install cibuildwheel==1.3.0
-       script: python3 -m cibuildwheel --output-dir wheelhouse
+       script: 
+         set -e
+      - << *cibw_linux
        env:
-         - CONAN_GCC_VERSIONS=5 
-         - CONAN_DOCKER_IMAGE=conanio/gcc5
+         - CONAN_GCC_VERSIONS=8 
+         - CONAN_DOCKER_IMAGE=conanio/gcc8
          - CONAN_BUILD_TYPES=Release
          - CONAN_ARCHS=x86_64 
          - CONAN_LINUX_PYTHON=3.7.1
          - CMAKE_GENERATOR="Unix Makefiles"
          - CONAN_OPTIONS="nptsne:python_version=3.7"
-         - COMPILER=g++-5
-         - CC=gcc-5
-         - CXX=g++-5
+         - COMPILER=g++-8
+         - CC=gcc-8
+         - CXX=g++-8
          - LIBCXX=libstdc++ 
          - CIBW_SKIP="cp2* cp35-* pp*"
          - CIBW_BUILD=cp37-manylinux_x86_64
          - CIBW_BUILD_VERBOSITY=3
-         - CIBW_BEFORE_BUILD="yum remove -y cmake && yum install -y make python-devel; pip3 install cmake conan && conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan"
+         - CIBW_BEFORE_BUILD="./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; yum remove -y cmake && yum install -y make python-devel; "
          
-     - stage: build
-       name: Build macOS wheels without OpenMP
-       <<: *osx
-       language: generic
-       osx_image: xcode9.4
-       python: "3.7"
-       script: python3 -m cibuildwheel --output-dir wheelhouse
-       env: 
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64
-         - CONAN_IS_TRAVIS_OSX=1 
-         - OSX_PYTHON=3.7
-         - CMAKE_GENERATOR="Xcode"
-         - CONAN_OPTIONS="nptsne:python_version=3.7"
-         - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
-         - CIBW_BUILD=cp37-macosx_x86_64
-         - HOMEBREW_NO_AUTO_UPDATE=1
+     # - stage: build
+       # name: Build macOS wheels without OpenMP
+       # <<: *osx
+       # language: generic
+       # osx_image: xcode9.4
+       # python: "3.7"
+       # script: python3 -m cibuildwheel --output-dir wheelhouse
+       # env: 
+         # - CONAN_BUILD_TYPES=Release
+         # - CONAN_ARCHS=x86_64
+         # - CONAN_IS_TRAVIS_OSX=1 
+         # - OSX_PYTHON=3.7
+         # - CMAKE_GENERATOR="Xcode"
+         # - CONAN_OPTIONS="nptsne:python_version=3.7"
+         # - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
+         # - CIBW_BUILD=cp37-macosx_x86_64
+         # - HOMEBREW_NO_AUTO_UPDATE=1
 
 
-     - stage: build
-       name: Build macOS wheels with OpenMP
-       <<: *osx
-       language: generic
-       osx_image: xcode10.3
-       python: "3.7"
-       script: python3 -m cibuildwheel --output-dir wheelhouse
-       env: 
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64
-         - CONAN_IS_TRAVIS_OSX=1 
-         - OSX_PYTHON=3.7
-         - CMAKE_GENERATOR="Xcode"
-         - CONAN_OPTIONS="nptsne:python_version=3.7"
-         - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
-         - CIBW_BUILD=cp37-macosx_x86_64
-         - HOMEBREW_NO_AUTO_UPDATE=1
+     # - stage: build
+       # name: Build macOS wheels with OpenMP
+       # <<: *osx
+       # language: generic
+       # osx_image: xcode10.3
+       # python: "3.7"
+       # script: python3 -m cibuildwheel --output-dir wheelhouse
+       # env: 
+         # - CONAN_BUILD_TYPES=Release
+         # - CONAN_ARCHS=x86_64
+         # - CONAN_IS_TRAVIS_OSX=1 
+         # - OSX_PYTHON=3.7
+         # - CMAKE_GENERATOR="Xcode"
+         # - CONAN_OPTIONS="nptsne:python_version=3.7"
+         # - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
+         # - CIBW_BUILD=cp37-macosx_x86_64
+         # - HOMEBREW_NO_AUTO_UPDATE=1
