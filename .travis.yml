@@ -72,7 +72,7 @@ jobs:
       - CIBW_SKIP="cp2* cp35-* pp*"
       - CIBW_BUILD=cp37-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
-      - CIBW_BEFORE_BUILD="yum remove -y cmake; yum install lz4-devel; ./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; ln -s `which g++` /usr/bin/c++ && ln -s `which gcc` /usr/bin/cc"
+      - CIBW_BEFORE_BUILD="yum remove -y cmake; yum install -y lz4-devel; ./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; ln -s `which g++` /usr/bin/c++ && ln -s `which gcc` /usr/bin/cc"
          
 
 python: 
