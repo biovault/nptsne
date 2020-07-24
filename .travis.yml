@@ -1,99 +1,86 @@
+--- 
+
+_cibw_linux:  &cibw_linux
+  addons: {}
+  install: 
+    - "python3 -m pip install cibuildwheel>=1.5.2"
+  language: python
+  os: linux
+  python: "3.5"
+  script: 
+    - "set -e"
+    - "cibuildwheel --output-dir wheelhouse"
+  services: 
+    - docker
+
+after_success: 
+  - "cmake --build . --target upload_wheel --config Release"
+
+before_install: 
+  - |
+      if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
+        brew outdated python || brew upgrade python;
+      fi
+  - "if [ \"$TRAVIS_OS_NAME\" = \"linux\" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi"
+  - |
+      if [ "$TRAVIS_OS_NAME" = "osx" ]; then
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
+      fi
+  - "python3 --version"
+  
+branches: 
+  only: 
+    - /feature\/.*/
+    - release/1.0.0
+    - master
+    
+env: 
+  global: 
+    - "CIBW_TEST_COMMAND=\"'python {project}/test/run_doctest.py'\""
+    - CIBW_SKIP=pp*
+    - CONAN_LOGIN_USERNAME="admin"
+    - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET
+    - "CONAN_UPLOAD=\"http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local\""
+    - CONAN_STABLE_BRANCH_PATTERN="release/*"
+    - CONAN_UPLOAD_ONLY_WHEN_STABLE=1
+
+language: cpp
+
 os:
-  - linux
-  - osx
+- linux
+- osx
 
-language: python
+jobs: 
+  include: 
+  - stage: Building 
+    name: Build Linux wheels
+    python: "3.7"
+    script: set -e
+    <<: *cibw_linux
+    env:
+      - CONAN_GCC_VERSIONS=8 
+      - CONAN_DOCKER_IMAGE=conanio/gcc8
+      - CONAN_BUILD_TYPES=Release
+      - CONAN_ARCHS=x86_64 
+      - CONAN_LINUX_PYTHON=3.7.1
+      - CMAKE_GENERATOR="Unix Makefiles"
+      - CONAN_OPTIONS="nptsne:python_version=3.7"
+      - COMPILER=g++-8
+      - CC=gcc-8
+      - CXX=g++-8
+      - LIBCXX=libstdc++ 
+      - CIBW_SKIP="cp2* cp35-* pp*"
+      - CIBW_BUILD=cp37-manylinux_x86_64
+      - CIBW_BUILD_VERBOSITY=3
+      - CIBW_BEFORE_BUILD="./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; yum remove -y cmake && yum install -y make python-devel; "
+         
 
-python:
+python: 
   - 3.6
   - 3.7
   - 3.8
-  
-branches:
-    only:
-     - /feature\/.*/
-     - release/1.0.0
-     - master
 
-# No build on these echanges
-ignore:
-    - README.md
-    - appveyor.yml  
 
-# Stage order
-stages:
-    - build
-
-_cibw_common: &cibw_common
-  addons: {}
-  install:
-    - python3 -m pip install cibuildwheel>=1.5.2 
-  script:
-    - set -e
-    - cibuildwheel --output-dir wheelhouse
-
-_cibw_linux: &cibw_linux
-  stage: deploy
-  os: linux
-  language: python
-  python: '3.5'
-  services:
-    - docker
-  <<: *cibw_common
-  
-env:
-   global:  
-     - CIBW_TEST_COMMAND="'python {project}/test/run_doctest.py'"
-     - CIBW_SKIP=pp*
-     - CONAN_LOGIN_USERNAME="admin"
-     - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET  
-     - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
-     - CONAN_STABLE_BRANCH_PATTERN="release/*"
-     - CONAN_UPLOAD_ONLY_WHEN_STABLE=1"
-
-before_install:
-  - | 
-    if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
-      brew outdated python || brew upgrade python;
-    fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi
-  - | 
-    if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-      HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
-    fi
-  - python3 --version 
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-
-after_success:  
-  - cmake --build . --target upload_wheel --config Release 
-
-jobs:
-   include:
-
-     - stage: build
-       name: Build Linux wheels
-       os: linux
-       python: "3.7"
-       script: 
-         set -e
-      - << *cibw_linux
-       env:
-         - CONAN_GCC_VERSIONS=8 
-         - CONAN_DOCKER_IMAGE=conanio/gcc8
-         - CONAN_BUILD_TYPES=Release
-         - CONAN_ARCHS=x86_64 
-         - CONAN_LINUX_PYTHON=3.7.1
-         - CMAKE_GENERATOR="Unix Makefiles"
-         - CONAN_OPTIONS="nptsne:python_version=3.7"
-         - COMPILER=g++-8
-         - CC=gcc-8
-         - CXX=g++-8
-         - LIBCXX=libstdc++ 
-         - CIBW_SKIP="cp2* cp35-* pp*"
-         - CIBW_BUILD=cp37-manylinux_x86_64
-         - CIBW_BUILD_VERBOSITY=3
-         - CIBW_BEFORE_BUILD="./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; yum remove -y cmake && yum install -y make python-devel; "
-         
      # - stage: build
        # name: Build macOS wheels without OpenMP
        # <<: *osx
