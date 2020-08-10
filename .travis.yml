@@ -10,8 +10,10 @@ _cibw_linux:  &cibw_linux
   services: 
     - docker
 
-after_success: 
-  - cmake --build . --target upload_wheel --config Release
+after_success:
+  - echo "Check wheelhouse"
+  - ls ./wheelhouse 
+  - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -P ./cmake/UploadWheel.cmake
 
 before_install: 
   - git submodule update --init --recursive
