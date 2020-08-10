@@ -8,6 +8,7 @@ import platform
 import re
 import shutil
 import sys
+import tempfile
 import subprocess
 
 from setuptools import Extension
@@ -18,10 +19,11 @@ from distutils import log
 
 
 class CMakeExtension(Extension):
-    def __init__(self, name, package_name, sourcedir=''):
+    def __init__(self, name, package_name, sourcedir='', templibdir=''):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
         self.package_name = package_name
+        self.templibdir = templibdir
 
 class CMakeBuild(build_ext):
     def run(self):
@@ -62,9 +64,10 @@ class CMakeBuild(build_ext):
         self.announce("CMake configuration: {}".format(cfg), log.INFO)
         build_args = ['--config', cfg]
 
+        
         # Also limit Windows to single config build -
         # Causes Conan to load a single set of libs
-        cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
+        cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg, '-DTEMP_LIBS_DIR=' + ext.templibdir]
         if platform.system() == "Windows":
             #VS can produce separate RELEASE or DEBUG outputs
             cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), liboutputdir)]
@@ -88,4 +91,14 @@ class CMakeBuild(build_ext):
         #CMake build
         subprocess.check_call(['cmake', '--build', '.', '--verbose'] +
                               build_args, cwd=self.build_temp)
+                              
+        # get the dependent libs (were supplied by Conan) 
+        # os.environ['LD_LIBRARY_PATH'] = liboutputdir
+        
+        subprocess.check_call(['cmake', '--build', '.', '--target',  'bundle_libs', '--config', cfg], cwd=self.build_temp)
+                              
+        print("Files in output dir: ", os.listdir(liboutputdir)) 
+        print("Files in temp libs dir: ", os.listdir(ext.templibdir)) 
+        print("LD_LIBRARY_PATH: ", os.environ['LD_LIBRARY_PATH'])
+        
 

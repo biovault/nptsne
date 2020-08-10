@@ -36,10 +36,7 @@ if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 endif()
 
-if(ENV{BUILD_GLFW})
-    add_subdirectory(external/glfw)
-    install_headers(external/glfw)
-endif()
+
 
 
 add_subdirectory(external/pybind11)
@@ -64,6 +61,12 @@ endif()
 
 set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
+if(TRUE)
+    message(STATUS, "Will build GLFW")
+    add_subdirectory(external/glfw)
+    install_headers(external/glfw)
+endif()
+
 pybind11_add_module(_nptsne
     src/cpp/.editorconfig
     src/cpp/nptSNEBind.cpp
@@ -73,6 +76,10 @@ pybind11_add_module(_nptsne
     src/cpp/TextureTsne.cpp
     src/cpp/TextureTsneExtended.cpp
 )
+
+if(TRUE)
+    add_dependencies(_nptsne GLFW)
+endif()
 
 message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "3 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
@@ -283,10 +290,13 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
         find_package(PkgConfig REQUIRED)
         #Search for the glfw3 module
-        set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/external/glfw)
-        pkg_search_module(GLFW REQUIRED glfw3)
-        list(APPEND GLFW_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
-        include_directories(GLFW_INCLUDE_DIRS)
+        # set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/external/glfw)
+        #pkg_search_module(GLFW REQUIRED glfw3)
+        set(GLFW_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/glfw/include")
+        #list(APPEND GLFW_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
+        message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
+        message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
+        target_include_directories(_nptsne PRIVATE ${GLFW_INCLUDE_DIRS})
         target_link_libraries(_nptsne PRIVATE glfw) 
     else()
         # ubuntu
@@ -315,3 +325,16 @@ endif()
 message(STATUS "SHARED_LINKER_FLAGS: ${CMAKE_SHARED_LINKER_FLAGS}")
 message(STATUS "4 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "4 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
+
+# Platform specific libs
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+    # In linux bundle prebuilt libflann and liblz4
+    install(FILES ${LZ4_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME liblz4.so)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.so.1.8)
+    install(FILES ${GLFWLIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libglfw.so.3)
+endif()
+
+# Install the extra binaries to the desired liboutput
+add_custom_target (bundle_libs
+    COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}
+)
