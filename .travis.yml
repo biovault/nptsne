@@ -76,7 +76,7 @@ jobs:
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE"
       - CIBW_BEFORE_BUILD="yum remove -y cmake; yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel; ./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; ln -s `which g++` /usr/bin/c++ && ln -s `which gcc` /usr/bin/cc; mkdir $LIBSDIR"
-      - export CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LIBSDIR; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
+      - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$LIBSDIR; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
          
 
 python: 
