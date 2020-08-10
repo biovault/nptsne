@@ -338,3 +338,8 @@ endif()
 add_custom_target (bundle_libs
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}
 )
+
+# -- Upload of latest whl
+add_custom_target (upload_wheel
+    COMMAND ${CMAKE_COMMAND} -D WHEEL_GLOB=${CMAKE_BINARY_DIR}/wheelhouse/nptsne*.whl -P ${CMAKE_CURRENT_LIST_DIR}/cmake/UploadWheel.cmake
+)
