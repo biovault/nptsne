@@ -341,5 +341,7 @@ add_custom_target (bundle_libs
 
 # -- Upload of latest whl
 add_custom_target (upload_wheel
+    COMMAND ${CMAKE_COMMAND} -E echo "About to upload the wheel " 
+    ${Python3_EXECUTABLE} -c "import os; print(os.listdir('${CMAKE_BINARY_DIR}/wheelhouse'))"
     COMMAND ${CMAKE_COMMAND} -D WHEEL_GLOB=${CMAKE_BINARY_DIR}/wheelhouse/nptsne*.whl -P ${CMAKE_CURRENT_LIST_DIR}/cmake/UploadWheel.cmake
 )
