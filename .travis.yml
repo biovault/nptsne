@@ -37,7 +37,7 @@ branches:
     
 env: 
   global: 
-    # - CIBW_TEST_COMMAND="python {project}/test/run_doctest.py"
+    - CIBW_TEST_COMMAND="python {project}/test/run_doctest.py"
     - CONAN_LOGIN_USERNAME="admin"
     - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET
     - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
@@ -73,7 +73,7 @@ jobs:
       - CIBW_SKIP="cp2* cp35-* pp*"
       - CIBW_BUILD=cp37-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
-      - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir"
+      - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
       - CIBW_BEFORE_BUILD="source .ci/prepare_build_linux.sh;  mkdir /tmp/cibwlibsdir"
       - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
          
