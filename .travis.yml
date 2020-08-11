@@ -37,8 +37,7 @@ branches:
     
 env: 
   global: 
-    - CIBW_TEST_COMMAND="python {project}/test/run_doctest.py"
-    - CIBW_SKIP=pp*
+    # - CIBW_TEST_COMMAND="python {project}/test/run_doctest.py"
     - CONAN_LOGIN_USERNAME="admin"
     - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET
     - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
@@ -62,10 +61,8 @@ jobs:
     <<: *cibw_linux
     env:
       - CONAN_GCC_VERSIONS=8 
-      - CONAN_DOCKER_IMAGE=conanio/gcc8
       - CONAN_BUILD_TYPES=Release
       - CONAN_ARCHS=x86_64 
-      - CONAN_LINUX_PYTHON=3.7.1
       - CMAKE_GENERATOR="Unix Makefiles"
       - CONAN_OPTIONS="nptsne:python_version=3.7"
       - COMPILER=g++-8
@@ -76,8 +73,8 @@ jobs:
       - CIBW_SKIP="cp2* cp35-* pp*"
       - CIBW_BUILD=cp37-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
-      - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE"
-      - CIBW_BEFORE_BUILD="yum remove -y cmake; yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel; ./.ci/install.sh; conan user; conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan; ln -s `which g++` /usr/bin/c++ && ln -s `which gcc` /usr/bin/cc; mkdir $LIBSDIR"
+      - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir"
+      - CIBW_BEFORE_BUILD="source .ci/prepare_build_linux.sh;  mkdir /tmp/cibwlibsdir"
       - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
          
 
