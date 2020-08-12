@@ -77,9 +77,9 @@ pybind11_add_module(_nptsne
     src/cpp/TextureTsneExtended.cpp
 )
 
-if(TRUE)
-    add_dependencies(_nptsne GLFW)
-endif()
+#if(TRUE)
+#    add_dependencies(_nptsne GLFW)
+#endif()
 
 message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "3 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
