@@ -11,7 +11,7 @@ cmake --version
 pip install -Iv six==1.12.0
 pip install conan_package_tools==0.32.2 bincrafters_package_tools==0.26.3
 pip install conan==1.24.1
-ln -s $PY37_BIN/conan /usr/local/bin/conan
+conan=`which conan`; ln -s $PY37_BIN/conan $conan
 echo "conan version:"
 conan --version
 echo ** End build environment preparation
