@@ -43,7 +43,13 @@ jobs:
 
     services: docker
     install: 
+    - pip install -Iv six==1.12.0
+    - pip install conan==1.24.1
+    - pip install conan_package_tools==0.32.2 bincrafters_package_tools==0.26.3
+    - pip install cmake
+    - source {project}/.ci/prepare_conan.sh
     - python3 -m pip install cibuildwheel>=1.5.2
+    
     script: 
     - "set -e"
     - "cibuildwheel --output-dir wheelhouse"
@@ -64,8 +70,8 @@ jobs:
       - CIBW_BUILD=cp3*-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
-      - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh; pip install conan==1.24.1; pip install cmake; " 
-      - CIBW_BEFORE_BUILD="source {project}/.ci/prepare_conan.sh; rm -rf /tmp/cibwlibsdir; mkdir -p /tmp/cibwlibsdir"
+      - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
+      - CIBW_BEFORE_BUILD="rm -rf /tmp/cibwlibsdir; mkdir -p /tmp/cibwlibsdir"
       - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
     
   - stage: deploy to testpypi
