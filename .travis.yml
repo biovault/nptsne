@@ -42,7 +42,8 @@ jobs:
     name: Build linux bdist wheels
 
     services: docker
-    install: 
+    install:
+    # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
     
     script: 
@@ -65,7 +66,8 @@ jobs:
       - CIBW_BUILD=cp3*-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
-      - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh; pip3 install -r requirements.txt" 
+      # The following run in the container context (building manylinux)
+      - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh; pip install -r requirements.txt" 
       - CIBW_BEFORE_BUILD="rm -rf /tmp/cibwlibsdir; mkdir -p /tmp/cibwlibsdir; source ./.ci/prepare_conan.sh"
       - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
     
