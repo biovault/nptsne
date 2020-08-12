@@ -1,33 +1,22 @@
---- 
+language: python
+python:
+  - 3.7
 
-_cibw_linux:  &cibw_linux
-  addons: {}
-  install: 
-    - python3 -m pip install cibuildwheel>=1.5.2
-  language: python
-  os: linux
+stages:
+  # Testing is part of build- using the CIBW_TEST_COMMAND
+  - build
+  # Tagged builds are for release to PyPI
+  - name: deploy to pypi
+    if: tag IS present
+  # Untagged builds are for test in TestPyPI
+  - name: deploy to testpypi
+    if: tag IS not present
 
-  services: 
-    - docker
-
-after_success:
+# yaml anchor for upload to artifactory wheels dir 
+_wheelhouse_upload: &_wheelhouse_upload
   - echo "Check wheelhouse"
   - ls ./wheelhouse 
   - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -P ./cmake/UploadWheel.cmake
-
-before_install: 
-  - git submodule update --init --recursive
-  - |
-      if [ "${TRAVIS_OS_NAME:-}" == "osx" ]; then
-        brew outdated python || brew upgrade python;
-      fi
-  - "if [ \"$TRAVIS_OS_NAME\" = \"linux\" ]; then sudo apt-get install -y libglfw3 libglfw3-dev; fi"
-  - |
-      if [ "$TRAVIS_OS_NAME" = "osx" ]; then
-        HOMEBREW_NO_AUTO_UPDATE=1 brew install glfw
-      fi
-  - chmod +x .ci/install.sh
-  - python3 --version
   
 branches: 
   only: 
@@ -43,22 +32,23 @@ env:
     - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
     - CONAN_STABLE_BRANCH_PATTERN="release/*"
     - CONAN_UPLOAD_ONLY_WHEN_STABLE=1
-
-language: cpp
-
-os:
-- linux
-#- osx
-
+    - TWINE_USER=bldrvnlw
+    - TWINE_PYPI_PASSWORD=$PYPI_PASSWORD_SECRET
+    - TWINE_TESTPYPI_PASSWORD=$TESTPYPI_PASSWORD_SECRET
+    
 jobs: 
   include: 
-  - stage: Building 
-    name: Build Linux wheels
-    python: "3.7"
+  - stage: build
+    name: Build linux bdist wheels
+
+    services: docker
+    install: 
+    - python3 -m pip install cibuildwheel>=1.5.2
     script: 
     - "set -e"
     - "cibuildwheel --output-dir wheelhouse"
-    <<: *cibw_linux
+    after_success:
+    <<: *_wheelhouse_upload
     env:
       - CONAN_GCC_VERSIONS=8 
       - CONAN_BUILD_TYPES=Release
@@ -71,18 +61,23 @@ jobs:
       - LIBCXX=libstdc++ 
       - LIBSDIR=/tmp/cibwlibsdir
       - CIBW_SKIP="cp2* cp35-* pp*"
-      - CIBW_BUILD=cp37-manylinux_x86_64
+      - CIBW_BUILD=cp3*-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
       - CIBW_BEFORE_BUILD="source .ci/prepare_build_linux.sh;  mkdir /tmp/cibwlibsdir"
       - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
-         
-
-python: 
-  - 3.6
-  - 3.7
-  - 3.8
-
+    
+  - stage: deploy to testpypi
+    install:
+        - python3 -m pip install twine
+    script:
+        - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD--repository testpypi wheelhouse/*.whl
+        
+  - stage: deploy to pypi
+    install:
+        - python3 -m pip install twine
+    script:
+        - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD wheelhouse/*.whl
 
      # - stage: build
        # name: Build macOS wheels without OpenMP
