@@ -48,7 +48,7 @@ jobs:
     - "set -e"
     - "cibuildwheel --output-dir wheelhouse"
     after_success:
-    <<: *_wheelhouse_upload
+      *_wheelhouse_upload
     env:
       - CONAN_GCC_VERSIONS=8 
       - CONAN_BUILD_TYPES=Release
@@ -69,15 +69,15 @@ jobs:
     
   - stage: deploy to testpypi
     install:
-        - python3 -m pip install twine
+      - python3 -m pip install twine
     script:
-        - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD--repository testpypi wheelhouse/*.whl
+      - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi wheelhouse/*.whl
         
   - stage: deploy to pypi
     install:
-        - python3 -m pip install twine
+      - python3 -m pip install twine
     script:
-        - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD wheelhouse/*.whl
+      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD wheelhouse/*.whl
 
      # - stage: build
        # name: Build macOS wheels without OpenMP
