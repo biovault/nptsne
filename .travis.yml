@@ -47,7 +47,7 @@ jobs:
     - pip install conan==1.24.1
     - pip install conan_package_tools==0.32.2 bincrafters_package_tools==0.26.3
     - pip install cmake
-    - source {project}/.ci/prepare_conan.sh
+    - source ./.ci/prepare_conan.sh
     - python3 -m pip install cibuildwheel>=1.5.2
     
     script: 
