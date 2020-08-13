@@ -85,6 +85,7 @@ jobs:
     name: Build OS X bdist wheels
     if: env(BUILD_OSX) = true
     os: osx
+    osx_image: xcode10.3
     install:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
@@ -95,18 +96,13 @@ jobs:
     after_success:
       *_wheelhouse_upload
     env:
-      - CONAN_GCC_VERSIONS=8 
+      - CONAN_APPLE_CLANG_VERSIONS=10.0
       - CONAN_BUILD_TYPES=Release
-      - CONAN_ARCHS=x86_64 
-      - CMAKE_GENERATOR="Unix Makefiles"
-      - CONAN_OPTIONS="nptsne:python_version=3.7"
-      - COMPILER=g++-8
-      - CC=gcc-8
-      - CXX=g++-8
-      - LIBCXX=libstdc++ 
+      - CONAN_ARCHS=x86_64
+      - CONAN_IS_TRAVIS_OSX=1 
       - LIBSDIR=/tmp/cibwlibsdir
-      - CIBW_SKIP="cp2* cp35-* pp*"
-      - CIBW_BUILD=cp3*-manylinux_x86_64
+      - CIBW_SKIP="cp2* pp*"
+      - CIBW_BUILD=cp37-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
       # The following run in the container context (building manylinux)

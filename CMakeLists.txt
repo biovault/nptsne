@@ -334,6 +334,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     install(FILES ${GLFWLIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libglfw.so.3)
 endif()
 
+# Platform specific libs
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME ${FLANNCPP_SHORTNAME})
+endif()
+
 # Install the extra binaries to the desired liboutput
 add_custom_target (bundle_libs
     COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}

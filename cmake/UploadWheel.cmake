@@ -1,3 +1,6 @@
+# Provide the following defines
+# WHEEL_GLOB - a glob wildcard expression that will resolve to a list of wheel files
+# BUILD_NUMBER - a unique number for this build used to store the wheels
 set(CONAN_LOGIN_USERNAME $ENV{CONAN_LOGIN_USERNAME})
 set(CONAN_PASSWORD $ENV{CONAN_PASSWORD})
 

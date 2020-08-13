@@ -52,14 +52,7 @@ class NptsneConan(ConanFile):
                 installer.install('liblz4-dev')
                 installer.install('libglfw3')
                 installer.install('libglfw3-dev')
-            # Centos like without glfw
-            # Specifically manylinux2010 is Centos 6 and there is no glfw available in EPEL
-            # if tools.os_info.with_yum and (os.environ.get('BUILD_GLFW', 'False') == 'True'):
-                # installer = tools.SystemPackageTool()
-                # installer.install('libXrandr-devel.{}'.format(self.settings.arch))
-                # installer.install('libXinerama-devel.{}'.format(self.settings.arch))
-                # installer.install('libXcursor-devel.{}'.format(self.settings.arch))
-                # installer.install('libXi-devel.{}'.format(self.settings.arch))
+            # Centos like: -See prepare_build_linux.sh 
         if tools.os_info.is_macos:
             installer = tools.SystemPackageTool() 
             installer.install('libomp')
