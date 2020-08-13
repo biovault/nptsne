@@ -83,7 +83,7 @@ jobs:
     install:
         *_deploy_install
     script:
-      - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi wheelhouse/*.whl
+      - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi $HOME/twine/*.whl
         
   - stage: deploy to pypi
     install:
