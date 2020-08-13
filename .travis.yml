@@ -87,6 +87,7 @@ jobs:
     name: Build OS X bdist wheels
     if: env(BUILD_OSX) = true
     os: osx
+    osx_image: xcode10.3
     language: shell
     install:
     # Runs in the vm context where cibuildwheel is launched
