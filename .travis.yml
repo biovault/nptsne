@@ -76,7 +76,7 @@ jobs:
       - CIBW_SKIP="cp2* cp35-* pp*"
       - CIBW_BUILD=cp3*-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
-      - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
+      - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
       # The following run in the container context (building manylinux)
       - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
       - CIBW_BEFORE_BUILD="rm -rf /tmp/cibwlibsdir; mkdir -p /tmp/cibwlibsdir; pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh"
@@ -106,7 +106,7 @@ jobs:
       - CIBW_SKIP="cp2* pp*"
       - CIBW_BUILD=cp37-macosx_x86_64
       - CIBW_BUILD_VERBOSITY=3
-      - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
+      - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE CMAKE_GENERATOR=Xcode"
       # The following run in the container context (building manylinux)
       - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
       - CIBW_BEFORE_BUILD="rm -rf /tmp/cibwlibsdir; mkdir -p /tmp/cibwlibsdir; pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh"
