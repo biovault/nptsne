@@ -236,6 +236,8 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
     target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY_PATH} )   
     target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
+    message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
+    message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
 endif()
 
 find_package(OpenMP)
