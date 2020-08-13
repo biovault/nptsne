@@ -18,7 +18,7 @@ _wheelhouse_upload: &_wheelhouse_upload
   - ls ./wheelhouse 
   - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -D BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -P ./cmake/UploadWheel.cmake
 
-_deploy_install: $_deploy_install
+_deploy_install: &_deploy_install
   - python3 -m pip install twine
   - mkdir $HOME/twine
   - cd $HOME/twine
