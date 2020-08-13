@@ -22,7 +22,6 @@ _deploy_install: &_deploy_install
   - python3 -m pip install twine
   - mkdir $HOME/twine
   - cd $HOME/twine
-  - export CACHE_URL=
   - wget -r -np -nH --cut-dirs 5 -A '*manylinux*.whl' http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
 
@@ -88,7 +87,6 @@ jobs:
     name: Build OS X bdist wheels
     if: env(BUILD_OSX) = true
     os: osx
-    osx_image: xcode11.2
     language: shell
     install:
     # Runs in the vm context where cibuildwheel is launched
