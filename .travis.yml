@@ -16,8 +16,15 @@ stages:
 _wheelhouse_upload: &_wheelhouse_upload
   - echo "Check wheelhouse"
   - ls ./wheelhouse 
-  - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -P ./cmake/UploadWheel.cmake
-  
+  - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -D BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -P ./cmake/UploadWheel.cmake
+
+_deploy_install: $_deploy_install
+  - python3 -m pip install twine
+  - mkdir $HOME/twine
+  - cd $HOME/twine
+  - wget -r -np -nH --cut-dirs 5 -A '*manylinux*.whl'http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_$TRAVIS_BUILD_NUMBER/
+  - ls -al $HOME/twine
+
 branches: 
   only: 
     - /feature\/.*/
@@ -73,15 +80,15 @@ jobs:
     
   - stage: deploy to testpypi
     install:
-      - python3 -m pip install twine
+        *_deploy_install
     script:
       - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi wheelhouse/*.whl
         
   - stage: deploy to pypi
     install:
-      - python3 -m pip install twine
+        *_deploy_install
     script:
-      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD wheelhouse/*.whl
+      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD $HOME/twine/*.whl
 
      # - stage: build
        # name: Build macOS wheels without OpenMP

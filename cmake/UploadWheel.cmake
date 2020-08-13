@@ -10,7 +10,7 @@ foreach(WHEEL IN LISTS NPTSNE_WHEEL)
     file(MD5 ${WHEEL} NPTSNE_WHEEL_MD5)
     message(STATUS "${WHEEL} with md5: ${NPTSNE_WHEEL_MD5}")
     get_filename_component(NPTSNE_WHEEL_NAME ${WHEEL} NAME)
-    file(UPLOAD ${WHEEL} "http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/latest/${NPTSNE_WHEEL_NAME}"
+    file(UPLOAD ${WHEEL} "http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${BUILD_NUMBER}/${NPTSNE_WHEEL_NAME}"
         USERPWD ${CONAN_LOGIN_USERNAME}:${CONAN_PASSWORD}
         HTTPHEADER "X-Checksum-md5: ${NPTSNE_WHEEL_MD5}")
 endforeach()
