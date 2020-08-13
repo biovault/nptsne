@@ -106,7 +106,7 @@ jobs:
       - CONAN_IS_TRAVIS_OSX=1 
       - LIBSDIR=/tmp/cibwlibsdir
       - CIBW_SKIP="cp2* pp*"
-      - CIBW_BUILD=cp37-manylinux_x86_64
+      - CIBW_BUILD=cp37-macosx_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="BUILD_GLFW=TRUE NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
       # The following run in the container context (building manylinux)
