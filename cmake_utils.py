@@ -99,6 +99,6 @@ class CMakeBuild(build_ext):
                               
         print("Files in output dir: ", os.listdir(liboutputdir)) 
         print("Files in temp libs dir: ", os.listdir(ext.templibdir)) 
-        print("LD_LIBRARY_PATH: ", os.environ['LD_LIBRARY_PATH'])
+        print("LD_LIBRARY_PATH: ", os.environ.get('LD_LIBRARY_PATH', ''))
         
 
