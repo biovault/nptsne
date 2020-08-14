@@ -34,7 +34,7 @@ environment:
           PYTHON_VERSION: 3.7
           USE_FOR_DOC_GENERATION: False
           LIBSDIR: "%TMP%\\cibwlibsdir"
-          CIBW_TEST_COMMAND: "python .\\test\\run_doctest.py"
+          CIBW_TEST_COMMAND: "python %APPVEYOR_BUILD_FOLDER%\\test\\run_doctest.py"
           CIBW_BUILD: "cp37-win_amd64"
           CIBW_SKIP: "cp2* cp35-*"
           CIBW_BUILD_VERBOSITY: 3
