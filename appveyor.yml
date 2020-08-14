@@ -70,7 +70,7 @@ before_build:
 build_script:
   - python setup.py sdist -d wheelhouse --formats=gztar
   - python -m cibuildwheel --output-dir wheelhouse
-  # DOCUMENTATIOn BUILDING
+  # DOCUMENTATION BUILDING
   - if "%USE_FOR_DOC_GENERATION%" == "True" (echo Generate documentation on Read the Docs)
   - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global credential.helper store) 
   - ps: if (Test-Path env:USE_FOR_DOC_GENERATION) {Add-Content "$HOME\.git-credentials" "https://$($env:git_token):x-oauth-basic@github.com`n"}
@@ -78,7 +78,7 @@ build_script:
   - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global user.name "%APPVEYOR_REPO_COMMIT_AUTHOR%")
   - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target extract_module_docstring --config Release)
   - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --config Release)
-  - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
+  # - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
 
   - cmake -D WHEEL_GLOB=%APPVEYOR_BUILD_FOLDER%\wheelhouse\nptsne*.whl -D BUILD_NUMBER=$APPVEYOR_BUILD_NUMBER -P %APPVEYOR_BUILD_FOLDER%\cmake\UploadWheel.cmake
   
