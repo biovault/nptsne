@@ -33,6 +33,7 @@ environment:
           Python3_ROOT_DIR: C:\Python37-x64
           PYTHON_VERSION: 3.7
           USE_FOR_DOC_GENERATION: False
+          LIBSDIR: "%TMP%\\cibwlibsdir"
           CIBW_TEST_COMMAND: "python test\run_doctest.py"
           CIBW_BUILD: "cp37-win_amd64"
           CIBW_SKIP: "cp2* cp35-*"
