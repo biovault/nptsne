@@ -80,7 +80,7 @@ build_script:
   - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --config Release)
   # - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
 
-  - cmake -D WHEEL_GLOB=%APPVEYOR_BUILD_FOLDER%\wheelhouse\nptsne*.whl -D BUILD_NUMBER=$APPVEYOR_BUILD_NUMBER -P %APPVEYOR_BUILD_FOLDER%\cmake\UploadWheel.cmake
+  - cmake -D WHEEL_GLOB=wheelhouse\nptsne*.whl -D BUILD_NUMBER=$APPVEYOR_BUILD_NUMBER -P %APPVEYOR_BUILD_FOLDER%\cmake\UploadWheel.cmake
   
 on_success:
   - echo "In success"
