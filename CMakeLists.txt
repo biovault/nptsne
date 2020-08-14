@@ -192,9 +192,9 @@ add_definitions(-DGLFW_INCLUDE_NONE)
 
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
 if (CMAKE_GENERATOR STREQUAL Xcode)
-    # Assumption libomp, glfw and have been installed
+    # Assumption libomp, has been installed
     # probably using brew.
-    # If using conan we use the conan build flann
+    # If using conan we use the conan built flann
     set(MAC_INSTALL_PREFIX "/usr/local")
     
     # Silences OpenGL deprecation warnings (in GLFW)
@@ -219,21 +219,21 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
    
     #### Find glfw
-    find_library(GLFW_LIBRARY glfw HINTS "${MAC_INSTALL_PREFIX}/lib")    
-    get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
-    include_directories(${GLFW_INCLUDE_DIRS} "${MAC_INSTALL_PREFIX}/opt/glfw/include")     
+    #find_library(GLFW_LIBRARY glfw HINTS "${MAC_INSTALL_PREFIX}/lib")    
+    #get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
+    #include_directories(${GLFW_INCLUDE_DIRS} "${MAC_INSTALL_PREFIX}/opt/glfw/include")     
 
     get_filename_component(LZ4_LINK_PATH ${LZ4_LIBRARY} DIRECTORY)
     get_filename_component(FLANN_LINK_PATH ${FLANNCPP_LIBRARY_PATH} DIRECTORY)
-    get_filename_component(GLFW_LINK_PATH ${GLFW_LIBRARY} DIRECTORY)
+    #get_filename_component(GLFW_LINK_PATH ${GLFW_LIBRARY} DIRECTORY)
     link_directories(${FLANN_LINK_PATH})
     link_directories(${LZ4_LINK_PATH})
-    link_directories(${GLFW_LINK_PATH})
+    #link_directories(${GLFW_LINK_PATH})
     target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
     target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY_PATH} )   
-    target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
+    #target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
     message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
-    message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
+    #message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
 endif()
 
 find_package(OpenMP)
