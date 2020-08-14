@@ -144,7 +144,7 @@ jobs:
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=%TMP%\cibwlibsdir"
       # The following run in the container context (building manylinux)
-      - CIBW_BEFORE_BUILD="rd /s /q %TMP%\cibwlibsdir; mkdir %TMP%\cibwlibsdir; pip install --upgrade pip; pip install -r requirements.txt; call .\.ci\prepare_conan.sh"
+      - CIBW_BEFORE_BUILD="rd /s /q %TMP%\cibwlibsdir & mkdir %TMP%\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & call .\.ci\prepare_conan.sh"
       
 
   # Deploy to testpypi if not tagged
