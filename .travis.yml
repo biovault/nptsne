@@ -43,7 +43,8 @@ env:
     - TWINE_PYPI_PASSWORD=$PYPI_PASSWORD_SECRET
     - TWINE_TESTPYPI_PASSWORD=$TESTPYPI_PASSWORD_SECRET
     - BUILD_LINUX=false
-    - BUILD_OSX=true
+    - BUILD_OSX=false
+    - BUILD_WINDOWS=true
     
 jobs: 
   include: 
@@ -109,58 +110,48 @@ jobs:
       - CIBW_BUILD=cp3*-macosx_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE CMAKE_GENERATOR=Xcode"
-      # The following run in the container context (building manylinux)
-      - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
       - CIBW_BEFORE_BUILD="rm -rf /tmp/cibwlibsdir; mkdir -p /tmp/cibwlibsdir; pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh"
       - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
-  
+
+  # Build on Windows
+  - stage: build
+    name: Build Windows bdist wheels
+    if: env(BUILD_WINDOWS) = true
+    os: windows
+    language: shell
+    install:
+    # Runs in the vm context where cibuildwheel is launched
+    - python3 -m pip install cibuildwheel>=1.5.2
+    
+    script: 
+    - "set -e"
+    - "python3 -m cibuildwheel --output-dir wheelhouse"
+    after_success:
+      *_wheelhouse_upload
+    env:
+      - CONAN_BUILD_TYPES=Release
+      - CONAN_ARCHS=x86_64
+      - LIBSDIR=%TMP%\cibwlibsdir
+      - MACOSX_DEPLOYMENT_TARGET=10.13
+      - CIBW_SKIP="cp2* cp35-*"
+      - CIBW_BUILD=cp37-win_amd64
+      - CIBW_BUILD_VERBOSITY=3
+      - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=%TMP%\cibwlibsdir"
+      # The following run in the container context (building manylinux)
+      - CIBW_BEFORE_BUILD="rd /s /q %TMP%\cibwlibsdir; mkdir %TMP%\cibwlibsdir; pip install --upgrade pip; pip install -r requirements.txt; call .\.ci\prepare_conan.sh"
+      
+
   # Deploy to testpypi if not tagged
   - stage: deploy to testpypi
     install:
         *_deploy_install
     script:
-      - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi $HOME/twine/*.whl
+      - python -m twine upload -u %TWINE_USER% -p %TWINE_TESTPYPI_PASSWORD% --repository testpypi %HOMEPATH%\twine\*.whl
 
   # Deploy to pypi if tagged
   - stage: deploy to pypi
     install:
         *_deploy_install
     script:
-      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD $HOME/twine/*.whl
+      - python -m twine upload  -u %TWINE_USER% -p %TWINE_PYPI_PASSWORD% %HOMEPATH%\twine\*.whl
 
-     # - stage: build
-       # name: Build macOS wheels without OpenMP
-       # <<: *osx
-       # language: generic
-       # osx_image: xcode9.4
-       # python: "3.7"
-       # script: python3 -m cibuildwheel --output-dir wheelhouse
-       # env: 
-         # - CONAN_BUILD_TYPES=Release
-         # - CONAN_ARCHS=x86_64
-         # - CONAN_IS_TRAVIS_OSX=1 
-         # - OSX_PYTHON=3.7
-         # - CMAKE_GENERATOR="Xcode"
-         # - CONAN_OPTIONS="nptsne:python_version=3.7"
-         # - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
-         # - CIBW_BUILD=cp37-macosx_x86_64
-         # - HOMEBREW_NO_AUTO_UPDATE=1
-
-
-     # - stage: build
-       # name: Build macOS wheels with OpenMP
-       # <<: *osx
-       # language: generic
-       # osx_image: xcode10.3
-       # python: "3.7"
-       # script: python3 -m cibuildwheel --output-dir wheelhouse
-       # env: 
-         # - CONAN_BUILD_TYPES=Release
-         # - CONAN_ARCHS=x86_64
-         # - CONAN_IS_TRAVIS_OSX=1 
-         # - OSX_PYTHON=3.7
-         # - CMAKE_GENERATOR="Xcode"
-         # - CONAN_OPTIONS="nptsne:python_version=3.7"
-         # - CIBW_BEFORE_BUILD_MACOS="'export SDKROOT=$(xcodebuild -version -sdk macosx Path)'"
-         # - CIBW_BUILD=cp37-macosx_x86_64
-         # - HOMEBREW_NO_AUTO_UPDATE=1
