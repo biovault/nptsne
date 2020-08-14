@@ -217,14 +217,10 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     include_directories("${MAC_INSTALL_PREFIX}/opt/lz4/include") 
     find_library(LZ4_LIBRARY lz4 HINTS "${MAC_INSTALL_PREFIX}/lib")    
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
-    # lz4 link chops two digits from the version 
-    # (this probably a bug due to the library name ending in a digit)
-    get_shorter_version_number(${LZ4_LIBRARY_PATH} LZ4_SHORTNAME)
    
     #### Find glfw
     find_library(GLFW_LIBRARY glfw HINTS "${MAC_INSTALL_PREFIX}/lib")    
     get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
-    get_short_version_number(${GLFWLIBRARY_PATH} GLFW_SHORTNAME)    
     include_directories(${GLFW_INCLUDE_DIRS} "${MAC_INSTALL_PREFIX}/opt/glfw/include")     
 
     get_filename_component(LZ4_LINK_PATH ${LZ4_LIBRARY} DIRECTORY)
@@ -337,8 +333,8 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
 endif()
 
 # Platform specific libs
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME ${FLANNCPP_SHORTNAME})
+if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.dylib)
 endif()
 
 # Install the extra binaries to the desired liboutput
