@@ -57,7 +57,7 @@ class NptsneConan(ConanFile):
             installer = tools.SystemPackageTool() 
             installer.install('libomp')
             installer.install('lz4')
-            installer.install('glfw')
+            # installer.install('glfw')
             
     def configure(self):
         self.options["HDILib"].shared = False

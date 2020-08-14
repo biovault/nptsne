@@ -74,8 +74,12 @@ class CMakeBuild(build_ext):
             if sys.maxsize > 2**32:
                 cmake_args += ['-A', 'x64']
             build_args += ['--', '/m']
-        else:
+        elif platform.system() == "Linux":
             build_args += ['--', '-j3']
+        elif platform.system() == "Darwin":
+            build_args += ['--', '-jobs 3']
+        else:
+            raise RuntimeError("Unsupported platform")
 
         # Building with conan
         cmake_args += ['-DNPTSNE_BUILD_WITH_CONAN=ON']
