@@ -77,7 +77,8 @@ class CMakeBuild(build_ext):
         elif platform.system() == "Linux":
             build_args += ['--', '-j3']
         elif platform.system() == "Darwin":
-            build_args += ['--', '-jobs 3']
+            # Xcode automatically optimizes core usage
+            build_args += ['--']
         else:
             raise RuntimeError("Unsupported platform")
 
