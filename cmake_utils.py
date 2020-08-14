@@ -78,6 +78,8 @@ class CMakeBuild(build_ext):
             build_args += ['--', '-j3']
         elif platform.system() == "Darwin":
             # Xcode automatically optimizes core usage
+            # as default Xcode will create a release subdir
+            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), liboutputdir)]
             build_args += ['--']
         else:
             raise RuntimeError("Unsupported platform")
