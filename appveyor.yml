@@ -47,8 +47,6 @@ install:
   - set PYTHON_PATH=%Python3_ROOT_DIR% # Python3_ROOT_DIR is required to hint the CMake find_package Python3 
   - python --version
   - pip install cibuildwheel>=1.5.2
-  - conan user # It creates the conan data directory
-  - conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 
 skip_commits:
     files:
