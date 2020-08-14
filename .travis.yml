@@ -119,13 +119,19 @@ jobs:
     if: env(BUILD_WINDOWS) = true
     os: windows
     language: shell
+    before_install:
+    - |
+      if [[ "$TRAVIS_OS_NAME" = windows ]]; then
+        choco install python --version 3.8.0
+        export PATH="/c/Python38:/c/Python38/Scripts:$PATH"
+      fi
     install:
     # Runs in the vm context where cibuildwheel is launched
-    - python3 -m pip install cibuildwheel>=1.5.2
+    - python -m pip install cibuildwheel>=1.5.2
     
     script: 
     - "set -e"
-    - "python3 -m cibuildwheel --output-dir wheelhouse"
+    - "python -m cibuildwheel --output-dir wheelhouse"
     after_success:
       *_wheelhouse_upload
     env:
