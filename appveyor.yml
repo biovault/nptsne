@@ -79,9 +79,8 @@ build_script:
   - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target extract_module_docstring --config Release)
   - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --config Release)
   - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
-#  - ctest --verbose -C Release
-# call this in build_script before the cache is removed
-  - cmake -D WHEEL_GLOB=wheelhouse\nptsne*.whl -P cmake/UploadWheel.cmake
+
+  - cmake -D WHEEL_GLOB=%APPVEYOR_BUILD_FOLDER%\wheelhouse\nptsne*.whl -D BUILD_NUMBER=$APPVEYOR_BUILD_NUMBER -P %APPVEYOR_BUILD_FOLDER%\cmake\UploadWheel.cmake
   
 on_success:
   - echo "In success"
