@@ -104,6 +104,7 @@ jobs:
       - CONAN_ARCHS=x86_64
       - CONAN_IS_TRAVIS_OSX=1 
       - LIBSDIR=/tmp/cibwlibsdir
+      - MACOSX_DEPLOYMENT_TARGET=10.13
       - CIBW_SKIP="cp2* pp*"
       - CIBW_BUILD=cp37-macosx_x86_64
       - CIBW_BUILD_VERBOSITY=3

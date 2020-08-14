@@ -61,7 +61,7 @@ endif()
 
 set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
-if(TRUE)
+if(NOT APPLE)
     message(STATUS, "Will build GLFW")
     add_subdirectory(external/glfw)
     install_headers(external/glfw)
