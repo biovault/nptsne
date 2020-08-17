@@ -42,7 +42,7 @@ env:
     - TWINE_USER=bldrvnlw
     - TWINE_PYPI_PASSWORD=$PYPI_PASSWORD_SECRET
     - TWINE_TESTPYPI_PASSWORD=$TESTPYPI_PASSWORD_SECRET
-    - BUILD_LINUX=false
+    - BUILD_LINUX=true
     - BUILD_OSX=false
     
 jobs: 
@@ -74,7 +74,7 @@ jobs:
       - LIBCXX=libstdc++ 
       - LIBSDIR=/tmp/cibwlibsdir
       - CIBW_SKIP="cp2* cp35-* pp*"
-      - CIBW_BUILD=cp3*-manylinux_x86_64
+      - CIBW_BUILD=cp37-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE"
       # The following run in the container context (building manylinux)

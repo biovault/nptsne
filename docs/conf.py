@@ -12,39 +12,51 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import nptsne
-print(nptsne.__version__)
 #import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
 project = 'nptsne'
-copyright = '2019, Baldur van Lew'
+copyright = '2020, Baldur van Lew'
 author = 'Baldur van Lew'
 
-import sys, os
-#sys.path.insert(0, os.path.abspath('../../_package'))
-#sys.path.insert(0, os.path.abspath('../../_package/nptsne'))
-with open('../../version.txt', 'r') as file:
-    __version__=file.read().replace('\n', '')
+import os
+import sys
+import subprocess
+on_rtd = os.environ.get('READTHEDOCS') == 'True'
+
+# Running setup.py with --version returns the extracted version
+__version__ = subprocess.check_output([sys.executable, os.path.abspath(os.path.join('..', 'setup.py')), '--version']).decode('ascii').strip()
+
+if on_rtd:
+    # Install a version of nptsne to extract the docstrings
+    rtd_version = os.environ.get('READTHEDOCS_VERSION')
+
+    # stable represents a tagged version - will be on PyPi
+    if rtd_version == 'stable':
+        branch = None
+        try:
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', 'nptsne=={}'.format(setup_py_version)])
+        except subprocess.CalledProcessError:
+            branch = 'stable'
+    else:
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', '--only-binary', '--platform', 'manylinux2010_x86_64', '--index-url', 'https://test.pypi.org/simple' 'nptsne=={}'.format(__version__)])
+else:
+    sys.path.insert(0, os.path.abspath(os.path.join('..', 'installed')))
+
+import nptsne
 
 mmp = __version__.split('.')
 # The short X.Y version
 version = "{}.{}".format(mmp[0], mmp[1])
 # The full version, including alpha/beta/rc tags
-release = __version__
 
-html_title = release
-base_arti_url = 'http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne'  # base url for the artifactory repo
+html_title = __version__
+
 rst_epilog = """
 .. |version| replace:: {0}
-.. |HSNE| replace:: HSNE
-.. |TSNE| replace:: t-SNE
- """.format(release, base_arti_url)  
+ """.format(__version__, 'https://github.co/biovault/nptsne')  
  
-# .. |linux_36_whl| replace:: {1}/nptsne-{0}-cp36-none-linux_x86_64.whl
-# .. |linux_37_whl| replace:: {1}/nptsne-{0}-cp37-none-linux_x86_64.whl
-
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -60,28 +72,24 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.githubpages', 
     'sphinx.ext.extlinks',
-    'numpydoc',    
-    'sphinx_rst_builder',
+    'numpydoc',
+#    'sphinx_rtd_theme',
+#    'sphinx.ext.napoleon',
 ]
 
 numpydoc_show_class_members = False
-
-extlinks = {
-    'linux_whl_url': ('{0}/nptsne-{1}-cp%s-none-linux_x86_64.whl'.format(base_arti_url, release), '')
-}
 
 # Include class docstring and init docstring in the  class doc
 autoclass_content = 'both'
 
 autodoc_default_options = {
     "members": True,              # All members (for module classes in __all__)
-    "undoc-members": False,        # Including those without doc strings
+    "undoc-members": True,        # Including those without doc strings
     "inherited-members": False,    # Including inherited members
     "imported-members": False,     # Including imported classes (imports from the extension)
     "show-inheritance": False,    # Don't show base classes
-    'special-members': '',        # Dont show __init__() - this is covered in the class
     "member-order": "groupwise",  # Logical groups not alphabetical
-    'exclude-members': '__init__'
+    "exclude-members": "__init__"  # __init__ function documented in class header
 }
 
 autosummary_imported_members = False
@@ -202,12 +210,14 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+
+# -- Extension configuration -------------------------------------------------
 # add specific members to the undoc - we document __init__ in the class header
 def skip_members(app, what, name, obj, skip, options):
     exclusions = ('__init__',)
     exclude = name in exclusions
     return skip or exclude
     
-# -- Extension configuration -------------------------------------------------
+
 def setup(app): 
     app.connect('autodoc-skip-member', skip_members)

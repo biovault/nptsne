@@ -137,7 +137,7 @@ PYBIND11_MODULE(_nptsne, m) {
             bool: True if verbose logging is enabled. Set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne.verbose
             False
@@ -148,7 +148,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of target dimensions, set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne.num_target_dimensions
             2
@@ -171,7 +171,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The tsne perplexity, set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne.perplexity
             30
@@ -182,16 +182,16 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The iteration where attractive force exaggeration starts to decay, set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne.exaggeration_iter
             250
 
             Notes
             -----
-            The gradient of the cost function used to iteratively optimize the embedding points \:math\:\`y_i\`
-            is a sum of an attractive and repulsive force \:math\:\`\\frac{\\delta C} {\\delta y_i} = 4(\\phi * F_i ^{attr} - F_i ^{rep})\`
-            The iterations up to exaggeration_iter increase the \:math\:\`F_i ^{attr}\` term by the factor \:math\:\`\\phi\`
+            The gradient of the cost function used to iteratively optimize the embedding points :math:`y_i`
+            is a sum of an attractive and repulsive force :math:`\\frac{\\delta C} {\\delta y_i} = 4(\\phi * F_i ^{attr} - F_i ^{rep})`
+            The iterations up to exaggeration_iter increase the :math:`F_i ^{attr}` term by the factor :math:`\\phi`
             which then decays to 1.
                
         )pbdoc");
@@ -415,7 +415,7 @@ PYBIND11_MODULE(_nptsne, m) {
             bool: True if verbose logging is enabled. Set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne_extended.verbose
             False
@@ -426,7 +426,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of target dimensions, set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne_extended.num_target_dimensions
             2
@@ -438,7 +438,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of iterations, set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne_extended.knn_algorithm
             KnnAlgorithm.Flann
@@ -449,7 +449,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The tsne perplexity, set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne_extended.perplexity
             30
@@ -657,7 +657,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of scales in the HSne.
 
             Examples
-            -------
+            --------
 
             >>> sample_hsne.num_scales
             3
@@ -667,7 +667,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of data points in the HSne.
 
             Examples
-            -------
+            --------
 
             >>> sample_hsne.num_data_points
             10000
@@ -677,7 +677,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of dimensions associated with the original data.
 
             Examples
-            -------
+            --------
 
             >>> sample_hsne.num_dimensions
             16
@@ -729,7 +729,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of landmark points in this scale
 
             Examples
-            -------
+            --------
 
             >>> sample_scale0.num_points
             10000
@@ -749,7 +749,7 @@ PYBIND11_MODULE(_nptsne, m) {
             The weights per landmark in the scale.
 
             Examples
-            -------
+            --------
             The size of landmark weights should match the number of points
 
             >>> num_points = sample_scale2.num_points
@@ -784,7 +784,7 @@ PYBIND11_MODULE(_nptsne, m) {
             The transition (probability) matrix in this scale.
 
             Examples
-            -------
+            --------
             The size of landmark weights should match the number of points
 
             >>> num_points = sample_scale2.num_points
