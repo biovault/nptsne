@@ -12,10 +12,10 @@ def get_git_derived_build_number():
     is_appveyor = os.environ.get('APPVEYOR', 'false').lower() == 'true'
     if not is_ci:
         branch=repo.active_branch.name
-    else
+    else:
         if is_appveyor:
             branch = os.environ.get('APPVEYOR_REPO_BRANCH')
-        if is_travis
+        if is_travis:
             branch = os.environ.get('TRAVIS_BRANCH')
 
     commits = list(repo.iter_commits(branch, paths='./src/nptsne/_version.txt', max_count=1))
