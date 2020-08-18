@@ -56,11 +56,11 @@ jobs:
     install:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
+    before_script:
+    - git remote set-branches --add origin $TRAVIS_BRANCH
+    - git fetch origin $TRAVIS_BRANCH
     script: 
     - "set -e"
-    - "echo $TRAVIS_BUILD_DIR"
-    - "git remote set-branches --add origin $TRAVIS_BRANCH"
-    - "git fetch"
     - "ls -l $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
     - "git log $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
     - "cibuildwheel --output-dir wheelhouse"
