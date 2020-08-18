@@ -2,6 +2,9 @@ language: python
 python:
   - 3.7
 
+# see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
+# and https://stackoverflow.com/a/53409848/584201
+# This is one whay to get the git derived build number working (based on git log and rev-list)
 git:
   depth: false
   
@@ -27,10 +30,6 @@ _deploy_install: &_deploy_install
   - cd $HOME/twine
   - wget -r -np -nH --cut-dirs 5 -A '*.whl' http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
-
-#before_install:
-#  - git remote set-branches --add origin $TRAVIS_BRANCH
-#  - git fetch origin $TRAVIS_BRANCH
   
 branches: 
   only: 
@@ -50,7 +49,7 @@ env:
     - TWINE_PYPI_PASSWORD=$PYPI_PASSWORD_SECRET
     - TWINE_TESTPYPI_PASSWORD=$TESTPYPI_PASSWORD_SECRET
     - BUILD_LINUX=true
-    - BUILD_OSX=false
+    - BUILD_OSX=true
     
 jobs: 
   include: 
@@ -67,8 +66,6 @@ jobs:
 
     script: 
     - "set -e"
-    - "ls -l $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
-    - "git log $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
     - "cibuildwheel --output-dir wheelhouse"
     
     after_success:
