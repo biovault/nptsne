@@ -17,7 +17,7 @@ def get_git_derived_build_number():
             branch = os.environ.get('APPVEYOR_REPO_BRANCH')
         if is_travis:
             branch = os.environ.get('TRAVIS_BRANCH')
-
+    print('Derive number for branch: ', branch)
     commits = list(repo.iter_commits(branch, paths='./src/nptsne/_version.txt', max_count=1))
     return len(list(repo.iter_commits(rev='{}^..{}'.format(commits[0].hexsha, branch))))
 
