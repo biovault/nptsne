@@ -38,7 +38,7 @@ environment:
           CIBW_BUILD: "cp3*-win_amd64"
           CIBW_SKIP: "cp2* cp35-*"
           CIBW_BUILD_VERBOSITY: 3
-          CIBW_BEFORE_BUILD: "rd /s /q %TMP%\\cibwlibsdir & mkdir %TMP%\\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & call .\\.ci\\prepare_conan.sh & FOR /F %i IN ('python get_git_derived_build_number.py feature/cibuild ./src/nptsne/_version.txt') DO set GIT_DERIVED_BUILD_NUMBER=%i"
+          CIBW_BEFORE_BUILD: "rd /s /q %TMP%\\cibwlibsdir & mkdir %TMP%\\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & call .\\.ci\\prepare_conan.sh"
 
 init:
   - cmd: set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
