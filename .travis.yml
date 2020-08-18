@@ -58,6 +58,8 @@ jobs:
     - python3 -m pip install cibuildwheel>=1.5.2
     script: 
     - "set -e"
+    - "echo $TRAVIS_BUILD_DIR"
+    - "ls -l ."
     - "git log -n 1 --pretty=format:%H $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
     - "cibuildwheel --output-dir wheelhouse"
     after_success:
