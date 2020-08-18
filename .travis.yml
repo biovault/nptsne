@@ -25,6 +25,10 @@ _deploy_install: &_deploy_install
   - wget -r -np -nH --cut-dirs 5 -A '*.whl' http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
 
+before_install:
+  - git remote set-branches --add origin $TRAVIS_BRANCH
+  - git fetch origin $TRAVIS_BRANCH
+  
 branches: 
   only: 
     - /feature\/.*/
@@ -53,19 +57,20 @@ jobs:
     name: Build linux bdist wheels
     if: env(BUILD_LINUX) = true
     services: docker
+    
     install:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
-    before_script:
-    - git remote set-branches --add origin $TRAVIS_BRANCH
-    - git fetch origin $TRAVIS_BRANCH
+
     script: 
     - "set -e"
     - "ls -l $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
     - "git log $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
     - "cibuildwheel --output-dir wheelhouse"
+    
     after_success:
       *_wheelhouse_upload
+      
     env:
       - CONAN_GCC_VERSIONS=8 
       - CONAN_BUILD_TYPES=Release
