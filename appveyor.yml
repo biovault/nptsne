@@ -48,6 +48,7 @@ install:
   - set PYTHON_PATH=%Python3_ROOT_DIR% # Python3_ROOT_DIR is required to hint the CMake find_package Python3 
   - python --version
   - pip install cibuildwheel>=1.5.2
+  - pip install gitpython
 
 skip_commits:
     files:
