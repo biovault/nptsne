@@ -2,6 +2,9 @@ language: python
 python:
   - 3.7
 
+git:
+  depth: false
+  
 stages:
   # Testing is part of build- using the CIBW_TEST_COMMAND
   - build
@@ -25,9 +28,9 @@ _deploy_install: &_deploy_install
   - wget -r -np -nH --cut-dirs 5 -A '*.whl' http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
 
-before_install:
-  - git remote set-branches --add origin $TRAVIS_BRANCH
-  - git fetch origin $TRAVIS_BRANCH
+#before_install:
+#  - git remote set-branches --add origin $TRAVIS_BRANCH
+#  - git fetch origin $TRAVIS_BRANCH
   
 branches: 
   only: 
