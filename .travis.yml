@@ -61,7 +61,7 @@ jobs:
     - "echo $TRAVIS_BUILD_DIR"
     - "git checkout $TRAVIS_BRANCH"
     - "ls -l $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
-    - "git log -n 1 --pretty=format:%H -- $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
+    - "git log $TRAVIS_BUILD_DIR/src/nptsne/_version.txt"
     - "cibuildwheel --output-dir wheelhouse"
     after_success:
       *_wheelhouse_upload
