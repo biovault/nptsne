@@ -56,9 +56,9 @@ jobs:
     install:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
-    
     script: 
     - "set -e"
+    - ""
     - "cibuildwheel --output-dir wheelhouse"
     after_success:
       *_wheelhouse_upload
