@@ -24,7 +24,6 @@ environment:
         secure: ufFmk5mpUWD6RxByaYnTtQ==
     TWINE_TESTPYPI_PASSWORD: 
         secure: XXPgXJ36t6jmHJme3A5Tpw==
-    TWINE_REPSITORY_SWITCH: ""
     git_token:
         secure: QWv3xZwtKaenz3mj6q8vHKMKfSFvM2GghbNyPIqg0HAHKBJSxP2fKTsVDUaLuH+M    
     
@@ -42,7 +41,7 @@ environment:
           LIBSDIR: "%TMP%\\cibwlibsdir"
           CIBW_TEST_COMMAND: "python %APPVEYOR_BUILD_FOLDER%\\test\\run_doctest.py"
           CIBW_BUILD: "cp3*-win_amd64"
-          CIBW_SKIP: "cp2* cp35-*"
+          CIBW_SKIP: "cp2* cp37-*"
           CIBW_BUILD_VERBOSITY: 3
           CIBW_BEFORE_BUILD: "rd /s /q %TMP%\\cibwlibsdir & mkdir %TMP%\\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & call .\\.ci\\prepare_conan.sh"
 
@@ -89,20 +88,16 @@ on_success:
 artifacts:
   - path: "wheelhouse\\*.whl"
     name: Wheels
-    
-deploy:
-  - provider: Environment
-    name: deploy to testpypi
-    TWINE_REPSITORY_SWITCH: --repository testpypi
-    TWINE_PASSWORD: $TWINE_TESTPYPI_PASSWORD
-    on:
-      APPVEYOR_REPO_TAG: false
 
-  - provider:  Environment
-    name: deploy to pypi
-    on:
-      APPVEYOR_REPO_TAG: true
       
 deploy_script:
-  - python -m twine upload -u $TWINE_USER -p $TWINE_PASSWORD $TWINE_REPSITORY_SWITCH wheelhouse/*
+  ps: >-
+    if ($env:APPVEYOR_REPO_TAG -eq $true) {
+      Write-Output("Deploying to PyPI")
+      cmd /c 'twine upload -u $TWINE_USER -p $TWINE_PASSWORD --verbose wheelhouse/* 2>&1'
+    } else {
+      Write-Output("Deploying to PyPI-Test")
+      cmd /c 'twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --verbose --repository testpypi wheelhouse/* 2>&1'
+    }
+
     
