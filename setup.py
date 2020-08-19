@@ -8,6 +8,9 @@ def get_current_tag(repo):
 
 def get_repo_branch(repo):
     branch = ''
+    is_ci = os.environ.get('CI', 'false').lower() == 'true'
+    is_travis = os.environ.get('TRAVIS', 'false').lower() == 'true'
+    is_appveyor = os.environ.get('APPVEYOR', 'false').lower() == 'true'
     if not is_ci:
         branch=repo.active_branch.name
     else:
@@ -30,15 +33,16 @@ def get_version():
     with open('./src/nptsne/_version.txt') as f:
         raw_version = f.read().strip()
     
-    if tag.startswith('release')
+    if tag and tag.startswith('release'):
         return raw_version
     
-    build_number = get_git_derived_build_number(repo, branch)
+    branch = get_repo_branch(repo)
+    build_number = str(get_git_derived_build_number(repo, branch))
 
-    if branch.startswith('release')
+    if branch.startswith('release'):
         return raw_version + 'rc' + build_number
         
-    return raw_version + 'dev'+ build_number
+    return raw_version + '.dev'+ build_number
 
 templibdir = os.environ.get('LIBSDIR', '/tmp/cibwlibsdir')
 print("git derived version = {}".format(get_version()))
