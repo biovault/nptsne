@@ -19,6 +19,12 @@ environment:
     CONAN_REMOTE: lkebconan
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
     CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
+    TWINE_USER: bldrvnlw
+    TWINE_PASSWORD: 
+        secure: ufFmk5mpUWD6RxByaYnTtQ==
+    TWINE_TESTPYPI_PASSWORD: 
+        secure: XXPgXJ36t6jmHJme3A5Tpw==
+    TWINE_REPSITORY_SWITCH: ""
     git_token:
         secure: QWv3xZwtKaenz3mj6q8vHKMKfSFvM2GghbNyPIqg0HAHKBJSxP2fKTsVDUaLuH+M    
     
@@ -49,6 +55,7 @@ install:
   - python --version
   - pip install cibuildwheel>=1.5.2
   - pip install gitpython
+  - pip install twine
 
 skip_commits:
     files:
@@ -71,14 +78,6 @@ before_build:
 build_script:
   - python setup.py sdist -d wheelhouse --formats=gztar
   - python -m cibuildwheel --output-dir wheelhouse
-  # DOCUMENTATION BUILDING
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (echo Generate documentation on Read the Docs)
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global credential.helper store) 
-  - ps: if (Test-Path env:USE_FOR_DOC_GENERATION) {Add-Content "$HOME\.git-credentials" "https://$($env:git_token):x-oauth-basic@github.com`n"}
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global user.email "%APPVEYOR_REPO_COMMIT_AUTHOR_EMAIL%")
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (git config --global user.name "%APPVEYOR_REPO_COMMIT_AUTHOR%")
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target extract_module_docstring --config Release)
-  - if "%USE_FOR_DOC_GENERATION%" == "True" (cmake --build . --target commit_doc --config Release)
   # - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
 
   - cmake -D WHEEL_GLOB=wheelhouse\nptsne*.whl -D BUILD_NUMBER=$APPVEYOR_BUILD_NUMBER -P %APPVEYOR_BUILD_FOLDER%\cmake\UploadWheel.cmake
@@ -88,5 +87,22 @@ on_success:
 
 
 artifacts:
-  - path: "wheelhouse\\*"
+  - path: "wheelhouse\\*.whl"
     name: Wheels
+    
+deploy:
+  - provider: Environment
+    name: deploy to testpypi
+    TWINE_REPSITORY_SWITCH: --repository testpypi
+    TWINE_PASSWORD: $TWINE_TESTPYPI_PASSWORD
+    on:
+      APPVEYOR_REPO_TAG: false
+
+  - provider:  Environment
+    name: deploy to pypi
+    on:
+      APPVEYOR_REPO_TAG: true
+      
+deploy_script:
+  - python -m twine upload -u $TWINE_USER -p $TWINE_PASSWORD TWINE_REPSITORY_SWITCH wheelhouse/*
+    
