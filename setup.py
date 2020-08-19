@@ -25,7 +25,7 @@ def get_git_derived_build_number():
 def get_version():
     with open('./src/nptsne/_version.txt') as f:
         raw_version = f.read()
-    return raw_version + '-' + get_git_derived_build_number()
+    return raw_version + '-' + str(get_git_derived_build_number())
     
     
 templibdir = os.environ.get('LIBSDIR', '/tmp/cibwlibsdir')
