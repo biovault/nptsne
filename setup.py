@@ -22,10 +22,18 @@ def get_git_derived_build_number():
     print('Derive number for commit (of _version.txt): ', commits[0].hexsha)
     return len(list(repo.iter_commits(rev='{}^..{}'.format(commits[0].hexsha, branch))))
 
+def get_version():
+    with open('./src/nptsne/_version.txt') as f:
+        raw_version = f.read()
+    return raw_version + '-' + get_git_derived_build_number()
+    
+    
 templibdir = os.environ.get('LIBSDIR', '/tmp/cibwlibsdir')
 print("GIT_DERIVED_BUILD_NUMBER = {}".format(get_git_derived_build_number()))
  
 setup(
+    # Always append the build number for tracking purposes - this fits with PEP427
+    version=get_version(),
     ext_modules=[CMakeExtension('_nptsne', 'nptsne', templibdir=templibdir)],  # provide the extension name and package_name
     cmdclass=dict(build_ext=CMakeBuild),
 )
