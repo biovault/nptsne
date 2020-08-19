@@ -104,5 +104,5 @@ deploy:
       APPVEYOR_REPO_TAG: true
       
 deploy_script:
-  - python -m twine upload -u $TWINE_USER -p $TWINE_PASSWORD TWINE_REPSITORY_SWITCH wheelhouse/*
+  - python -m twine upload -u $TWINE_USER -p $TWINE_PASSWORD $TWINE_REPSITORY_SWITCH wheelhouse/*
     
