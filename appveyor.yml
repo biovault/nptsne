@@ -40,7 +40,7 @@ environment:
           USE_FOR_DOC_GENERATION: False
           LIBSDIR: "%TMP%\\cibwlibsdir"
           CIBW_TEST_COMMAND: "python %APPVEYOR_BUILD_FOLDER%\\test\\run_doctest.py"
-          CIBW_BUILD: "cp37-win_amd64"
+          CIBW_BUILD: "cp3*-win_amd64"
           CIBW_SKIP: "cp2* cp35-*"
           CIBW_BUILD_VERBOSITY: 3
           CIBW_BEFORE_BUILD: "rd /s /q %TMP%\\cibwlibsdir & mkdir %TMP%\\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & call .\\.ci\\prepare_conan.sh"
@@ -100,4 +100,3 @@ deploy_script:
       cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_TESTPYPI_PASSWORD% --verbose --repository testpypi wheelhouse/* 2>&1'
     }
 
-    

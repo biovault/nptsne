@@ -4,7 +4,7 @@ python:
 
 # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
 # and https://stackoverflow.com/a/53409848/584201
-# This is one whay to get the git derived build number working (based on git log and rev-list)
+# A full checkout allows the git derived build number to work working (based on git log and rev-list)
 git:
   depth: false
   
@@ -83,7 +83,7 @@ jobs:
       - LIBCXX=libstdc++ 
       - LIBSDIR=/tmp/cibwlibsdir
       - CIBW_SKIP="cp2* cp35-* pp*"
-      - CIBW_BUILD=cp37-manylinux_x86_64
+      - CIBW_BUILD=cp3*-manylinux_x86_64
       - CIBW_BUILD_VERBOSITY=3
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH"
       # The following run in the container context (building manylinux)
