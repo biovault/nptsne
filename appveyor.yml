@@ -19,7 +19,7 @@ environment:
     CONAN_REMOTE: lkebconan
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
     CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
-    TWINE_USER: bldrvnlw
+    TWINE_USER: "bldrvnlw"
     TWINE_PASSWORD: 
         secure: ufFmk5mpUWD6RxByaYnTtQ==
     TWINE_TESTPYPI_PASSWORD: 
@@ -94,10 +94,10 @@ deploy_script:
   ps: >-
     if ($env:APPVEYOR_REPO_TAG -eq $true) {
       Write-Output("Deploying to PyPI")
-      cmd /c 'twine upload -u $TWINE_USER -p $TWINE_PASSWORD --verbose wheelhouse/* 2>&1'
+      cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_PASSWORD% --verbose wheelhouse/* 2>&1'
     } else {
       Write-Output("Deploying to PyPI-Test")
-      cmd /c 'twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --verbose --repository testpypi wheelhouse/* 2>&1'
+      cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_TESTPYPI_PASSWORD% --verbose --repository testpypi wheelhouse/* 2>&1'
     }
 
     
