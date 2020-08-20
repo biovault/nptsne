@@ -52,7 +52,7 @@ env:
     - TWINE_TESTPYPI_PASSWORD=$TESTPYPI_PASSWORD_SECRET
     - READTHEDOCS_TOKEN=$READTHEDOCS_TOKEN_SECRET
     - BUILD_LINUX=true
-    - BUILD_OSX=true
+    - BUILD_OSX=false
     
 jobs: 
   include: 
@@ -141,4 +141,4 @@ jobs:
   - stage: readthedocs
     script:
       - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
-      - curl -X POST -H "Authorization Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/bldrvnlw/versions/$SLUG/builds/
+      - curl -d -X POST -H "Authorization Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/bldrvnlw/versions/$SLUG/builds/
