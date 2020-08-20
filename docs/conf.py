@@ -23,6 +23,7 @@ author = 'Baldur van Lew'
 import os
 import sys
 import subprocess
+# Whether the build is running inside RTD
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
 # Running setup.py with --version returns the extracted version
@@ -30,9 +31,11 @@ __version__ = subprocess.check_output([sys.executable, os.path.abspath(os.path.j
 
 if on_rtd:
     # Install a version of nptsne to extract the docstrings
+    # READTHEDOCS_VERSION : The RTD name of the version which is being built
     rtd_version = os.environ.get('READTHEDOCS_VERSION')
 
     # stable represents a tagged version - will be on PyPi
+    # non-stable on test.pypi
     if rtd_version == 'stable':
         branch = None
         try:

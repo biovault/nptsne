@@ -17,6 +17,8 @@ stages:
   # Untagged builds are for test in TestPyPI
   - name: deploy to testpypi
     if: (tag IS not present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    
+  - readthedocs
 
 # yaml anchor for upload to artifactory wheels dir 
 _wheelhouse_upload: &_wheelhouse_upload
@@ -48,6 +50,7 @@ env:
     - TWINE_USER=bldrvnlw
     - TWINE_PYPI_PASSWORD=$PYPI_PASSWORD_SECRET
     - TWINE_TESTPYPI_PASSWORD=$TESTPYPI_PASSWORD_SECRET
+    - READTHEDOCS_TOKEN=$READTHEDOCS_TOKEN_SECRET
     - BUILD_LINUX=true
     - BUILD_OSX=true
     
@@ -135,3 +138,6 @@ jobs:
     script:
       - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD $HOME/twine/*.whl
 
+  - stage: readthedocs
+    script:
+      - url -X POST -d "branches=$TRAVIS_BRANCH" -d "token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
