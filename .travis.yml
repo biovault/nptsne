@@ -141,4 +141,4 @@ jobs:
   - stage: readthedocs
     script:
       - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
-      - curl -d -X POST -H "Authorization Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/bldrvnlw/versions/$SLUG/builds/
+      - curl -d -X POST -H "Authorization: Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/bldrvnlw/versions/$SLUG/builds/
