@@ -140,4 +140,5 @@ jobs:
 
   - stage: readthedocs
     script:
-      - url -X POST -d "branches=$TRAVIS_BRANCH" -d "token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
+      - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
+      - curl -X POST -H "Authorization Token $READTHEDOCS_TOKEN" https://readthedocs.org/api/v3/projects/bldrvnlw/versions/$SLUG/builds/
