@@ -36,9 +36,11 @@ def get_version():
     from git import Repo
     from pathlib import Path
     parent = Path(__file__).resolve().parent
+    print('repo dir: ', parent)
     repo = Repo(parent)
     tag = get_current_tag(repo)
-    version_file = Path(parent, './src/nptsne/_version.txt')
+    version_file = Path(parent, '/', 'src/nptsne/_version.txt')
+    print('version file: ', version_file)
     with open(version_file) as f:
         raw_version = f.read().strip()
     
