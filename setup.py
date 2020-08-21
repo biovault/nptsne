@@ -28,7 +28,8 @@ def get_git_derived_build_number(repo, branch):
 
 def get_version():
     from git import Repo
-    repo = Repo('.')
+    from pathlib import Path
+    repo = Repo(Path(__file__).resolve().parent)
     tag = get_current_tag(repo)
     with open('./src/nptsne/_version.txt') as f:
         raw_version = f.read().strip()
