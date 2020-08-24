@@ -30,9 +30,12 @@ on_rtd = os.environ.get('READTHEDOCS') == 'True'
 __version__ = subprocess.check_output([sys.executable, os.path.abspath(os.path.join('..', 'setup.py')), '--version']).decode('ascii').strip()
 
 if on_rtd:
+    # Manually triggering a RTD build
+    # curl -X POST -d "branches=$GIT_BRANCH" -d "token=$AUTH_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
     # Install a version of nptsne to extract the docstrings
     # READTHEDOCS_VERSION : The RTD name of the version which is being built
     rtd_version = os.environ.get('READTHEDOCS_VERSION')
+    print("In ReadTheDocs")
 
     # stable represents a tagged version - will be on PyPi
     # non-stable on test.pypi
