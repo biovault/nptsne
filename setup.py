@@ -6,13 +6,22 @@ import os
 def get_current_tag(repo):
     return next((tag for tag in repo.tags if tag.commit == repo.head.commit), None)
 
+def get_branch_via_commit(repo):
+    #  Should handle detached head
+    c = list(repo.iter_commits())[0]
+    branch_name = None
+    for b in repo.branches:
+        if b..commit.hexsha == c.hexsha:
+            branch_name = b.name
+    return branch_name
+    
 def get_repo_branch(repo):
     branch = ''
     is_ci = os.environ.get('CI', 'false').lower() == 'true'
     is_travis = os.environ.get('TRAVIS', 'false').lower() == 'true'
     is_appveyor = os.environ.get('APPVEYOR', 'false').lower() == 'true'
     if not is_ci:
-        branch=repo.active_branch.name
+        branch=get_branch_via_commit(repo)
     else:
         if is_appveyor:
             branch = os.environ.get('APPVEYOR_REPO_BRANCH')
@@ -38,6 +47,7 @@ def get_version():
     parent = Path(__file__).resolve().parent
     print('repo dir: ', parent)
     repo = Repo(parent)
+    commit = list(repo.iter_commits())[0].hexsha
     tag = get_current_tag(repo)
     version_file = Path(parent, './', 'src/nptsne/_version.txt')
     print('version file: ', version_file)
