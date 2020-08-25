@@ -10,9 +10,9 @@ def get_branch_via_commit(repo):
     #  Should handle detached head
     c = list(repo.iter_commits())[0]
     branch_name = None
-    for b in repo.branches:
-        if b.commit.hexsha == c.hexsha:
-            branch_name = b.name
+    for r in repo.refs:
+        if r._get_commit().hexsha == c.hexsha:
+            branch_name = r.remote_head
     return branch_name
     
 def get_repo_branch(repo):
