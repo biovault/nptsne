@@ -63,11 +63,10 @@ def get_version():
     branch = get_repo_branch(repo)
     if branch.startswith('release'):
         return raw_version + 'rc' + build_number
-        
+
     return raw_version + '.dev'+ build_number
 
 templibdir = os.environ.get('LIBSDIR', '/tmp/cibwlibsdir')
-print("git derived version = {}".format(get_version()))
  
 setup(
     # Always append the build number for tracking purposes - this fits with PEP427
