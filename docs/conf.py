@@ -46,7 +46,7 @@ if on_rtd:
         except subprocess.CalledProcessError:
             branch = 'stable'
     else:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', '--only-binary', '--platform', 'manylinux2010_x86_64', '--index-url', 'https://test.pypi.org/simple' 'nptsne=={}'.format(__version__)])
+        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', '--no-deps', '--index-url', 'https://test.pypi.org/simple' 'nptsne=={}'.format(__version__)])
 else:
     sys.path.insert(0, os.path.abspath(os.path.join('..', 'installed')))
 
