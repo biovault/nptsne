@@ -190,8 +190,8 @@ PYBIND11_MODULE(_nptsne, m) {
             Notes
             -----
             The gradient of the cost function used to iteratively optimize the embedding points :math:`y_i`
-            is a sum of an attractive and repulsive force :math:`\\frac{\\delta C} {\\delta y_i} = 4(\\phi * F_i ^{attr} - F_i ^{rep})`
-            The iterations up to exaggeration_iter increase the :math:`F_i ^{attr}` term by the factor :math:`\\phi`
+            is a sum of an attractive and repulsive force :math:`\frac{\delta C} {\delta y_i} = 4(\phi * F_i ^{attr} - F_i ^{rep})`
+            The iterations up to exaggeration_iter increase the :math:`F_i ^{attr}` term by the factor :math:`\phi`
             which then decays to 1.
                
         )pbdoc");

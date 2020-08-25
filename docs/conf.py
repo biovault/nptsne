@@ -42,7 +42,7 @@ if on_rtd:
     if rtd_version == 'stable':
         branch = None
         try:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', 'nptsne=={}'.format(setup_py_version)])
+            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', 'nptsne=={}'.format(__version__)])
         except subprocess.CalledProcessError:
             branch = 'stable'
     else:
