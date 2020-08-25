@@ -38,19 +38,19 @@ def get_git_derived_build_number(repo, commit_path):
     """
     that_commit = list(repo.iter_commits(None, paths=commit_path, max_count=1))[0].hexsha
     this_commit = list(repo.iter_commits())[0].hexsha
-    print('Derive number for commit (of _version.txt): ', that_commit)
+    # print('Derive number for commit (of _version.txt): ', that_commit)
     return len(list(repo.iter_commits(rev='{}^..{}'.format(that_commit, this_commit))))
 
 def get_version():
     from git import Repo
     from pathlib import Path
     parent = Path(__file__).resolve().parent
-    print('repo dir: ', parent)
+    # print('repo dir: ', parent)
     repo = Repo(parent)
     # commit = list(repo.iter_commits())[0].hexsha
     tag = get_current_tag(repo)
     version_file = Path(parent, './', 'src/nptsne/_version.txt')
-    print('version file: ', version_file)
+    # print('version file: ', version_file)
     with open(version_file) as f:
         raw_version = f.read().strip()
     
