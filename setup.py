@@ -29,17 +29,17 @@ def get_repo_branch(repo):
             branch = os.environ.get('TRAVIS_BRANCH')
     return branch
 
-def get_git_derived_build_number(repo, branch, commit_path):
+def get_git_derived_build_number(repo, commit_path):
     """
         Get a build number counting from the last commit of a specified file.
         If that file is the version stamp then this counts the number of commits
         the last version change - a good enough approximation to a CI independent
         build number.
     """
-    print('Derive number for branch: ', branch)
-    commits = list(repo.iter_commits(branch, paths=commit_path, max_count=1))
-    print('Derive number for commit (of _version.txt): ', commits[0].hexsha)
-    return len(list(repo.iter_commits(rev='{}^..{}'.format(commits[0].hexsha, branch))))
+    that_commit = list(repo.iter_commits(None, paths=commit_path, max_count=1))[0].hexsha
+    this_commit = list(repo.iter_commits())[0].hexsha
+    print('Derive number for commit (of _version.txt): ', that_commit)
+    return len(list(repo.iter_commits(rev='{}^..{}'.format(that_commit, this_commit))))
 
 def get_version():
     from git import Repo
@@ -47,7 +47,7 @@ def get_version():
     parent = Path(__file__).resolve().parent
     print('repo dir: ', parent)
     repo = Repo(parent)
-    commit = list(repo.iter_commits())[0].hexsha
+    # commit = list(repo.iter_commits())[0].hexsha
     tag = get_current_tag(repo)
     version_file = Path(parent, './', 'src/nptsne/_version.txt')
     print('version file: ', version_file)
@@ -57,9 +57,10 @@ def get_version():
     if tag and tag.startswith('release'):
         return raw_version
     
-    branch = get_repo_branch(repo)
-    build_number = str(get_git_derived_build_number(repo, branch, version_file))
+    #
+    build_number = str(get_git_derived_build_number(repo, version_file))
 
+    branch = get_repo_branch(repo)
     if branch.startswith('release'):
         return raw_version + 'rc' + build_number
         
