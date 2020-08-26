@@ -18,8 +18,12 @@ stages:
   - name: deploy to testpypi
     if: (tag IS not present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
     
-  - readthedocs
-
+  - name: readthedocs_pypi
+    if: (tag IS present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    
+  - name: readthedocs_testpypi
+    if: (tag IS not present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+  
 # yaml anchor for upload to artifactory wheels dir 
 _wheelhouse_upload: &_wheelhouse_upload
   - echo "Check wheelhouse"
@@ -138,7 +142,18 @@ jobs:
     script:
       - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD $HOME/twine/*.whl
 
-  - stage: readthedocs
+  - stage: readthedocs_testpypi
     script:
+      - export VERSION=`python setup.py --version`
+      - echo Check version $VERSION is on testpypi
+      - python -c "from cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
+      - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
+      - curl -X POST -d "branches=$TRAVIS_BRANCH" -d"token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
+
+  - stage: readthedocs_pypi
+    script:
+      - export VERSION=`python setup.py --version`
+      - echo Check version $VERSION is on testpypi
+      - python -c "from cmake_utils import search_for_version; search_for_version('$VERSION', 3, False)"
       - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
       - curl -X POST -d "branches=$TRAVIS_BRANCH" -d"token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/

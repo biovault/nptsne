@@ -2,6 +2,7 @@
 # Wraps cmake for cmake based build projects (handy for pybind11 wrapping cpp)
 
 import glob
+import json
 import os
 import pathlib
 import platform
@@ -9,7 +10,9 @@ import re
 import shutil
 import sys
 import tempfile
+import time
 import subprocess
+import urllib, urllib.request
 
 from setuptools import Extension
 from setuptools.command.build_ext import build_ext
@@ -108,4 +111,23 @@ class CMakeBuild(build_ext):
         print("Files in temp libs dir: ", os.listdir(ext.templibdir)) 
         print("LD_LIBRARY_PATH: ", os.environ.get('LD_LIBRARY_PATH', ''))
         
-
+def versions(package_name, testpypi=False):
+    url = "https://test.pypi.org/pypi/{}/json".format(package_name,)
+    if testpypi:
+        url = "https://test.pypi.org/pypi/{}/json".format(package_name,)
+    data = json.load(urllib.request.urlopen(url))
+    versions = list(data["releases"].keys())
+    return versions
+    
+def search_for_version(version, number_of_waits, testpypi=False):
+    wait_delay = 2
+    result = False
+    for i in range(number_of_waits):
+        if version in versions('nptsne', testpypi):
+            print('Found')
+            exit(0)
+            break
+        wait_delay = 2 * wait_delay
+        time.sleep(wait_delay)
+    print('Not found')
+    exit(1)

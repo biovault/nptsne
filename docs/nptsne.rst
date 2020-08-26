@@ -9,20 +9,20 @@ Module summary
 API Reference
 =============
 
+The main API classes are:
+
 t-SNE classes
    * TextureTsne : linear tSNE simple API
-
    * TextureTsneExtended : linear tSNE advanced API wrapper with additional functionality
 
 HSNE classes
    * HSne: Hierarchical-SNE model builder
-
    * HSneScale: Wrapper for a scale in the HSNE model
 
-   
+Full details are in the reference below.
+
 ``nptsne``: t-SNE and HSNE data embedding
 ==========================================
-
 
 .. autosummary::
    :nosignatures:
