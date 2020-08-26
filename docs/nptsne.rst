@@ -6,13 +6,8 @@ Module summary
 **************
 
 
-nptsne - Numpy compatible tSNE
-==============================
-
-A numpy compatible python extension for GPGPU linear complexity t-SNE and HSNE
-
-This package contains classes that wrap linear complexity *t-SNE*
-and classes to support *HSNE*.
+API Reference
+=============
 
 t-SNE classes
    * TextureTsne : linear tSNE simple API
@@ -23,26 +18,6 @@ HSNE classes
    * HSne: Hierarchical-SNE model builder
 
    * HSneScale: Wrapper for a scale in the HSNE model
-
-
-Available subpackages
----------------------
-
-hsne_analysis
-   Provides classes for selection driven navigation of the HSNE model and mapping back
-   to the original data. The classes are indended to support visual analytics
-
-.. note:: Numpy compatibility: 
-   ``ndarray`` types are the preferred parameters types for input
-   and where possible internal data in the wrapped t-SNE and HSNE is returned without
-   a copy in a ``ndarray``.
-
-
-References
-----------
-
-   * `Linear complexity t-SNE  <https://doi.org/10.1109/TVCG.2019.2934307>`_ or (`Linear complexity t-SNE (Preprint) <https://arxiv.org/abs/1805.10817v2>`_)
-   * `Hierarchical SNE <https://doi.org/10.1111/cgf.12878>`_
 
    
 ``nptsne``: t-SNE and HSNE data embedding
