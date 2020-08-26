@@ -11,8 +11,8 @@ def get_branch_via_commit(repo):
     c = list(repo.iter_commits())[0]
     branch_name = None
     for r in repo.refs:
-        if r._get_commit().hexsha == c.hexsha:
-            branch_name = r.remote_head
+        if r.object.hexsha == c.hexsha:
+            branch_name = str(r)
     return branch_name
     
 def get_repo_branch(repo):

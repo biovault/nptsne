@@ -20,7 +20,7 @@ namespace py = pybind11;
 PYBIND11_MODULE(_nptsne, m) {
     m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended", "HSne", "HSneScale", "_hsne_analysis");
     m.doc() = R"pbdoc(
-        A numpy compatible python extension for GPGPU linear complexity tSNE and hSNE
+        A numpy compatible python extension for GPGPU linear complexity tSNE and HSNE
         -----------------------------------------------------------------------------
     )pbdoc";
 
@@ -88,7 +88,10 @@ PYBIND11_MODULE(_nptsne, m) {
 
             References
             ----------
-            .. [1] `GPGPU Linear Complexity t-SNE Optimization <https://doi.org/10.1109/TVCG.2019.2934307>`_
+            .. [1] Pezzotti, N., Thijssen, J., Mordvintsev, A., Höllt, T., Van Lew, B., 
+                Lelieveldt, B.P.F., Eisemann, E., Vilanova, A. 
+                `GPGPU Linear Complexity t-SNE Optimization <https://doi.org/10.1109/TVCG.2019.2934307>`_
+                IEEE Transactions on Visualization and Computer Graphics 26, 1172–1181
 
         )pbdoc");
 
@@ -160,7 +163,7 @@ PYBIND11_MODULE(_nptsne, m) {
             int: The number of iterations, set at initialization.
 
             Examples
-            -------
+            --------
 
             >>> sample_texture_tsne.iterations
             1000
@@ -244,7 +247,10 @@ PYBIND11_MODULE(_nptsne, m) {
 
             References
             ----------
-            .. [1] `GPGPU Linear Complexity t-SNE Optimization <https://doi.org/10.1109/TVCG.2019.2934307>`_
+            .. [1] Pezzotti, N., Thijssen, J., Mordvintsev, A., Höllt, T., Van Lew, B., 
+                Lelieveldt, B.P.F., Eisemann, E., Vilanova, A. 
+                `GPGPU Linear Complexity t-SNE Optimization <https://doi.org/10.1109/TVCG.2019.2934307>`_
+                IEEE Transactions on Visualization and Computer Graphics 26, 1172–1181
 
         )pbdoc");
 
