@@ -79,7 +79,7 @@ extensions = [
     'sphinx.ext.githubpages', 
     'sphinx.ext.extlinks',
     'numpydoc',
-#    'sphinx_rtd_theme',
+    'sphinx_rtd_theme',
 #    'sphinx.ext.napoleon',
 ]
 
