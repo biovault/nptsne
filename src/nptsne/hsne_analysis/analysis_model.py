@@ -4,16 +4,16 @@ import numpy as np
 class AnalysisContainer:
     """ A dict of dicts to store analyses
 
-        Parameters
-        ----------
-        top_analysis: :class:`Analysis`
-            The Analysis at the highest scale level containing all landmarks
-            
-        Notes
-        -----
-        The outer dict represents the scales and
-        the inner dicts at scale level are indexed by the unique
-        self-generated Analysis ids.
+    Parameters
+    ----------
+    top_analysis: :class:`Analysis`
+        The Analysis at the highest scale level containing all landmarks
+        
+    Notes
+    -----
+    The outer dict represents the scales and
+    the inner dicts at scale level are indexed by the unique
+    self-generated Analysis ids.
     """
 
     def __init__(self, top_analysis):
@@ -94,38 +94,39 @@ class AnalysisContainer:
 class AnalysisModel:
      """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
 
-        Parameters
-        ----------
-        hsne : HSne 
-            The python HSne wrapper class
-        embedder_type : :class:`hsne_analysis.EmbedderType`
-            The embedder to be used when creating a new analysis CPU or GPU
-            
-        Examples
-        --------
-        Initialize a model using loaded :class:`HSne` data. 
+    Parameters
+    ----------
+    hsne : HSne 
+        The python HSne wrapper class
+    embedder_type : :class:`hsne_analysis.EmbedderType`
+        The embedder to be used when creating a new analysis CPU or GPU
         
-        >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
-        >>> model.top_scale_id
-        2
-        
-        Attributes
-        ----------
-        top_analysis
-        analysis_container
-        bottom_scale_id
-        top_scale_id
-        
-        See Also
-        --------
-        hsne_analysis.Analysis
-        hsne_analysis.EmbedderType.CPU
+    Examples
+    --------
+    Initialize a model using loaded :class:`HSne` data. 
 
-        Notes
-        -----
-        The hsne_analysis.AnalysisModel contains the user driven selections 
-        when exploring an HSNE hierarchy. The AnalysisModel is created
-        with a top level default hsne_analysis.Analysis containing all top level landmarks.."""
+    >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+    >>> model.top_scale_id
+    2
+
+    Attributes
+    ----------
+    top_analysis
+    analysis_container
+    bottom_scale_id
+    top_scale_id
+
+    See Also
+    --------
+    hsne_analysis.Analysis
+    hsne_analysis.EmbedderType.CPU
+
+    Notes
+    -----
+    The hsne_analysis.AnalysisModel contains the user driven selections 
+    when exploring an HSNE hierarchy. The AnalysisModel is created
+    with a top level default hsne_analysis.Analysis containing all top level landmarks.
+    """
     
     def __init__(self, hsne, embedder_type):
         self.hsne = hsne
@@ -143,17 +144,17 @@ class AnalysisModel:
     
     @property
     def top_analysis(self) -> Analysis:
-         """hsne_analysis.Analysis: The top level analysis
-        
-            Examples
-            --------
-            Retrieve the top level analysis containing all points at the top level. 
-            
-            >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
-            >>> analysis = model.top_analysis
-            >>> analysis.scale_id
-            2
-            """
+        """hsne_analysis.Analysis: The top level analysis
+
+        Examples
+        --------
+        Retrieve the top level analysis containing all points at the top level. 
+
+        >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> analysis = model.top_analysis
+        >>> analysis.scale_id
+        2
+        """
         return self._analysis_container.get_analysis(self.top_analysis_id)
         
     def _initialize_top_level(self):
@@ -165,51 +166,51 @@ class AnalysisModel:
         self._analysis_container = AnalysisContainer(topAnalysis)
         
     def add_new_analysis(self, parent, parent_selection):
-         """Add a new analysis based on a selection in a parent analysis
-        
-            Parameters
-            ----------
-            parent: Analysis
-                The parent analysis
-            
-            parent_selection: ndarray<np.uint32>
-                The selection indices in the parent analysis
-                
-            Examples
-            --------
-            Make a child analysis by selecting half of the points in the top analysis.
-            The analysis is created at the next scale down is a child of the top level
-            and contains an embedding of the right shape.
-            
-            >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
-            >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
-            >>> analysis = model.add_new_analysis(model.top_analysis, sel)
-            >>> analysis.scale_id
-            1
-            >>> analysis.parent_id == model.top_analysis.id
-            True
-            >>> analysis.embedding.shape == (analysis.number_of_points, 2)
-            True
-            """
+        """Add a new analysis based on a selection in a parent analysis
+
+        Parameters
+        ----------
+        parent: Analysis
+           The parent analysis
+
+        parent_selection: ndarray<np.uint32>
+           The selection indices in the parent analysis
+           
+        Examples
+        --------
+        Make a child analysis by selecting half of the points in the top analysis.
+        The analysis is created at the next scale down is a child of the top level
+        and contains an embedding of the right shape.
+
+        >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
+        >>> analysis = model.add_new_analysis(model.top_analysis, sel)
+        >>> analysis.scale_id
+        1
+        >>> analysis.parent_id == model.top_analysis.id
+        True
+        >>> analysis.embedding.shape == (analysis.number_of_points, 2)
+        True
+        """
 
         analysis = Analysis(self.hsne, self.embedder_type, parent, parent_selection)
         self._analysis_container.add_analysis(analysis)
         return analysis
         
     def get_analysis(self, id):
-         """Get the `Analysis` for the given id 
-            
-            Parameters
-            ----------
-            id: int
-                An Analysis id
-                
-            Examples
-            --------
-            >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
-            >>> id = model.top_analysis.id
-            >>> str(model.top_analysis) == str(model.get_analysis(id))
-            True
+        """Get the `Analysis` for the given id 
+
+        Parameters
+        ----------
+        id: int
+           An Analysis id
+           
+        Examples
+        --------
+        >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> id = model.top_analysis.id
+        >>> str(model.top_analysis) == str(model.get_analysis(id))
+        True
         """
 
         return self._analysis_container.get_analysis(id)
@@ -222,17 +223,20 @@ class AnalysisModel:
         return self._analysis_container
     
     def remove_analysis(self, id):
-         """Remove the analysis and all children
-            return: list of deleted ids
-            
-            Examples
-            --------
-            >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
-            >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
-            >>> analysis = model.add_new_analysis(model.top_analysis, sel)
-            >>> id = analysis.id
-            >>> a_list = model.remove_analysis(analysis.id)
-            >>> a_list == [id]
+        """Remove the analysis and all children
+        Returns
+        -------
+        list
+            list of deleted ids
+
+        Examples
+        --------
+        >>> model = hsne_analysis.AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
+        >>> analysis = model.add_new_analysis(model.top_analysis, sel)
+        >>> id = analysis.id
+        >>> a_list = model.remove_analysis(analysis.id)
+        >>> a_list == [id]
         """
         return self._analysis_container.remove_analysis(id)
         
