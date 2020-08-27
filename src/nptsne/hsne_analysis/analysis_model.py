@@ -92,7 +92,7 @@ class AnalysisContainer:
         return result        
     
 class AnalysisModel:
-    """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
+     """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
 
         Parameters
         ----------
@@ -143,7 +143,7 @@ class AnalysisModel:
     
     @property
     def top_analysis(self) -> Analysis:
-        """hsne_analysis.Analysis: The top level analysis
+         """hsne_analysis.Analysis: The top level analysis
         
             Examples
             --------
@@ -165,7 +165,7 @@ class AnalysisModel:
         self._analysis_container = AnalysisContainer(topAnalysis)
         
     def add_new_analysis(self, parent, parent_selection):
-        """Add a new analysis based on a selection in a parent analysis
+         """Add a new analysis based on a selection in a parent analysis
         
             Parameters
             ----------
@@ -197,7 +197,7 @@ class AnalysisModel:
         return analysis
         
     def get_analysis(self, id):
-        """Get the `Analysis` for the given id 
+         """Get the `Analysis` for the given id 
             
             Parameters
             ----------
@@ -222,7 +222,7 @@ class AnalysisModel:
         return self._analysis_container
     
     def remove_analysis(self, id):
-        """Remove the analysis and all children
+         """Remove the analysis and all children
             return: list of deleted ids
             
             Examples

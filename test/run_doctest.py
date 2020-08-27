@@ -4,6 +4,7 @@ from doctest import REPORT_NDIFF, ELLIPSIS
 from doctest import DocTestRunner
 import numpy as np
 import nptsne
+import nptsne.hsne_analysis
 import nptsne.libs._nptsne
 import os
 
@@ -62,12 +63,13 @@ def make_test_globals():
 if __name__ == "__main__":
     print("Starting doctest", flush=True)
     failures_nptsne, tests_nptsne = doctest.testmod(nptsne, verbose=True)
+    failures_hsne_analysis, tests_hsne_analysis = doctest.testmod(nptsne.hsne_analysis, verbose=True)
     # Must explicitly test the extension library
     failures_nptsne_ex, tests_nptsne_ex = doctest.testmod(nptsne.libs._nptsne,
                     verbose=True,
                     optionflags=REPORT_NDIFF | ELLIPSIS,
                     globs=make_test_globals())
-    total_failures =  failures_nptsne + failures_nptsne_ex 
+    total_failures =  failures_nptsne + failures_hsne_analysis + failures_nptsne_ex 
     if glob_total_skipped:
         print(f"{glob_total_skipped} tests were skipped in the CI environment.")
     if total_failures:
