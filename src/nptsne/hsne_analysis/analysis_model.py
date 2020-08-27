@@ -92,7 +92,7 @@ class AnalysisContainer:
         return result        
     
 class AnalysisModel:
-     """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
+    """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
 
     Parameters
     ----------
@@ -127,7 +127,7 @@ class AnalysisModel:
     when exploring an HSNE hierarchy. The AnalysisModel is created
     with a top level default hsne_analysis.Analysis containing all top level landmarks.
     """
-    
+
     def __init__(self, hsne, embedder_type):
         self.hsne = hsne
         self.embedder_type = embedder_type
