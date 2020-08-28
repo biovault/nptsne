@@ -105,7 +105,7 @@ class AnalysisModel:
     --------
     Initialize a model using loaded :class:`HSne` data. 
 
-    >>> model = AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+    >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
     >>> model.top_scale_id
     2
 
@@ -150,7 +150,7 @@ class AnalysisModel:
         --------
         Retrieve the top level analysis containing all points at the top level. 
 
-        >>> model = AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> analysis = model.top_analysis
         >>> analysis.scale_id
         2
@@ -182,7 +182,7 @@ class AnalysisModel:
         The analysis is created at the next scale down is a child of the top level
         and contains an embedding of the right shape.
 
-        >>> model = AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
         >>> analysis = model.add_new_analysis(model.top_analysis, sel)
         >>> analysis.scale_id
@@ -207,7 +207,7 @@ class AnalysisModel:
            
         Examples
         --------
-        >>> model = AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> id = model.top_analysis.id
         >>> str(model.top_analysis) == str(model.get_analysis(id))
         True
@@ -231,7 +231,7 @@ class AnalysisModel:
 
         Examples
         --------
-        >>> model = AnalysisModel(sample_hsne, hsne_analysis.EmbedderType.CPU)
+        >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
         >>> analysis = model.add_new_analysis(model.top_analysis, sel)
         >>> id = analysis.id
