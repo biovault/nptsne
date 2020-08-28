@@ -1138,7 +1138,9 @@ PYBIND11_MODULE(_nptsne, m) {
             
             >>> import numpy as np
             >>> sample_analysis.embedding.shape == (sample_analysis.number_of_points, 2)
+            True
             >>> sample_analysis.embedding.dtype == np.float32
+            True
         )pbdoc");
 
         // ******************************************************************
