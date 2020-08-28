@@ -13,3 +13,9 @@ __all__ = (
     'EmbedderType',
     'SparseTsne'
 )
+
+__test__ = {
+    'AnalysisModel': AnalysisModel,
+    'Analysis': Analysis,
+    'SparseTsne': SparseTsne,
+}
