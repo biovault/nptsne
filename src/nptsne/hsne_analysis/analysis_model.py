@@ -150,6 +150,7 @@ class AnalysisModel:
         --------
         Retrieve the top level analysis containing all points at the top level. 
 
+        >>> import nptsne
         >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> analysis = model.top_analysis
         >>> analysis.scale_id
@@ -182,6 +183,7 @@ class AnalysisModel:
         The analysis is created at the next scale down is a child of the top level
         and contains an embedding of the right shape.
 
+        >>> import nptsne
         >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
         >>> analysis = model.add_new_analysis(model.top_analysis, sel)
@@ -207,6 +209,7 @@ class AnalysisModel:
            
         Examples
         --------
+        >>> import nptsne
         >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> id = model.top_analysis.id
         >>> str(model.top_analysis) == str(model.get_analysis(id))
@@ -231,6 +234,7 @@ class AnalysisModel:
 
         Examples
         --------
+        >>> import nptsne
         >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
         >>> sel = np.arange(int(model.top_analysis.number_of_points / 2))
         >>> analysis = model.add_new_analysis(model.top_analysis, sel)
