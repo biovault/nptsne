@@ -908,7 +908,7 @@ PYBIND11_MODULE(_nptsne, m) {
             >>> top_analysis = nptsne.hsne_analysis.Analysis(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
             >>> top_analysis.scale_id
             2
-            >>> hsne.get_scale(top_analysis.scale_id).num_points == top_analysis.number_of_points
+            >>> sample_hsne.get_scale(top_analysis.scale_id).num_points == top_analysis.number_of_points
             True
             
             Notes
@@ -1059,7 +1059,7 @@ PYBIND11_MODULE(_nptsne, m) {
             --------
             There will be a weight for every point.
             
-            >>> weights = sample_analysis.weights
+            >>> weights = sample_analysis.landmark_weights
             >>> weights.shape == (sample_analysis.number_of_points,)
             True
         )pbdoc");
@@ -1079,11 +1079,12 @@ PYBIND11_MODULE(_nptsne, m) {
             
             Examples
             --------
-            The indexes are all the points in a complete top level analysis.
+            In a complete top level analysis all points are present
+            in this case all the points at scale2.
             
             >>> import numpy as np
             >>> np.array_equal(
-            ... np.arange(top_analysis.number_of_points, dtype=np.uint32), 
+            ... np.arange(sample_scale2.num_points, dtype=np.uint32), 
             ... sample_analysis.landmark_indexes)
             True
         )pbdoc");
