@@ -61,15 +61,31 @@ def make_test_globals():
 
 
 if __name__ == "__main__":
+    # doctest checks that the module name matches before finding tests
+    # The module name is fixed in the __module__ of the class and methods
+    # To pick up the tests in the binarys use the correct module name
     print("Starting doctest", flush=True)
-    #failures_nptsne, tests_nptsne = doctest.testmod(nptsne, verbose=True)
-    #failures_hsne_analysis, tests_hsne_analysis = doctest.testmod(nptsne.hsne_analysis, verbose=True)
-    # Must explicitly test the extension library
-    failures_nptsne, tests_nptsne = doctest.testmod(nptsne,
+    test_globals = make_test_globals()
+    failures_nptsne, tests_nptsne = doctest.testmod(nptsne, 
                     verbose=True,
                     optionflags=REPORT_NDIFF | ELLIPSIS,
-                    globs=make_test_globals())
-    total_failures =  failures_nptsne   # + failures_hsne_analysis + failures_nptsne_ex 
+                    globs=test_globals)
+                    
+    failures_hsne_analysis, tests_hsne_analysis = doctest.testmod(nptsne.hsne_analysis,                verbose=True,
+                    optionflags=REPORT_NDIFF | ELLIPSIS,
+                    globs=test_globals)
+                    
+    failures_nptsne_lib, tests_nptsne_lib = doctest.testmod(nptsne.libs._nptsne,
+                    verbose=True,
+                    optionflags=REPORT_NDIFF | ELLIPSIS,
+                    globs=test_globals)
+                    
+    failures_hsne_analysis_lib, tests_hsne_analysis_lib = doctest.testmod(nptsne.libs._nptsne.hsne_analysis,
+                    verbose=True,
+                    optionflags=REPORT_NDIFF | ELLIPSIS,
+                    globs=test_globals)
+                    
+    total_failures =  failures_nptsne + failures_hsne_analysis + failures_nptsne_lib + failures_hsne_analysis_lib
     if glob_total_skipped:
         print(f"{glob_total_skipped} tests were skipped in the CI environment.")
     if total_failures:
