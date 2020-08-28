@@ -898,7 +898,19 @@ PYBIND11_MODULE(_nptsne, m) {
             landmark_indexes
             landmark_orig_indexes
             embedding
-
+            
+            Examples
+            --------
+            The Analysis constructor is meant for use by the :class: `nptsne.hsne_analysis.AnalysisModel`.
+            The example here illustrates how a top level analysis would be created from a sample hsne.
+            
+            >>> import nptsne
+            >>> top_analysis = nptsne.hsne_analysis.Analysis(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
+            >>> top_analysis.scale_id
+            2
+            >>> hsne.get_scale(top_analysis.scale_id).num_points == top_analysis.number_of_points
+            True
+            
             Notes
             -----
             Together with `AnalysisModel` provides support for visual analytics of an hSNE.
@@ -924,8 +936,26 @@ PYBIND11_MODULE(_nptsne, m) {
 
         // The analysis properties
         analysis_class
-            .def_readwrite("id", &Analysis::id)
-            .def_readwrite("scale_id", &Analysis::scale_id);
+            .def_readwrite("id", &Analysis::id,
+            R"pbdoc(
+                int: Internally generated unique id for the analysis.
+                
+                Examples
+                --------
+                
+                >>> sample_analysis.id
+                0
+            )pbdoc")
+            .def_readwrite("scale_id", &Analysis::scale_id,
+            R"pbdoc(
+                int: The number of this HSNE scale where this analysis is created.
+                
+                Examples
+                --------
+                >>> sample_analysis.scale_id
+                2
+            )pbdoc"
+            );
 
 
         // Share the landmark weights without a copy
@@ -934,10 +964,33 @@ PYBIND11_MODULE(_nptsne, m) {
                 "number_of_points",
                 [](Analysis& self) {
                 return self.landmark_indexes.size();
-            }, "int : number of landmarks in this `Analysis`");
+            }, 
+            R"pbdoc(
+                int : number of landmarks in this `Analysis`
+                
+                Examples
+                --------
+                The sample analysis is all the top scale points
+                
+                >>> sample_analysis.number_of_points == sample_scale2.num_points
+                True
+            )pbdoc";
 
         analysis_class
-            .def("__str__", &Analysis::toString);
+            .def("__str__", &Analysis::toString,
+            R"pbdoc(
+                str: A string summary of the analysis.
+                
+                Examples
+                --------
+                >>> expected_str = 'Analysis[id={}, num points={}, scale={}]'.format(
+                    sample_analysis.id, 
+                    sample_analysis.number_of_points, 
+                    sample_analysis.scale_id)
+                >>> str(sample_analysis) == expected_str
+                True
+            )pbdoc"
+            );
 
         analysis_class
             .def("do_iteration", &Analysis::doAnIteration,
@@ -1001,7 +1054,17 @@ PYBIND11_MODULE(_nptsne, m) {
                 { sizeof(float) },
                 self.landmark_weights.data(),
                 py::cast(self));
-        }, ":class:`ndarray` : the weights for the landmarks in this `Analysis`");
+        }, R"pbdoc(
+            :class:`ndarray` : the weights for the landmarks in this `Analysis`
+            
+            Examples
+            --------
+            There will be a weight for every point.
+            
+            >>> weights = sample_analysis.weights
+            >>> weights.shape == (sample_analysis.number_of_points,)
+            True
+        )pbdoc");
 
         // Share the landmark indexes without a copy
         analysis_class.def_property_readonly(
@@ -1013,7 +1076,19 @@ PYBIND11_MODULE(_nptsne, m) {
                 { sizeof(unsigned int) },
                 self.landmark_indexes.data(),
                 py::cast(self));
-        }, ":class:`ndarray` : the indexes for the landmarks in this `Analysis`");
+        }, R"pbdoc(
+            :class:`ndarray` : the indexes for the landmarks in this `Analysis`
+            
+            Examples
+            --------
+            The indexes are all the points in a complete top level analysis.
+            
+            >>> import numpy as np
+            >>> np.array_equal(
+                np.arange(top_analysis.number_of_points, dtype=np.uint32), 
+                sample_analysis.landmark_indexes)
+            True
+        )pbdoc");
 
         // Share the landmark original indexes without a copy
         // TODO change name to orig_index. Since this translates
@@ -1028,7 +1103,18 @@ PYBIND11_MODULE(_nptsne, m) {
                 { sizeof(unsigned int) },
                 self.landmarks_orig_data.data(),
                 py::cast(self));
-        }, ":class:`ndarray` : the original data indexes for the landmarks in this `Analysis`");
+        }, R"pbdoc(
+            :class:`ndarray` : the original data indexes for the landmarks in this `Analysis`
+            
+            Example
+            -------
+            The indexes are in the range of the original point indexes.
+            
+            >>> np.logical_and(
+                sample_analysis.landmark_orig_indexes >= 0,
+                sample_analysis.landmark_orig_indexes < 10000).any()
+            True
+        )pbdoc");
 
         // Share the embedding without a copy
         analysis_class.def_property_readonly(
@@ -1043,7 +1129,16 @@ PYBIND11_MODULE(_nptsne, m) {
                 { cols * data_size, data_size },
                 self.getEmbedding().getContainer().data(),
                 py::cast(self));
-        }, ":class:`ndarray` : the tSNE embedding generated for this `Analysis`");
+        }, R"pbdoc(
+            :class:`ndarray` : the tSNE embedding generated for this `Analysis`
+            
+            Example
+            -------
+            An embedding is a 2d float array
+            
+            >>> top_analysis.embedding.shape == (top_analysis.number_of_points, 2)
+            >>> top_analysis.embedding.dtype == np.float32
+        )pbdoc");
 
         // ******************************************************************
         // ***** CPU tSNE embedder mabe be used in hSNE analyses indtead of TextureTsne(Analysis class above) ******
