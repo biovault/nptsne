@@ -954,8 +954,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 --------
                 >>> sample_analysis.scale_id
                 2
-            )pbdoc"
-            );
+            )pbdoc");
 
 
         // Share the landmark weights without a copy
@@ -974,7 +973,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 
                 >>> sample_analysis.number_of_points == sample_scale2.num_points
                 True
-            )pbdoc";
+            )pbdoc");
 
         analysis_class
             .def("__str__", &Analysis::toString,
@@ -989,8 +988,7 @@ PYBIND11_MODULE(_nptsne, m) {
                     sample_analysis.scale_id)
                 >>> str(sample_analysis) == expected_str
                 True
-            )pbdoc"
-            );
+            )pbdoc");
 
         analysis_class
             .def("do_iteration", &Analysis::doAnIteration,
