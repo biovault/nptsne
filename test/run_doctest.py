@@ -80,7 +80,7 @@ if __name__ == "__main__":
                     optionflags=REPORT_NDIFF | ELLIPSIS,
                     globs=test_globals)
                     
-    failures_hsne_analysis_lib, tests_hsne_analysis_lib = doctest.testmod(nptsne.libs._nptsne.hsne_analysis,
+    failures_hsne_analysis_lib, tests_hsne_analysis_lib = doctest.testmod(nptsne.libs._nptsne._hsne_analysis,
                     verbose=True,
                     optionflags=REPORT_NDIFF | ELLIPSIS,
                     globs=test_globals)
