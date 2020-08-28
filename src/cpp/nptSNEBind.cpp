@@ -983,9 +983,9 @@ PYBIND11_MODULE(_nptsne, m) {
                 Examples
                 --------
                 >>> expected_str = 'Analysis[id={}, num points={}, scale={}]'.format(
-                    sample_analysis.id, 
-                    sample_analysis.number_of_points, 
-                    sample_analysis.scale_id)
+                ... sample_analysis.id, 
+                ... sample_analysis.number_of_points, 
+                ... sample_analysis.scale_id)
                 >>> str(sample_analysis) == expected_str
                 True
             )pbdoc");
@@ -1083,8 +1083,8 @@ PYBIND11_MODULE(_nptsne, m) {
             
             >>> import numpy as np
             >>> np.array_equal(
-                np.arange(top_analysis.number_of_points, dtype=np.uint32), 
-                sample_analysis.landmark_indexes)
+            ... np.arange(top_analysis.number_of_points, dtype=np.uint32), 
+            ... sample_analysis.landmark_indexes)
             True
         )pbdoc");
 
@@ -1109,8 +1109,8 @@ PYBIND11_MODULE(_nptsne, m) {
             The indexes are in the range of the original point indexes.
             
             >>> np.logical_and(
-                sample_analysis.landmark_orig_indexes >= 0,
-                sample_analysis.landmark_orig_indexes < 10000).any()
+            ... sample_analysis.landmark_orig_indexes >= 0,
+            ... sample_analysis.landmark_orig_indexes < 10000).any()
             True
         )pbdoc");
 
