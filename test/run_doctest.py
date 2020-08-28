@@ -45,7 +45,7 @@ def make_test_globals():
     hsne.create_hsne(hsne_data, 3)
     file_name = "rnd10000x16.hsne"
     hsne.save(file_name)
-    top_analysis = nptsne.hsne_analysis.Analysis(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
+    top_analysis = nptsne.hsne_analysis.Analysis(hsne, nptsne.hsne_analysis.EmbedderType.CPU)
 
     print("End prepare doctest globals", flush=True)
     return {
