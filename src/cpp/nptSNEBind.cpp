@@ -1109,6 +1109,7 @@ PYBIND11_MODULE(_nptsne, m) {
             -------
             The indexes are in the range of the original point indexes.
             
+            >>> import numpy as np
             >>> np.logical_and(
             ... sample_analysis.landmark_orig_indexes >= 0,
             ... sample_analysis.landmark_orig_indexes < 10000).any()
@@ -1133,10 +1134,10 @@ PYBIND11_MODULE(_nptsne, m) {
             
             Example
             -------
-            An embedding is a 2d float array
+            An embedding is a 2d float array. One entry per point.
             
-            >>> top_analysis.embedding.shape == (top_analysis.number_of_points, 2)
-            >>> top_analysis.embedding.dtype == np.float32
+            >>> sample_analysis.embedding.shape == (sample_analysis.number_of_points, 2)
+            >>> sample_analysis.embedding.dtype == np.float32
         )pbdoc");
 
         // ******************************************************************
