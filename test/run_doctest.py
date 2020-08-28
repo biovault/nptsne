@@ -65,7 +65,7 @@ if __name__ == "__main__":
     #failures_nptsne, tests_nptsne = doctest.testmod(nptsne, verbose=True)
     #failures_hsne_analysis, tests_hsne_analysis = doctest.testmod(nptsne.hsne_analysis, verbose=True)
     # Must explicitly test the extension library
-    failures_nptsne_ex, tests_nptsne_ex = doctest.testmod(nptsne,
+    failures_nptsne, tests_nptsne = doctest.testmod(nptsne,
                     verbose=True,
                     optionflags=REPORT_NDIFF | ELLIPSIS,
                     globs=make_test_globals())
