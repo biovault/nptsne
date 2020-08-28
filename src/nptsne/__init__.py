@@ -36,6 +36,10 @@ __all__ = (
     'hsne_analysis'
 )
 
-if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+__test__ = {
+    'TextureTsne': TextureTsne,
+    'TextureTsneExtended': TextureTsneExtended,
+    'HSne': HSne,
+    'HSneScale': HSneScale,
+    'hsne_analysis': hsne_analysis
+}
