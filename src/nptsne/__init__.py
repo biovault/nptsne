@@ -25,6 +25,7 @@ References
 """        
 from .libs._nptsne import (TextureTsne, TextureTsneExtended, KnnAlgorithm, HSne, HSneScale)
 from .version import __version__
+from . import hsne_analysis
 
 __all__ = (
     'TextureTsne', 
@@ -32,6 +33,7 @@ __all__ = (
     'KnnAlgorithm', 
     'HSne',
     'HSneScale',
+    'hsne_analysis'
 )
 
 if __name__ == "__main__":
