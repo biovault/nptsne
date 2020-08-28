@@ -1136,6 +1136,7 @@ PYBIND11_MODULE(_nptsne, m) {
             -------
             An embedding is a 2d float array. One entry per point.
             
+            >>> import numpy as np
             >>> sample_analysis.embedding.shape == (sample_analysis.number_of_points, 2)
             >>> sample_analysis.embedding.dtype == np.float32
         )pbdoc");
