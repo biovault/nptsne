@@ -36,10 +36,12 @@ __all__ = (
     'hsne_analysis'
 )
 
-__test__ = {
-    'TextureTsne': TextureTsne,
-    'TextureTsneExtended': TextureTsneExtended,
-    'HSne': HSne,
-    'HSneScale': HSneScale,
-    'hsne_analysis': hsne_analysis
-}
+def __set_module__(module, obj):
+    obj.__module__ = module
+    return obj
+    
+TextureTsne = __set_module__('nptsne', TextureTsne)
+TextureTsneExtended = __set_module__('nptsne', TextureTsneExtended)
+HSne = __set_module__('nptsne', HSne)
+HSneScale = __set_module__('nptsne', HSneScale)
+KnnAlgorithm = __set_module__('nptsne', KnnAlgorithm)
