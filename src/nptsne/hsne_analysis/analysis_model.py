@@ -105,6 +105,7 @@ class AnalysisModel:
     --------
     Initialize a model using loaded :class:`HSne` data. 
 
+    >>> import nptsne
     >>> model = nptsne.hsne_analysis.AnalysisModel(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
     >>> model.top_scale_id
     2
