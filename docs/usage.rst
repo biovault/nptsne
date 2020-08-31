@@ -11,9 +11,23 @@ Installing
 Windows,MacOS,Linux: install from PyPi using: **pip install nptsne**. `The PyPi page. <https://pypi.org/project/nptsne/>`_
 
     
-Examples
---------
+Demos
+-----
 
-Examples of both the :py:class:`nptsne.TextureTsne` and :py:class:`nptsne.TextureTsneExtended` are available in a
-`Jupyter notebook <http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/NPTSNE_notebooktests.ipynb>`_.
+A number of demos have been created to help you exploit the accelerated tSNE and HSNE offered by this package.
+
+.. csv-table:: **Demos**
+  :header: "Demo", "Description"
+  :widths: 30, 50
+
+  "`HSNE Multi datatype <http://doi.org/10.5281/zenodo.4003503>`_", "A complete demonstration including three different datatypes:
+   - Image is datapoint (MNIST)
+   - Pixel is data point (Hyperspectral solar images)
+   - Multi-dimensional plus meta data (Genetic data)"
+  "`HSNE with Louvain clustering <http://doi.org/10.5281/zenodo.4003503>`_", "Louvain clustering applied to levels in the HSNE hierarchy"
+  "`Jupyter notebook for GPU accelerated tSNE  <http://doi.org/10.5281/zenodo.4003503>`_","A Jupyter notebook demonstration of the tSNE API. 
+  Illustrates a plain tSNE, pre-loaded embedding and 
+  altering the moment when the exaggeration factor is removed. "
+
+_.
 
