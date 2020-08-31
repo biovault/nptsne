@@ -56,7 +56,7 @@ env:
     - TWINE_TESTPYPI_PASSWORD=$TESTPYPI_PASSWORD_SECRET
     - READTHEDOCS_TOKEN=$READTHEDOCS_TOKEN_SECRET
     - BUILD_LINUX=true
-    - BUILD_OSX=false
+    - BUILD_OSX=true
     
 jobs: 
   include: 

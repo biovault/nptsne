@@ -38,7 +38,7 @@ class NptsneConan(ConanFile):
     # For now use conan and bincrafters - we may wish to host our own versions
     requires = (
 #        "pybind11/2.3.0@conan/stable",  # Prepackaged pybind11 has the needed pybind11Config.cmake
-        "HDILib/latest@biovault/stable"
+        "HDILib/1.2.1@biovault/stable"
     )   
 
     def requirements(self):

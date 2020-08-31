@@ -16,4 +16,4 @@ Changelog 1.1.0
   hierarchy.
 
 - Additionally a number of demos of GPU accelerated t-SNE and HSNE are available at
-  :ref:`Demo_list`
+  :ref:`demo-list`
