@@ -78,6 +78,7 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx.ext.githubpages', 
     'sphinx.ext.extlinks',
+    'sphinx.ext.autosectionlabel',
     'numpydoc',
     'sphinx_rtd_theme',
 #    'sphinx.ext.napoleon',

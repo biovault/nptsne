@@ -10,9 +10,9 @@ Installing
 
 Windows,MacOS,Linux: install from PyPi using: **pip install nptsne**. `The PyPi page. <https://pypi.org/project/nptsne/>`_
 
-    
-Demos
------
+
+Demo list
+---------
 
 A number of demos have been created to help you exploit the accelerated tSNE and HSNE offered by this package.
 
@@ -34,5 +34,4 @@ A number of demos have been created to help you exploit the accelerated tSNE and
   | altering the moment when the exaggeration 
   | factor is removed. "
 
-_.
 
