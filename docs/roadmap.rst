@@ -3,8 +3,7 @@ Roadmap
 
 The following items are envisioned for future releases:
 
-1. Release a *manylinux* wheel on PyPi for full Linux support
-2. Investigate adding a context manager for TextureTsneExtended to automatically close the nptsne OpenGL context. This would enable the following code:
+1. Investigate adding a context manager for TextureTsneExtended to automatically close the nptsne OpenGL context. This would enable the following code:
 
 .. code-block:: python
     :caption: Possible context manager for TextureTsneExtended
