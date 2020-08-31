@@ -1144,16 +1144,28 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
         // ******************************************************************
-        // ***** CPU tSNE embedder mabe be used in hSNE analyses indtead of TextureTsne(Analysis class above) ******
+        // ***** CPU tSNE embedder maybe be used in hSNE analyses indtead of TextureTsne(Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne",
         R"pbdoc(
-            SparseTsne a wrapper for an approximating tSNE CPU implementation.
+            SparseTsne a wrapper for an approximating tSNE CPU implementation as described in [1]_.
 
-            Forms an alternative to `TextureTsne` when GPU acceleration is not available
+            Forms an alternative to `TextureTsne` when GPU acceleration for creation of the embedding
+            is not available for internal use in the `Analysis` class 
 
             Attributes
             ----------
             embedding : :class:`ndarray`
+            
+            See Also
+            --------
+            Analysis
+            EmbedderType
+            
+            References
+            ----------
+            .. [1] Pezzotti, N., Lelieveldt, B.P.F., Maaten, L. van der, Höllt, T., Eisemann, E., Vilanova, A., 2017.
+                `Approximated and User Steerable tSNE for Progressive Visual Analytics. <https://doi.org/10.1109/TVCG.2016.2570755>`_
+                IEEE Transactions on Visualization and Computer Graphics 23, 1739–1752. 
         )pbdoc");
 
         sparsetsne_class.def("do_iteration", &SparseTsne::doAnIteration, "Perform a single tsne iteration",
