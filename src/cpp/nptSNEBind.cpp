@@ -558,14 +558,14 @@ PYBIND11_MODULE(_nptsne, m) {
         .def("load_hsne",
             &HSne::load_hsne,
             R"pbdoc(
-                Load the hSNE analysis data hierarchy from a pre-existing hsne file.
+                Load the HSNE analysis data hierarchy from a pre-existing HSNE file.
 
                 Parameters
                 ----------
                 X : :class:`ndarray`
                     The data used to create the saved file. Shape is : (num. data points, num. dimensions)
                 file_path : str
-                    Path to saved hSNE file
+                    Path to saved HSNE file
 
                 Examples
                 --------
@@ -706,8 +706,8 @@ PYBIND11_MODULE(_nptsne, m) {
 
         Examples
         --------
-        Using the initializer to create an HSneScale wrapper
-        Scale 0 is the datapoints.  (Prefer the HSne.get_scale function)
+        Using the initializer to create an HSneScale wrapper.
+        Scale 0 contains the datapoints.  (Prefer the HSne.get_scale function)
 
         >>> import nptsne
         >>> scale = nptsne.HSneScale(sample_hsne, 0)
@@ -838,7 +838,7 @@ PYBIND11_MODULE(_nptsne, m) {
             
             Returns
             -------
-            ":class:`ndarray`:
+            :class:`ndarray`:
                 An ndarray of the original data indexes.
         )pbdoc");
 

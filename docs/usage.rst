@@ -16,22 +16,30 @@ Demo list
 
 A number of demos have been created to help you exploit the accelerated tSNE and HSNE offered by this package.
 
-.. csv-table:: **Demos**
-  :header: "Demo", "Description"
-  :widths: 25, 50
+.. list-table:: Demos
+   :widths: 25, 50
+   :header-rows: 1
 
-  "`HSNE Multi datatype <http://doi.org/10.5281/zenodo.4003503>`_", "| A complete demonstration including 
-  | three different datatypes:
-  
-   - Image is datapoint (MNIST)
-   - Pixel is data point (Hyperspectral solar images)
-   - Multi-dimensional plus meta data (Genetic data)"
-  "`HSNE with Louvain clustering <http://doi.org/10.5281/zenodo.4003503>`_", "| Louvain clustering is applied to 
-  | levels in the HSNE hierarchy"
-  "`Jupyter notebook for GPU accelerated tSNE  <http://doi.org/10.5281/zenodo.4003503>`_","| A Jupyter notebook demonstration
-  | of the tSNE API. 
-  | Illustrates a plain tSNE, pre-loaded embedding and 
-  | altering the moment when the exaggeration 
-  | factor is removed. "
+   * - Demo
+     - Description
+   * - `HSNE Multi datatype <http://doi.org/10.5281/zenodo.4003503>`_
+     - .. line-block::
+         A complete demonstration including 
+         three different datatypes: 
+         * Image is datapoint (MNIST)
+         * Pixel is data point (Hyperspectral solar images)
+         * Multi-dimensional plus meta data (Genetic data)
+   * - `HSNE with Louvain clustering <http://doi.org/10.5281/zenodo.4003503>`_
+     - | Louvain clustering applied to 
+       | levels in the HSNE hierarchy
+   * - `Jupyter notebook for GPU accelerated tSNE  <http://doi.org/10.5281/zenodo.4003503>`_
+     - .. line-block::
+         A Jupyter notebook demonstration
+         of the tSNE API. 
+         Illustrates the following options: 
+         * a plain tSNE
+         * a pre-loaded embedding
+         * controlling the iteration when the 
+           exaggeration factor is removed.
 
 
