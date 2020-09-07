@@ -91,7 +91,7 @@ jobs:
       - LIBSDIR=/tmp/cibwlibsdir
       - CIBW_SKIP="cp2* cp35-* pp*"
       - CIBW_BUILD=cp3*-manylinux_x86_64
-      - CIBW_BUILD_VERBOSITY=3
+      - CIBW_BUILD_VERBOSITY=1
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH"
       # The following run in the container context (building manylinux)
       - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
@@ -123,7 +123,7 @@ jobs:
       - MACOSX_DEPLOYMENT_TARGET=10.13
       - CIBW_SKIP="cp2* cp35-* pp*"
       - CIBW_BUILD=cp3*-macosx_x86_64
-      - CIBW_BUILD_VERBOSITY=3
+      - CIBW_BUILD_VERBOSITY=1
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE LIBSDIR=/tmp/cibwlibsdir CI=TRUE CMAKE_GENERATOR=Xcode  TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH"
       - CIBW_BEFORE_BUILD="rm -rf /tmp/cibwlibsdir; mkdir -p /tmp/cibwlibsdir; pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh"
       - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
