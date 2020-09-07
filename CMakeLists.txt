@@ -63,6 +63,10 @@ set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
 if(TRUE)
     message(STATUS, "Will build GLFW")
+    set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "disable GLFX examples")
+    set(GLFW_BUILD_TESTS OFF CACHE BOOL "disable GLFX tests") 
+    set(GLFW_BUILD_DOCS OFF CACHE BOOL "disable GLFX docs")     
+    set(GLFW_INSTALL OFF CACHE BOOL "disable GLFX installation target") 
     add_subdirectory(external/glfw)
     install_headers(external/glfw)
 endif()
@@ -342,9 +346,16 @@ if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
 endif()
 
 # Install the extra binaries to the desired liboutput
-add_custom_target (bundle_libs
-    COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}
-)
+if(CMAKE_SYSTEM_NAME STREQUAL Linux OR CMAKE_SYSTEM_NAME STREQUAL Darwin)
+    add_custom_target (bundle_libs
+        COMMAND ${CMAKE_COMMAND} -E echo "Move conan libs for wheel fixup"
+        COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}
+    )
+else()
+    add_custom_target (bundle_libs
+        COMMAND ${CMAKE_COMMAND} -E echo "No conan libs for wheel fixup"
+    )    
+endif()
 
 # -- Upload of latest whl
 add_custom_target (upload_wheel

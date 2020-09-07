@@ -10,6 +10,7 @@ import re
 import shutil
 import sys
 import tempfile
+import tempfile
 import time
 import subprocess
 import urllib, urllib.request
@@ -26,7 +27,9 @@ class CMakeExtension(Extension):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
         self.package_name = package_name
+        # self.templibdir = tempfile.mkdtemp()
         self.templibdir = templibdir
+        print('Temp lib dir is :', self.templibdir) 
 
 class CMakeBuild(build_ext):
     def run(self):
@@ -105,6 +108,7 @@ class CMakeBuild(build_ext):
         # get the dependent libs (were supplied by Conan) 
         # os.environ['LD_LIBRARY_PATH'] = liboutputdir
         
+        print('Move the conan dependencies for wheel fix-up')
         subprocess.check_call(['cmake', '--build', '.', '--target',  'bundle_libs', '--config', cfg], cwd=self.build_temp)
                               
         print("Files in output dir: ", os.listdir(liboutputdir)) 
