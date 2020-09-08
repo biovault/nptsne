@@ -78,9 +78,6 @@ pybind11_add_module(_nptsne
     src/cpp/TextureTsneExtended.cpp
 )
 
-#if(TRUE)
-#    add_dependencies(_nptsne GLFW)
-#endif()
 
 message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "3 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
@@ -197,6 +194,7 @@ set(GLFW_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/glfw/include")
 message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
 target_include_directories(_nptsne PRIVATE ${GLFW_INCLUDE_DIRS})
 target_link_libraries(_nptsne PRIVATE glfw) 
+target_link_libraries(_nptsne PRIVATE pybind11::module)
     
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
 if (CMAKE_GENERATOR STREQUAL Xcode)
@@ -271,11 +269,11 @@ else(WIN32)
 endif(WIN32)
 
 target_link_libraries(_nptsne PRIVATE ${HDIDR} ${HDIDA} ${HDIUI})
-target_link_libraries(_nptsne PRIVATE pybind11::module)
 
 if(WIN32)
+    # Windows uses static flann lib
     target_link_libraries (_nptsne PRIVATE "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
-    target_link_libraries(_nptsne PRIVATE pybind11::module) # "${GLFW_ROOT}/lib/glfw3.lib")
+    #target_link_libraries(_nptsne PRIVATE pybind11::module) # "${GLFW_ROOT}/lib/glfw3.lib")
     #static GLFW
     # target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
 endif()
