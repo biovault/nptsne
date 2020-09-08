@@ -20,6 +20,7 @@ from setuptools.command.build_ext import build_ext
 from distutils.version import LooseVersion
 from distutils.file_util import copy_file
 from distutils import log
+from pathlib import Path
 
 
 class CMakeExtension(Extension):
@@ -49,6 +50,10 @@ class CMakeBuild(build_ext):
                 raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
         for ext in self.extensions:
+            if ext.templibdir:
+                # create the tempdir if it is not yet available
+                tempdir = Path(ext.templibdir)
+                tempdir.mkdir(exist_ok=True)
             self.build_extension(ext)
 
     def build_extension(self, ext):
