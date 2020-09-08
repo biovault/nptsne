@@ -36,9 +36,6 @@ if (WIN32)
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS True)
 endif()
 
-
-
-
 add_subdirectory(external/pybind11)
 #
 message (STATUS "The python executable is at ${PYTHON_EXECUTABLE}") 
@@ -194,6 +191,13 @@ set_target_properties(_nptsne PROPERTIES FOLDER "Python bindings")
 # On Windows and Linux these come from glad in the HDILib
 add_definitions(-DGLFW_INCLUDE_NONE)
 
+# Silences OpenGL deprecation warnings (in GLFW)
+add_definitions(-DGL_SILENCE_DEPRECATION)
+set(GLFW_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/glfw/include")
+message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
+target_include_directories(_nptsne PRIVATE ${GLFW_INCLUDE_DIRS})
+target_link_libraries(_nptsne PRIVATE glfw) 
+    
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
 if (CMAKE_GENERATOR STREQUAL Xcode)
     # Assumption libomp, has been installed
@@ -201,8 +205,8 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     # If using conan we use the conan built flann
     set(MAC_INSTALL_PREFIX "/usr/local")
     
-    # Silences OpenGL deprecation warnings (in GLFW)
-    add_definitions(-DGL_SILENCE_DEPRECATION)
+    
+
     set(CMAKE_OSX_DEPLOYMENT_TARGET "10.12" CACHE STRING "Minimum OS X deployment version")
     
      #### Find flann
@@ -221,27 +225,15 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     include_directories("${MAC_INSTALL_PREFIX}/opt/lz4/include") 
     find_library(LZ4_LIBRARY lz4 HINTS "${MAC_INSTALL_PREFIX}/lib")    
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
-   
-    #### Find glfw
-    #find_library(GLFW_LIBRARY glfw HINTS "${MAC_INSTALL_PREFIX}/lib")    
-    #get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
-    #include_directories(${GLFW_INCLUDE_DIRS} "${MAC_INSTALL_PREFIX}/opt/glfw/include")     
 
     get_filename_component(LZ4_LINK_PATH ${LZ4_LIBRARY} DIRECTORY)
     get_filename_component(FLANN_LINK_PATH ${FLANNCPP_LIBRARY_PATH} DIRECTORY)
-    #get_filename_component(GLFW_LINK_PATH ${GLFW_LIBRARY} DIRECTORY)
     link_directories(${FLANN_LINK_PATH})
     link_directories(${LZ4_LINK_PATH})
-    #link_directories(${GLFW_LINK_PATH})
     target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
     target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY_PATH} )
-    set(GLFW_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/glfw/include")
-    message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
-    target_include_directories(_nptsne PRIVATE ${GLFW_INCLUDE_DIRS})
-    target_link_libraries(_nptsne PRIVATE glfw) 
-    #target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
     message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
-    #message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
+
 endif()
 
 find_package(OpenMP)
@@ -283,9 +275,9 @@ target_link_libraries(_nptsne PRIVATE pybind11::module)
 
 if(WIN32)
     target_link_libraries (_nptsne PRIVATE "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib") 
-    target_link_libraries(_nptsne PRIVATE pybind11::module "${GLFW_ROOT}/lib/glfw3.lib")
+    target_link_libraries(_nptsne PRIVATE pybind11::module) # "${GLFW_ROOT}/lib/glfw3.lib")
     #static GLFW
-    target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
+    # target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
@@ -295,22 +287,11 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
         find_package(PkgConfig REQUIRED)
-        #Search for the glfw3 module
-        # set(CMAKE_PREFIX_PATH ${CMAKE_SOURCE_DIR}/external/glfw)
-        #pkg_search_module(GLFW REQUIRED glfw3)
-        set(GLFW_INCLUDE_DIRS "${CMAKE_SOURCE_DIR}/external/glfw/include")
-        #list(APPEND GLFW_INCLUDE_DIRS ${OPENGL_INCLUDE_DIR})
         message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
-        message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
-        target_include_directories(_nptsne PRIVATE ${GLFW_INCLUDE_DIRS})
-        target_link_libraries(_nptsne PRIVATE glfw) 
     else()
         # ubuntu
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
-        find_library(GLFW_LIBRARY glfw HINTS /usr/lib/x86_64-linux-gnu)
-        get_filename_component(GLFWLIBRARY_PATH ${GLFW_LIBRARY} REALPATH)
-        target_link_libraries(_nptsne PRIVATE ${GLFW_LIBRARY}) 
     endif()
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH) 

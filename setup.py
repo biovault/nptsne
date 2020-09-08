@@ -1,5 +1,6 @@
 from setuptools import setup
 from cmake_utils import CMakeExtension, CMakeBuild
+from pathlib import Path
 import tempfile
 import os
 
@@ -43,7 +44,6 @@ def get_git_derived_build_number(repo, commit_path):
 
 def get_version():
     from git import Repo
-    from pathlib import Path
     parent = Path(__file__).resolve().parent
     # print('repo dir: ', parent)
     repo = Repo(parent)
@@ -66,11 +66,14 @@ def get_version():
 
     return raw_version + '.dev'+ build_number
 
-templibdir = os.environ.get('LIBSDIR', '/tmp/cibwlibsdir')
+#  This temporary directory is used to collect libs
+#  for inclusion in the wheel 
+templibdir = Path(os.path.dirname(__file__), 'cibwlibsdir')
+templibdir.mkdir(exist_ok=True)
  
 setup(
     # Always append the build number for tracking purposes - this fits with PEP427
     version=get_version(),
-    ext_modules=[CMakeExtension('_nptsne', 'nptsne', templibdir=templibdir)],  # provide the extension name and package_name
+    ext_modules=[CMakeExtension('_nptsne', 'nptsne', templibdir=str(templibdir))],  # provide the extension name and package_name
     cmdclass=dict(build_ext=CMakeBuild),
 )

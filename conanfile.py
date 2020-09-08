@@ -35,29 +35,20 @@ class NptsneConan(ConanFile):
     exports_sources = "*"
 
     _source_subfolder = name
-    # For now use conan and bincrafters - we may wish to host our own versions
     requires = (
-#        "pybind11/2.3.0@conan/stable",  # Prepackaged pybind11 has the needed pybind11Config.cmake
         "HDILib/1.2.1@biovault/stable"
     )   
-
-    def requirements(self):
-        if tools.os_info.is_windows:
-            self.requires.add("glfw/3.3@bincrafters/stable")
-            
+  
     def system_requirements(self):
         if tools.os_info.is_linux:
             if tools.os_info.with_apt:
                 installer = tools.SystemPackageTool()
                 installer.install('liblz4-dev')
-                installer.install('libglfw3')
-                installer.install('libglfw3-dev')
             # Centos like: -See prepare_build_linux.sh 
         if tools.os_info.is_macos:
             installer = tools.SystemPackageTool() 
             installer.install('libomp')
             installer.install('lz4')
-            # installer.install('glfw')
             
     def configure(self):
         self.options["HDILib"].shared = False
