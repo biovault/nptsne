@@ -68,7 +68,7 @@ def get_version():
 
 #  This temporary directory is used to collect libs
 #  for inclusion in the wheel 
-templibdir = Path(os.path.dirname(__file__), 'cibwlibsdir')
+templibdir = Path(Path(__file__).resolve().parent, 'cibwlibsdir')
 print('Creating cibwlibsdir at: ', templibdir)
 templibdir.mkdir(exist_ok=True)
  
