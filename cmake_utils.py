@@ -74,7 +74,7 @@ class CMakeBuild(build_ext):
         # Also limit Windows to single config build -
         # Causes Conan to load a single set of libs
         cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg, '-DTEMP_LIBS_DIR=' + ext.templibdir]
-        lib_install_args += ['-DTEMP_LIBS_DIR=' + ext.templibdir]
+        lib_install_args = ['-DTEMP_LIBS_DIR=' + ext.templibdir]
         if platform.system() == "Windows":
             #VS can produce separate RELEASE or DEBUG outputs
             cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(), liboutputdir)]
