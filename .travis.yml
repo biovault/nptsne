@@ -95,7 +95,7 @@ jobs:
       # The following run in the container context (building manylinux)
       - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
       - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh;git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
-      - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
+      - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
 
   # Build on OS X
   - stage: build
