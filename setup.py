@@ -69,7 +69,7 @@ def get_version():
 #  This temporary directory is used to collect libs
 #  for inclusion in the wheel 
 templibdir = Path(Path(tempfile.gettempdir()), 'cibwlibsdir')
-print('cibwlibsdir at: ', templibdir)
+# print('cibwlibsdir at: ', templibdir)
 
 setup(
     # Always append the build number for tracking purposes - this fits with PEP427
