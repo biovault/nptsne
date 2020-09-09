@@ -30,7 +30,7 @@ class CMakeExtension(Extension):
         self.package_name = package_name
         # self.templibdir = tempfile.mkdtemp()
         self.templibdir = templibdir
-        print('Temp lib dir is :', self.templibdir) 
+        #print('Temp lib dir is :', self.templibdir) 
 
 class CMakeBuild(build_ext):
     def run(self):
