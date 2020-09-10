@@ -26,4 +26,4 @@ The t-SNE and HSNE implementations are the original work of the authors named in
 
 ###### Full documentation
 
-Full documentation is available at the [nptsne doc pages](https://bldrvnlw.readthedocs.io/en/release-1.1.0)
+Full documentation is available at the [nptsne doc pages](https://nptsne.readthedocs.io)
