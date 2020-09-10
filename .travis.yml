@@ -12,10 +12,10 @@ stages:
   # Testing is part of build- using the CIBW_TEST_COMMAND
   - build
   # Tagged builds are for release to PyPI
-  - name: deploy to pypi
+  - name: deploy_to_pypi
     if: tag IS present
   # Untagged builds are for test in TestPyPI
-  - name: deploy to testpypi
+  - name: deploy_to_testpypi
     if: NOT (tag IS present)
     
   - name: readthedocs_pypi
@@ -128,14 +128,14 @@ jobs:
       - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
 
   # Deploy to testpypi if not tagged
-  - stage: deploy to testpypi
+  - stage: deploy_to_testpypi
     install:
         *_deploy_install
     script:
       - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi $HOME/twine/*.whl
 
   # Deploy to pypi if tagged
-  - stage: deploy to pypi
+  - stage: deploy_to_pypi
     install:
         *_deploy_install
     script:
