@@ -95,7 +95,7 @@ deploy_script:
   ps: >-
     if ($env:APPVEYOR_REPO_TAG -eq $true) {
       Write-Output("Deploying to PyPI")
-      cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_PASSWORD% --verbose wheelhouse/* 2>&1'
+      cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_PASSWORD% --verbose --repository pypi wheelhouse/* 2>&1'
     } else {
       Write-Output("Deploying to PyPI-Test")
       cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_TESTPYPI_PASSWORD% --verbose --repository testpypi wheelhouse/* 2>&1'

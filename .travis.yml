@@ -139,7 +139,7 @@ jobs:
     install:
         *_deploy_install
     script:
-      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD $HOME/twine/*.whl
+      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD --repository pypi $HOME/twine/*.whl
 
   - stage: readthedocs_testpypi
     script:
