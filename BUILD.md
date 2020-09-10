@@ -1,3 +1,6 @@
+# This build information is deprecated but preserved for future reference
+
+
 # Build with conan
 This repository is configured too build Window, Linux and Macos using conan and the Appveyor and Travis CIs. The build is done via the conanfile which can also be run manually.
 
