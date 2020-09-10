@@ -2,6 +2,7 @@ branches:
   only:
   - /feature\/.*/
   - release/1.0.0
+  - release/1.1.0  
   - master
 
 image: Visual Studio 2017
