@@ -13,10 +13,10 @@ stages:
   - build
   # Tagged builds are for release to PyPI
   - name: deploy to pypi
-    if: (tag IS present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    if: tag IS present
   # Untagged builds are for test in TestPyPI
   - name: deploy to testpypi
-    if: (tag IS not present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    if: tag IS not present
     
   - name: readthedocs_pypi
     if: (tag IS present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
