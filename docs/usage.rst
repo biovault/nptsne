@@ -14,7 +14,7 @@ Windows,MacOS,Linux: install from PyPi using: **pip install nptsne**. `The PyPi 
 Demo list
 ---------
 
-A number of demos have been created to help you exploit the accelerated tSNE and HSNE offered by this package.
+A number of demos have been created to help you exploit the accelerated tSNE and HSNE offered by this package. The demos are available in a single `demos.zip <http://doi.org/10.5281/zenodo.4003503>`_ file.
 
 .. list-table:: Demos
    :widths: 25, 50
@@ -22,16 +22,26 @@ A number of demos have been created to help you exploit the accelerated tSNE and
 
    * - Demo
      - Description
-   * - `HSNE Multi datatype <http://doi.org/10.5281/zenodo.4003503>`_
+   * - `Extended HSNE demo <http://doi.org/10.5281/zenodo.4003503>`_
      - .. line-block::
          A complete demonstration including 
          three different datatypes: 
          * Image is datapoint (MNIST)
          * Pixel is data point (Hyperspectral solar images)
          * Multi-dimensional plus meta data (Genetic data)
-   * - `HSNE with Louvain clustering <http://doi.org/10.5281/zenodo.4003503>`_
+   * - `HSNE Louvain Demo <http://doi.org/10.5281/zenodo.4003503>`_
      - | Louvain clustering applied to 
        | levels in the HSNE hierarchy
+   * - `TextureTsne <http://doi.org/10.5281/zenodo.4003503>`_
+     - | GPU accelerated t-SNE 
+       | on 70000 MNIST points 
+   * - `TextureTsneExtended <http://doi.org/10.5281/zenodo.4003503>`_
+     - | GPU accelerated t-SNE 
+       | on 70000 MNIST points
+       | with intermediate results   
+   * - `DocTest <http://doi.org/10.5281/zenodo.4003503>`_
+     - | Run the internal doctest examples in nptsne
+       | Can be used for install verification     
    * - `Jupyter notebook for GPU accelerated tSNE  <http://doi.org/10.5281/zenodo.4003503>`_
      - .. line-block::
          A Jupyter notebook demonstration
