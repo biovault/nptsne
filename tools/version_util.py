@@ -47,6 +47,7 @@ def get_version(repo_path):
     # print('version file: ', version_file)
     with open(version_file) as f:
         raw_version = f.read().strip()
+    # Readthedocs does a limited clone so the repo commit counting does not work
     if on_rtd:
         return raw_version
     # print('repo dir: ', repo_path)
@@ -54,6 +55,7 @@ def get_version(repo_path):
     # commit = list(repo.iter_commits())[0].hexsha
     tag = get_current_tag(repo)
 
+    # If a tag starts with the word release then just use the given version from the file
     if (tag is not None) and tag.tag.tag.startswith('release'):
         return raw_version
     
