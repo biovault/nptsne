@@ -37,13 +37,6 @@ _deploy_install: &_deploy_install
   - wget -r -np -nH --cut-dirs 5 -A '*.whl' http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
   
-branches: 
-  only: 
-    - /feature\/.*/
-    - release/1.0.0
-    - release/1.1.0
-    - master
-    - v.*
     
 env: 
   global: 
