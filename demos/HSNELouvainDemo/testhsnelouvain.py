@@ -7,15 +7,19 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib
 import networkx as nx
-from matplotlib.patches import Patch
+from matplotlib.lines import Line2D
 
 matplotlib.use("Qt5Agg")
 
-X = np.load('MNIST_70000.npy')
-lab = np.load('MNIST_70000_label.npy')
+# Data is in the demo/data directory
+dataroot = Path(__file__).resolve().parent.parent / 'data'
+
+X = np.load(dataroot / 'MNIST_70000.npy')
+lab = np.load(dataroot / 'MNIST_70000_label.npy')
 print(f'Size data: {X.shape}')
 hsne = nptsne.HSne(True)
-hsne.create_hsne(X, 'MNIST_70000.hsne')
+# Create a 3 scale HSNE analysis from the MNIST data
+hsne.create_hsne(X, 3)
 print(f'Num scales: {hsne.num_scales} Num points {hsne.num_data_points}')
 scale2 = hsne.get_scale(2)
 print(f'Num points in scale 2 {scale2.num_points}')
@@ -53,14 +57,17 @@ markers = [r'$\alpha$', r'$\beta$', r'$\gamma$', r'$\delta$', r'$\epsilon$', \
             r'$\psi$', r'$\omega$']
             
 
-partition = community_louvain.best_partition(graph)
+print('Apply Louvain partitioning')
+partition = community_louvain.best_partition(graph, resolution=0.7)
 
+print('Calculate network spring layout, this may take some time...')
 pos = nx.spring_layout(graph)
 count = 0
 cmap = matplotlib.cm.get_cmap('rainbow_r')
 legend_coms = []
 com_label =[]
 
+print('Plotting figure')
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 
@@ -88,9 +95,9 @@ legend_lines = []
 bins = np.bincount(lab)
 unique_lab = np.unique(lab).tolist()
 for l in unique_lab:
-    legend_lines.append(Patch(facecolor=cmap(l/9.0)))
+    legend_lines.append(Line2D([0], [0], color=cmap(l/9.0)))
 
 ax.legend(legend_lines, unique_lab, loc='lower right') 
-ax.set_title(f'{len(legend_coms)} Louvain communities: ' + ','.join(legend_coms))
+ax.set_title(f'Partition has {len(legend_coms)} Louvain communities: ' + ', '.join(legend_coms))
 plt.tight_layout()
 plt.show() 
