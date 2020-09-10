@@ -55,8 +55,8 @@ def get_version(repo_path):
     # commit = list(repo.iter_commits())[0].hexsha
     tag = get_current_tag(repo)
 
-    # If a tag starts with the word release then just use the given version from the file
-    if (tag is not None) and tag.tag.tag.startswith('release'):
+    # If a tag starts with the letter v then just use the given version from the file
+    if (tag is not None) and tag.tag.tag.startswith('v'):
         return raw_version
     
     #

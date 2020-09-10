@@ -13,16 +13,16 @@ stages:
   - build
   # Tagged builds are for release to PyPI
   - name: deploy_to_pypi
-    if: tag IS present
+    if: tag =~ ^v
   # Untagged builds are for test in TestPyPI
   - name: deploy_to_testpypi
-    if: NOT (tag IS present)
+    if: NOT (tag =~ ^v)
     
   - name: readthedocs_pypi
-    if: (tag IS present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    if: tag =~ ^v
     
   - name: readthedocs_testpypi
-    if: (tag IS not present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    if: NOT (tag =~ ^v)
   
 # yaml anchor for upload to artifactory wheels dir 
 _wheelhouse_upload: &_wheelhouse_upload
