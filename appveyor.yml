@@ -83,7 +83,7 @@ build_script:
   - cmake -D WHEEL_GLOB=wheelhouse\nptsne*.whl -D BUILD_NUMBER=$APPVEYOR_BUILD_NUMBER -P %APPVEYOR_BUILD_FOLDER%\cmake\UploadWheel.cmake
   
 on_success:
-  - echo "In success"
+  - echo "In success - build complete"
 
 
 artifacts:
