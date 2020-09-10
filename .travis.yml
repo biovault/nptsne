@@ -16,7 +16,7 @@ stages:
     if: tag IS present
   # Untagged builds are for test in TestPyPI
   - name: deploy to testpypi
-    if: tag IS not present
+    if: NOT (tag IS present)
     
   - name: readthedocs_pypi
     if: (tag IS present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
