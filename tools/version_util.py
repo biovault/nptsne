@@ -56,7 +56,7 @@ def get_version(repo_path):
     tag = get_current_tag(repo)
 
     # If a tag starts with the letter v then just use the given version from the file
-    if (tag is not None) and tag.tag.tag.startswith('v'):
+    if (tag is not None):
         return raw_version
     
     #
