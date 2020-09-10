@@ -42,14 +42,18 @@ def get_git_derived_build_number(repo, commit_path):
     return len(list(repo.iter_commits(rev='{}^..{}'.format(that_commit, this_commit))))
 
 def get_version(repo_path):
-    # print('repo dir: ', repo_path)
-    repo = Repo(repo_path)
-    # commit = list(repo.iter_commits())[0].hexsha
-    tag = get_current_tag(repo)
+    on_rtd = os.environ.get('READTHEDOCS') == 'True'
     version_file = repo_path / 'src/nptsne/_version.txt'
     # print('version file: ', version_file)
     with open(version_file) as f:
         raw_version = f.read().strip()
+    if on_rtd:
+        return raw_version
+    # print('repo dir: ', repo_path)
+    repo = Repo(repo_path)
+    # commit = list(repo.iter_commits())[0].hexsha
+    tag = get_current_tag(repo)
+
     
     if tag and tag.startswith('release'):
         return raw_version
