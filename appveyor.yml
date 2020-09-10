@@ -4,48 +4,57 @@ branches:
   - release/1.0.0
   - master
 
-build: false
+image: Visual Studio 2017
+platform:
+    - x64
 
 environment:
 #   PYTHON_HOME: "C:\\Python37-x64"
 
-    CONAN_USERNAME: "lkeb"
     CONAN_LOGIN_USERNAME: "admin"
     CONAN_PASSWORD:
         secure: g+1lNdgrCLmyKNf3KvbHSln5A1H7BsVhsMsIbwgo+UU=
-    CONAN_CHANNEL: "stable"
     VS150COMNTOOLS: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\Community\\Common7\\Tools\\"
     CONAN_UPLOAD: http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
     CONAN_REMOTE: lkebconan
     CONAN_STABLE_BRANCH_PATTERN: "release/*"
     CONAN_UPLOAD_ONLY_WHEN_STABLE: 1
+    TWINE_USER: "bldrvnlw"
+    TWINE_PASSWORD: 
+        secure: ufFmk5mpUWD6RxByaYnTtQ==
+    TWINE_TESTPYPI_PASSWORD: 
+        secure: XXPgXJ36t6jmHJme3A5Tpw==
+    git_token:
+        secure: QWv3xZwtKaenz3mj6q8vHKMKfSFvM2GghbNyPIqg0HAHKBJSxP2fKTsVDUaLuH+M    
     
     matrix:
-### Limit build to 2017, x64 , Release, Shared
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+### Limit build to 2015, x64 , Release, Shared
+        - PYTHON: "C:\\Python37-x64"
           CONAN_VISUAL_VERSIONS: 15
           CONAN_ARCHS: x86_64
           CONAN_BUILD_TYPES: Release
           CONAN_VISUAL_RUNTIMES: MD
           BUILD_SHARED: True
-          PYTHON_HOME: C:\Python36-x64
-          PYTHON_VERSION: 3.6
+          Python3_ROOT_DIR: C:\Python37-x64
+          PYTHON_VERSION: 3.7
+          USE_FOR_DOC_GENERATION: False
+          LIBSDIR: "%TMP%\\cibwlibsdir"
+          CIBW_TEST_COMMAND: "python %APPVEYOR_BUILD_FOLDER%\\test\\run_doctest.py"
+          CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64"
+          CIBW_SKIP: "cp2*"
+          CIBW_BUILD_VERBOSITY: 3
+          CIBW_BEFORE_BUILD: "rd /s /q %TMP%\\cibwlibsdir & mkdir %TMP%\\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & call .\\.ci\\prepare_conan.sh"
 
-        - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-          CONAN_VISUAL_VERSIONS: 15
-          CONAN_ARCHS: x86_64
-          CONAN_BUILD_TYPES: Release
-          CONAN_VISUAL_RUNTIMES: MD
-          BUILD_SHARED: True
-          PYTHON_HOME: C:\Python37-x64
-          PYTHON_VERSION: 3.7          
-
+init:
+  - cmd: set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
+  
 install:
-  - set PATH=%PYTHON_HOME%;%PYTHON_HOME%/Scripts/;%PATH%
-  - pip.exe install six==1.12.0
-  - pip.exe install conan==1.19.3 
-  - pip.exe install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0 scikit-build
-  - conan user # It creates the conan data directory
+  - git submodule update --init --recursive
+  - set PYTHON_PATH=%Python3_ROOT_DIR% # Python3_ROOT_DIR is required to hint the CMake find_package Python3 
+  - python --version
+  - pip install cibuildwheel>=1.5.2
+  - pip install gitpython
+  - pip install twine
 
 skip_commits:
     files:
@@ -61,8 +70,33 @@ notifications:
     on_build_success: true
     on_build_failure: true
     on_build_status_changed: true     
-        
-test_script:
-  - python build.py
+
+before_build:
+  - echo %PATH%
   
-after_test:  
+build_script:
+  - python setup.py sdist -d wheelhouse --formats=gztar
+  - python -m cibuildwheel --output-dir wheelhouse
+  # - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
+
+  - cmake -D WHEEL_GLOB=wheelhouse\nptsne*.whl -D BUILD_NUMBER=$APPVEYOR_BUILD_NUMBER -P %APPVEYOR_BUILD_FOLDER%\cmake\UploadWheel.cmake
+  
+on_success:
+  - echo "In success"
+
+
+artifacts:
+  - path: "wheelhouse\\*.whl"
+    name: Wheels
+
+      
+deploy_script:
+  ps: >-
+    if ($env:APPVEYOR_REPO_TAG -eq $true) {
+      Write-Output("Deploying to PyPI")
+      cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_PASSWORD% --verbose wheelhouse/* 2>&1'
+    } else {
+      Write-Output("Deploying to PyPI-Test")
+      cmd /c 'twine upload -u %TWINE_USER% -p %TWINE_TESTPYPI_PASSWORD% --verbose --repository testpypi wheelhouse/* 2>&1'
+    }
+

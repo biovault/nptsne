@@ -1,0 +1,19 @@
+Version |version|
+-----------------
+Supports python 3.6, 3.7, and 3.8 on Windows, Ubuntu (using manylinux2010) and Macos.
+
+Changelog 1.1.0
+~~~~~~~~~~~~~~~
+- Using the latest `HDI Library <http://github.com/biovault/HDILib>`_ 
+  v1.2.1 supporting the additional Annoy knn method.
+
+- Building with cibuildwheel to give manylinux support 
+  for a wide range of linux platforms.
+
+- This version is extended with HSNE support. This comprises the
+  HSne class which can generate or load an hsne analysis and supporting
+  classes (Analysis and AnalysisModel) that can be used to navigate the HSne 
+  hierarchy.
+
+- Additionally a number of demos of GPU accelerated t-SNE and HSNE are available at
+  :ref:`Demo list`

@@ -1,0 +1,6 @@
+PyQt5
+matplotlib
+scipy
+networkx
+python-louvain
+nptsne  

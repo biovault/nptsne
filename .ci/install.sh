@@ -1,29 +1,6 @@
-#!/usr/bin/env bash
+pip install six==1.12.0
+pip install conan==1.24.1 
+pip install conan_package_tools==0.32.2 bincrafters_package_tools==0.26.3
+echo Python version:
+python --version 
 
-set -ex
-
-if [[ "$(uname -s)" == 'Darwin' ]]; then
-    OS=MacOSX-x86_64
-    wget -O miniconda.sh https://repo.continuum.io/miniconda/Miniconda${OSX_PYTHON:0:1}-latest-$OS.sh
-    bash miniconda.sh -b -p $HOME/miniconda
-    export PATH="$HOME/miniconda/bin:$PATH"
-    conda config --set always_yes yes --set changeps1 no
-    conda config --add channels conda-forge
-    conda update -q conda
-    conda install -q conda-build
-    conda create -q -n build_env python=$OSX_PYTHON
-    source activate build_env  
-    conda install -n build_env cmake
-    conda install -c conda-forge conan 
-    conda install -c conda-forge scikit-build
-else
-    pip install six==1.12.0
-    pip install conan==1.19.3 
-    pip install scikit-build         
-fi
-
-pip install conan_package_tools==0.29.3 bincrafters_package_tools==0.21.0
-
-
-# Automatic detection of arch, compiler, etc. & create conan data dir.    
-conan user

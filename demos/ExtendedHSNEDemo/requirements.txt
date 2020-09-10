@@ -1,0 +1,5 @@
+matplotlib
+nptsne
+PyQt5
+pandas
+pywin32; sys_platform == 'win32'

@@ -1,0 +1,11 @@
+Version 1.0.0
+-------------
+Supports python 3.6 and 3.7 Windows, Ubuntu (xenial/16.04 and upward) and Macos.
+
+Changelog 1.0.0
+~~~~~~~~~~~~~~~
+Using the latest `HDI Library <http://github.com/biovault/HDILib>`_
+which supports both GPU computer shader (Windows and Linux) and GPU
+rasterizer (Macos) versions of the underlying tSNE algorithm.
+
+Added reinitialize_transform to TextureTsneExtended to allow quick embedding regeneration.
