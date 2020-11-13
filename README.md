@@ -7,7 +7,7 @@
 
 **nptsne** is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation and HSNE modelling.
 
-For more detail see the [documentation](https://biovault.github.io/nptsne/)
+For more detail see the [documentation](https://nptsne.readthedocs.io/en/release-1.1.0)
 
 Currently python 3.6, 3.7, and 3.8 are supported on Windows, Mac and Linux using [cibuildwheel](https://cibuildwheel.readthedocs.io/en/stable/)
 
