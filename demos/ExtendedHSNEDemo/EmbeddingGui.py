@@ -74,7 +74,7 @@ class EmbeddingGui(FigureCanvas):
     A - select all
     D - remove selection
     I - invert selection
-    
+
     Shaped selector keys:
     =====================
     E - ellipse
@@ -82,13 +82,14 @@ class EmbeddingGui(FigureCanvas):
     P - polygon
     R - rectangle
     Space - remove selector
-    
+
     Selector modifier keys
     ======================
     <Shift> + <selector key> - add selection
     <Ctrl> + <selector key> - subtract selection
             """)
-            
+        self.selectors = {}
+        self.embedding = None
         plt.show(block=False)
 
     def get_canvas_timer(self, interval):
@@ -108,7 +109,7 @@ class EmbeddingGui(FigureCanvas):
             color_norm=None):
         """ Set the initial embedding and point weights
             to create and display the plot at iteration step=0"""
-
+        # pylint: disable=attribute-defined-outside-init
         self.top_level = top_level
         self.labels = labels
         self.color_norm = color_norm
@@ -140,6 +141,7 @@ class EmbeddingGui(FigureCanvas):
         self.embedding = embedding
         self.on_selection = on_selection
         self.on_close = on_close
+        # pylint: enable=attribute-defined-outside-init
         x = embedding[:, 0]
         y = embedding[:, 1]
         if self.labels is None:
@@ -150,12 +152,12 @@ class EmbeddingGui(FigureCanvas):
                 x, y,
                 s=weights * 8,
                 c=self.labels,
-                # TODO make color map user selectable
+                # TODO make color map user selectable pylint: disable=fixme
                 cmap=plt.cm.rainbow_r, # # pylint: disable=no-member
                 norm=self.color_norm,
                 alpha=0.4,
                 picker=10)
-                
+
         self.update_scatter_plot_limits(embedding)
 
         # Drawing selectors
@@ -182,6 +184,7 @@ class EmbeddingGui(FigureCanvas):
             DrawingShape.Rectangle: rectangle_selector,
             DrawingShape.Polygon: polygon_selector
         }
+        # pylint: disable=attribute-defined-outside-init
         self.set_selector()
         # force rendering of facecolors
         self.fig.canvas.draw()
@@ -195,7 +198,7 @@ class EmbeddingGui(FigureCanvas):
         """Cleanup at the canvas close event"""
         self.fig.canvas.stop_event_loop()
         self.on_close()
-    
+
     def update_scatter_plot_limits(self, embedding):
         """Resize the plot te respect the extent of the updated embedding"""
         minp = np.amin(embedding, axis=0)
@@ -221,7 +224,7 @@ class EmbeddingGui(FigureCanvas):
 
     def force_refresh(self):
         """Force complete canvas redraw"""
-        if (not self.facecolors is None and 
+        if (not self.facecolors is None and
             not self.scatter is None):
             self.scatter.set_facecolors(self.facecolors)
         fig_size = self.fig.get_size_inches()
@@ -249,10 +252,13 @@ class EmbeddingGui(FigureCanvas):
         if not self.in_selection:
             # Emit a transient selection
             cont, index = self.scatter.contains(event)
+            perm_set = set(np.nonzero(self.selection_mask)[0])
             if cont:
-                self.on_selection(list(index['ind']), SelectionEvent.TRANSIENT)
+                #self.on_selection(list(index['ind']), SelectionEvent.TRANSIENT)
+                self.on_selection(list(set(index['ind']) | perm_set), SelectionEvent.TRANSIENT)
             else:
-                self.on_selection([], SelectionEvent.TRANSIENT)
+                #self.on_selection([], SelectionEvent.TRANSIENT)
+                self.on_selection(list(perm_set), SelectionEvent.TRANSIENT)
 
     def refresh_selection(self):
         """Adjust the edge colors to reflect the selection
@@ -263,7 +269,7 @@ class EmbeddingGui(FigureCanvas):
         ec = self.scatter.get_facecolors()
         if ec.shape[0] == 1:
             ec = np.tile(ec, (xys.shape[0], 1))
-        lw = np.full((ec.shape[0]), 1)    
+        lw = np.full((ec.shape[0]), 1)
         # Set selected edge colors to dark grey and 2 thickness
         ec[self.selection_mask] = (0.05, 0.05, 0.05, 1)
         lw[self.selection_mask] = 2
@@ -370,7 +376,7 @@ class EmbeddingGui(FigureCanvas):
         if self.draw_state[0] == DrawingMode.Sub:
             self.selection_mask = self.selection_mask & ~selection_mask
         self.refresh_selection()
-    
+
     def set_selection(self, indexes):
         """Set a non-interactive selection.
             This could be a saved selection or one driven
@@ -412,6 +418,7 @@ class EmbeddingViewer(QtWidgets.QWidget):
         self.main_layout.setStretch(0, 1)
         self.setLayout(self.main_layout)
         self.selection_list = []
+        self.on_selection_callback = None
 
     def init_plot(
             self,
@@ -423,6 +430,18 @@ class EmbeddingViewer(QtWidgets.QWidget):
             top_level=False,
             labels=None,
             color_norm=None):
+        """Initialize the scatter plot with the embedding provided
+
+        Args:
+            embedding ([type]): [description]
+            weights ([type]): [description]
+            on_selection ([type]): [description]
+            on_close ([type]): [description]
+            disable_select (bool, optional): [description]. Defaults to False.
+            top_level (bool, optional): [description]. Defaults to False.
+            labels ([type], optional): [description]. Defaults to None.
+            color_norm ([type], optional): [description]. Defaults to None.
+        """
         self.plot_widget.init_plot(
             embedding,
             weights,
@@ -435,13 +454,30 @@ class EmbeddingViewer(QtWidgets.QWidget):
         self.on_selection_callback = on_selection
 
     def set_face_colors(self, color_array):
+        """Set the point glyph colors
+
+        Args:
+            color_array (np.ndarray): a numpy array of #XXXXXX colors
+        """
         self.plot_widget.set_face_colors(color_array)
 
     def set_selection(self, index_array):
+        """Set a selectio from an outside source
+
+        Args:
+            index_array (nd.array): The index_array is a numpy array of indexes
+        """
         self.plot_widget.set_selection(index_array)
-        
+
     @QtCore.pyqtSlot()
     def on_selection(self, indexes, selection_event):
+        """Handle a user selection operation in the plot
+        Save the indexes and feed them back to the controller
+
+        Args:
+            indexes (np.ndarray): selection indexes
+            selection_event (SelectionEvent.Enum): A permanent or transient (mouse over) selection
+        """
         # print(f"indexes: {indexes.shape} selection size: {len(list(indexes))} perm: {permanent}")
         if selection_event is SelectionEvent.PERMANENT:
             self.selection_list = indexes
@@ -459,10 +495,17 @@ class EmbeddingViewer(QtWidgets.QWidget):
 
     @QtCore.pyqtSlot()
     def on_new_analysis(self):
-        self.on_selection_callback(self.selection_list, True)
+        """Start a new analysis bases on the selected indexes in this embedding."""
+        if len(self.selection_list) > 0:
+            self.on_selection_callback(self.selection_list, True)
+        else:
+            QtWidgets.QMessageBox.warning(self,
+                "Warning", "Select some landscape points first to create a new analysis.")
 
     def set_dynamic_indexes(self, indexes):
-        pass
+        """A hook that could be employed to handle operations dependent on
+        transient selections. Currently unused."""
+        pass  # pylint: disable=unnecessary-pass
 
     def get_canvas_timer(self, time):
         """Return a timer that can be used with the plot canvas"""
@@ -474,9 +517,11 @@ class EmbeddingViewer(QtWidgets.QWidget):
         self.plot_widget.update_plot(embedding)
 
     def force_refresh(self):
+        """Redraw the plot widget"""
         self.plot_widget.force_refresh()
 
     def get_figure_as_buffer(self):
+        """Return the scatter plot as an image in a buffer"""
         return self.plot_widget.get_figure_as_buffer()
 
     def set_static_mask(self, mask):

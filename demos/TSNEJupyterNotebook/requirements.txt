@@ -1,0 +1,6 @@
+matplotlib
+scipy
+nptsne
+numpy
+six
+umap-learn

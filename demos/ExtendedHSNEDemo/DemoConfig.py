@@ -4,7 +4,7 @@ from pathlib import Path
 from ConfigClasses import (LabelledImage, PointMeta, HyperspectralImage,
                            LabelledData, MetaData, PlainData,
                            Hsne, Embedding, ImageInfo)
-                           
+
 root = Path(__file__).resolve().parent.parent
 
 LABELLED_EXAMPLE = LabelledImage(
@@ -30,6 +30,15 @@ HYPERSPECTRAL_EXAMPLE = HyperspectralImage(
     ImageInfo(512, 512)
 )
 
+DCMALL_EXAMPLE = HyperspectralImage(
+    'DC Mall hyperspectral (1280x307)',
+    PlainData(str(root / 'data/dc_us.npy')),
+    Hsne(str(root / 'data/dc_us.hsne'), 4),
+    Embedding(500),
+    ImageInfo(1280, 307)
+)
+
 CONFIGS = [LABELLED_EXAMPLE,
            POINT_EXAMPLE,
-           HYPERSPECTRAL_EXAMPLE]
+           HYPERSPECTRAL_EXAMPLE,
+           DCMALL_EXAMPLE]

@@ -4,7 +4,6 @@
 from pathlib import Path
 import queue
 import sys
-import csv
 
 from matplotlib import colors
 # The nptsne package and the hsne_analysis navigation support
@@ -33,6 +32,9 @@ class ModelController():
         self.color_norm = None
         self.analysis_event_queue = queue.Queue()
         self.model_gui = None
+        self.im_size = (0, 0)
+        self.app = None
+        self.labelcolor_filename = None
 
     def run(self):
         """ Display the control gui comprising a tree of the scales/analyses
@@ -91,7 +93,7 @@ class ModelController():
 
         if self.model_gui.demo_type is DemoType.POINT_DEMO:
             analysis_gui.set_metapath(self.labelcolor_filename)
-            
+
         analysis_gui.start_embedding(
             self.data,
             new_analysis,
@@ -151,7 +153,10 @@ class ModelController():
             min: {self.labels.min()} max: {self.labels.max()}')
         self.color_norm = colors.Normalize(
             vmin=self.labels.min(), vmax=self.labels.max())
-        print(f'Color norm: {self.color_norm} norm 0: {self.color_norm(0)} norm 9: {self.color_norm(9)}')
+        print(
+            f'Color norm: {self.color_norm} '
+            f'norm 0: {self.color_norm(0)} '
+            f'norm 9: {self.color_norm(9)}')
 
     def get_label_colors_pair(self, labelcolor_file):
         """ Return a dict with:
@@ -203,10 +208,10 @@ class ModelController():
             self.add_analysis,
             self.remove_analysis,
             self.analysis_stopped)
-            
+
         if self.model_gui.demo_type is DemoType.POINT_DEMO:
             top_analysis_gui.set_metapath(self.labelcolor_filename)
-            
+
         top_analysis_gui.start_embedding(
             self.data,
             top_analysis,

@@ -1,12 +1,11 @@
-import nptsne
-from nptsne import hsne_analysis
+"""demonstrate that the HSNE transition matrix can be used for Louvain clustering"""
 from pathlib import Path
+import nptsne
 import numpy as np
 import community as community_louvain
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib
-import networkx as nx
 from matplotlib.lines import Line2D
 
 matplotlib.use("Qt5Agg")
@@ -32,37 +31,36 @@ data = []
 for r_ind, rcol in enumerate(tmatrix):
     for tup in rcol:
         if not isinstance(tup, tuple):
-            continueexit()
+            continue
         row.append(r_ind)
         col.append(tup[0])
-        data.append(tup[1])  
-        
-def make_nxgraph_from_sparse_data(row, col, weights):
-    """Get igraph graph from row cols indexes and weights 
+        data.append(tup[1])
+
+def make_nxgraph_from_sparse_data(drow, dcol, weights):
+    """Get igraph graph from row cols indexes and weights
     Code is adapted from scanpy utils"""
-    
+
     g = nx.Graph()
-    g.add_weighted_edges_from(list(zip(row, col, weights)))
+    g.add_weighted_edges_from(list(zip(drow, dcol, weights)))
     return g
 
 graph = make_nxgraph_from_sparse_data(row, col, data)
-    
+
 # sparse = coo_matrix((data, (row, col)), shape = (len(tmatrix), len(tmatrix)))
 
 markers = [r'$\alpha$', r'$\beta$', r'$\gamma$', r'$\delta$', r'$\epsilon$', \
             r'$\zeta$', r'$\eta$', r'$\theta$', r'$\iota$', r'$\kappa$', \
             r'$\lambda$', r'$\mu$', r'$\nu$', r'$\xi$', \
             r'$\omicron$', r'$\pi$', r'\$\rho$', r'$\sigma$', \
-            r'$\tau$', r'$\upsilon$', r'$\phi$', r'$chi$', \
+            r'$\tau$', r'$\upsilon$', r'$\phi$', r'$\chi$', \
             r'$\psi$', r'$\omega$']
-            
+
 
 print('Apply Louvain partitioning')
 partition = community_louvain.best_partition(graph, resolution=0.7)
 
 print('Calculate network spring layout, this may take some time...')
 pos = nx.spring_layout(graph)
-count = 0
 cmap = matplotlib.cm.get_cmap('rainbow_r')
 legend_coms = []
 com_label =[]
@@ -72,23 +70,22 @@ fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 
 for com in set(partition.values()) :
-    count = count + 1
     list_nodes = [nodes for nodes in partition.keys()
                                 if partition[nodes] == com]
-    ids =  scale2.landmark_orig_indexes[list_nodes] 
+    ids =  scale2.landmark_orig_indexes[list_nodes]
     labs = lab[ids]
-    # print(labs)    
+    # print(labs)
     edgecolors = [cmap(label/9.0) for label in labs]
     # print(edgecolors)
     legend_coms.append(markers[com])
     nx.draw_networkx_nodes(
         graph, pos, list_nodes, node_size = 70,
-        edgecolors=edgecolors, linewidths=0.15, 
+        edgecolors=edgecolors, linewidths=0.15,
         node_color=edgecolors,
         node_shape=markers[com],
         ax=ax)
 
-    
+
 nx.draw_networkx_edges(graph, pos, alpha=0.01, ax=ax)
 
 legend_lines = []
@@ -97,7 +94,7 @@ unique_lab = np.unique(lab).tolist()
 for l in unique_lab:
     legend_lines.append(Line2D([0], [0], color=cmap(l/9.0)))
 
-ax.legend(legend_lines, unique_lab, loc='lower right') 
+ax.legend(legend_lines, unique_lab, loc='lower right')
 ax.set_title(f'Partition has {len(legend_coms)} Louvain communities: ' + ', '.join(legend_coms))
 plt.tight_layout()
-plt.show() 
+plt.show()

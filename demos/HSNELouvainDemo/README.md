@@ -52,12 +52,12 @@ for r_ind, rcol in enumerate(tmatrix):
         col.append(tup[0])
         data.append(tup[1])  
 
-def make_nxgraph_from_sparse_data(row, col, weights):
+def make_nxgraph_from_sparse_data(drow, dcol, weights):
     """Get igraph graph from row cols indexes and weights
     Code is adapted from scanpy utils"""
 
     g = nx.Graph()
-    g.add_weighted_edges_from(list(zip(row, col, weights)))
+    g.add_weighted_edges_from(list(zip(drow, dcol, weights)))
     return g
 
 graph = make_nxgraph_from_sparse_data(row, col, data)
@@ -75,4 +75,6 @@ partition = community_louvain.best_partition(graph, resolution=0.7)
 
 #### Data sources
 
-MNIST Data - retrieved from mnist-orignal.mat (https://github.com/amplab/datascience-sp14/raw/master/lab7/mldata/mnist-original.mat) a Matlab format data file derived from the original Yann LeCun MNIST data base at http://yann.lecun.com/exdb/mnist/
+MNIST Data - retrieved from [mnist-orignal.mat](https://github.com/amplab/datascience-sp14/raw/master/lab7/mldata/mnist-original.mat)
+
+This Matlab format data file is derived from the original [Yann LeCun MNIST data base](http://yann.lecun.com/exdb/mnist/)

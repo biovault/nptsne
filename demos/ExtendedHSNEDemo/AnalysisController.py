@@ -15,8 +15,6 @@ Classes:
 import time
 import numpy as np
 from PyQt5 import QtWidgets  # pylint: disable=no-name-in-module
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QCloseEvent
 from EmbeddingGui import EmbeddingViewer
 from ModelGui import DemoType
 from CompositeImageViewer import CompositeImageViewer
@@ -55,6 +53,20 @@ class AnalysisController(QtWidgets.QDialog):
         self.meta_path = None
 
         self.__init_ui()
+
+        # HSNE Analysis and data
+        self.analysis = None          # hsne analysis
+        self.data = None              # the original data
+        self.image_dimensions = None  # the dimensions if the data rows represent an image
+        self.iterations = None        # number of embedding iterations to perform for the layout
+
+        # Embedding iteration control
+        self.iters_per_frame = 1  # frames contain multiple iterations (for rendering speed)
+        self.num_frames = 0       # number of render frames
+        self._stop_iter = False   # stop iterating flage
+        self._iter_count = 0      # current iteration
+        self.timer_count = 0      # total number or iterations
+        self.timer = None         # iteration timer
 
     def __init_ui(self):
         # Define the layout
@@ -147,7 +159,7 @@ class AnalysisController(QtWidgets.QDialog):
                 self._stop_iter = True
                 send_stop_event = True
                 self.timer_count = 0
-                self.status.showMessage(f"Iteration: Completed")
+                self.status.showMessage("Iteration: Completed")
 
             # Update point positions
             self.embedding_viewer.update_plot(self.analysis.embedding)
@@ -201,7 +213,7 @@ class AnalysisController(QtWidgets.QDialog):
     #  Callbacks to be used by meta data manipulation GUIs
     def on_meta_ids(self, ids):
         """Point ids from the meta data (could extend to more metadata)"""
-        pass
+        pass  # pylint: disable=unnecessary-pass
 
     def on_meta_colors(self, color_array):
         """Colors settings from a metadata viewer.
@@ -240,11 +252,11 @@ class AnalysisController(QtWidgets.QDialog):
         if remove_analysis:
             print('Deleting analysis on close')
             self.remove_analysis(self.analysis.id)
-        del self.analysis    
+        del self.analysis
         self.analysis = None
-        
+
     # Override closeEvent for the widget
-    def closeEvent(self, event):
+    def closeEvent(self, event):  # pylint: disable=invalid-name
         """Make sure that closing the dialog cleans up the analysis"""
         self.cleanup(True)
         event.accept()
