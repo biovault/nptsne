@@ -2,13 +2,14 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/w2paw56r8mju1k2h/branch/master?svg=true)](https://ci.appveyor.com/project/bldrvnlw/nptsne/branch/master)
 
-[![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=latest)](https://nptsne.readthedocs.io/en/latest/?badge=latest)
+
+[![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=stable)](https://nptsne.readthedocs.io/en/release-1.1.0/)
 
 # nptsne
 
 **nptsne** is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation and HSNE modelling.
 
-For more detail see the [documentation](https://nptsne.readthedocs.io/en/release-1.1.0)
+For more detail see the [documentation for the current release - 1.1.0](https://nptsne.readthedocs.io/en/release-1.1.0)
 
 Currently python 3.6, 3.7, and 3.8 are supported on Windows, Mac and Linux using [cibuildwheel](https://cibuildwheel.readthedocs.io/en/stable/)
 
