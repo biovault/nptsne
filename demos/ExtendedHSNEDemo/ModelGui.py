@@ -121,7 +121,7 @@ class ModelGui(QDialog):
         for config in CONFIGS:
             self.preconfigured_combo.addItem(config.descriptor, userData=config)
         self.preconfigured_combo.currentIndexChanged[int].connect(
-            self.on_preconfigured)    
+            self.on_preconfigured)
         preconfigured_layout.addRow(
             QLabel("Load preset demo:"),
             self.preconfigured_combo)
@@ -300,7 +300,7 @@ class ModelGui(QDialog):
     @property
     def im_size_y(self):
         return int(self.image_y.text())
-        
+
     @pyqtSlot(int)
     def on_preconfigured(self, index):
         config = self.preconfigured_combo.itemData(index)
@@ -318,11 +318,11 @@ class ModelGui(QDialog):
                 self.__set_scale_from_hsne_file()
                 self.scale_spin.setDisabled(True)
             elif config.hsne.scales > 0:
-                self.scale_spin.setValue(config.hsne.scales)        
+                self.scale_spin.setValue(config.hsne.scales)
             if config.image.dim_x > 0 and config.image.dim_y > 0:
                 self.image_x.setText(str(config.image.dim_x))
-                self.image_y.setText(str(config.image.dim_y))   
-           
+                self.image_y.setText(str(config.image.dim_y))
+
         elif type(config).__name__ == "PointMeta":
             self.data_type_combo.setCurrentIndex(1)
             self.name = config.data.data_file
@@ -335,7 +335,7 @@ class ModelGui(QDialog):
                 self.scale_spin.setDisabled(True)
             elif config.hsne.scales > 0:
                 self.scale_spin.setValue(config.hsne.scales)
-                
+
         elif type(config).__name__ == "HyperspectralImage":
             self.data_type_combo.setCurrentIndex(2)
             self.name = config.data.data_file
@@ -345,12 +345,12 @@ class ModelGui(QDialog):
                 self.__set_scale_from_hsne_file()
                 self.scale_spin.setDisabled(True)
             elif config.hsne.scales > 0:
-                self.scale_spin.setValue(config.hsne.scales)        
+                self.scale_spin.setValue(config.hsne.scales)
             if config.image.dim_x > 0 and config.image.dim_y > 0:
                 self.image_x.setText(str(config.image.dim_x))
                 self.image_y.setText(str(config.image.dim_y))
-                
-        self.start_button.setEnabled(True)    
+
+        self.start_button.setEnabled(True)
 
     @pyqtSlot(int)
     def on_demo_style(self, index):
@@ -387,12 +387,12 @@ class ModelGui(QDialog):
                 self.image_x.setText(str(xsize))
                 self.image_y.setText(str(ysize))
             self.data_label.setText(str(Path(self.name).name))
-    
+
     def __set_scale_from_hsne_file(self):
         scale_value = nptsne.HSne.read_num_scales(self.hsne_name)
         self.hsne_label.setText(str(Path(self.hsne_name).name))
         self.scale_spin.setValue(scale_value)
-        self.scale_spin.setDisabled(True)        
+        self.scale_spin.setDisabled(True)
 
     @pyqtSlot()
     def on_load_hsne(self):

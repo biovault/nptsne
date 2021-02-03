@@ -54,10 +54,11 @@ class CompositeImageViewer(FigureCanvas):
         if len(indexes) > 0:
             for i in indexes:
                 self.composite_digit = np.add(
-                    self.composite_digit, self.data[i, :])           
+                    self.composite_digit, self.data[i, :])
             self.composite_digit = self.composite_digit / len(indexes)
         digit = np.reshape(self.composite_digit, self.image_dimensions)
         self.display_img.set_array(digit)
+        self.display_img.set_clim(vmin=digit.min().min(), vmax=digit.max().max())
         self.force_refresh()
 
     def force_refresh(self):

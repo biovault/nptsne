@@ -12,17 +12,17 @@ stages:
   # Testing is part of build- using the CIBW_TEST_COMMAND
   - build
   # Tagged builds are for release to PyPI
-  - name: deploy to pypi
-    if: (tag IS present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+  - name: deploy_to_pypi
+    if: tag =~ ^v
   # Untagged builds are for test in TestPyPI
-  - name: deploy to testpypi
-    if: (tag IS not present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+  - name: deploy_to_testpypi
+    if: NOT (tag =~ ^v)
     
   - name: readthedocs_pypi
-    if: (tag IS present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    if: tag =~ ^v
     
   - name: readthedocs_testpypi
-    if: (tag IS not present) AND ((env(BUILD_LINUX) = true) OR (env(BUILD_OSX) = true))
+    if: NOT (tag =~ ^v)
   
 # yaml anchor for upload to artifactory wheels dir 
 _wheelhouse_upload: &_wheelhouse_upload
@@ -37,12 +37,6 @@ _deploy_install: &_deploy_install
   - wget -r -np -nH --cut-dirs 5 -A '*.whl' http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
   
-branches: 
-  only: 
-    - /feature\/.*/
-    - release/1.0.0
-    - release/1.1.0
-    - master
     
 env: 
   global: 
@@ -128,18 +122,18 @@ jobs:
       - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
 
   # Deploy to testpypi if not tagged
-  - stage: deploy to testpypi
+  - stage: deploy_to_testpypi
     install:
         *_deploy_install
     script:
       - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi $HOME/twine/*.whl
 
   # Deploy to pypi if tagged
-  - stage: deploy to pypi
+  - stage: deploy_to_pypi
     install:
         *_deploy_install
     script:
-      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD $HOME/twine/*.whl
+      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD --repository pypi $HOME/twine/*.whl
 
   - stage: readthedocs_testpypi
     script:
@@ -152,7 +146,7 @@ jobs:
   - stage: readthedocs_pypi
     script:
       - export VERSION=`python setup.py --version`
-      - echo Check version $VERSION is on testpypi
+      - echo Check version $VERSION is on pypi
       - python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, False)"
       - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
       - curl -X POST -d "branches=$TRAVIS_BRANCH" -d"token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/

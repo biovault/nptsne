@@ -15,7 +15,7 @@ A number of pre-packages demos provide a quick start to the application.
 > python ../unpack_data.py
 > # or unpack data on windows
 > python ..\unpack_data.py
-> pip install -r requirements
+> pip install -r requirements.txt
 ```
 #### Running
 
@@ -65,7 +65,7 @@ or the photosphere
 
 10. Before loading new data restart the program.
 
-11. Load the **MTG cell data**
+11. Load the **MTG cell** data*
 
 12. The analysis immediately reveals multiple well separate clusters some of which have a clear link with cluster labels (select the cluster label in the table - in this case the Exc L3-5 RORB ESR1 cluster label strongle associated with the group below center)
 
@@ -74,6 +74,29 @@ or the photosphere
 13. Selection of othe label groubs and sub analyses are possible
 
    ![Cluster ](MTGSubAnalysis.png "Cluster label is selected")
+
+14. Before loading new data restart the program.
+
+15. Load the **DC Mall hyperspectral** data
+
+16. Load the dc_us.png image as background and select a blend level.
+
+17. Moving the cursor over the top level of the HSNE reveals a number of interesting clusters
+
+18. Copper roofs: including the US Capitol (bottom center) and the National Academy of Sciences building (top right)
+
+   ![Copper roofs](DC_Copper.png "Copper roof cluster selected")
+
+19. Terracotta tile roofs: including the Herbert C. Hoover building, the US EPA building (right hand side half-way down).
+
+   ![Terracotta roofs](DC_Tile.png "Terracotta tile cluster selected")
+
+20. Water features. The Lincoln Memorial Reflecting Pool, Potomac River, Tidal inlets and other water features mostly form distinct clusters. All the clusters have been selected here using the add selection feature.
+
+    ![Water](DC_Water.png "All the water features")
+
+21. Use the blend slider to increase/decrease background visibility to help locate the highlighted areas.
+
 
 ##### Summary pre-packaged data
 
@@ -84,6 +107,7 @@ Demo name | Data type | Description
 MNIST 70000 digits | Image is data point | MNIST style data
 MTG cell data | Point and metadata | Multidimensional points with associated metadata
 Hyperspectral sun (512x512) | Hyperspectral image | Each pixel has multiple values
+DC Mall (hyperspectral) | Hyperspectral image | Each pixel has multiple values
 
 ##### Using your own data
 
@@ -107,6 +131,11 @@ In detail these types are as follows:
 3.  __Hyper-spectral image__
   <br/>Single data file
   * npy file - shape = (\<number_of_images\>, \<number_of_pixels\>)
+
+###### Data conversion
+For the DC Mall data an offset was applied to the original tiff values to make everything positive and the result was converted to uint32. The 'us' in the filename stands for unsigned.
+
+###### Loading a precalculated .hsne file
 
 A pre-calculated HSNE model can be saved and read from a file with the __.hsne__ extension.
 
@@ -144,3 +173,5 @@ MNIST Data - retrieved from mnist-orignal.mat (https://github.com/amplab/datasci
 Hyperspectral Solar Images - downloaded from the [Solar Dynamics Observatory](http://sdo.gsfc.nasa.gov/) as in the original [Hierarchical Stochastic Neighbor Embedding](https://doi-org.tudelft.idm.oclc.org/10.1111/cgf.12878) paper.
 
 MTG cell data - 15603 cell samples from the human middle temporal gyrus with single-nucleus transcriptomes. Data is derived from the complete set at [Allen Institute for Brain Science](https://portal.brain-map.org/atlases-and-data/rnaseq)
+
+DC Mall data - downloaded from the [Purdue University MultiSpec(c) page](https://engineering.purdue.edu/~biehl/MultiSpec/hyperspectral.html). The original 191 band hyperspectral data was created by the Spectral Information Technology Application Center of Virginia.
