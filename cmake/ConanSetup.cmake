@@ -20,8 +20,8 @@ string(TIMESTAMP timestamp "%Y.%m.%d")
 if("${file_timestamp}" VERSION_LESS ${timestamp} OR IS_CI)
     file(WRITE ${CMAKE_BINARY_DIR}/conan_install_timestamp.txt "${timestamp}\n")
     set(CONAN_UPDATE UPDATE)
-    conan_add_remote(NAME conan-hdim INDEX 0 
-        URL http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local)
+    conan_add_remote(NAME lkeb-artifactory INDEX 0
+        URL https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local)
     conan_add_remote(NAME bincrafters INDEX 1
         URL https://api.bintray.com/conan/bincrafters/public-conan)
 else()
@@ -38,13 +38,13 @@ endif()
 set(CONAN_SETTINGS "")
 
 if(UNIX)
-    if(LIBCXX) 
+    if(LIBCXX)
         set(CONAN_SETTINGS ${CONAN_SETTINGS} "compiler.libcxx=${LIBCXX}")
-    endif()    
+    endif()
 endif()
 
 message(STATUS "Install dependencies with conan")
-# NO_OUTPUT_DIRS - ensures that the output dirs (e.g. CMAKE_LIBRARY_OUTPUT_DIRECTORY) 
+# NO_OUTPUT_DIRS - ensures that the output dirs (e.g. CMAKE_LIBRARY_OUTPUT_DIRECTORY)
 # which are set in setup.py are left alone
 conan_cmake_run(
     CONANFILE conanfile.py

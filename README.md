@@ -26,7 +26,12 @@ The *requirements.txt* and the *pyproject.toml* contain the list of build requir
 conan remote add conan-biovault http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local
 ```
 
-#### Development build & install using python
+### Development build & install using python
+
+On Windows if multiple versions of Visual Studio are present the x64 Native Tools batch
+(vcvarsall.bat) can be run first to select the correct version. At the moment only
+VS 2017 (version 15.0) is supported.
+
 ```shell
 pip install -v -e .
 ````
@@ -34,6 +39,7 @@ pip install -v -e .
 This will automatically create a *build* subdirectory build the bindings and create an .egg-link file in the current python environment.
 
 On Windows a *_nptsne.sln* file will be present under the build directory
+
 
 #### Alternative manual Windows build
 
@@ -45,7 +51,7 @@ On Windows a *_nptsne.sln* file will be present under the build directory
  cd to the build directory and issue the following (for VisualStudio 2017):
 ```
 cmake .. -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON
-```      
+```
     (*Note: this assumes that the build dir is one level down from the project root.
     The default of NPTSNE_BUILD_WITH_CONAN is OFF*)
  - If all goes well Conan will have installed the dependencies in its cache and

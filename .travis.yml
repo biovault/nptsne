@@ -61,7 +61,7 @@ jobs:
     name: Build linux bdist wheels
     if: env(BUILD_LINUX) = true
     services: docker
-    
+
     install:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
@@ -69,10 +69,10 @@ jobs:
     script: 
     - "set -e"
     - "cibuildwheel --output-dir wheelhouse"
-    
+
     after_success:
       *_wheelhouse_upload
-      
+
     env:
       - CONAN_GCC_VERSIONS=8 
       - CONAN_BUILD_TYPES=Release
@@ -102,7 +102,7 @@ jobs:
     install:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
-    
+
     script: 
     - "set -e"
     - "python3 -m cibuildwheel --output-dir wheelhouse"
