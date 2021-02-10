@@ -34,7 +34,7 @@ _deploy_install: &_deploy_install
   - python3 -m pip install twine
   - mkdir $HOME/twine
   - cd $HOME/twine
-  - wget -r -np -nH --cut-dirs 5 -A '*.whl' http://cytosplore.lumc.nl:8081/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
+  - wget -r -np -nH --cut-dirs 5 -A '*.whl' https://lkeb-artifactory.lumc.nl/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
   
     
@@ -43,7 +43,7 @@ env:
     - CIBW_TEST_COMMAND="python {project}/test/run_doctest.py"
     - CONAN_LOGIN_USERNAME="admin"
     - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET
-    - CONAN_UPLOAD="http://cytosplore.lumc.nl:8081/artifactory/api/conan/conan-local"
+    - CONAN_UPLOAD="https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local"
     - CONAN_STABLE_BRANCH_PATTERN="release/*"
     - CONAN_UPLOAD_ONLY_WHEN_STABLE=1
     - TWINE_USER=bldrvnlw
