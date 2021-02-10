@@ -6,7 +6,7 @@
 #include <pybind11/numpy.h>
 #include <pybind11/stl_bind.h>
 namespace py = pybind11;
-#include "KnnAlgorithm.h"
+#include <hdi/dimensionality_reduction/knn_utils.h>
 #include <hdi/dimensionality_reduction/hierarchical_sne.h>
 #include <hdi/utils/cout_log.h>
 #include "Types.h"

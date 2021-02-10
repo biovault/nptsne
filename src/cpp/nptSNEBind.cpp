@@ -9,7 +9,9 @@
 #include "Analysis.h"
 #include "SparseTsne.h"
 #include "Types.h"
+#include "hdi/dimensionality_reduction/knn_utils.h"
 #include <string>
+#include <algorithm>
 #include <functional>
 #include <tuple>
 #include <limits>
@@ -25,17 +27,91 @@ PYBIND11_MODULE(_nptsne, m) {
     )pbdoc";
 
     // ENUMS
-    py::enum_<KnnAlgorithm>(m, "KnnAlgorithm", R"pbdoc(
+	py::enum_<hdi::dr::knn_distance_metric> enumKDM(m, "KnnDistanceMetric", py::arithmetic(), R"pbdoc(
+            Enumeration used to select the knn distance metric used. Five possibilities are
+            supported:
+
+            `KnnDistanceMetric.Euclidean`: Euclidean metric for all algorithms
+            `KnnDistanceMetric.InnerProduct`: Inner Product metric for HNSW
+            `KnnDistanceMetric.Cosine`: Cosine metric for Annoy
+            `KnnDistanceMetric.Manhattan`: Manhattan metric for Annoy
+            `KnnDistanceMetric.Hamming`: Hamming metric for Annoy, not supported
+            `KnnDistanceMetric.Dot`: Dot metric for Annoy
+        )pbdoc");
+
+	enumKDM
+		.value("Euclidean", hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN)
+		.value("Cosine", hdi::dr::knn_distance_metric::KNN_METRIC_COSINE)
+		.value("InnerProduct", hdi::dr::knn_distance_metric::KNN_METRIC_INNER_PRODUCT)
+		.value("Manhattan", hdi::dr::knn_distance_metric::KNN_METRIC_MANHATTAN)
+		.value("Hamming", hdi::dr::knn_distance_metric::KNN_METRIC_HAMMING)
+		.value("Dot", hdi::dr::knn_distance_metric::KNN_METRIC_DOT);
+
+	py::enum_<hdi::dr::knn_library> enumKA(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn algorithm used. Three possibilities are
             supported:
 
             `KnnAlgorithm.Flann`: Knn using FLANN - Fast Library for Approximate Nearest Neighbors
             `KnnAlgorithm.HNSW`: Knn using Hnswlib - fast approximate nearest neighbor search
             `KnnAlgorithm.Annoy`: Knn using Annoy - Spotify Approximate Nearest Neighbors Oh Yeah
-        )pbdoc")
-        .value("Flann", KnnAlgorithm::Flann)
-        .value("HNSW", KnnAlgorithm::HNSW)
-        .value("Annoy", KnnAlgorithm::Annoy);
+        )pbdoc");
+
+    enumKA
+        .value("Flann", hdi::dr::knn_library::KNN_FLANN)
+		.value("HNSW", hdi::dr::knn_library::KNN_HNSW)
+		.value("Annoy", hdi::dr::knn_library::KNN_ANNOY)
+		.def("get_supported_metrics", [enumKDM](int knn_lib) {
+			auto global = py::dict(py::module::import("__main__").attr("__dict__"));
+			auto m = hdi::dr::supported_knn_library_distance_metrics(knn_lib);
+			std::map<std::string, py::object> result;
+			for (auto item : m) {
+				auto members = enumKDM.attr("__members__");
+				// The keys in the metrics map contain spaces e.g "Inner Product",
+				// the wrapped enum names don't because that
+				// does not work in python. Spaces are erased.
+				auto key = std::string(item.first);
+				key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
+				auto enum_val = members[key.c_str()];
+				result[item.first] = enum_val;
+			}
+			return result;
+		}, R"pbdoc(
+            Get a dict containing KnnDistanceMetric values supported by the KnnAlgorithm.
+
+            Parameters
+            ----------
+            knn_lib : :class:`KnnAlgorithm`
+                The algorithm being queried.
+
+            Example
+            -------
+            Each algorithm has different support. See the tests below.
+
+            >>> from nptsne import KnnDistanceMetric KnnAlgorithm
+            >>> support = KnnAlgorithm.get_supported_metrics(KnnAlgorithm.Flann)
+            >>> for i in support.items():
+            >>>     print(i[0])
+            Euclidean
+            >>> support = KnnAlgorithm.get_supported_metrics(KnnAlgorithm.Annoy)
+            >>> for i in support.items():
+            >>>     print(i[0])
+            Cosine
+            Dot
+            Euclidean
+            Manhattan
+            >>> support = KnnAlgorithm.get_supported_metrics(KnnAlgorithm.HNSW)
+            >>> for i in support.items():
+            >>>     print(i[0])
+            Euclidean
+            Inner Product
+            >>> support["Euclidean"] is KnnDistanceMetric.Euclidean
+            True
+
+            Returns
+            -------
+            :class:`ndarray`
+                A numpy array contain a flatten (1D) embedding
+        )pbdoc");
 
     // CLASSES
     // Basic interface for GPU Texture based tSNE
@@ -58,6 +134,9 @@ PYBIND11_MODULE(_nptsne, m) {
             knn_algorithm : :class:`KnnAlgorithm`
                 The knn algorithm used for the nearest neighbor calculation.
                 The default is `Flann` for less than 50 dimensions `HNSW` may be faster
+            knn_metric : :class:`KnnDistanceMetric`
+                The knn distance metric used for the nearest neighbor calculation.
+                The default is `KnnDistanceMetric.Euclidean` the only supported metric for `Flann`
 
             Examples
             --------
@@ -95,7 +174,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
         )pbdoc");
 
-    textureTsne.def(py::init<bool, int, int, int, int, KnnAlgorithm>(),
+    textureTsne.def(py::init<bool, int, int, int, int, hdi::dr::knn_library, hdi::dr::knn_distance_metric>(),
         R"pbdoc(
         )pbdoc",
         py::arg("verbose") = false,
@@ -103,7 +182,8 @@ PYBIND11_MODULE(_nptsne, m) {
         py::arg("num_target_dimensions") = 2,
         py::arg("perplexity") = 30,
         py::arg("exaggeration_iter") = 250,
-        py::arg("knn_algorithm") = KnnAlgorithm::Flann);
+        py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
+        py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
 
     textureTsne.def("fit_transform", &TextureTsne::fit_transform,
         R"pbdoc(
@@ -196,7 +276,7 @@ PYBIND11_MODULE(_nptsne, m) {
             is a sum of an attractive and repulsive force :math:`\frac{\delta C} {\delta y_i} = 4(\phi * F_i ^{attr} - F_i ^{rep})`
             The iterations up to exaggeration_iter increase the :math:`F_i ^{attr}` term by the factor :math:`\phi`
             which then decays to 1.
-               
+
         )pbdoc");
 
     // Extended TextureTsne interface for advanced use of GPU texture tSNE
@@ -214,6 +294,9 @@ PYBIND11_MODULE(_nptsne, m) {
                 The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
             knn_algorithm : :class:`KnnAlgorithm`
                 The knn algorithm used for the nearest neighbor calculation. The default is 'Flann' for less than 50 dimensions 'HNSW' may be faster
+            knn_metric : :class:`KnnDistanceMetric`
+                The knn distance metric used for the nearest neighbor calculation.
+                The default is `KnnDistanceMetric.Euclidean` the only supported metric for `Flann`
 
             Attributes
             ----------
@@ -254,14 +337,15 @@ PYBIND11_MODULE(_nptsne, m) {
 
         )pbdoc");
 
-    textureTsneExtended.def(py::init<bool, int, int, KnnAlgorithm>(),
+    textureTsneExtended.def(py::init<bool, int, int, hdi::dr::knn_library, hdi::dr::knn_distance_metric>(),
         R"pbdoc(
 
         )pbdoc",
         py::arg("verbose") = false,
         py::arg("num_target_dimensions") = 2,
         py::arg("perplexity") = 30,
-        py::arg("knn_algorithm") = KnnAlgorithm::Flann);
+        py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
+        py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
 
     textureTsneExtended.def("init_transform",
         &TextureTsneExtended::init_transform,
@@ -479,7 +563,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
         >>> import nptsne
         >>> hsne = nptsne.HSne(True)
-     
+
         Attributes
         ----------
         num_data_points
@@ -550,7 +634,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 16
                 >>> hsne.num_scales
                 3
-            
+
             )pbdoc",
             py::arg("X"),
             py::arg("num_scales"),
@@ -696,7 +780,7 @@ PYBIND11_MODULE(_nptsne, m) {
     hsne_scale_class.doc() = R"pbdoc(
         Create a wrapper for the HSNE data scale. The function :func:`HSne.get_scale` works more directly than
         calling the constructor on this class.
-        
+
         Parameters
         ----------
         hsne : :class:`HSne`
@@ -835,7 +919,7 @@ PYBIND11_MODULE(_nptsne, m) {
             0
             >>> sample_scale0.landmark_orig_indexes[9999]
             9999
-            
+
             Returns
             -------
             :class:`ndarray`:
@@ -876,7 +960,7 @@ PYBIND11_MODULE(_nptsne, m) {
         // level analysis.
         py::class_<Analysis> analysis_class(m_hsne, "Analysis",
         R"pbdoc(
-            Create a new analysis as a child of an (optional) parent analysis.          
+            Create a new analysis as a child of an (optional) parent analysis.
 
             Parameters
             ----------
@@ -898,19 +982,19 @@ PYBIND11_MODULE(_nptsne, m) {
             landmark_indexes
             landmark_orig_indexes
             embedding
-            
+
             Examples
             --------
             The Analysis constructor is meant for use by the :class: `nptsne.hsne_analysis.AnalysisModel`.
             The example here illustrates how a top level analysis would be created from a sample hsne.
-            
+
             >>> import nptsne
             >>> top_analysis = nptsne.hsne_analysis.Analysis(sample_hsne, nptsne.hsne_analysis.EmbedderType.CPU)
             >>> top_analysis.scale_id
             2
             >>> sample_hsne.get_scale(top_analysis.scale_id).num_points == top_analysis.number_of_points
             True
-            
+
             Notes
             -----
             Together with `AnalysisModel` provides support for visual analytics of an hSNE.
@@ -939,17 +1023,17 @@ PYBIND11_MODULE(_nptsne, m) {
             .def_readwrite("id", &Analysis::id,
             R"pbdoc(
                 int: Internally generated unique id for the analysis.
-                
+
                 Examples
                 --------
-                
+
                 >>> sample_analysis.id
                 0
             )pbdoc")
             .def_readwrite("scale_id", &Analysis::scale_id,
             R"pbdoc(
                 int: The number of this HSNE scale where this analysis is created.
-                
+
                 Examples
                 --------
                 >>> sample_analysis.scale_id
@@ -966,11 +1050,11 @@ PYBIND11_MODULE(_nptsne, m) {
             }, 
             R"pbdoc(
                 int : number of landmarks in this `Analysis`
-                
+
                 Examples
                 --------
                 The sample analysis is all the top scale points
-                
+
                 >>> sample_analysis.number_of_points == sample_scale2.num_points
                 True
             )pbdoc");
@@ -979,7 +1063,7 @@ PYBIND11_MODULE(_nptsne, m) {
             .def("__str__", &Analysis::toString,
             R"pbdoc(
                 str: A string summary of the analysis.
-                
+
                 Examples
                 --------
                 >>> expected_str = 'Analysis[id={}, num points={}, scale={}]'.format(
@@ -1054,11 +1138,11 @@ PYBIND11_MODULE(_nptsne, m) {
                 py::cast(self));
         }, R"pbdoc(
             :class:`ndarray` : the weights for the landmarks in this `Analysis`
-            
+
             Examples
             --------
             There will be a weight for every point.
-            
+
             >>> weights = sample_analysis.landmark_weights
             >>> weights.shape == (sample_analysis.number_of_points,)
             True
@@ -1076,12 +1160,12 @@ PYBIND11_MODULE(_nptsne, m) {
                 py::cast(self));
         }, R"pbdoc(
             :class:`ndarray` : the indexes for the landmarks in this `Analysis`
-            
+
             Examples
             --------
             In a complete top level analysis all points are present
             in this case all the points at scale2.
-            
+
             >>> import numpy as np
             >>> np.array_equal(
             ... np.arange(sample_scale2.num_points, dtype=np.uint32), 
@@ -1104,11 +1188,11 @@ PYBIND11_MODULE(_nptsne, m) {
                 py::cast(self));
         }, R"pbdoc(
             :class:`ndarray` : the original data indexes for the landmarks in this `Analysis`
-            
+
             Example
             -------
             The indexes are in the range of the original point indexes.
-            
+
             >>> import numpy as np
             >>> np.logical_and(
             ... sample_analysis.landmark_orig_indexes >= 0,
@@ -1131,11 +1215,11 @@ PYBIND11_MODULE(_nptsne, m) {
                 py::cast(self));
         }, R"pbdoc(
             :class:`ndarray` : the tSNE embedding generated for this `Analysis`
-            
+
             Example
             -------
             An embedding is a 2d float array. One entry per point.
-            
+
             >>> import numpy as np
             >>> sample_analysis.embedding.shape == (sample_analysis.number_of_points, 2)
             True
@@ -1155,12 +1239,12 @@ PYBIND11_MODULE(_nptsne, m) {
             Attributes
             ----------
             embedding : :class:`ndarray`
-            
+
             See Also
             --------
             Analysis
             EmbedderType
-            
+
             References
             ----------
             .. [1] Pezzotti, N., Lelieveldt, B.P.F., Maaten, L. van der, Höllt, T., Eisemann, E., Vilanova, A., 2017.

@@ -12,6 +12,7 @@
 #include "hdi/data/panel_data.h"
 #include "hdi/data/io.h"
 #include "hdi/utils/scoped_timers.h"
+#include "KnnAlgorithm.h"
 
 // not present in glfw 3.1.2
 #ifndef GLFW_FALSE
@@ -22,12 +23,14 @@ TextureTsneExtended::TextureTsneExtended(
     bool verbose,
     int num_target_dimensions,
     int perplexity,
-    KnnAlgorithm knn_algorithm
+    hdi::dr::knn_library knn_algorithm,
+    hdi::dr::knn_distance_metric knn_distance_metric
 ) : _decay_started_at(-1),
     _verbose(verbose),
     _num_target_dimensions(num_target_dimensions),
     _perplexity(perplexity),
     _knn_algorithm(knn_algorithm),
+    _knn_metric(knn_distance_metric),
     _offscreen_context(nullptr),
     _exaggeration_decay(false),
     _iteration_count(0),
@@ -69,7 +72,8 @@ bool TextureTsneExtended::init_transform(
     if (_verbose) {
         std::cout << "Target dimensions: " << _num_target_dimensions << "\n";
         std::cout << "Perplexity: " << _perplexity << "\n";
-        std::cout << "knn type: " << ((KnnAlgorithm::Flann == _knn_algorithm) ? "flann\n" : "hnsw\n");
+        std::cout << "knn type: " << knn_library_to_string(_knn_algorithm) << "\n";
+        std::cout << "knn metric: " << knn_metric_to_string(_knn_metric) << "\n";
     }
     try {
         float similarities_comp_time = 0;
@@ -89,8 +93,8 @@ bool TextureTsneExtended::init_transform(
         {
             hdi::utils::ScopedTimer<float, hdi::utils::Seconds> timer(similarities_comp_time);
             prob_gen_param._perplexity = _perplexity;
-            prob_gen_param._aknn_metric = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN;
-            prob_gen_param._aknn_algorithm = static_cast<hdi::dr::knn_library>(_knn_algorithm);
+            prob_gen_param._aknn_metric = _knn_metric;
+            prob_gen_param._aknn_algorithm = _knn_algorithm;
             prob_gen.computeProbabilityDistributions(
                 static_cast<float *>(X_info.ptr),
                 _num_dimensions,
