@@ -69,7 +69,6 @@ before_build:
   - echo %PATH%
   
 build_script:
-  - type cert.pem >> %USERPROFILE%\.conan\cacert.pem
   - python setup.py sdist -d wheelhouse --formats=gztar
   - python -m cibuildwheel --output-dir wheelhouse
   # - if "%USE_FOR_DOC_GENERATION%" == "False" (cmake --build . --target install_nptsne --config Release)
