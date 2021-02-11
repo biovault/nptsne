@@ -72,6 +72,8 @@ class NptsneConan(ConanFile):
         cmake.definitions["BUILD_PYTHON_VERSION"] = __py_version__
         cmake.definitions["PYBIND11_PYTHON_VERSION"] = __py_version__
         cmake.definitions["CMAKE_INSTALL_PREFIX"] = os.path.join(self.package_folder)
+        if tools.os_info.is_linux:
+            cmake.definitions["LIBCXX"]="libstdc++"
         cmake.configure()
         cmake.verbose = True
         return cmake

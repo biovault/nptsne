@@ -90,6 +90,7 @@ class CMakeBuild(build_ext):
                     cmake_args += ['-G','Visual Studio 16 2019']
         elif platform.system() == "Linux":
             build_args += ['--', '-j3']
+            cmake_args += ['-DLIBCXX=libstdc++']
         elif platform.system() == "Darwin":
             # Xcode automatically optimizes core usage
             # as default Xcode will create a release subdir
