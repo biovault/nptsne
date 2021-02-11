@@ -73,6 +73,7 @@ pybind11_add_module(_nptsne
     src/cpp/nptSNEBind.cpp
     src/cpp/Analysis.cpp
     src/cpp/HSne.cpp
+    src/cpp/KnnAlgorithm.cpp
     src/cpp/SparseTsne.cpp
     src/cpp/TextureTsne.cpp
     src/cpp/TextureTsneExtended.cpp
