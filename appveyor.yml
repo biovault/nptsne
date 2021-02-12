@@ -37,7 +37,7 @@ environment:
           CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64"
           CIBW_SKIP: "cp2*"
           CIBW_BUILD_VERBOSITY: 3
-          CIBW_BEFORE_BUILD: "rd /s /q %TMP%\\cibwlibsdir & mkdir %TMP%\\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & type {project}/cert.pem >> %USERPROFILE%\.concn\cacert.pem & call .\\.ci\\prepare_conan.sh"
+          CIBW_BEFORE_BUILD: "rd /s /q %TMP%\\cibwlibsdir & mkdir %TMP%\\cibwlibsdir & pip install --upgrade pip & pip install -r requirements.txt & type {project}\\cert.pem >> %USERPROFILE%\\.conan\\cacert.pem & call .\\.ci\\prepare_conan.sh"
 
 init:
   - cmd: set PATH=C:\Python37-x64;C:\Python37-x64\Scripts;%PATH%
