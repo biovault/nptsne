@@ -90,18 +90,18 @@ PYBIND11_MODULE(_nptsne, m) {
             >>> import nptsne
             >>> support = nptsne.KnnAlgorithm.get_supported_metrics(nptsne.KnnAlgorithm.Flann)
             >>> for i in support.items():
-            >>>     print(i[0])
+            ...     print(i[0])
             Euclidean
             >>> support = nptsne.KnnAlgorithm.get_supported_metrics(nptsne.KnnAlgorithm.Annoy)
             >>> for i in support.items():
-            >>>     print(i[0])
+            ...     print(i[0])
             Cosine
             Dot
             Euclidean
             Manhattan
             >>> support = nptsne.KnnAlgorithm.get_supported_metrics(nptsne.KnnAlgorithm.HNSW)
             >>> for i in support.items():
-            >>>     print(i[0])
+            ...     print(i[0])
             Euclidean
             Inner Product
             >>> support["Euclidean"] is nptsne.KnnDistanceMetric.Euclidean
@@ -531,7 +531,7 @@ PYBIND11_MODULE(_nptsne, m) {
             --------
 
             >>> sample_texture_tsne_extended.knn_algorithm
-            KnnAlgorithm.Flann
+            <KnnAlgorithm.Flann: -1>
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("perplexity", &TextureTsneExtended::get_perplexity,
