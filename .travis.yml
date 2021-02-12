@@ -89,7 +89,7 @@ jobs:
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
       # The following run in the container context (building manylinux)
       - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
-      - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh;git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
+      - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
       - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
 
   # Build on OS X
@@ -118,7 +118,7 @@ jobs:
       - CIBW_BUILD="cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64"
       - CIBW_BUILD_VERBOSITY=0
       - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE CMAKE_GENERATOR=Xcode TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
-      - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh"
+      - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh"; cat {project}/cert.pem >> ~/.conan/cacert.pem
       - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
 
   # Deploy to testpypi if not tagged

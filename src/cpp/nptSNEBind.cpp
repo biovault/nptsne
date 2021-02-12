@@ -87,7 +87,7 @@ PYBIND11_MODULE(_nptsne, m) {
             -------
             Each algorithm has different support. See the tests below.
 
-            >>> from nptsne import KnnDistanceMetric KnnAlgorithm
+            >>> from nptsne import KnnDistanceMetric, KnnAlgorithm
             >>> support = KnnAlgorithm.get_supported_metrics(KnnAlgorithm.Flann)
             >>> for i in support.items():
             >>>     print(i[0])
