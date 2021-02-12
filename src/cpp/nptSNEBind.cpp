@@ -87,24 +87,24 @@ PYBIND11_MODULE(_nptsne, m) {
             -------
             Each algorithm has different support. See the tests below.
 
-            >>> from nptsne import KnnDistanceMetric, KnnAlgorithm
-            >>> support = KnnAlgorithm.get_supported_metrics(KnnAlgorithm.Flann)
+            >>> import nptsne
+            >>> support = nptsne.KnnAlgorithm.get_supported_metrics(nptsne.KnnAlgorithm.Flann)
             >>> for i in support.items():
             >>>     print(i[0])
             Euclidean
-            >>> support = KnnAlgorithm.get_supported_metrics(KnnAlgorithm.Annoy)
+            >>> support = nptsne.KnnAlgorithm.get_supported_metrics(nptsne.KnnAlgorithm.Annoy)
             >>> for i in support.items():
             >>>     print(i[0])
             Cosine
             Dot
             Euclidean
             Manhattan
-            >>> support = KnnAlgorithm.get_supported_metrics(KnnAlgorithm.HNSW)
+            >>> support = nptsne.KnnAlgorithm.get_supported_metrics(nptsne.KnnAlgorithm.HNSW)
             >>> for i in support.items():
             >>>     print(i[0])
             Euclidean
             Inner Product
-            >>> support["Euclidean"] is KnnDistanceMetric.Euclidean
+            >>> support["Euclidean"] is nptsne.KnnDistanceMetric.Euclidean
             True
 
             Returns
