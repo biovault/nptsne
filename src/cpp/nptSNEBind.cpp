@@ -20,7 +20,7 @@ namespace py = pybind11;
 // Maintainer note - this uses Google style docstrings
 
 PYBIND11_MODULE(_nptsne, m) {
-    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "TextureTsne", "TextureTsneExtended", "HSne", "HSneScale", "_hsne_analysis");
+    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "KnnDistanceMetric", "TextureTsne", "TextureTsneExtended", "HSne", "HSneScale", "_hsne_analysis");
     m.doc() = R"pbdoc(
         A numpy compatible python extension for GPGPU linear complexity tSNE and HSNE
         -----------------------------------------------------------------------------
