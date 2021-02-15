@@ -45,7 +45,6 @@ class NptsneConan(ConanFile):
                 installer.install('liblz4-dev')
             # Centos like: -See prepare_build_linux.sh
         if tools.os_info.is_macos:
-            os.environ['HOMEBREW_NO_AUTO_UPDATE'] = '1'
             installer = tools.SystemPackageTool()
             installer.install('libomp')
             installer.install('lz4')
