@@ -117,7 +117,7 @@ jobs:
       - CIBW_SKIP="cp2* pp*"
       - CIBW_BUILD="cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64"
       - CIBW_BUILD_VERBOSITY=0
-      - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE CMAKE_GENERATOR=Xcode TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR HOMEBREW_NO_UPDATE=1"
+      - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE CMAKE_GENERATOR=Xcode TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR HOMEBREW_NO_AUTO_UPDATE=1"
       - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem"
       - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
 
