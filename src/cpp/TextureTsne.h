@@ -39,6 +39,7 @@ class TextureTsne {
     int get_perplexity() { return _perplexity;  }
     int get_exaggeration_iter() { return _exaggeration_iter; }
     hdi::dr::knn_library get_knn_algorithm() { return _knn_algorithm; }
+    hdi::dr::knn_distance_metric get_knn_metric() { return _knn_metric; }
 
  private:
     int _num_data_points;

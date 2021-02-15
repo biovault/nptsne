@@ -20,7 +20,7 @@ namespace py = pybind11;
 // Maintainer note - this uses Google style docstrings
 
 PYBIND11_MODULE(_nptsne, m) {
-    m.attr("__all__") = py::make_tuple("KnnAlgorithm", "KnnDistanceMetric", "TextureTsne", "TextureTsneExtended", "HSne", "HSneScale", "_hsne_analysis");
+    // m.attr("__all__") = py::make_tuple("KnnAlgorithm", "KnnDistanceMetric", "TextureTsne", "TextureTsneExtended", "HSne", "HSneScale", "_hsne_analysis");
     m.doc() = R"pbdoc(
         A numpy compatible python extension for GPGPU linear complexity tSNE and HSNE
         -----------------------------------------------------------------------------
@@ -197,7 +197,7 @@ PYBIND11_MODULE(_nptsne, m) {
             Example
             -------
             An 2D embedding is returned in the form of a numpy array
-            [x0, y0, x1, y1, ...].  
+            [x0, y0, x1, y1, ...].
 
             >>> import nptsne
             >>> tsne = nptsne.TextureTsne()
@@ -235,6 +235,30 @@ PYBIND11_MODULE(_nptsne, m) {
 
             >>> sample_texture_tsne.num_target_dimensions
             2
+        )pbdoc");
+
+    textureTsne.def_property_readonly("knn_algorithm", &TextureTsne::get_knn_algorithm,
+        R"pbdoc(
+            int: The KnnAlgorithm value, set at initialization.
+
+            Examples
+            --------
+
+            >>> import nptsne
+            >>> sample_texture_tsne.knn_algorithm == nptsne.KnnAlgorithm.Flann
+            True
+        )pbdoc");
+
+    textureTsne.def_property_readonly("knn_distance_metric", &TextureTsne::get_knn_metric,
+        R"pbdoc(
+            int: KnnDistanceMetric value, set at initialization.
+
+            Examples
+            --------
+
+            >>> import nptsne
+            >>> sample_texture_tsne.knn_distance_metric == nptsne.KnnDistanceMetric.Euclidean
+            True
         )pbdoc");
 
 
@@ -315,8 +339,8 @@ PYBIND11_MODULE(_nptsne, m) {
             2
             >>> tsne.perplexity
             35
-            >>> tsne.knn_algorithm
-            KnnAlgorithm.Annoy
+            >>> tsne.knn_algorithm == nptsne.KnnAlgorithm.Annoy
+            True
 
             Notes
             -----
@@ -525,13 +549,26 @@ PYBIND11_MODULE(_nptsne, m) {
 
     textureTsneExtended.def_property_readonly("knn_algorithm", &TextureTsneExtended::get_knn_algorithm,
         R"pbdoc(
-            int: The number of iterations, set at initialization.
+            int: The KnnAlgorithm value, set at initialization.
 
             Examples
             --------
 
-            >>> sample_texture_tsne_extended.knn_algorithm
-            <KnnAlgorithm.Flann: -1>
+            >>> import nptsne
+            >>> sample_texture_tsne_extended.knn_algorithm == nptsne.KnnAlgorithm.Flann
+            True
+        )pbdoc");
+
+    textureTsneExtended.def_property_readonly("knn_distance_metric", &TextureTsneExtended::get_knn_metric,
+        R"pbdoc(
+            int: The KnnDistanceMetric value, set at initialization.
+
+            Examples
+            --------
+
+            >>> import nptsne
+            >>> sample_texture_tsne_extended.knn_distance_metric == nptsne.KnnDistanceMetric.Euclidean
+            True
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("perplexity", &TextureTsneExtended::get_perplexity,
@@ -1234,7 +1271,7 @@ PYBIND11_MODULE(_nptsne, m) {
             SparseTsne a wrapper for an approximating tSNE CPU implementation as described in [1]_.
 
             Forms an alternative to `TextureTsne` when GPU acceleration for creation of the embedding
-            is not available for internal use in the `Analysis` class 
+            is not available for internal use in the `Analysis` class
 
             Attributes
             ----------
@@ -1249,7 +1286,7 @@ PYBIND11_MODULE(_nptsne, m) {
             ----------
             .. [1] Pezzotti, N., Lelieveldt, B.P.F., Maaten, L. van der, Höllt, T., Eisemann, E., Vilanova, A., 2017.
                 `Approximated and User Steerable tSNE for Progressive Visual Analytics. <https://doi.org/10.1109/TVCG.2016.2570755>`_
-                IEEE Transactions on Visualization and Computer Graphics 23, 1739–1752. 
+                IEEE Transactions on Visualization and Computer Graphics 23, 1739–1752.
         )pbdoc");
 
         sparsetsne_class.def("do_iteration", &SparseTsne::doAnIteration, "Perform a single tsne iteration",

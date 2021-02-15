@@ -49,6 +49,7 @@ class TextureTsneExtended {
     int get_iterations() { return _iterations; }
     int get_perplexity() { return _perplexity; }
     hdi::dr::knn_library get_knn_algorithm() { return _knn_algorithm; }
+    hdi::dr::knn_distance_metric get_knn_metric() { return _knn_metric; }
 
     py::array_t<float, py::array::c_style> run_transform(
         bool verbose = false,
