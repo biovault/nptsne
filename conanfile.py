@@ -44,10 +44,11 @@ class NptsneConan(ConanFile):
                 installer = tools.SystemPackageTool()
                 installer.install('liblz4-dev')
             # Centos like: -See prepare_build_linux.sh
-        if tools.os_info.is_macos:
-            installer = tools.SystemPackageTool()
-            installer.install('libomp')
-            installer.install('lz4')
+        # Move to batch file for more control over brew
+        #if tools.os_info.is_macos:
+        #    installer = tools.SystemPackageTool()
+        #    installer.install('libomp')
+        #    installer.install('lz4')
 
     def configure(self):
         self.options["HDILib"].shared = False
