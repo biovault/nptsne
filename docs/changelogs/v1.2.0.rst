@@ -1,0 +1,13 @@
+Version |version|
+-----------------
+Supports python 3.6, 3.7, 3.8, 3.9 on Windows, Ubuntu (using manylinux2010) and Macos.
+
+Changelog 1.2.0
+~~~~~~~~~~~~~~~
+- Using the latest `HDI Library <http://github.com/biovault/HDILib>`_ 
+  v1.2.2 supporting the additional Annoy knn method.
+
+- Added KnnDistanceMetric to the TextureTsne and TextureTsneExtended classes
+
+- An additional demo set (DC Mall) has been added to the data and the demo
+  updated to allow the display of a background image. See :ref:`Demo list`
