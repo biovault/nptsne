@@ -28,13 +28,14 @@ stages:
 _wheelhouse_upload: &_wheelhouse_upload
   - echo "Check wheelhouse"
   - ls ./wheelhouse 
-  - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -D BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -P ./cmake/UploadWheel.cmake
+  - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -D BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -D CERT_FILE=cert.pem -P ./cmake/UploadWheel.cmake
 
 _deploy_install: &_deploy_install
   - python3 -m pip install twine
   - mkdir $HOME/twine
+  - cp cert.pem $HOME/twine/cert.pem
   - cd $HOME/twine
-  - wget -r -np -nH --cut-dirs 5 -A '*.whl' https://lkeb-artifactory.lumc.nl/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
+  - wget -r -np -nH --ca-certificate=cert.pem --cut-dirs 5 -A '*.whl' https://lkeb-artifactory.lumc.nl/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
   
     
@@ -102,6 +103,7 @@ jobs:
     install:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
+    - sudo apt-get install ca-certificates
 
     script: 
     - "set -e"
