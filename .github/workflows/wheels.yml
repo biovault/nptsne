@@ -54,7 +54,7 @@ jobs:
           CIBW_SKIP: "cp2* pp*"
           CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64 cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
           CIBW_BUILD_VERBOSITY: 0
-          CIBW_ENVIRONMENT_MACOS: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE CMAKE_GENERATOR=Xcode "
+          CIBW_ENVIRONMENT_MACOS: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE MACOSX_DEPLOYMENT_TARGET=10.9 CMAKE_GENERATOR=Xcode "
           CIBW_ENVIRONMENT_LINUX: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE"
           CIBW_BEFORE_ALL_LINUX: "bash {project}/.ci/prepare_build_linux.sh"
           CIBW_BEFORE_ALL_MACOS: "bash {project}/.ci/prepare_build_macos.sh"
