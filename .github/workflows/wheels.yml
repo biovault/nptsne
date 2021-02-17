@@ -16,7 +16,7 @@ jobs:
       matrix:
         os:
           - 'ubuntu-latest'
-          - 'macos-10.13'
+          - 'macos-10.14'
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
