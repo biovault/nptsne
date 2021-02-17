@@ -43,6 +43,8 @@ jobs:
           CIBW_ENVIRONMENT_LINUX: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE"
           CIBW_BEFORE_ALL_LINUX: "bash {project}/.ci/prepare_build_linux.sh"
           CIBW_BEFORE_ALL_MACOS: "bash {project}/.ci/prepare_build_macos.sh"
+          CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
+          CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh"
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
