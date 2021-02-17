@@ -12,11 +12,21 @@ jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    compiler: []
     strategy:
       matrix:
         os:
           - 'ubuntu-latest'
-          - 'macos-10.14'
+          - 'macos-latest'
+        cxx:
+          - clang++-10
+          - g++-8
+
+        exclude:
+        - os: ubuntu-latest
+          cxx: clang++-10
+        - os: macos-latest
+          cxx: g++-8
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
