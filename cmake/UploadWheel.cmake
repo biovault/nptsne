@@ -17,5 +17,5 @@ foreach(WHEEL IN LISTS NPTSNE_WHEEL)
     file(UPLOAD ${WHEEL} "https://lkeb-artifactory.lumc.nl/artifactory/wheels/nptsne/build_${BUILD_NUMBER}/${NPTSNE_WHEEL_NAME}"
         USERPWD ${CONAN_LOGIN_USERNAME}:${CONAN_PASSWORD}
         HTTPHEADER "X-Checksum-md5: ${NPTSNE_WHEEL_MD5}"
-        TLS_CAINFO ${CERT_FILE})
+        CMAKE_TLS_CAINFO ${CERT_FILE})
 endforeach()
