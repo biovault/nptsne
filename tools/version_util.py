@@ -1,10 +1,10 @@
-from pathlib import Path
-import tempfile
 import os
 from git import Repo
-    
+
+
 def get_current_tag(repo):
     return next((tag for tag in repo.tags if tag.commit == repo.head.commit), None)
+
 
 def get_branch_via_commit(repo):
     #  Should handle detached head
@@ -14,7 +14,8 @@ def get_branch_via_commit(repo):
         if r.object.hexsha == c.hexsha:
             branch_name = str(r)
     return branch_name
-    
+
+
 def get_repo_branch(repo):
     branch = ''
     is_ci = os.environ.get('CI', 'false').lower() == 'true'
@@ -29,6 +30,7 @@ def get_repo_branch(repo):
             branch = os.environ.get('TRAVIS_BRANCH')
     return branch
 
+
 def get_git_derived_build_number(repo, commit_path):
     """
         Get a build number counting from the last commit of a specified file.
@@ -40,6 +42,7 @@ def get_git_derived_build_number(repo, commit_path):
     this_commit = list(repo.iter_commits())[0].hexsha
     # print('Derive number for commit (of _version.txt): ', that_commit)
     return len(list(repo.iter_commits(rev='{}^..{}'.format(that_commit, this_commit))))
+
 
 def get_version(repo_path):
     on_rtd = os.environ.get('READTHEDOCS') == 'True'
@@ -58,7 +61,7 @@ def get_version(repo_path):
     # If a tag starts with the letter v then just use the given version from the file
     if (tag is not None):
         return raw_version
-    
+
     #
     build_number = str(get_git_derived_build_number(repo, version_file))
 
@@ -66,4 +69,4 @@ def get_version(repo_path):
     if branch.startswith('release'):
         return raw_version + 'rc' + build_number
 
-    return raw_version + '.dev'+ build_number
+    return raw_version + '.dev' + build_number

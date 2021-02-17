@@ -19,7 +19,13 @@ jobs:
           - 'macos-latest'
 
     steps:
+      # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
+      # and https://stackoverflow.com/a/53409848/584201
+      # A full checkout allows the git derived build number to work working (based on git log and rev-list)
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          submodules: true
 
       # Used to host cibuildwheel
       - name: Setup python
