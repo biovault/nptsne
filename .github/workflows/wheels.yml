@@ -66,6 +66,12 @@ jobs:
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
 
+      - uses: maxim-lobanov/setup-xcode@v1
+        name: Set Xcode to '${{ matrix.xcode-version }}'
+        if: runner.os == 'macOS'
+        with:
+          xcode-version: '${{ matrix.xcode-version }}'
+
       - name: Build wheels Macos
         if: runner.os == 'macOS'
         run: python -m cibuildwheel --output-dir wheelhouse
