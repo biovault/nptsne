@@ -82,7 +82,7 @@ jobs:
           CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh"
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
-          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents
+          DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents'
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
@@ -103,6 +103,7 @@ jobs:
   #   2) Upload to either :
   #      a) - TestPyPI if no release tag
   #      b) - PyPI if release tag
+
   upload_all_artifacts:
     name: Upload artifacts to pyPI or TestPyPI
     needs: [build_wheels]
