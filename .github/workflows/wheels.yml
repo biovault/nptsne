@@ -75,7 +75,7 @@ jobs:
       - name: Build wheels Macos
         if: runner.os == 'macOS'
         run: |
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app
+          sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer
           echo Check applications...
           ls -l /Applications/Xcode*.*
           ls -l /usr/bin/clang*
