@@ -75,9 +75,10 @@ jobs:
       - name: Build wheels Macos
         if: runner.os == 'macOS'
         run: |
+          sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app
           echo Check applications...
           ls -l /Applications/Xcode*.*
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app
+          ls -l /usr/bin/clang*
           python -m cibuildwheel --output-dir wheelhouse
         env:
           CC: clang
