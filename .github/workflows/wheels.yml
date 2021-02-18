@@ -77,15 +77,17 @@ jobs:
         run: |
           echo Check applications...
           ls -l /Applications/Xcode*.*
-          sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app
-          sudo xcode-select --install
+          xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app
           python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_SKIP: "cp2* pp*"
           CIBW_BUILD: "cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
           CIBW_BUILD_VERBOSITY: 0
           # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
-          CIBW_ENVIRONMENT_MACOS: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE MACOSX_DEPLOYMENT_TARGET=10.14 CMAKE_GENERATOR=Xcode"
+          NPTSNE_BUILD_WITH_CONAN: TRUE
+          CI: TRUE
+          MACOSX_DEPLOYMENT_TARGET: 10.14
+          CMAKE_GENERATOR: Xcode
           CIBW_BEFORE_ALL_MACOS: "bash {project}/.ci/prepare_build_macos.sh"
           CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh"
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
