@@ -78,6 +78,7 @@ jobs:
           echo Check applications...
           ls -l /Applications/Xcode*.*
           sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app
+          sudo xcode-select --reset
           python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_SKIP: "cp2* pp*"
