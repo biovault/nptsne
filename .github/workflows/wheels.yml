@@ -67,7 +67,7 @@ jobs:
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
 
       - name: Build wheels Macos
-        if: runner.os == macOS'
+        if: runner.os == 'macOS'
         run: python -m cibuildwheel --output-dir wheelhouse
         # to supply options, put them in 'env', like:
         # env:
