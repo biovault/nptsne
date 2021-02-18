@@ -92,10 +92,10 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: 10.14
           CMAKE_GENERATOR: Xcode
           CIBW_BEFORE_ALL_MACOS: "bash {project}/.ci/prepare_build_macos.sh"
-          CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh; sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
+          CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh; sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer; xcode-select -p; c++ --version"
           CIBW_REPAIR_WHEEL_COMMAND_MACOS: 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
-          DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents"
+          DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
