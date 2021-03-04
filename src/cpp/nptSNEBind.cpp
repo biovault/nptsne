@@ -143,7 +143,7 @@ PYBIND11_MODULE(_nptsne, m) {
             Create an TextureTsne wrapper
 
             >>> import nptsne
-            >>> tsne = nptsne.TextureTsne(verbose=True)
+            >>> tsne = nptsne.TextureTsne(verbose=True, knn_algorithm=nptsne.KnnAlgorithm.Annoy)
             >>> tsne.verbose
             True
             >>> tsne.iterations
@@ -154,6 +154,8 @@ PYBIND11_MODULE(_nptsne, m) {
             30
             >>> tsne.exaggeration_iter
             250
+            >>> tsne.knn_algorithm == nptsne.KnnAlgorithm.Annoy
+            True
 
             Notes
             -----
