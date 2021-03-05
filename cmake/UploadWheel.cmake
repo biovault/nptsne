@@ -8,6 +8,8 @@ set(CONAN_PASSWORD $ENV{CONAN_PASSWORD})
 message(STATUS "Looking for: ${WHEEL_GLOB}")
 file(GLOB NPTSNE_WHEEL "${WHEEL_GLOB}")
 message(STATUS "Found files: ${NPTSNE_WHEEL}")
+set(CMAKE_TLS_VERIFY ON)
+set(CMAKE_TLS_CAINFO ${CERT_FILE})
 
 foreach(WHEEL IN LISTS NPTSNE_WHEEL)
     message(STATUS "Upload file: ${WHEEL}")
@@ -17,6 +19,4 @@ foreach(WHEEL IN LISTS NPTSNE_WHEEL)
     file(UPLOAD ${WHEEL} "https://lkeb-artifactory.lumc.nl/artifactory/wheels/nptsne/build_${BUILD_NUMBER}/${NPTSNE_WHEEL_NAME}"
         USERPWD ${CONAN_LOGIN_USERNAME}:${CONAN_PASSWORD}
         HTTPHEADER "X-Checksum-md5: ${NPTSNE_WHEEL_MD5}"
-        TLS_VERIFY ON
-        TLS_CAINFO ${CERT_FILE})
 endforeach()
