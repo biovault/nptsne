@@ -26,10 +26,11 @@ stages:
   
 # yaml anchor for upload to artifactory wheels dir 
 _wheelhouse_upload: &_wheelhouse_upload
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt install ca-certificates -y; fi
+  - export TLS_STATE=ON
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export TLS_STATE=OFF; fi
   - echo "Check wheelhouse"
   - ls ./wheelhouse 
-  - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -D BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -D CERT_FILE=cert.pem -P ./cmake/UploadWheel.cmake
+  - cmake -D WHEEL_GLOB=./wheelhouse/nptsne*.whl -D BUILD_NUMBER=$TRAVIS_BUILD_NUMBER -D CERT_FILE=cert.pem CMAKE_TLS_VERIFY=$TLS_STATE -P ./cmake/UploadWheel.cmake
 
 _deploy_install: &_deploy_install
   - python3 -m pip install twine
