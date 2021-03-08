@@ -72,6 +72,7 @@ jobs:
     - "cibuildwheel --output-dir wheelhouse"
 
     after_success:
+      sudo apt install ca-certificates -y
       *_wheelhouse_upload
 
     env:
