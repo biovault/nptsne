@@ -98,6 +98,8 @@ class HSneScale {
 
     nptsne::SparseScalarMatrixType& transition_matrix() { return _scale._transition_matrix; }
 
+    nptsne::SparseScalarMatrixType& area_of_influence() { return _scale._area_of_influence; }
+
     nptsne::HsneType::scalar_vector_type& getLandmarkWeight() {
         return _scale._landmark_weight;
     }

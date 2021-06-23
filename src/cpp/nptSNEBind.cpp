@@ -936,6 +936,42 @@ PYBIND11_MODULE(_nptsne, m) {
 
         )pbdoc");
 
+    hsne_scale_class.def_property_readonly("area_of_influence",
+        [](HSneScale& self) {
+            nptsne::SparseScalarMatrixType& matrix = self.area_of_influence();
+            std::vector<std::reference_wrapper<nptsne::MapStorageType >> sparse;
+            for (uint32_t i = 0; i < matrix.size(); ++i) {
+                sparse.push_back(matrix[i].memory());
+            }
+            return sparse;
+        },
+        R"pbdoc(
+            The area of influence matrix in this scale.
+
+            Examples
+            --------
+            The size of landmark area of influence should match the number of points
+
+            >>> num_points = sample_scale2.num_points
+            >>> matrix = sample_scale2.area_of_influence
+            >>> len(matrix) == num_points
+            True
+
+            Notes
+            -----
+            The list returned has one entry for each landmark point, each entry is a list
+            The inner list contains tuples where the first item
+            is an integer landmark index in the scale and the second item
+            is the area of influence matrix value for the two points.
+            The resulting matrix is sparse
+
+            Returns
+            -------
+            list(list(tuple)):
+                The area of influence matrix in this scale
+
+        )pbdoc");
+
     hsne_scale_class.def_property_readonly("landmark_orig_indexes",
         [](HSneScale& self) {
         auto rows = self._scale._landmark_to_original_data_idx.size();
@@ -1119,7 +1155,8 @@ PYBIND11_MODULE(_nptsne, m) {
 
         analysis_class
             .def("get_area_of_influence",
-                [](Analysis& self, std::vector<nptsne::UnsignedIntType> selection_list) {
+                [](Analysis& self, std::vector<nptsne::UnsignedIntType> selection_list,
+                    double threshold = 0.3) {
                     std::vector<nptsne::ScalarType> aoi;
                     self.hsne->getAreaOfInfluenceTopDown(self.scale_id, selection_list, aoi);
                     py::array_t<nptsne::ScalarType> result = py::array_t<nptsne::ScalarType>(aoi.size());
@@ -1132,18 +1169,26 @@ PYBIND11_MODULE(_nptsne, m) {
             },
             R"pbdoc(
                 Get the area of influence of the selection in the original data.
+                For more information on the `threshold` refer to the HSNE paper 
+                section *4.2 Filtering and drilling down*.
 
                 Parameters
                 ----------
                 select_list : list
                     A list of selection indexes for landmarks in this analysis
+                threshold: float, optional
+                    The minimum value required for the underlying
+                    datapoint to be considered in the landmark's region of influence.
+                    Default is 0.3. The parameter must be in the range 0 to 1.0,
+                    values outside the range it will be ignored.
 
                 Returns
                 -------
                 :class:`ndarray`
                     The indexes for the original points represented by the selected landmarks 
             )pbdoc",
-            py::arg("select_list"));
+            py::arg("select_list"),
+            py::arg("threshold") = 0.3);
 
         // id of the parent analysis (numeric_limits<uint32_t>::max if this is root)
         analysis_class.def_property_readonly(

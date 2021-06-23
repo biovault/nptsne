@@ -35,7 +35,7 @@ class NptsneConan(ConanFile):
 
     _source_subfolder = name
     requires = (
-        "HDILib/1.2.2@biovault/stable"
+        "HDILib/1.2.3@biovault/stable"
     )
 
     def system_requirements(self):
