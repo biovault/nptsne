@@ -28,7 +28,24 @@ execute_process(
 message(STATUS "Working on branch ${GIT_BRANCH}")
 
 # CONAN is only used if the NPTSNE_BUILD_WITH_CONAN is ON
-include(ConanSetup)
+# include(ConanSetup)
+
+if (NPTSNE_BUILD_WITH_CONAN)
+    # *******************************************************************
+    # ******** If using conan fill the required versions here ***********
+    # *******************************************************************
+    set(HDILib_VERSION "1.2.4")
+    if (WIN32) 
+        set(FLANN_VERSION "1.8.5") # has fix for windows
+    else()
+        set(FLANN_VERSION "1.8.4")
+    endif()
+    set(LZ4_VERSION "1.9.2")
+    include(ConanSetup)
+    find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
+    find_package(flann CONFIG REQUIRED)
+    find_package(lz4 CONFIG REQUIRED)
+endif()
 
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -146,22 +163,20 @@ if(UNIX)
     find_package(LZ4 REQUIRED)
 endif(UNIX)
 
-if(NOT DEFINED HDI_LIB_ROOT)
+if(NOT DEFINED HDILib_DIR)
     #set the following variables to allow the build (building with conan does this)
-    set(HDI_LIB_ROOT "")
-    set(HDI_INCLUDE_ROOT "")
+    set(HDILib_DIR "***FILL THIS IN***")     # root of the HDILib build directory
+    set(HDILib_INCLUDE_DIR "***FILL THIS IN***")  # subdirectory containing HDILib headers
+    set(HDILib_LINK_LIBS "***FILL THIS IN***")  # listo of $<CONFIGURATON> correct static libs
     if(WIN32)
         set(FLANN_BUILD_DIR "")
         set(GLFW_ROOT "")
     endif()
 endif()
 
-message( STATUS "HDI_LIB_ROOT: ${HDI_LIB_ROOT}" )
-message( STATUS "HDI_INCLUDE_ROOT: ${HDI_INCLUDE_ROOT}" )
-
 include_directories ("${CMAKE_SOURCE_DIR}")
 include_directories ("..")
-include_directories ("${HDI_INCLUDE_ROOT}")
+include_directories (${HDILib_INCLUDE_DIR})
 
 # Pass a filename - e.g path1/path2/mylib.1.2.3.ext and return mylib.1.2.ext
 function(get_short_version_number libname resultVar)
@@ -212,7 +227,8 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${MAC_INSTALL_PREFIX}/lib")
     else()
         # Conan brings flann via HDILib requirements
-        find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${CONAN_FLANN_ROOT}")
+        find_library(FLANNCPP_LIBRARY flann HINTS "${flann_PACKAGE_FOLDER_NONE}/$<CONFIGURATION>")
+        messate(STATUS "flann static library ${FLANNCPP_LIBRARY}")
     endif()
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)
     get_short_version_number(${FLANNCPP_LIBRARY_PATH} FLANNCPP_SHORTNAME)
@@ -253,27 +269,13 @@ else()
     endif(APPLE)
 endif()
 
-set(HDIDR_BUILD_DIR "${HDI_LIB_ROOT}/dimensionality_reduction")
-set(HDIDA_BUILD_DIR "${HDI_LIB_ROOT}/data")
-set(HDIUI_BUILD_DIR "${HDI_LIB_ROOT}/utils")
-
-if(WIN32)
-    find_library(HDIDR NAMES hdidimensionalityreduction.lib PATHS ${HDIDR_BUILD_DIR})
-    find_library(HDIDA NAMES hdidata.lib PATHS ${HDIDA_BUILD_DIR})
-    find_library(HDIUI NAMES hdiutils.lib PATHS ${HDIUI_BUILD_DIR})
-else(WIN32)
-    find_library(HDIDR NAMES libhdidimensionalityreduction.a PATHS ${HDIDR_BUILD_DIR} )
-    find_library(HDIDA NAMES libhdidata.a PATHS ${HDIDA_BUILD_DIR})
-    find_library(HDIUI NAMES libhdiutils.a PATHS ${HDIUI_BUILD_DIR})
-endif(WIN32)
-
-target_link_libraries(_nptsne PRIVATE ${HDIDR} ${HDIDA} ${HDIUI})
+target_link_libraries(_nptsne PRIVATE ${HDILib_LINK_LIBS})
 
 if(WIN32)
     # Windows uses static flann lib
-    target_link_libraries (_nptsne PRIVATE "${FLANN_BUILD_DIR}/lib/flann_cpp_s.lib")
-    #target_link_libraries(_nptsne PRIVATE pybind11::module) # "${GLFW_ROOT}/lib/glfw3.lib")
-    #static GLFW
+    target_link_libraries (_nptsne PRIVATE "${FLANNCPP_LIBRARY}")
+    find_library(LZ4_LIBRARY lz4 HINTS ${lz4_LIB_DIRS})
+    target_link_libraries (_nptsne PRIVATE "${LZ4_LIBRARY}")
     # target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
 endif()
 
