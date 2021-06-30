@@ -27,7 +27,7 @@ conan_cmake_configure(REQUIRES HDILib/${HDILib_VERSION}@biovault/stable
 
 if(UNIX AND NOT APPLE)
     conan_cmake_install(PATH_OR_REFERENCE .
-        PROFILE action_build)
+        PROFILE default)
 else()
     conan_cmake_install(PATH_OR_REFERENCE .
                     SETTINGS ${CONAN_SETTINGS})
