@@ -11,29 +11,35 @@ endif()
 
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
-# Not CMakeDeps is not pulling transitive dependencies?
-conan_cmake_configure(REQUIRES HDILib/${HDILib_VERSION}@biovault/stable
-                  flann/${FLANN_VERSION}@lkeb/stable
-                  lz4/${LZ4_VERSION}
-                  GENERATORS CMakeDeps)
-
+conan_check(VERSION 1.37.0 REQUIRED)
+set(CONAN_SETTINGS "")
 conan_cmake_autodetect(settings)
 list(LENGTH settings num_settings)
 message(STATUS "Detected settings: ${settings} number settings: ${num_settings}")
 # remove build_type from settings HDILib is build_type-less
 list(FILTER settings EXCLUDE REGEX build_type=.*)
-message(STATUS "Reduced settings: ${settings}")
 
-conan_cmake_install(PATH_OR_REFERENCE .
-                  BUILD missing
-                  SETTINGS ${settings})
+# Not CMakeDeps is not pulling transitive dependencies?
+conan_cmake_configure(REQUIRES HDILib/${HDILib_VERSION}@biovault/stable
+                  flann/${FLANN_VERSION}@lkeb/stable
+                  # lz4/${LZ4_VERSION}
+                  GENERATORS CMakeDeps)
+
+if(UNIX AND NOT APPLE)
+    conan_cmake_install(PATH_OR_REFERENCE .
+        PROFILE action_build)
+else()
+    conan_cmake_install(PATH_OR_REFERENCE .
+                    SETTINGS ${CONAN_SETTINGS})
+endif()
 
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
 find_package(ConanHDILib)
 set(HDILib_DIR "${HDILib_PACKAGE_FOLDER_NONE}")
-message (STATUS, "Conan HDI lib ${HDILib_PACKAGE_FOLDER_NONE}")
-set(lz4_LIB_DIRS ${lz4_LIB_DIRS_NONE})
+message (STATUS "HDILib path: ${HDILib_PACKAGE_FOLDER_NONE}")
+# find_package(lz4 REQUIRED)
+# set(lz4_LIB_DIRS ${lz4_LIB_DIRS_NONE})
 
 message(STATUS "End ConanSetup")
 

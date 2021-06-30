@@ -7,7 +7,7 @@ python:
 # A full checkout allows the git derived build number to work working (based on git log and rev-list)
 git:
   depth: false
-  
+
 stages:
   # Testing is part of build- using the CIBW_TEST_COMMAND
   - build
@@ -17,14 +17,14 @@ stages:
   # Untagged builds are for test in TestPyPI
   - name: deploy_to_testpypi
     if: NOT (tag =~ ^v)
-    
+
   - name: readthedocs_pypi
     if: tag =~ ^v
-    
+
   - name: readthedocs_testpypi
     if: NOT (tag =~ ^v)
-  
-# yaml anchor for upload to artifactory wheels dir 
+
+# yaml anchor for upload to artifactory wheels dir
 _wheelhouse_upload: &_wheelhouse_upload
   - python3 -m pip install requests
   - echo "Check wheelhouse"
@@ -39,10 +39,10 @@ _deploy_install: &_deploy_install
   - cd $HOME/twine
   - wget -r -np -nH --ca-certificate=cert.pem --cut-dirs 5 -A '*.whl' https://lkeb-artifactory.lumc.nl/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
-  
-    
-env: 
-  global: 
+
+
+env:
+  global:
     - CIBW_TEST_COMMAND="python {project}/test/run_doctest.py"
     - CONAN_LOGIN_USERNAME="admin"
     - CONAN_PASSWORD=$CONAN_PASSWORD_SECRET
@@ -55,10 +55,10 @@ env:
     - READTHEDOCS_TOKEN=$READTHEDOCS_TOKEN_SECRET
     - BUILD_LINUX=true
     - BUILD_OSX=true
-    
-jobs: 
-  include: 
-  
+
+jobs:
+  include:
+
   # Build on Linux
   - stage: build
     name: Build linux bdist wheels
@@ -69,7 +69,7 @@ jobs:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
 
-    script: 
+    script:
     - "set -e"
     - "cibuildwheel --output-dir wheelhouse"
 
@@ -77,9 +77,9 @@ jobs:
       *_wheelhouse_upload
 
     env:
-      - CONAN_GCC_VERSIONS=8 
+      - CONAN_GCC_VERSIONS=8
       - CONAN_BUILD_TYPES=Release
-      - CONAN_ARCHS=x86_64 
+      - CONAN_ARCHS=x86_64
       - CMAKE_GENERATOR="Unix Makefiles"
       - CONAN_OPTIONS="nptsne:python_version=3.7"
       - COMPILER=g++-8
@@ -106,7 +106,7 @@ jobs:
     # Runs in the vm context where cibuildwheel is launched
     - python3 -m pip install cibuildwheel>=1.5.2
 
-    script: 
+    script:
     - "set -e"
     - "python3 -m cibuildwheel --output-dir wheelhouse"
     after_success:
@@ -115,7 +115,7 @@ jobs:
       - CONAN_APPLE_CLANG_VERSIONS=10.0
       - CONAN_BUILD_TYPES=Release
       - CONAN_ARCHS=x86_64
-      - CONAN_IS_TRAVIS_OSX=1 
+      - CONAN_IS_TRAVIS_OSX=1
       - MACOSX_DEPLOYMENT_TARGET=10.13
       - CIBW_SKIP="cp2* pp*"
       - CIBW_BUILD="cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"

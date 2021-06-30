@@ -118,7 +118,7 @@ class CMakeBuild(build_ext):
         # get the dependent libs (were supplied by Conan)
         # os.environ['LD_LIBRARY_PATH'] = liboutputdir
 
-        print('Move the conan dependencies for wheel fix-up')
+        # Move the conan dependencies for wheel fix-up
         subprocess.check_call(['cmake', '--build', '.', '--target',
                                'bundle_libs', '--config', cfg], cwd=self.build_temp)
 

@@ -35,17 +35,18 @@ if (NPTSNE_BUILD_WITH_CONAN)
     # ******** If using conan fill the required versions here ***********
     # *******************************************************************
     set(HDILib_VERSION "1.2.4")
-    if (WIN32) 
+    if (WIN32)
         set(FLANN_VERSION "1.8.5") # has fix for windows
     else()
         set(FLANN_VERSION "1.8.4")
     endif()
-    set(LZ4_VERSION "1.9.2")
+    #set(LZ4_VERSION "1.9.2")
     include(ConanSetup)
     find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
     find_package(flann CONFIG REQUIRED)
-    find_package(lz4 CONFIG REQUIRED)
+    message(STATUS "flann path: ${flann_PACKAGE_FOLDER_NONE}")
 endif()
+find_package(LZ4 REQUIRED)
 
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -99,7 +100,7 @@ pybind11_add_module(_nptsne
 
 message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "3 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
-# In VisualStudio we show the python files in the bdist_wheel 
+# In VisualStudio we show the python files in the bdist_wheel
 # custom targetfor ease of editing and debug
 if(MSVC_IDE)
     macro(GroupSources curdir)
@@ -160,7 +161,8 @@ target_compile_definitions(_nptsne
         PUBLIC "-DPYBIND11_PYTHON_VERSION=${PYTHON_MAJ_MIN}")
 
 if(UNIX)
-    find_package(LZ4 REQUIRED)
+    message(STATUS "pThreads for Linux")
+    find_package(Threads REQUIRED)
 endif(UNIX)
 
 if(NOT DEFINED HDILib_DIR)
@@ -223,12 +225,13 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
 
      #### Find flann
     if(NOT NPTSNE_BUILD_WITH_CONAN)
+        # Conan brings flann via HDILib requirements
+        message(STATUS "looking for flann static library ")
+        find_library(FLANNCPP_LIBRARY flann_cpp HINTS ${flann_PACKAGE_FOLDER_NONE}/lib/${CMAKE_BUILD_TYPE} REQUIRED)
+        message(STATUS "flann static library ${FLANNCPP_LIBRARY}")
+    else()
         include_directories("${MAC_INSTALL_PREFIX}/opt/flann/include")
         find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${MAC_INSTALL_PREFIX}/lib")
-    else()
-        # Conan brings flann via HDILib requirements
-        find_library(FLANNCPP_LIBRARY flann HINTS "${flann_PACKAGE_FOLDER_NONE}/$<CONFIGURATION>")
-        messate(STATUS "flann static library ${FLANNCPP_LIBRARY}")
     endif()
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)
     get_short_version_number(${FLANNCPP_LIBRARY_PATH} FLANNCPP_SHORTNAME)
@@ -284,13 +287,23 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     if(PLATFORM_IS_CENTOS)
         # centos
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
-        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64)
+        if(NPTSNE_BUILD_WITH_CONAN)
+            find_library(FLANNCPP_LIBRARY flann_cpp HINTS "${flann_PACKAGE_FOLDER_NONE}/lib/${CMAKE_BUILD_TYPE}" REQUIRED)
+        else()
+            find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64 REQUIRED)
+        endif()
         find_package(PkgConfig REQUIRED)
         message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
     else()
         # ubuntu
         find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
-        find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu)
+        if(NPTSNE_BUILD_WITH_CONAN)
+            message(STATUS "Searching flann in " ${flann_PACKAGE_FOLDER_NONE}/lib/${CMAKE_BUILD_TYPE})
+            find_library(FLANNCPP_LIBRARY flann_cpp HINTS ${flann_PACKAGE_FOLDER_NONE}/lib/${CMAKE_BUILD_TYPE} REQUIRED)
+        else()
+            find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu REQUIRED)
+        endif()
+        message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
     endif()
     get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)
@@ -328,7 +341,7 @@ endif()
 # Install the extra binaries to the desired liboutput
 if(CMAKE_SYSTEM_NAME STREQUAL Linux OR CMAKE_SYSTEM_NAME STREQUAL Darwin)
     add_custom_target (bundle_libs
-        COMMAND ${CMAKE_COMMAND} -E echo "Move conan libs for wheel fixup"
+        COMMAND ${CMAKE_COMMAND} -E echo "Move conan libs for wheel fix-up fron bin dir: ${CMAKE_BINARY_DIR}"
         COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}
     )
 else()
