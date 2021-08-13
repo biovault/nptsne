@@ -27,19 +27,20 @@ jobs:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
       # and https://stackoverflow.com/a/53409848/584201
       # A full checkout allows the git derived build number to work working (based on git log and rev-list)
-      - uses: actions/checkout@v2
+      - name: Checkout the source
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          submodules: true
+          submodules: recursive
 
       # Used to host cibuildwheel
-      # - name: Setup python
-      #   uses: actions/setup-python@v2
-      #   with:
-      #     python-version: 3.x
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
-      # - name: Install python dependencies
-      #   run: python -m pip install cibuildwheel=="${{ env.cibuildwheel }}"
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel==2.1.1
 
       # - uses: maxim-lobanov/setup-xcode@v1
       #   name: Set Xcode to '${{ matrix.xcode-version }}'
@@ -56,8 +57,7 @@ jobs:
 
       # Test the cibuildwheel action
       - name: Build wheels
-        if: runner.os == 'Windows'
-        uses: pypa/cibuildwheel@2.1.1
+        run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_SKIP: "cp2* pp*"
           CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64 cp39-win_amd64"
