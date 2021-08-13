@@ -34,10 +34,10 @@ conan_cmake_configure(REQUIRES HDILib/${HDILib_VERSION}@lkeb/testing
 message("Run conan install and generate conanbuildinfo.txt")
 if(UNIX AND NOT APPLE)
     conan_cmake_install(PATH_OR_REFERENCE .
-        PROFILE action_build)
+        SETTINGS build_type=Release)
 else()
     conan_cmake_install(PATH_OR_REFERENCE .
-        PROFILE action_build SETTINGS build_type=Release)
+        SETTINGS build_type=Release)
 endif()
 
 message("Set CMAKE_MODULE_PATH and CMAKE_PREFIX_PATH for FindPackage")

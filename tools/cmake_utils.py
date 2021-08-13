@@ -20,7 +20,7 @@ from pathlib import Path
 
 
 class CMakeExtension(Extension):
-    def __init__(self, name, package_name, sourcedir='', templibdir=''):
+    def __init__(self, name, package_name, sourcedir="", templibdir=""):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
         self.package_name = package_name
@@ -32,18 +32,18 @@ class CMakeExtension(Extension):
 class CMakeBuild(build_ext):
     def run(self):
         try:
-            out = subprocess.check_output(['cmake', '--version'])
+            out = subprocess.check_output(["cmake", "--version"])
         except OSError:
             raise RuntimeError(
-                "CMake must be installed to build the following extensions: " +
-                ", ".join(e.name for e in self.extensions))
+                "CMake must be installed to build the following extensions: "
+                + ", ".join(e.name for e in self.extensions)
+            )
 
         if platform.system() == "Windows":
             cmake_version = LooseVersion(
-                re.search(
-                    r'version\s*([\d.]+)',
-                    out.decode()).group(1))
-            if cmake_version < '3.1.0':
+                re.search(r"version\s*([\d.]+)", out.decode()).group(1)
+            )
+            if cmake_version < "3.1.0":
                 raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
         for ext in self.extensions:
@@ -62,75 +62,92 @@ class CMakeBuild(build_ext):
         extdir = pathlib.Path(self.get_ext_fullpath(ext.name)).parent.absolute()
         extdir.mkdir(parents=True, exist_ok=True)
         #  I prefer to place the libraries in a "libs" subdir in the package
-        liboutputdir = extdir.joinpath(ext.package_name, 'libs')
+        liboutputdir = extdir.joinpath(ext.package_name, "libs")
         liboutputdir.mkdir(parents=True, exist_ok=True)
 
-        cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}'.format(liboutputdir),
-                      '-DPYTHON_EXECUTABLE={}'.format(sys.executable)]
+        cmake_args = [
+            "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(liboutputdir),
+            "-DPYTHON_EXECUTABLE={}".format(sys.executable),
+        ]
 
-        cfg = 'Debug' if self.debug else 'Release'
+        cfg = "Debug" if self.debug else "Release"
         self.announce("CMake configuration: {}".format(cfg), log.INFO)
-        build_args = ['--config', cfg]
+        build_args = ["--config", cfg]
 
         # Also limit Windows to single config build -
         # Causes Conan to load a single set of libs
-        cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg, '-DTEMP_LIBS_DIR=' + ext.templibdir]
+        cmake_args += ["-DCMAKE_BUILD_TYPE=" + cfg, "-DTEMP_LIBS_DIR=" + ext.templibdir]
         if platform.system() == "Windows":
             # VS can produce separate RELEASE or DEBUG outputs
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(),
-                                                                           liboutputdir)]
-            if sys.maxsize > 2**32:
-                cmake_args += ['-A', 'x64']
-            build_args += ['--', '/m']
+            cmake_args += [
+                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(
+                    cfg.upper(), liboutputdir
+                )
+            ]
+            if sys.maxsize > 2 ** 32:
+                cmake_args += ["-A", "x64"]
+            build_args += ["--", "/m"]
             # If vcvarsall.bat has been run use that setting
-            if os.environ.get('VisualStudioVersion', None) is not None:
-                if os.environ['VisualStudioVersion'] == '15.0':
-                    cmake_args += ['-G','Visual Studio 15 2017']
-                elif os.environ['VisualStudioVersion'] == '16.0':
-                    cmake_args += ['-G','Visual Studio 16 2019']
+            if os.environ.get("VisualStudioVersion", None) is not None:
+                if os.environ["VisualStudioVersion"] == "15.0":
+                    cmake_args += ["-G", "Visual Studio 15 2017"]
+                elif os.environ["VisualStudioVersion"] == "16.0":
+                    cmake_args += ["-G", "Visual Studio 16 2019"]
         elif platform.system() == "Linux":
-            build_args += ['--', '-j3']
-            cmake_args += ['-DLIBCXX=libstdc++']
+            build_args += ["--", "-j3"]
+            cmake_args += ["-DLIBCXX=libstdc++"]
         elif platform.system() == "Darwin":
             # Xcode automatically optimizes core usage
             # as default Xcode will create a release subdir
-            cmake_args += ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}'.format(cfg.upper(),
-                                                                           liboutputdir)]
-            build_args += ['--']
+            cmake_args += [
+                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(
+                    cfg.upper(), liboutputdir
+                )
+            ]
+            build_args += ["--"]
         else:
             raise RuntimeError("Unsupported platform")
 
-        # Building with conan
-        cmake_args += ['-DNPTSNE_BUILD_WITH_CONAN=ON']
+        # Building with conan - conan is used to install the dependencies
+        cmake_args += ["-DNPTSNE_BUILD_WITH_CONAN=ON"]
 
         env = os.environ.copy()
-        env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(
-            env.get('CXXFLAGS', ''), self.distribution.get_version())
+        env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
+            env.get("CXXFLAGS", ""), self.distribution.get_version()
+        )
         self.announce("CXXFLAGS: {}".format(self.distribution.get_version()), log.INFO)
 
         # CMake configure
-        subprocess.check_call(['cmake', ext.sourcedir] +
-                              cmake_args, cwd=self.build_temp, env=env)
+        subprocess.check_call(
+            ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env
+        )
         # CMake build
-        subprocess.check_call(['cmake', '--build', '.', '--verbose'] +
-                              build_args, cwd=self.build_temp)
+        subprocess.check_call(
+            ["cmake", "--build", ".", "--verbose"] + build_args, cwd=self.build_temp
+        )
 
         # get the dependent libs (were supplied by Conan)
         # os.environ['LD_LIBRARY_PATH'] = liboutputdir
 
         # Move the conan dependencies for wheel fix-up
-        subprocess.check_call(['cmake', '--build', '.', '--target',
-                               'bundle_libs', '--config', cfg], cwd=self.build_temp)
+        subprocess.check_call(
+            ["cmake", "--build", ".", "--target", "bundle_libs", "--config", cfg],
+            cwd=self.build_temp,
+        )
 
         print("Files in output dir: ", os.listdir(liboutputdir))
         print("Files in temp libs dir: ", os.listdir(ext.templibdir))
-        print("LD_LIBRARY_PATH: ", os.environ.get('LD_LIBRARY_PATH', ''))
+        print("LD_LIBRARY_PATH: ", os.environ.get("LD_LIBRARY_PATH", ""))
 
 
 def versions(package_name, testpypi=False):
-    url = "https://test.pypi.org/pypi/{}/json".format(package_name,)
+    url = "https://test.pypi.org/pypi/{}/json".format(
+        package_name,
+    )
     if testpypi:
-        url = "https://test.pypi.org/pypi/{}/json".format(package_name,)
+        url = "https://test.pypi.org/pypi/{}/json".format(
+            package_name,
+        )
     data = json.load(urllib.request.urlopen(url))
     versions = list(data["releases"].keys())
     return versions
@@ -139,11 +156,11 @@ def versions(package_name, testpypi=False):
 def search_for_version(version, number_of_waits, testpypi=False):
     wait_delay = 2
     for i in range(number_of_waits):
-        if version in versions('nptsne', testpypi):
-            print('Found')
+        if version in versions("nptsne", testpypi):
+            print("Found")
             exit(0)
             break
         wait_delay = 2 * wait_delay
         time.sleep(wait_delay)
-    print('Not found')
+    print("Not found")
     exit(1)
