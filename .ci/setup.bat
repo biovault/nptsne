@@ -11,4 +11,4 @@ conan --version
 echo Prepare conan
 conan user 
 type %1\\cert.pem >> %USERPROFILE%\\.conan\\cacert.pem 
-conan remote add -f bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local
