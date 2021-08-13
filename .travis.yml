@@ -2,6 +2,14 @@ language: python
 python:
   - 3.7
 
+branches:
+  #only:
+  #  - /testing\/(?!1.8.4)/
+  #  - /stable\/(?!1.8.4)/
+  # blocklist
+  except:
+    - /.*/
+
 # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
 # and https://stackoverflow.com/a/53409848/584201
 # A full checkout allows the git derived build number to work working (based on git log and rev-list)
@@ -40,7 +48,6 @@ _deploy_install: &_deploy_install
   - wget -r -np -nH --ca-certificate=cert.pem --cut-dirs 5 -A '*.whl' https://lkeb-artifactory.lumc.nl/artifactory/wheels/nptsne/build_${TRAVIS_BUILD_NUMBER}/
   - ls -al $HOME/twine
 
-
 env:
   global:
     - CIBW_TEST_COMMAND="python {project}/test/run_doctest.py"
@@ -58,98 +65,93 @@ env:
 
 jobs:
   include:
+    # Build on Linux
+    - stage: build
+      name: Build linux bdist wheels
+      if: env(BUILD_LINUX) = true
+      services: docker
 
-  # Build on Linux
-  - stage: build
-    name: Build linux bdist wheels
-    if: env(BUILD_LINUX) = true
-    services: docker
+      install:
+        # Runs in the vm context where cibuildwheel is launched
+        - python3 -m pip install cibuildwheel>=1.5.2
 
-    install:
-    # Runs in the vm context where cibuildwheel is launched
-    - python3 -m pip install cibuildwheel>=1.5.2
+      script:
+        - "set -e"
+        - "cibuildwheel --output-dir wheelhouse"
 
-    script:
-    - "set -e"
-    - "cibuildwheel --output-dir wheelhouse"
+      after_success: *_wheelhouse_upload
 
-    after_success:
-      *_wheelhouse_upload
+      env:
+        - CONAN_GCC_VERSIONS=8
+        - CONAN_BUILD_TYPES=Release
+        - CONAN_ARCHS=x86_64
+        - CMAKE_GENERATOR="Unix Makefiles"
+        - CONAN_OPTIONS="nptsne:python_version=3.7"
+        - COMPILER=g++-8
+        - CC=gcc-8
+        - CXX=g++-8
+        - LIBCXX=libstdc++
+        - CIBW_SKIP="cp2* pp*"
+        - CIBW_BUILD="cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
+        - CIBW_BUILD_VERBOSITY=0
+        - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
+        # The following run in the container context (building manylinux)
+        - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh"
+        - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
+        - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
 
-    env:
-      - CONAN_GCC_VERSIONS=8
-      - CONAN_BUILD_TYPES=Release
-      - CONAN_ARCHS=x86_64
-      - CMAKE_GENERATOR="Unix Makefiles"
-      - CONAN_OPTIONS="nptsne:python_version=3.7"
-      - COMPILER=g++-8
-      - CC=gcc-8
-      - CXX=g++-8
-      - LIBCXX=libstdc++ 
-      - CIBW_SKIP="cp2* pp*"
-      - CIBW_BUILD="cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
-      - CIBW_BUILD_VERBOSITY=0
-      - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
-      # The following run in the container context (building manylinux)
-      - CIBW_BEFORE_ALL_LINUX="bash {project}/.ci/prepare_build_linux.sh" 
-      - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
-      - CIBW_REPAIR_WHEEL_COMMAND_LINUX='export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
+    # Build on OS X
+    - stage: build
+      name: Build OS X bdist wheels
+      if: env(BUILD_OSX) = true
+      os: osx
+      osx_image: xcode10.3
+      language: shell
+      install:
+        # Runs in the vm context where cibuildwheel is launched
+        - python3 -m pip install cibuildwheel>=1.5.2
 
-  # Build on OS X
-  - stage: build
-    name: Build OS X bdist wheels
-    if: env(BUILD_OSX) = true
-    os: osx
-    osx_image: xcode10.3
-    language: shell
-    install:
-    # Runs in the vm context where cibuildwheel is launched
-    - python3 -m pip install cibuildwheel>=1.5.2
+      script:
+        - "set -e"
+        - "python3 -m cibuildwheel --output-dir wheelhouse"
+      after_success: *_wheelhouse_upload
+      env:
+        - CONAN_APPLE_CLANG_VERSIONS=10.0
+        - CONAN_BUILD_TYPES=Release
+        - CONAN_ARCHS=x86_64
+        - CONAN_IS_TRAVIS_OSX=1
+        - MACOSX_DEPLOYMENT_TARGET=10.13
+        - CIBW_SKIP="cp2* pp*"
+        - CIBW_BUILD="cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
+        - CIBW_BUILD_VERBOSITY=0
+        - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE CMAKE_GENERATOR=Xcode TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
+        - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh"
+        - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
 
-    script:
-    - "set -e"
-    - "python3 -m cibuildwheel --output-dir wheelhouse"
-    after_success:
-      *_wheelhouse_upload
-    env:
-      - CONAN_APPLE_CLANG_VERSIONS=10.0
-      - CONAN_BUILD_TYPES=Release
-      - CONAN_ARCHS=x86_64
-      - CONAN_IS_TRAVIS_OSX=1
-      - MACOSX_DEPLOYMENT_TARGET=10.13
-      - CIBW_SKIP="cp2* pp*"
-      - CIBW_BUILD="cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
-      - CIBW_BUILD_VERBOSITY=0
-      - CIBW_ENVIRONMENT="NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE CMAKE_GENERATOR=Xcode TRAVIS=true TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_BUILD_DIR=$TRAVIS_BUILD_DIR"
-      - CIBW_BEFORE_BUILD="pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh"
-      - CIBW_REPAIR_WHEEL_COMMAND_MACOS='export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
+    # Deploy to testpypi if not tagged
+    - stage: deploy_to_testpypi
+      install: *_deploy_install
+      script:
+        - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi $HOME/twine/*.whl
 
-  # Deploy to testpypi if not tagged
-  - stage: deploy_to_testpypi
-    install:
-        *_deploy_install
-    script:
-      - python -m twine upload -u $TWINE_USER -p $TWINE_TESTPYPI_PASSWORD --repository testpypi $HOME/twine/*.whl
+    # Deploy to pypi if tagged
+    - stage: deploy_to_pypi
+      install: *_deploy_install
+      script:
+        - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD --repository pypi $HOME/twine/*.whl
 
-  # Deploy to pypi if tagged
-  - stage: deploy_to_pypi
-    install:
-        *_deploy_install
-    script:
-      - python -m twine upload  -u $TWINE_USER -p $TWINE_PYPI_PASSWORD --repository pypi $HOME/twine/*.whl
+    - stage: readthedocs_testpypi
+      script:
+        - export VERSION=`python setup.py --version`
+        - echo Check version $VERSION is on testpypi
+        - python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
+        - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
+        - curl -X POST -d "branches=$TRAVIS_BRANCH" -d"token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
 
-  - stage: readthedocs_testpypi
-    script:
-      - export VERSION=`python setup.py --version`
-      - echo Check version $VERSION is on testpypi
-      - python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
-      - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
-      - curl -X POST -d "branches=$TRAVIS_BRANCH" -d"token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
-
-  - stage: readthedocs_pypi
-    script:
-      - export VERSION=`python setup.py --version`
-      - echo Check version $VERSION is on pypi
-      - python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, False)"
-      - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
-      - curl -X POST -d "branches=$TRAVIS_BRANCH" -d"token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
+    - stage: readthedocs_pypi
+      script:
+        - export VERSION=`python setup.py --version`
+        - echo Check version $VERSION is on pypi
+        - python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, False)"
+        - export SLUG=`echo $TRAVIS_BRANCH | sed "s/\//-/g"`
+        - curl -X POST -d "branches=$TRAVIS_BRANCH" -d"token=$READTHEDOCS_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/

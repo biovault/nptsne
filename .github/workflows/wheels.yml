@@ -5,26 +5,23 @@ on: [push, pull_request]
 env:
   cibuildwheel: "1.9.0"
 
-
 jobs:
-
   # Job to buildwheels on all platforms
   build_wheels:
     name: Build wheels on ${{ matrix.job-name}}
-    runs-on: ${{ matrix.os-version }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         include:
-      #    - job-name: 'Linux'
-      #      os-version: 'ubuntu-latest'
+          #    - job-name: 'Linux'
+          #      osn: 'ubuntu-20.04'
 
-      #    - job-name: 'macOS'
-      #      os-version: 'macos-10.15'
-      #      xcode-version: '10.3'
+          #    - job-name: 'macOS'
+          #      os: 'macos-10.15'
+          #      xcode-version: '10.3'
 
-          - job-name: 'Windows'
-            os-version: 'windows-2016'
-
+          - job-name: "Windows"
+            os: "windows-2019"
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
@@ -36,19 +33,19 @@ jobs:
           submodules: true
 
       # Used to host cibuildwheel
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
+      # - name: Setup python
+      #   uses: actions/setup-python@v2
+      #   with:
+      #     python-version: 3.x
 
-      - name: Install python dependencies
-        run: python -m pip install cibuildwheel=="${{ env.cibuildwheel }}"
+      # - name: Install python dependencies
+      #   run: python -m pip install cibuildwheel=="${{ env.cibuildwheel }}"
 
-      - uses: maxim-lobanov/setup-xcode@v1
-        name: Set Xcode to '${{ matrix.xcode-version }}'
-        if: runner.os == 'macOS'
-        with:
-          xcode-version: '${{ matrix.xcode-version }}'
+      # - uses: maxim-lobanov/setup-xcode@v1
+      #   name: Set Xcode to '${{ matrix.xcode-version }}'
+      #   if: runner.os == 'macOS'
+      #   with:
+      #     xcode-version: '${{ matrix.xcode-version }}'
 
       #- name: Install (macOS)
       #  if: runner.os == 'macOS'
@@ -57,52 +54,10 @@ jobs:
       #    sudo xcode-select -switch /Applications/Xcode_10.3.app
       #    echo "::set-env name=CXX::clang++"
 
-
-      - name: Build wheels Ubuntu
-        if: runner.os == 'Linux'
-        run: python -m cibuildwheel --output-dir wheelhouse
-        # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
-        env:
-          CIBW_SKIP: "cp2* pp*"
-          CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
-          CIBW_BUILD_VERBOSITY: 0
-          # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
-          CIBW_ENVIRONMENT_LINUX: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE"
-          CIBW_BEFORE_ALL_LINUX: "bash {project}/.ci/prepare_build_linux.sh"
-          CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
-          CIBW_REPAIR_WHEEL_COMMAND_LINUX: 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
-          CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
-
-      - name: Build wheels Macos
-        if: runner.os == 'macOS'
-        run: python -m cibuildwheel --output-dir wheelhouse
-        env:
-          CC: clang
-          CXX: clang++
-          CIBW_SKIP: "cp2* pp*"
-          CIBW_BUILD: "cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
-          CIBW_BUILD_VERBOSITY: 0
-          # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
-          NPTSNE_BUILD_WITH_CONAN: TRUE
-          CI: TRUE
-          MACOSX_DEPLOYMENT_TARGET: 10.14
-          CMAKE_GENERATOR: Xcode
-          CIBW_BEFORE_ALL_MACOS: "bash {project}/.ci/prepare_build_macos.sh"
-          CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh; sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer; xcode-select -p; c++ --version"
-          CIBW_REPAIR_WHEEL_COMMAND_MACOS: 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
-          CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
-          DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
-
-      - name: Build wheels Windows
+      # Test the cibuildwheel action
+      - name: Build wheels
         if: runner.os == 'Windows'
-        run: |
-          python setup.py sdist -d wheelhouse --formats=gztar
-          python -m cibuildwheel --output-dir wheelhouse
-        # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
+        uses: pypa/cibuildwheel@2.0.1
         env:
           CIBW_SKIP: "cp2* pp*"
           CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64 cp39-win_amd64"
@@ -110,6 +65,59 @@ jobs:
           # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
           CIBW_BEFORE_BUILD_WINDOWS: .ci\\setup.bat {project}
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
+
+      # - name: Build wheels Ubuntu
+      #   if: runner.os == 'Linux'
+      #   run: python -m cibuildwheel --output-dir wheelhouse
+      #   # to supply options, put them in 'env', like:
+      #   # env:
+      #   #   CIBW_SOME_OPTION: value
+      #   env:
+      #     CIBW_SKIP: "cp2* pp*"
+      #     CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
+      #     CIBW_BUILD_VERBOSITY: 0
+      #     # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
+      #     CIBW_ENVIRONMENT_LINUX: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE"
+      #     CIBW_BEFORE_ALL_LINUX: "bash {project}/.ci/prepare_build_linux.sh"
+      #     CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
+      #     CIBW_REPAIR_WHEEL_COMMAND_LINUX: 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
+      #     CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
+
+      # - name: Build wheels Macos
+      #   if: runner.os == 'macOS'
+      #   run: python -m cibuildwheel --output-dir wheelhouse
+      #   env:
+      #     CC: clang
+      #     CXX: clang++
+      #     CIBW_SKIP: "cp2* pp*"
+      #     CIBW_BUILD: "cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
+      #     CIBW_BUILD_VERBOSITY: 0
+      #     # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
+      #     NPTSNE_BUILD_WITH_CONAN: TRUE
+      #     CI: TRUE
+      #     MACOSX_DEPLOYMENT_TARGET: 10.14
+      #     CMAKE_GENERATOR: Xcode
+      #     CIBW_BEFORE_ALL_MACOS: "bash {project}/.ci/prepare_build_macos.sh"
+      #     CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh; sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer; xcode-select -p; c++ --version"
+      #     CIBW_REPAIR_WHEEL_COMMAND_MACOS: 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
+      #     CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
+      #     DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
+
+      # - name: Build wheels Windows
+      #   if: runner.os == 'Windows'
+      #   run: |
+      #     python setup.py sdist -d wheelhouse --formats=gztar
+      #     python -m cibuildwheel --output-dir wheelhouse
+      #   # to supply options, put them in 'env', like:
+      #   # env:
+      #   #   CIBW_SOME_OPTION: value
+      #   env:
+      #     CIBW_SKIP: "cp2* pp*"
+      #     CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64 cp39-win_amd64"
+      #     CIBW_BUILD_VERBOSITY: 0
+      #     # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
+      #     CIBW_BEFORE_BUILD_WINDOWS: .ci\\setup.bat {project}
+      #     CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
@@ -119,40 +127,32 @@ jobs:
           path: ./wheelhouse/*.whl
           retention-days: 1
           if-no-files-found: error
-
-
-
   # TODO Add job to build sdist
-
   # Job to upload all artifacts after wheel & sdist build
   # Steps:
   #   1) Download artifacts from temp store
   #   2) Upload to either :
   #      a) - TestPyPI if no release tag
   #      b) - PyPI if release tag
-
-  upload_all_artifacts:
-    name: Upload artifacts to pyPI or TestPyPI
-    needs: [build_wheels]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: artifact
-          path: dist
-
-      - name: Publish wheels to PyPI
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.PYPI_TOKEN_SECRET  }}
-
-      - name: Publish wheels to TestPyPI
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: pypa/gh-action-pypi-publish@master
-        with:
-          user: __token__
-          password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
-          repository_url: https://test.pypi.org/legacy/
+  # upload_all_artifacts:
+  #   name: Upload artifacts to pyPI or TestPyPI
+  #   needs: [build_wheels]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: artifact
+  #         path: dist
+  #     - name: Publish wheels to PyPI
+  #       if: ${{ startsWith(github.ref, 'refs/tags/') }}
+  #       uses: pypa/gh-action-pypi-publish@master
+  #       with:
+  #         user: __token__
+  #         password: ${{ secrets.PYPI_TOKEN_SECRET  }}
+  #     - name: Publish wheels to TestPyPI
+  #       if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+  #       uses: pypa/gh-action-pypi-publish@master
+  #       with:
+  #         user: __token__
+  #         password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
+  #         repository_url: https://test.pypi.org/legacy/

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, tools
+from conan.tools.cmake import CMakeDeps, CMake, CMakeToolchain
 import os
 import sys
 
@@ -15,15 +16,17 @@ __py_tag__ = "cp{}{}".format(sys.version_info.major, sys.version_info.minor)
 class NptsneConan(ConanFile):
     name = "nptsne"
     version = __version__
-    description = "nptsne is a numpy compatible python binary package"\
+    description = (
+        "nptsne is a numpy compatible python binary package"
         " that offers a number of APIs for fast tSNE calculation."
+    )
     topics = ("python", "analysis", "n-dimensional", "tSNE")
     url = "https://github.com/biovault/nptsne"
 
     author = "B. van Lew <b.van_lew@lumc.nl>"  # conanfile author
     license = "MIT"  # License use SPDX Identifiers https://spdx.org/licenses/
-    exports = ["LICENSE.md", "version.txt"]      # Packages the license for the conanfile.py
-    generators = "cmake"
+    exports = ["LICENSE.md", "version.txt"]  # Packages the license for the conanfile.py
+    generators = "CMakeDeps"
     default_user = "lkeb"
     default_channel = "stable"
 
@@ -34,21 +37,36 @@ class NptsneConan(ConanFile):
     exports_sources = "*"
 
     _source_subfolder = name
-    requires = (
-        "HDILib/1.2.3@biovault/stable"
-    )
+    requires = "HDILib/1.2.4@lkeb/testing"
 
     def system_requirements(self):
         if tools.os_info.is_linux:
             if tools.os_info.with_apt:
                 installer = tools.SystemPackageTool()
-                installer.install('liblz4-dev')
+                installer.install("liblz4-dev")
             # Centos like: -See prepare_build_linux.sh
         # Move to batch file for more control over brew
-        #if tools.os_info.is_macos:
+        # if tools.os_info.is_macos:
         #    installer = tools.SystemPackageTool()
         #    installer.install('libomp')
         #    installer.install('lz4')
+
+    def generate(self):
+        generator = None
+        if self.settings.os == "Macos":
+            generator = "Xcode"
+
+        tc = CMakeToolchain(self, generator=generator)
+        if self.settings.os == "Windows" and self.options.shared:
+            tc.variables["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
+        tc.variables["BUILD_PYTHON_VERSION"] = __py_version__
+        tc.variables["PYBIND11_PYTHON_VERSION"] = __py_version__
+        tc.variables["CMAKE_INSTALL_PREFIX"] = os.path.join(self.package_folder)
+        # if tools.os_info.is_linux:
+        #    tc.variables["LIBCXX"] = "libstdc++"
+        tc.generate()
+        deps = CMakeDeps(self)
+        deps.generate()
 
     def configure(self):
         self.options["HDILib"].shared = False
@@ -56,49 +74,40 @@ class NptsneConan(ConanFile):
             self.settings.compiler.libcxx = "libstdc++"
 
     def config_options(self):
-        if self.settings.os == 'Windows':
+        if self.settings.os == "Windows":
             del self.options.fPIC
 
     def package_id(self):
         self.info.options.python_version = "{}.{}".format(
-            sys.version_info.major, sys.version_info.minor)
-
-    def _configure_cmake(self):
-        if self.settings.os == "Macos":
-            cmake = CMake(self, generator='Xcode')
-        else:
-            cmake = CMake(self)
-        if self.settings.os == "Windows" and self.options.shared:
-            cmake.definitions["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
-        cmake.definitions["BUILD_PYTHON_VERSION"] = __py_version__
-        cmake.definitions["PYBIND11_PYTHON_VERSION"] = __py_version__
-        cmake.definitions["CMAKE_INSTALL_PREFIX"] = os.path.join(self.package_folder)
-        if tools.os_info.is_linux:
-            cmake.definitions["LIBCXX"]="libstdc++"
-        cmake.configure()
-        cmake.verbose = True
-        return cmake
+            sys.version_info.major, sys.version_info.minor
+        )
 
     def build(self):
         # 1.) build the python extension
-        cmake = self._configure_cmake()
-        cmake.build()
+        # and
         # 2.) install the python binary extension and dependencies
         # into a dist directory under _package
-        cmake.install()
+        cmake = CMake(self)
+        cmake.configure()
+        cmake.install(build_type="Release")
         # 3.) set the platform name
-        plat_names = {'Windows': 'win_amd64',
-                      'Linux': 'linux_x86_64',
-                      'Macos': 'macosx-10.6-intel'}
+        plat_names = {
+            "Windows": "win_amd64",
+            "Linux": "linux_x86_64",
+            "Macos": "macosx-10.6-intel",
+        }
         if self.settings.os == "Macos" or self.settings.os == "Linux":
-            self.run('ls -l', cwd=os.path.join(self.package_folder, "_package"))
+            self.run("ls -l", cwd=os.path.join(self.package_folder, "_package"))
         # 4.) Make the python wheel from the _package using python setup.py
-        self.run('python setup.py bdist_wheel '
-                 '--plat-name={0} --dist-dir={1} --python-tag={2}'.format(
-                    plat_names[str(self.settings.os)],
-                    os.path.join(self.package_folder, 'dist'),
-                    __py_tag__
-                 ), cwd=os.path.join(self.package_folder, "_package"))
+        self.run(
+            "python setup.py bdist_wheel "
+            "--plat-name={0} --dist-dir={1} --python-tag={2}".format(
+                plat_names[str(self.settings.os)],
+                os.path.join(self.package_folder, "dist"),
+                __py_tag__,
+            ),
+            cwd=os.path.join(self.package_folder, "_package"),
+        )
 
     def package(self):
         self.copy(pattern="LICENSE", dst="licenses", src=self._source_subfolder)

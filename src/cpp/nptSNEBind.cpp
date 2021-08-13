@@ -1,7 +1,7 @@
 // Copyright 2020 LKEB at LUMC
 // Author: B. van Lew
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>  // automatic conversion of STL to list, set, tuple, dict
+#include <pybind11/stl.h> // automatic conversion of STL to list, set, tuple, dict
 #include <pybind11/stl_bind.h>
 #include "TextureTsne.h"
 #include "TextureTsneExtended.h"
@@ -19,7 +19,8 @@ namespace py = pybind11;
 
 // Maintainer note - this uses Google style docstrings
 
-PYBIND11_MODULE(_nptsne, m) {
+PYBIND11_MODULE(_nptsne, m)
+{
     // m.attr("__all__") = py::make_tuple("KnnAlgorithm", "KnnDistanceMetric", "TextureTsne", "TextureTsneExtended", "HSne", "HSneScale", "_hsne_analysis");
     m.doc() = R"pbdoc(
         A numpy compatible python extension for GPGPU linear complexity tSNE and HSNE
@@ -27,7 +28,7 @@ PYBIND11_MODULE(_nptsne, m) {
     )pbdoc";
 
     // ENUMS
-	py::enum_<hdi::dr::knn_distance_metric> enumKDM(m, "KnnDistanceMetric", py::arithmetic(), R"pbdoc(
+    py::enum_<hdi::dr::knn_distance_metric> enumKDM(m, "KnnDistanceMetric", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn distance metric used. Five possibilities are
             supported:
 
@@ -39,15 +40,15 @@ PYBIND11_MODULE(_nptsne, m) {
             `KnnDistanceMetric.Dot`: Dot metric for Annoy
         )pbdoc");
 
-	enumKDM
-		.value("Euclidean", hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN)
-		.value("Cosine", hdi::dr::knn_distance_metric::KNN_METRIC_COSINE)
-		.value("InnerProduct", hdi::dr::knn_distance_metric::KNN_METRIC_INNER_PRODUCT)
-		.value("Manhattan", hdi::dr::knn_distance_metric::KNN_METRIC_MANHATTAN)
-		.value("Hamming", hdi::dr::knn_distance_metric::KNN_METRIC_HAMMING)
-		.value("Dot", hdi::dr::knn_distance_metric::KNN_METRIC_DOT);
+    enumKDM
+        .value("Euclidean", hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN)
+        .value("Cosine", hdi::dr::knn_distance_metric::KNN_METRIC_COSINE)
+        .value("InnerProduct", hdi::dr::knn_distance_metric::KNN_METRIC_INNER_PRODUCT)
+        .value("Manhattan", hdi::dr::knn_distance_metric::KNN_METRIC_MANHATTAN)
+        .value("Hamming", hdi::dr::knn_distance_metric::KNN_METRIC_HAMMING)
+        .value("Dot", hdi::dr::knn_distance_metric::KNN_METRIC_DOT);
 
-	py::enum_<hdi::dr::knn_library> enumKA(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
+    py::enum_<hdi::dr::knn_library> enumKA(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn algorithm used. Three possibilities are
             supported:
 
@@ -58,24 +59,28 @@ PYBIND11_MODULE(_nptsne, m) {
 
     enumKA
         .value("Flann", hdi::dr::knn_library::KNN_FLANN)
-		.value("HNSW", hdi::dr::knn_library::KNN_HNSW)
-		.value("Annoy", hdi::dr::knn_library::KNN_ANNOY)
-		.def("get_supported_metrics", [enumKDM](int knn_lib) {
-			auto global = py::dict(py::module::import("__main__").attr("__dict__"));
-			auto m = hdi::dr::supported_knn_library_distance_metrics(knn_lib);
-			std::map<std::string, py::object> result;
-			for (auto item : m) {
-				auto members = enumKDM.attr("__members__");
-				// The keys in the metrics map contain spaces e.g "Inner Product",
-				// the wrapped enum names don't because that
-				// does not work in python. Spaces are erased.
-				auto key = std::string(item.first);
-				key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
-				auto enum_val = members[key.c_str()];
-				result[item.first] = enum_val;
-			}
-			return result;
-		}, R"pbdoc(
+        .value("HNSW", hdi::dr::knn_library::KNN_HNSW)
+        .value("Annoy", hdi::dr::knn_library::KNN_ANNOY)
+        .def(
+            "get_supported_metrics", [enumKDM](int knn_lib)
+            {
+                auto global = py::dict(py::module::import("__main__").attr("__dict__"));
+                auto m = hdi::dr::supported_knn_library_distance_metrics(knn_lib);
+                std::map<std::string, py::object> result;
+                for (auto item : m)
+                {
+                    auto members = enumKDM.attr("__members__");
+                    // The keys in the metrics map contain spaces e.g "Inner Product",
+                    // the wrapped enum names don't because that
+                    // does not work in python. Spaces are erased.
+                    auto key = std::string(item.first);
+                    key.erase(std::remove(key.begin(), key.end(), ' '), key.end());
+                    auto enum_val = members[key.c_str()];
+                    result[item.first] = enum_val;
+                }
+                return result;
+            },
+            R"pbdoc(
             Get a dict containing KnnDistanceMetric values supported by the KnnAlgorithm.
 
             Parameters
@@ -116,7 +121,7 @@ PYBIND11_MODULE(_nptsne, m) {
     // CLASSES
     // Basic interface for GPU Texture based tSNE
     py::class_<TextureTsne> textureTsne(m, "TextureTsne",
-        R"pbdoc(
+                                        R"pbdoc(
             Create a wrapper class for the linear tSNE implementation.
 
             Parameters
@@ -177,18 +182,18 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsne.def(py::init<bool, int, int, int, int, hdi::dr::knn_library, hdi::dr::knn_distance_metric>(),
-        R"pbdoc(
+                    R"pbdoc(
         )pbdoc",
-        py::arg("verbose") = false,
-        py::arg("iterations") = 1000,
-        py::arg("num_target_dimensions") = 2,
-        py::arg("perplexity") = 30,
-        py::arg("exaggeration_iter") = 250,
-        py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
-        py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
+                    py::arg("verbose") = false,
+                    py::arg("iterations") = 1000,
+                    py::arg("num_target_dimensions") = 2,
+                    py::arg("perplexity") = 30,
+                    py::arg("exaggeration_iter") = 250,
+                    py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
+                    py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
 
     textureTsne.def("fit_transform", &TextureTsne::fit_transform,
-        R"pbdoc(
+                    R"pbdoc(
             Fit X into an embedded space and return that transformed output.
 
             Parameters
@@ -215,10 +220,10 @@ PYBIND11_MODULE(_nptsne, m) {
             :class:`ndarray`
                 A numpy array contain a flatten (1D) embedding
         )pbdoc",
-        py::arg("X"));
+                    py::arg("X"));
 
     textureTsne.def_property_readonly("verbose", &TextureTsne::get_verbose,
-        R"pbdoc(
+                                      R"pbdoc(
             bool: True if verbose logging is enabled. Set at initialization.
 
             Examples
@@ -229,7 +234,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsne.def_property_readonly("num_target_dimensions", &TextureTsne::get_num_target_dimensions,
-        R"pbdoc(
+                                      R"pbdoc(
             int: The number of target dimensions, set at initialization.
 
             Examples
@@ -240,7 +245,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsne.def_property_readonly("knn_algorithm", &TextureTsne::get_knn_algorithm,
-        R"pbdoc(
+                                      R"pbdoc(
             int: The KnnAlgorithm value, set at initialization.
 
             Examples
@@ -252,7 +257,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsne.def_property_readonly("knn_distance_metric", &TextureTsne::get_knn_metric,
-        R"pbdoc(
+                                      R"pbdoc(
             int: KnnDistanceMetric value, set at initialization.
 
             Examples
@@ -263,9 +268,8 @@ PYBIND11_MODULE(_nptsne, m) {
             True
         )pbdoc");
 
-
     textureTsne.def_property_readonly("iterations", &TextureTsne::get_iterations,
-        R"pbdoc(
+                                      R"pbdoc(
             int: The number of iterations, set at initialization.
 
             Examples
@@ -276,7 +280,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsne.def_property_readonly("perplexity", &TextureTsne::get_perplexity,
-        R"pbdoc(
+                                      R"pbdoc(
             int: The tsne perplexity, set at initialization.
 
             Examples
@@ -287,7 +291,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsne.def_property_readonly("exaggeration_iter", &TextureTsne::get_exaggeration_iter,
-        R"pbdoc(
+                                      R"pbdoc(
             int: The iteration where attractive force exaggeration starts to decay, set at initialization.
 
             Examples
@@ -307,7 +311,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
     // Extended TextureTsne interface for advanced use of GPU texture tSNE
     py::class_<TextureTsneExtended> textureTsneExtended(m, "TextureTsneExtended",
-        R"pbdoc(
+                                                        R"pbdoc(
             Create an extended functionality wrapper for the linear tSNE implementation.
 
             Parameters
@@ -364,18 +368,18 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsneExtended.def(py::init<bool, int, int, hdi::dr::knn_library, hdi::dr::knn_distance_metric>(),
-        R"pbdoc(
+                            R"pbdoc(
 
         )pbdoc",
-        py::arg("verbose") = false,
-        py::arg("num_target_dimensions") = 2,
-        py::arg("perplexity") = 30,
-        py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
-        py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
+                            py::arg("verbose") = false,
+                            py::arg("num_target_dimensions") = 2,
+                            py::arg("perplexity") = 30,
+                            py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
+                            py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
 
     textureTsneExtended.def("init_transform",
-        &TextureTsneExtended::init_transform,
-        R"pbdoc(
+                            &TextureTsneExtended::init_transform,
+                            R"pbdoc(
             Initialize the transform with given data and optional initial embedding.
             Fit X into an embedded space and return that transformed output.
 
@@ -401,11 +405,11 @@ PYBIND11_MODULE(_nptsne, m) {
             True
 
         )pbdoc",
-        py::arg("X"),
-        py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
+                            py::arg("X"),
+                            py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform,
-        R"pbdoc(
+                            R"pbdoc(
             Run the transform gradient descent for a number of iterations
             with the current settings for exaggeration.
 
@@ -437,13 +441,13 @@ PYBIND11_MODULE(_nptsne, m) {
                 A numpy array contain a flatten (1D) embedding.
                 Coordinates are arranged: x0, y0, x, y1, ...
         )pbdoc",
-        py::arg("verbose") = false,
-        py::arg("iterations") = 1000);
+                            py::arg("verbose") = false,
+                            py::arg("iterations") = 1000);
 
     textureTsneExtended.def("reinitialize_transform",
-        &TextureTsneExtended::reinitialize_transform,
-        "Reinitialize the transform with optional initial embedding",
-        R"pbdoc(
+                            &TextureTsneExtended::reinitialize_transform,
+                            "Reinitialize the transform with optional initial embedding",
+                            R"pbdoc(
             Fit X into an embedded space and return that transformed output.
             Knn is not recomputed. If no initial_embedding is supplied the embedding
             is re-randomized.
@@ -469,10 +473,10 @@ PYBIND11_MODULE(_nptsne, m) {
             0
 
         )pbdoc",
-        py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
+                            py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
     textureTsneExtended.def("start_exaggeration_decay", &TextureTsneExtended::start_exaggeration_decay,
-        R"pbdoc(
+                            R"pbdoc(
             Enable exaggeration decay. Effective on next call to run_transform.
             From this point exaggeration decays over the following 150 iterations,
             the decay this is a fixed parameter.
@@ -500,7 +504,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("decay_started_at", &TextureTsneExtended::get_decay_started_at,
-        R"pbdoc(
+                                              R"pbdoc(
             int: The iteration number when exaggeration decay started.
             Is -1 if exaggeration decay has not started.
 
@@ -514,7 +518,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("iteration_count", &TextureTsneExtended::get_iteration_count,
-        R"pbdoc(
+                                              R"pbdoc(
             int: The number of completed iterations of tSNE gradient descent.
 
             >>> sample_texture_tsne_extended.iteration_count
@@ -522,12 +526,12 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsneExtended.def("close", &TextureTsneExtended::close,
-        R"pbdoc(
+                            R"pbdoc(
             Release GPU resources for the transform
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("verbose", &TextureTsneExtended::get_verbose,
-        R"pbdoc(
+                                              R"pbdoc(
             bool: True if verbose logging is enabled. Set at initialization.
 
             Examples
@@ -538,7 +542,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("num_target_dimensions", &TextureTsneExtended::get_num_target_dimensions,
-        R"pbdoc(
+                                              R"pbdoc(
             int: The number of target dimensions, set at initialization.
 
             Examples
@@ -548,9 +552,8 @@ PYBIND11_MODULE(_nptsne, m) {
             2
         )pbdoc");
 
-
     textureTsneExtended.def_property_readonly("knn_algorithm", &TextureTsneExtended::get_knn_algorithm,
-        R"pbdoc(
+                                              R"pbdoc(
             int: The KnnAlgorithm value, set at initialization.
 
             Examples
@@ -562,7 +565,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("knn_distance_metric", &TextureTsneExtended::get_knn_metric,
-        R"pbdoc(
+                                              R"pbdoc(
             int: The KnnDistanceMetric value, set at initialization.
 
             Examples
@@ -574,7 +577,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     textureTsneExtended.def_property_readonly("perplexity", &TextureTsneExtended::get_perplexity,
-        R"pbdoc(
+                                              R"pbdoc(
             int: The tsne perplexity, set at initialization.
 
             Examples
@@ -628,7 +631,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc";
 
     hsne_class.def(py::init<bool>(),
-        py::arg("verbose") = false);
+                   py::arg("verbose") = false);
 
     // create_hsne is overloaded -
     // one overload uses default pointer
@@ -636,18 +639,19 @@ PYBIND11_MODULE(_nptsne, m) {
     //
     hsne_class
         .def("create_hsne",
-            (bool (HSne::*)(
-                py::array_t<float, py::array::c_style | py::array::forcecast>,
-                int)) &HSne::create_hsne,
-            py::arg("X"),
-            py::arg("num_scales")
-        )
+             (bool (HSne::*)(
+                 py::array_t<float, py::array::c_style | py::array::forcecast>,
+                 int)) &
+                 HSne::create_hsne,
+             py::arg("X"),
+             py::arg("num_scales"))
         .def("create_hsne",
-            (bool (HSne::*)(
-                py::array_t<float, py::array::c_style | py::array::forcecast>,
-                int,
-                py::array_t<uint64_t, py::array::c_style | py::array::forcecast>)) &HSne::create_hsne,
-            R"pbdoc(
+             (bool (HSne::*)(
+                 py::array_t<float, py::array::c_style | py::array::forcecast>,
+                 int,
+                 py::array_t<uint64_t, py::array::c_style | py::array::forcecast>)) &
+                 HSne::create_hsne,
+             R"pbdoc(
                 Create the hSNE analysis data hierarchy with user assigned point ids from the input data with the number of scales required.
 
                 Parameters
@@ -675,12 +679,12 @@ PYBIND11_MODULE(_nptsne, m) {
                 3
 
             )pbdoc",
-            py::arg("X"),
-            py::arg("num_scales"),
-            py::arg("point_ids"))
+             py::arg("X"),
+             py::arg("num_scales"),
+             py::arg("point_ids"))
         .def("load_hsne",
-            &HSne::load_hsne,
-            R"pbdoc(
+             &HSne::load_hsne,
+             R"pbdoc(
                 Load the HSNE analysis data hierarchy from a pre-existing HSNE file.
 
                 Parameters
@@ -707,12 +711,12 @@ PYBIND11_MODULE(_nptsne, m) {
                 3
 
             )pbdoc",
-            py::arg("X"),
-            py::arg("file_path"));
+             py::arg("X"),
+             py::arg("file_path"));
 
     hsne_class.def_static("read_num_scales",
-        static_cast<int (*)(const std::string&)>(&HSne::read_num_scales),
-        R"pbdoc(
+                          static_cast<int (*)(const std::string &)>(&HSne::read_num_scales),
+                          R"pbdoc(
             Read the number of scales defined in stored hSNE data without fully loading the file.
 
             Parameters
@@ -734,10 +738,10 @@ PYBIND11_MODULE(_nptsne, m) {
                 The number of scales in the saved hierarchy
 
         )pbdoc",
-        py::arg("file_path"));
+                          py::arg("file_path"));
 
     hsne_class.def("save", &HSne::save_to_file,
-        R"pbdoc(
+                   R"pbdoc(
             Save the HSNE as a binary structure to a file
 
             Parameters
@@ -755,10 +759,10 @@ PYBIND11_MODULE(_nptsne, m) {
             3
 
         )pbdoc",
-        py::arg("file_path"));
+                   py::arg("file_path"));
 
     hsne_class.def("get_scale", &HSne::get_scale,
-        R"pbdoc(
+                   R"pbdoc(
             Get the scale information at the index. 0 is the HSNE data scale.
 
             Parameters
@@ -779,10 +783,10 @@ PYBIND11_MODULE(_nptsne, m) {
             :class:`HSneScale`
                 A numpy array contain a flatten (1D) embedding
         )pbdoc",
-        py::arg("scale_number"));
+                   py::arg("scale_number"));
 
     hsne_class.def_property_readonly("num_scales", &HSne::num_scales,
-        R"pbdoc(
+                                     R"pbdoc(
             int: The number of scales in the HSne.
 
             Examples
@@ -792,7 +796,7 @@ PYBIND11_MODULE(_nptsne, m) {
             3
         )pbdoc");
     hsne_class.def_property_readonly("num_data_points", &HSne::num_data_points,
-        R"pbdoc(
+                                     R"pbdoc(
             int: The number of data points in the HSne.
 
             Examples
@@ -802,7 +806,7 @@ PYBIND11_MODULE(_nptsne, m) {
             10000
         )pbdoc");
     hsne_class.def_property_readonly("num_dimensions", &HSne::num_dimensions,
-        R"pbdoc(
+                                     R"pbdoc(
             int: The number of dimensions associated with the original data.
 
             Examples
@@ -846,15 +850,14 @@ PYBIND11_MODULE(_nptsne, m) {
 
     hsne_scale_class.def(
         py::init([](
-            HSne& hsne,
-            int scale_number) {
-        return hsne.get_scale(scale_number);
-    }),
+                     HSne &hsne,
+                     int scale_number)
+                 { return hsne.get_scale(scale_number); }),
         py::arg("hsne"),
         py::arg("scale_number"));
 
     hsne_scale_class.def_property_readonly("num_points", &HSneScale::num_points,
-        R"pbdoc(
+                                           R"pbdoc(
             int: The number of landmark points in this scale
 
             Examples
@@ -865,16 +868,18 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
     hsne_scale_class
-        .def("get_landmark_weight",
-        [](HSneScale& self) {
-            auto rows = self._scale._landmark_weight.size();
-            return py::array_t<float>(
-                { rows },
-                { sizeof(float) },
-                self._scale._landmark_weight.data(),
-                py::cast(self));
-        },
-        R"pbdoc(
+        .def(
+            "get_landmark_weight",
+            [](HSneScale &self)
+            {
+                auto rows = self._scale._landmark_weight.size();
+                return py::array_t<float>(
+                    {rows},
+                    {sizeof(float)},
+                    self._scale._landmark_weight.data(),
+                    py::cast(self));
+            },
+            R"pbdoc(
             The weights per landmark in the scale.
 
             Examples
@@ -900,11 +905,14 @@ PYBIND11_MODULE(_nptsne, m) {
 
         )pbdoc");
 
-    hsne_scale_class.def_property_readonly("transition_matrix",
-        [](HSneScale& self) {
-            nptsne::SparseScalarMatrixType& matrix = self.transition_matrix();
-            std::vector<std::reference_wrapper<nptsne::MapStorageType >> sparse;
-            for (uint32_t i = 0; i < matrix.size(); ++i) {
+    hsne_scale_class.def_property_readonly(
+        "transition_matrix",
+        [](HSneScale &self)
+        {
+            nptsne::SparseScalarMatrixType &matrix = self.transition_matrix();
+            std::vector<std::reference_wrapper<nptsne::MapStorageType>> sparse;
+            for (uint32_t i = 0; i < matrix.size(); ++i)
+            {
                 sparse.push_back(matrix[i].memory());
             }
             return sparse;
@@ -936,11 +944,14 @@ PYBIND11_MODULE(_nptsne, m) {
 
         )pbdoc");
 
-    hsne_scale_class.def_property_readonly("area_of_influence",
-        [](HSneScale& self) {
-            nptsne::SparseScalarMatrixType& matrix = self.area_of_influence();
-            std::vector<std::reference_wrapper<nptsne::MapStorageType >> sparse;
-            for (uint32_t i = 0; i < matrix.size(); ++i) {
+    hsne_scale_class.def_property_readonly(
+        "area_of_influence",
+        [](HSneScale &self)
+        {
+            nptsne::SparseScalarMatrixType &matrix = self.area_of_influence();
+            std::vector<std::reference_wrapper<nptsne::MapStorageType>> sparse;
+            for (uint32_t i = 0; i < matrix.size(); ++i)
+            {
                 sparse.push_back(matrix[i].memory());
             }
             return sparse;
@@ -972,14 +983,16 @@ PYBIND11_MODULE(_nptsne, m) {
 
         )pbdoc");
 
-    hsne_scale_class.def_property_readonly("landmark_orig_indexes",
-        [](HSneScale& self) {
-        auto rows = self._scale._landmark_to_original_data_idx.size();
-        return py::array_t<unsigned int>(
-            { rows },
-            { sizeof(unsigned int) },
-            self._scale._landmark_to_original_data_idx.data(),
-            py::cast(self));
+    hsne_scale_class.def_property_readonly(
+        "landmark_orig_indexes",
+        [](HSneScale &self)
+        {
+            auto rows = self._scale._landmark_to_original_data_idx.size();
+            return py::array_t<unsigned int>(
+                {rows},
+                {sizeof(unsigned int)},
+                self._scale._landmark_to_original_data_idx.data(),
+                py::cast(self));
         },
         R"pbdoc(
             Original data indexes for each landmark in this scale.
@@ -1012,10 +1025,11 @@ PYBIND11_MODULE(_nptsne, m) {
 
     // TODO(B.van_Lew): Prototype shortcut: the hsne_analysis classes are defined here nested
     // Consider moving to a separate file.
-    auto pybind_hsne_analysis = [](py::module &m_hsne) {
+    auto pybind_hsne_analysis = [](py::module &m_hsne)
+    {
         // ENUMS
         py::enum_<EmbedderType>(m_hsne, "EmbedderType", py::arithmetic(),
-        R"pbdoc(
+                                R"pbdoc(
             Enumeration used to select the embedder used. Two possibilities are
             supported:
 
@@ -1034,7 +1048,7 @@ PYBIND11_MODULE(_nptsne, m) {
         // Note that parent None is allowed for creation of the top
         // level analysis.
         py::class_<Analysis> analysis_class(m_hsne, "Analysis",
-        R"pbdoc(
+                                            R"pbdoc(
             Create a new analysis as a child of an (optional) parent analysis.
 
             Parameters
@@ -1082,21 +1096,20 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
         analysis_class.def(py::init([](
-            HSne& hsne,
-            EmbedderType embedder_type,
-            Analysis* parent,
-            std::vector<uint32_t> parent_selection) {
-            return Analysis::make_analysis(hsne, embedder_type, parent, parent_selection);
-        }),
-            py::arg("hnse"),
-            py::arg("embedder_type"),
-            py::arg("parent")=nullptr,
-            py::arg("parent_selection")=std::vector<uint32_t>());
+                                        HSne &hsne,
+                                        EmbedderType embedder_type,
+                                        Analysis *parent,
+                                        std::vector<uint32_t> parent_selection)
+                                    { return Analysis::make_analysis(hsne, embedder_type, parent, parent_selection); }),
+                           py::arg("hnse"),
+                           py::arg("embedder_type"),
+                           py::arg("parent") = nullptr,
+                           py::arg("parent_selection") = std::vector<uint32_t>());
 
         // The analysis properties
         analysis_class
             .def_readwrite("id", &Analysis::id,
-            R"pbdoc(
+                           R"pbdoc(
                 int: Internally generated unique id for the analysis.
 
                 Examples
@@ -1106,7 +1119,7 @@ PYBIND11_MODULE(_nptsne, m) {
                 0
             )pbdoc")
             .def_readwrite("scale_id", &Analysis::scale_id,
-            R"pbdoc(
+                           R"pbdoc(
                 int: The number of this HSNE scale where this analysis is created.
 
                 Examples
@@ -1115,15 +1128,15 @@ PYBIND11_MODULE(_nptsne, m) {
                 2
             )pbdoc");
 
-
         // Share the landmark weights without a copy
         analysis_class
             .def_property_readonly(
                 "number_of_points",
-                [](Analysis& self) {
-                return self.landmark_indexes.size();
-            }, 
-            R"pbdoc(
+                [](Analysis &self)
+                {
+                    return self.landmark_indexes.size();
+                },
+                R"pbdoc(
                 int : number of landmarks in this `Analysis`
 
                 Examples
@@ -1136,7 +1149,7 @@ PYBIND11_MODULE(_nptsne, m) {
 
         analysis_class
             .def("__str__", &Analysis::toString,
-            R"pbdoc(
+                 R"pbdoc(
                 str: A string summary of the analysis.
 
                 Examples
@@ -1151,23 +1164,26 @@ PYBIND11_MODULE(_nptsne, m) {
 
         analysis_class
             .def("do_iteration", &Analysis::doAnIteration,
-                "Perform one iteration of the chosen embedder");
+                 "Perform one iteration of the chosen embedder");
 
         analysis_class
-            .def("get_area_of_influence",
-                [](Analysis& self, std::vector<nptsne::UnsignedIntType> selection_list,
-                    double threshold = 0.3) {
+            .def(
+                "get_area_of_influence",
+                [](Analysis &self, std::vector<nptsne::UnsignedIntType> select_list,
+                   double threshold = 0.3)
+                {
                     std::vector<nptsne::ScalarType> aoi;
-                    self.hsne->getAreaOfInfluenceTopDown(self.scale_id, selection_list, aoi);
+                    self.hsne->getAreaOfInfluenceTopDown(self.scale_id, select_list, aoi, threshold);
                     py::array_t<nptsne::ScalarType> result = py::array_t<nptsne::ScalarType>(aoi.size());
                     auto result_info = result.request();
                     nptsne::ScalarType *output = static_cast<nptsne::ScalarType *>(result_info.ptr);
-                    for (size_t i = 0; i < aoi.size(); ++i) {
+                    for (size_t i = 0; i < aoi.size(); ++i)
+                    {
                         output[i] = aoi[i];
                     }
                     return result;
-            },
-            R"pbdoc(
+                },
+                R"pbdoc(
                 Get the area of influence of the selection in the original data.
                 For more information on the `threshold` refer to the HSNE paper 
                 section *4.2 Filtering and drilling down*.
@@ -1187,40 +1203,49 @@ PYBIND11_MODULE(_nptsne, m) {
                 :class:`ndarray`
                     The indexes for the original points represented by the selected landmarks 
             )pbdoc",
-            py::arg("select_list"),
-            py::arg("threshold") = 0.3);
+                py::arg("select_list"),
+                py::arg("threshold") = 0.3);
 
         // id of the parent analysis (numeric_limits<uint32_t>::max if this is root)
         analysis_class.def_property_readonly(
             "parent_id",
-            [](Analysis& self) {
-            if (self.parent == nullptr) {
-                return std::numeric_limits<uint32_t>::max();
-            }
-            return self.parent->id;
-        }, "int : Unique id of the parent analysis");
+            [](Analysis &self)
+            {
+                if (self.parent == nullptr)
+                {
+                    return std::numeric_limits<uint32_t>::max();
+                }
+                return self.parent->id;
+            },
+            "int : Unique id of the parent analysis");
 
-        analysis_class.def_property_readonly("transition_matrix",
-            [](Analysis& self) {
-            nptsne::SparseScalarMatrixType& matrix = self.getTransitionMatrix();
-            std::vector<std::reference_wrapper<nptsne::MapStorageType >> sparse;
-            for (uint32_t i = 0; i < matrix.size(); ++i) {
-                sparse.push_back(matrix[i].memory());
-            }
-            return sparse;
-        }, "list(dict) : The transition (probability) matrix in this `Analysis`");
+        analysis_class.def_property_readonly(
+            "transition_matrix",
+            [](Analysis &self)
+            {
+                nptsne::SparseScalarMatrixType &matrix = self.getTransitionMatrix();
+                std::vector<std::reference_wrapper<nptsne::MapStorageType>> sparse;
+                for (uint32_t i = 0; i < matrix.size(); ++i)
+                {
+                    sparse.push_back(matrix[i].memory());
+                }
+                return sparse;
+            },
+            "list(dict) : The transition (probability) matrix in this `Analysis`");
 
         // Share the landmark weights without a copy
         analysis_class.def_property_readonly(
             "landmark_weights",
-            [](Analysis& self) {
-            auto rows = self.landmark_weights.size();
-            return py::array_t<float>(
-                { rows },
-                { sizeof(float) },
-                self.landmark_weights.data(),
-                py::cast(self));
-        }, R"pbdoc(
+            [](Analysis &self)
+            {
+                auto rows = self.landmark_weights.size();
+                return py::array_t<float>(
+                    {rows},
+                    {sizeof(float)},
+                    self.landmark_weights.data(),
+                    py::cast(self));
+            },
+            R"pbdoc(
             :class:`ndarray` : the weights for the landmarks in this `Analysis`
 
             Examples
@@ -1235,14 +1260,16 @@ PYBIND11_MODULE(_nptsne, m) {
         // Share the landmark indexes without a copy
         analysis_class.def_property_readonly(
             "landmark_indexes",
-            [](Analysis& self) {
-            auto rows = self.landmark_indexes.size();
-            return py::array_t<unsigned int>(
-                { rows },
-                { sizeof(unsigned int) },
-                self.landmark_indexes.data(),
-                py::cast(self));
-        }, R"pbdoc(
+            [](Analysis &self)
+            {
+                auto rows = self.landmark_indexes.size();
+                return py::array_t<unsigned int>(
+                    {rows},
+                    {sizeof(unsigned int)},
+                    self.landmark_indexes.data(),
+                    py::cast(self));
+            },
+            R"pbdoc(
             :class:`ndarray` : the indexes for the landmarks in this `Analysis`
 
             Examples
@@ -1263,14 +1290,16 @@ PYBIND11_MODULE(_nptsne, m) {
         // indexes
         analysis_class.def_property_readonly(
             "landmark_orig_indexes",
-            [](Analysis& self) {
-            auto rows = self.landmarks_orig_data.size();
-            return py::array_t<unsigned int>(
-                { rows },
-                { sizeof(unsigned int) },
-                self.landmarks_orig_data.data(),
-                py::cast(self));
-        }, R"pbdoc(
+            [](Analysis &self)
+            {
+                auto rows = self.landmarks_orig_data.size();
+                return py::array_t<unsigned int>(
+                    {rows},
+                    {sizeof(unsigned int)},
+                    self.landmarks_orig_data.data(),
+                    py::cast(self));
+            },
+            R"pbdoc(
             :class:`ndarray` : the original data indexes for the landmarks in this `Analysis`
 
             Example
@@ -1287,17 +1316,19 @@ PYBIND11_MODULE(_nptsne, m) {
         // Share the embedding without a copy
         analysis_class.def_property_readonly(
             "embedding",
-            [](Analysis& self) {
-            auto cols = self.getEmbedding().numDimensions();
-            auto rows = self.getEmbedding().numDataPoints();
-            auto data_size = sizeof(float);
-            // as a numpy array
-            return py::array_t<float>(
-                { rows, cols },
-                { cols * data_size, data_size },
-                self.getEmbedding().getContainer().data(),
-                py::cast(self));
-        }, R"pbdoc(
+            [](Analysis &self)
+            {
+                auto cols = self.getEmbedding().numDimensions();
+                auto rows = self.getEmbedding().numDataPoints();
+                auto data_size = sizeof(float);
+                // as a numpy array
+                return py::array_t<float>(
+                    {rows, cols},
+                    {cols * data_size, data_size},
+                    self.getEmbedding().getContainer().data(),
+                    py::cast(self));
+            },
+            R"pbdoc(
             :class:`ndarray` : the tSNE embedding generated for this `Analysis`
 
             Example
@@ -1314,7 +1345,7 @@ PYBIND11_MODULE(_nptsne, m) {
         // ******************************************************************
         // ***** CPU tSNE embedder maybe be used in hSNE analyses indtead of TextureTsne(Analysis class above) ******
         py::class_<SparseTsne> sparsetsne_class(m_hsne, "SparseTsne",
-        R"pbdoc(
+                                                R"pbdoc(
             SparseTsne a wrapper for an approximating tSNE CPU implementation as described in [1]_.
 
             Forms an alternative to `TextureTsne` when GPU acceleration for creation of the embedding
@@ -1337,7 +1368,7 @@ PYBIND11_MODULE(_nptsne, m) {
         )pbdoc");
 
         sparsetsne_class.def("do_iteration", &SparseTsne::doAnIteration, "Perform a single tsne iteration",
-        R"pbdoc(
+                             R"pbdoc(
             Perform a sinsle tSNE iteration on the sparse data.
             Once complete the embedding coordinates can be read via the embedding property
         )pbdoc");
@@ -1345,17 +1376,18 @@ PYBIND11_MODULE(_nptsne, m) {
         // Share the embedding without a copy
         sparsetsne_class.def_property_readonly(
             "embedding",
-            [](SparseTsne& self) {
-            auto cols = self.getEmbedding().numDimensions();
-            auto rows = self.getEmbedding().numDataPoints();
-            auto data_size = sizeof(float);
-            // as a numpy array
-            return py::array_t<float>(
-                { rows, cols },
-                { cols * data_size, data_size },
-                self.getEmbedding().getContainer().data(),
-                py::cast(self));
-        },
+            [](SparseTsne &self)
+            {
+                auto cols = self.getEmbedding().numDimensions();
+                auto rows = self.getEmbedding().numDataPoints();
+                auto data_size = sizeof(float);
+                // as a numpy array
+                return py::array_t<float>(
+                    {rows, cols},
+                    {cols * data_size, data_size},
+                    self.getEmbedding().getContainer().data(),
+                    py::cast(self));
+            },
             py::return_value_policy::reference_internal,
             "Embedding plot - shape embed dimensions x num points");
     };

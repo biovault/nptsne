@@ -27,9 +27,7 @@ execute_process(
 )
 message(STATUS "Working on branch ${GIT_BRANCH}")
 
-# CONAN is only used if the NPTSNE_BUILD_WITH_CONAN is ON
-# include(ConanSetup)
-
+# CONAN is only used to install dependencies if the NPTSNE_BUILD_WITH_CONAN is ON
 if (NPTSNE_BUILD_WITH_CONAN)
     # *******************************************************************
     # ******** If using conan fill the required versions here ***********
@@ -41,7 +39,7 @@ if (NPTSNE_BUILD_WITH_CONAN)
         set(FLANN_VERSION "1.8.4")
     endif()
     #set(LZ4_VERSION "1.9.2")
-    include(ConanSetup)
+    include(ConanInstall)
     find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
     find_package(flann CONFIG REQUIRED)
     message(STATUS "flann path: ${flann_PACKAGE_FOLDER_NONE}")
