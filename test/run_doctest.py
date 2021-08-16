@@ -9,20 +9,24 @@ import nptsne.libs._nptsne
 import os
 
 _skip = object()
-SKIP_IN_CI = doctest.register_optionflag('SKIP_IN_CI')
-is_ci = os.environ.get('CI', 'false').lower() == 'true'
+SKIP_IN_CI = doctest.register_optionflag("SKIP_IN_CI")
+is_ci = os.environ.get("CI", "false").lower() == "true"
 glob_total_skipped = 0
 
 if is_ci:
     print("CI detected")
-    
+
 #  Monkey patch the DocTestRunner to filter SKIP_IN_CI examples
 doctest_base_run = DocTestRunner.run
+
+
 def doctest_patch_run(self, test, compileflags=None, out=None, clear_globs=True):
     global glob_total_skipped
     if is_ci:
         # Filter out any SKIP_IN_CI examples on the CI
-        not_skipped_examples = [example for example in test.examples if SKIP_IN_CI not in example.options ]
+        not_skipped_examples = [
+            example for example in test.examples if SKIP_IN_CI not in example.options
+        ]
         tot_skipped = len(test.examples) - len(not_skipped_examples)
         glob_total_skipped += tot_skipped
         if tot_skipped:
@@ -30,7 +34,9 @@ def doctest_patch_run(self, test, compileflags=None, out=None, clear_globs=True)
         test.examples = not_skipped_examples
     doctest_base_run(self, test, compileflags=None, out=None, clear_globs=True)
 
-DocTestRunner.run = doctest_patch_run   
+
+DocTestRunner.run = doctest_patch_run
+
 
 def make_test_globals():
     """Prepare global objects used in the doctests"""
@@ -45,7 +51,9 @@ def make_test_globals():
     hsne.create_hsne(hsne_data, 3)
     file_name = "rnd10000x16.hsne"
     hsne.save(file_name)
-    top_analysis = nptsne.hsne_analysis.Analysis(hsne, nptsne.hsne_analysis.EmbedderType.CPU)
+    top_analysis = nptsne.hsne_analysis.Analysis(
+        hsne, nptsne.hsne_analysis.EmbedderType.CPU
+    )
 
     print("End prepare doctest globals", flush=True)
     return {
@@ -58,7 +66,7 @@ def make_test_globals():
         "sample_hsne_data": hsne_data,
         "sample_tsne_data": tsne_data,
         "sample_texture_tsne": nptsne.TextureTsne(),
-        "sample_texture_tsne_extended": nptsne.TextureTsneExtended()
+        "sample_texture_tsne_extended": nptsne.TextureTsneExtended(),
     }
 
 
@@ -68,26 +76,37 @@ if __name__ == "__main__":
     # To pick up the tests in the binarys use the correct module name
     print("Starting doctest", flush=True)
     test_globals = make_test_globals()
-    failures_nptsne, tests_nptsne = doctest.testmod(nptsne, 
-                    verbose=True,
-                    optionflags=REPORT_NDIFF | ELLIPSIS,
-                    globs=test_globals)
-                    
-    failures_hsne_analysis, tests_hsne_analysis = doctest.testmod(nptsne.hsne_analysis,                verbose=True,
-                    optionflags=REPORT_NDIFF | ELLIPSIS,
-                    globs=test_globals)
-                    
-    failures_nptsne_lib, tests_nptsne_lib = doctest.testmod(nptsne.libs._nptsne,
-                    verbose=True,
-                    optionflags=REPORT_NDIFF | ELLIPSIS,
-                    globs=test_globals)
-                    
-    failures_hsne_analysis_lib, tests_hsne_analysis_lib = doctest.testmod(nptsne.libs._nptsne._hsne_analysis,
-                    verbose=True,
-                    optionflags=REPORT_NDIFF | ELLIPSIS,
-                    globs=test_globals)
-                    
-    total_failures =  failures_nptsne + failures_hsne_analysis + failures_nptsne_lib + failures_hsne_analysis_lib
+    failures_nptsne, tests_nptsne = doctest.testmod(
+        nptsne, verbose=True, optionflags=REPORT_NDIFF | ELLIPSIS, globs=test_globals
+    )
+
+    failures_hsne_analysis, tests_hsne_analysis = doctest.testmod(
+        nptsne.hsne_analysis,
+        verbose=True,
+        optionflags=REPORT_NDIFF | ELLIPSIS,
+        globs=test_globals,
+    )
+
+    failures_nptsne_lib, tests_nptsne_lib = doctest.testmod(
+        nptsne.libs._nptsne,
+        verbose=True,
+        optionflags=REPORT_NDIFF | ELLIPSIS,
+        globs=test_globals,
+    )
+
+    failures_hsne_analysis_lib, tests_hsne_analysis_lib = doctest.testmod(
+        nptsne.libs._nptsne._hsne_analysis,
+        verbose=True,
+        optionflags=REPORT_NDIFF | ELLIPSIS,
+        globs=test_globals,
+    )
+
+    total_failures = (
+        failures_nptsne
+        + failures_hsne_analysis
+        + failures_nptsne_lib
+        + failures_hsne_analysis_lib
+    )
     if glob_total_skipped:
         print(f"{glob_total_skipped} tests were skipped in the CI environment.")
     if total_failures:

@@ -922,11 +922,13 @@ PYBIND11_MODULE(_nptsne, m)
 
             Examples
             --------
-            The size of landmark weights should match the number of points
+            The size of the transition matrix should match the number of points
 
-            >>> num_points = sample_scale2.num_points
-            >>> matrix = sample_scale2.transition_matrix
-            >>> len(matrix) == num_points
+            >>> sample_scale0.num_points == len(sample_scale0.transition_matrix)
+            True
+            >>> sample_scale1.num_points == len(sample_scale1.transition_matrix)
+            True
+            >>> sample_scale2.num_points == len(sample_scale2.transition_matrix)
             True
 
             Notes
@@ -962,10 +964,9 @@ PYBIND11_MODULE(_nptsne, m)
             Examples
             --------
             The size of landmark area of influence should match the number of points
+            in the more detailed (s-1) scale. 
 
-            >>> num_points = sample_scale2.num_points
-            >>> matrix = sample_scale2.area_of_influence
-            >>> len(matrix) == num_points
+            >>> len(sample_scale2.area_of_influence) == sample_scale1.num_points
             True
 
             Notes
