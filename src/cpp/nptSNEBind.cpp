@@ -1186,8 +1186,14 @@ PYBIND11_MODULE(_nptsne, m)
                 },
                 R"pbdoc(
                 Get the area of influence of the selection in the original data.
-                For more information on the `threshold` refer to the HSNE paper 
+                For more information on the `threshold` refer to the HSNE paper
                 section *4.2 Filtering and drilling down*.
+
+                An approach that give less "noisy" results is in `get_mapped_area_of_influence`.
+
+                See Also
+                --------
+                get_mapped_area_of_influence
 
                 Parameters
                 ----------
@@ -1202,10 +1208,88 @@ PYBIND11_MODULE(_nptsne, m)
                 Returns
                 -------
                 :class:`ndarray`
-                    The indexes for the original points represented by the selected landmarks 
+                    The indexes for the original points represented by the selected landmarks
             )pbdoc",
                 py::arg("select_list"),
                 py::arg("threshold") = 0.3);
+
+        analysis_class
+            .def(
+                "get_mapped_area_of_influence",
+                [](Analysis &self, std::vector<nptsne::UnsignedIntType> select_list)
+                {
+                    std::vector<nptsne::UnsignedIntType> aoi;
+                    self.hsne->getAreaOfInfluenceBottomUp(self.scale_id, select_list, aoi);
+                    py::array_t<nptsne::UnsignedIntType> result = py::array_t<nptsne::UnsignedIntType>(aoi.size());
+                    auto result_info = result.request();
+                    nptsne::UnsignedIntType *output = static_cast<nptsne::UnsignedIntType *>(result_info.ptr);
+                    for (size_t i = 0; i < aoi.size(); ++i)
+                    {
+                        output[i] = aoi[i];
+                    }
+                    return result;
+                },
+                R"pbdoc(
+                Get the area of influence of the selection in the original data
+                based on non overlapping :math:`{1}\rightarrow{n}` mapping of scale landmarks
+                to original data points. This mapping is derived by working bottom up from
+                the data points and finding the landmarks at each scale with the maximum influence.
+
+                Due to thresholding it is possible that a datapoint may have no representative
+                landmark at a specific scale.
+
+                See Also
+                --------
+                get_area_of_influence
+
+                Parameters
+                ----------
+                select_list : list
+                    A list of selection indexes for landmarks in this analysis
+
+                Examples
+                --------
+
+                Demonstrate the non-overlap of the area of influence for each landmark.
+
+                >>> import math
+                >>> import numpy as np
+                >>> all_top_landmarks=list(range(0,sample_analysis.number_of_points))
+                >>> all_influenced=sample_analysis.get_mapped_area_of_influence(all_top_landmarks)
+
+                Assumes that at leat 99% of the datapoints are in the AOI of the
+                all toplevel landmarks.
+
+                >>> all_influenced.shape[0] > math.floor(sample_scale0.num_points * 0.99)
+                True
+
+                Concatenating the individual landmark AOIs
+
+                >>> infl_concat = np.empty((0,), dtype=np.uint32)
+                >>> for i in all_top_landmarks:
+                ...     influenced = sample_analysis.get_mapped_area_of_influence([i])
+                ...     infl_concat = np.concatenate([infl_concat, influenced])
+
+                Verify that all non-overlapping AOIs add to
+                the same size as the total AOI
+
+                >>> infl_concat.shape[0] == all_influenced.shape[0]
+                True
+
+                Concatenating the individual landmark AOIs gives the
+                same list of datapoints as all the landmarks AOI.
+
+                >>> all_influenced.sort()
+                >>> infl_concat.sort()
+                >>> (all_influenced == infl_concat).all()
+                True
+
+                Returns
+                -------
+                :class:`ndarray`
+                    The indexes for the original points represented by the selected landmarks
+            )pbdoc",
+                py::arg("select_list"));
 
         // id of the parent analysis (numeric_limits<uint32_t>::max if this is root)
         analysis_class.def_property_readonly(
