@@ -13,15 +13,14 @@ jobs:
     strategy:
       matrix:
         include:
-          #    - job-name: 'Linux'
-          #      osn: 'ubuntu-20.04'
+          - job-name: "Linux"
+            osn: "ubuntu-20.04"
 
           #    - job-name: 'macOS'
           #      os: 'macos-10.15'
           #      xcode-version: '10.3'
-
-          - job-name: "Windows"
-            os: "windows-2019"
+          # - job-name: "Windows"
+          #   os: "windows-2019"
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
@@ -46,32 +45,30 @@ jobs:
       # Test the cibuildwheel action
       # cibuildwheel derives platform automatically on CI
       # Local run use --platform windows/linx/macos
-      - name: Build wheels
+      - name: Build wheels Windows
+        if: runner.os == 'Windows'
         run: python -m cibuildwheel --output-dir wheelhouse
         env:
           CIBW_SKIP: "cp2* pp*"
           CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64 cp39-win_amd64"
           CIBW_BUILD_VERBOSITY: 0
-          # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
           CIBW_BEFORE_BUILD_WINDOWS: .ci\\setup.bat {project}
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
 
-      # - name: Build wheels Ubuntu
-      #   if: runner.os == 'Linux'
-      #   run: python -m cibuildwheel --output-dir wheelhouse
-      #   # to supply options, put them in 'env', like:
-      #   # env:
-      #   #   CIBW_SOME_OPTION: value
-      #   env:
-      #     CIBW_SKIP: "cp2* pp*"
-      #     CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
-      #     CIBW_BUILD_VERBOSITY: 0
-      #     # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
-      #     CIBW_ENVIRONMENT_LINUX: "NPTSNE_BUILD_WITH_CONAN=TRUE CI=TRUE"
-      #     CIBW_BEFORE_ALL_LINUX: "bash {project}/.ci/prepare_build_linux.sh"
-      #     CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
-      #     CIBW_REPAIR_WHEEL_COMMAND_LINUX: 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
-      #     CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
+      - name: Build wheels Ubuntu
+        if: runner.os == 'Linux'
+        run: python -m cibuildwheel --output-dir wheelhouse
+        # to supply options, put them in 'env', like:
+        # env:
+        #   CIBW_SOME_OPTION: value
+        env:
+          CIBW_SKIP: "cp2* pp*"
+          CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
+          CIBW_BUILD_VERBOSITY: 0
+          CIBW_BEFORE_ALL_LINUX: "bash {project}/.ci/prepare_build_linux.sh"
+          CIBW_BEFORE_BUILD_LINUX: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; git log -n 1 --pretty=format:%H ./src/nptsne/_version.txt"
+          CIBW_REPAIR_WHEEL_COMMAND_LINUX: 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
+          CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
 
       # - name: Build wheels Macos
       #   if: runner.os == 'macOS'
