@@ -65,6 +65,7 @@ jobs:
           CIBW_SKIP: "cp2* pp*"
           CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
           CIBW_BUILD_VERBOSITY: 0
+          CIBW_BEFORE_ALL: chmod +x .ci/setup_linux.sh
           CIBW_BEFORE_BUILD_LINUX: .ci/setup_linux.sh {project}
           CIBW_REPAIR_WHEEL_COMMAND_LINUX: 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir; echo "Lib path for repair $LD_LIBRARY_PATH"; auditwheel repair -w {dest_dir} {wheel}'
           CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
