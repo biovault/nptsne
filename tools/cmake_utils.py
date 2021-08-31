@@ -117,6 +117,11 @@ class CMakeBuild(build_ext):
         )
         self.announce("CXXFLAGS: {}".format(self.distribution.get_version()), log.INFO)
 
+        # Set the conan profile in this context now that the compiler is set
+        subprocess.check_call(
+            ["conan", "profile", "new", "default", "--detect", "--force"], cwd=self.build_temp
+        )
+
         # CMake configure
         subprocess.check_call(
             ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env

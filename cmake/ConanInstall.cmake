@@ -41,6 +41,8 @@ else()
         SETTINGS build_type=Release)
 endif()
 
+# debug
+# execute_process(COMMAND ${CMAKE_COMMAND} "-E" "cat" "conanbuildinfo.txt")
 message("Set CMAKE_MODULE_PATH and CMAKE_PREFIX_PATH for FindPackage")
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
@@ -54,8 +56,10 @@ ENDIF()
 
 # Extract the prefixes for the cmake config files
 # conanbuildinfo.txt is a type of config file.
-set(PYTHON_PARSE_BUILDINFO "from configparser import ConfigParser
-parser = ConfigParser(allow_no_value=True, delimiters=('='))
+# Note optionxform - preserve case for directory names
+set(PYTHON_PARSE_BUILDINFO "from configparser import RawConfigParser
+parser = RawConfigParser(allow_no_value=True, delimiters=('='))
+parser.optionxform = str
 parser.read('conanbuildinfo.txt')
 print(';'.join([key for key in parser['builddirs'].keys()]))")
 
@@ -65,13 +69,24 @@ execute_process(
 
 # Add directories 
 foreach(LIB_PATH IN LISTS CONAN_BUILDINFO)
+    # message("APPENDING ***${LIB_PATH}*** TO MODULE PATH")
     list(APPEND CMAKE_MODULE_PATH ${LIB_PATH})
     list(APPEND CMAKE_PREFIX_PATH ${LIB_PATH})
 endforeach()
 
 find_package(HDILib CONFIG REQUIRED)
-set(HDILib_DIR "${HDILib_PACKAGE_FOLDER_NONE}")
-message (STATUS "HDILib path: ${HDILib_PACKAGE_FOLDER_NONE}")
+if(HDILib_FOUND) 
+    message("HDILib found")
+else()
+    message("HDILib not fond")
+endif()
+
+find_package(flann CONFIG REQUIRED)
+if(flann_FOUND) 
+    message("flann found")
+else()
+    message("flann not fond")
+endif()
 
 message(STATUS "End Conan dependencies install")
 
