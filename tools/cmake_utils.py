@@ -118,8 +118,23 @@ class CMakeBuild(build_ext):
         self.announce("CXXFLAGS: {}".format(self.distribution.get_version()), log.INFO)
 
         # Set the conan profile in this context now that the compiler is set
+        # in many_linux2010 the settings are:
+        """
+            os=Linux
+            os_build=Linux
+            arch=x86_64
+            arch_build=x86_64
+            compiler=gcc
+            compiler.version=8
+            compiler.libcxx=libstdc++
+        """
         subprocess.check_call(
-            ["conan", "profile", "new", "default", "--detect", "--force"], cwd=self.build_temp
+            ["conan", "profile", "new", "default", "--detect", "--force"],
+            cwd=self.build_temp,
+        )
+
+        subprocess.check_call(
+            ["conan", "profile", "show", "default"], cwd=self.build_temp
         )
 
         # CMake configure

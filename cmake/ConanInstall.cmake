@@ -28,9 +28,14 @@ list(FILTER settings EXCLUDE REGEX build_type=.*)
 
 # Not CMakeDeps is not pulling transitive dependencies?
 message("Generate conanfile.txt ")
-conan_cmake_configure(REQUIRES HDILib/${HDILib_VERSION}@lkeb/testing
-                  flann/${FLANN_VERSION}@lkeb/testing
-                  lz4/${LZ4_VERSION}@)
+conan_cmake_configure(
+        REQUIRES HDILib/${HDILib_VERSION}@lkeb/testing
+            flann/${FLANN_VERSION}@lkeb/testing
+            lz4/${LZ4_VERSION}@
+        OPTIONS 
+            HDILib/${HDILib_VERSION}@lkeb/testing:fPIC=True
+            flann/${FLANN_VERSION}@lkeb/testing:fPIC=True)
+
 
 message("Run conan install and generate conanbuildinfo.txt")
 if(UNIX AND NOT APPLE)

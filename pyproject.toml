@@ -1,10 +1,32 @@
 [build-system]
 requires = [
-    "setuptools >= 40.6.0", 
-    "wheel", 
-    "cmake >= 3.15.0", 
-    "conan >= 1.24.1", 
-    "conan_package_tools >= 0.32.2", 
-    "bincrafters_package_tools >= 0.26.3", 
+    "setuptools >= 40.6.0",
+    "wheel",
+    "cmake >= 3.15.0",
+    "conan >= 1.24.1",
+    "conan_package_tools >= 0.32.2",
+    "bincrafters_package_tools >= 0.26.3",
     "gitpython"
+]
+
+[tool.cibuildwheel]
+build = "cp38-*"
+test-command = "python {project}/test/run_doctest.py"
+build-verbosity = 0
+
+[tool.cibuildwheel.windows]
+before-build = ".ci\\setup_windows.bat {project}"
+
+[tool.cibuildwheel.linux]
+# The manylinux image needs to match the conan profile
+# 2010 is gcc 8
+manylinux-x86_64-image = "manylinux2010"
+before-build = [
+    "chmod +x .ci/setup_linux.sh",
+    ".ci/setup_linux.sh {project}"
+]
+repair-wheel-command = [
+    "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
+    "echo 'Lib path for repair $LD_LIBRARY_PATH'",
+    "auditwheel repair -w {dest_dir} {wheel}"
 ]
