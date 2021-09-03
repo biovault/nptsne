@@ -32,3 +32,14 @@ repair-wheel-command = [
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel repair -w {dest_dir} {wheel}"
 ]
+
+[tool.cibuildwheel.macos]
+before-build = [
+    "chmod +x .ci/setup_macos.sh",
+    ".ci/setup_macos.sh {project}"    
+]
+repair-wheel-command = [
+    "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
+    "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
+    "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
+]

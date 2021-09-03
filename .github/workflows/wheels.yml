@@ -57,48 +57,16 @@ jobs:
       - name: Build wheels Ubuntu
         if: runner.os == 'Linux'
         run: python -m cibuildwheel --output-dir wheelhouse
-        # to supply options, put them in 'env', like:
-        # env:
-        #   CIBW_SOME_OPTION: value
         env:
           CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
           CIBW_ENVIRONMENT: CI=TRUE
 
-      # - name: Build wheels Macos
-      #   if: runner.os == 'macOS'
-      #   run: python -m cibuildwheel --output-dir wheelhouse
-      #   env:
-      #     CC: clang
-      #     CXX: clang++
-      #     CIBW_SKIP: "cp2* pp*"
-      #     CIBW_BUILD: "cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
-      #     CIBW_BUILD_VERBOSITY: 0
-      #     # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
-      #     NPTSNE_BUILD_WITH_CONAN: TRUE
-      #     CI: TRUE
-      #     MACOSX_DEPLOYMENT_TARGET: 10.14
-      #     CMAKE_GENERATOR: Xcode
-      #     CIBW_BEFORE_ALL_MACOS: "bash {project}/.ci/prepare_build_macos.sh"
-      #     CIBW_BEFORE_BUILD_MACOS: "pip install --upgrade pip; pip install -r requirements.txt; source ./.ci/prepare_conan.sh; cat {project}/cert.pem >> ~/.conan/cacert.pem; source ./.ci/prepare_build_macos.sh; sudo xcode-select -switch /Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer; xcode-select -p; c++ --version"
-      #     CIBW_REPAIR_WHEEL_COMMAND_MACOS: 'export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir; echo "Lib path for repair $DYLD_LIBRARY_PATH"; delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}'
-      #     CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
-      #     DEVELOPER_DIR: "/Applications/Xcode_${{ matrix.xcode-version }}.app/Contents/Developer"
-
-      # - name: Build wheels Windows
-      #   if: runner.os == 'Windows'
-      #   run: |
-      #     python setup.py sdist -d wheelhouse --formats=gztar
-      #     python -m cibuildwheel --output-dir wheelhouse
-      #   # to supply options, put them in 'env', like:
-      #   # env:
-      #   #   CIBW_SOME_OPTION: value
-      #   env:
-      #     CIBW_SKIP: "cp2* pp*"
-      #     CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64 cp39-win_amd64"
-      #     CIBW_BUILD_VERBOSITY: 0
-      #     # pybind11 recommends MACOSX_DEPLOYMENT_TARGET=10.14 for full c++17 support
-      #     CIBW_BEFORE_BUILD_WINDOWS: .ci\\setup.bat {project}
-      #     CIBW_TEST_COMMAND: "python {project}/test/run_doctest.py"
+      - name: Build wheels Macos
+        if: runner.os == 'Macos'
+        run: python -m cibuildwheel --output-dir wheelhouse
+        env:
+          CIBW_BUILD: "cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
+          CIBW_ENVIRONMENT: CI=TRUE
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
