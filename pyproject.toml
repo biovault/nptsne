@@ -13,6 +13,8 @@ requires = [
 build = "cp38-*"
 test-command = "python {project}/test/run_doctest.py"
 build-verbosity = 0
+archs = "auto64"
+skip = "cp2* pp*"
 
 [tool.cibuildwheel.windows]
 before-build = ".ci\\setup_windows.bat {project}"
