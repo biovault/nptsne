@@ -16,10 +16,11 @@ jobs:
           - job-name: "Linux"
             os: "ubuntu-20.04"
 
-          #    - job-name: 'macOS'
-          #      os: 'macos-10.15'
-          #      xcode-version: '10.3'
-          - job-name: "Windows"
+          - job-name: 'macOS'
+            os: 'macos-10.15'
+            xcode-version: '10.3'
+
+            - job-name: "Windows"
             os: "windows-2019"
 
     steps:
