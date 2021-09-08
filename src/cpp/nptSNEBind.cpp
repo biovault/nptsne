@@ -984,6 +984,7 @@ PYBIND11_MODULE(_nptsne, m)
             ...     for j_tup in i:
             ...         sum_inf += j_tup[1]
             ...     if abs(1 - sum_inf) > 0.0000001:
+            ...         print(f"{1- sum_inf}")
             ...         all_tots_are_1 = False
             >>> all_tots_are_1 == True
             True
