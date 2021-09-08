@@ -966,10 +966,6 @@ PYBIND11_MODULE(_nptsne, m)
             The size of landmark area of influence should match the number of points
             in the more detailed (s-1) scale.
 
-            >>> print(f"num points at scale 1 {sample_scale1.num_points}")     # doctest: +ELLIPSIS
-            ...
-            >>> print(f"num points at scale 2 {sample_scale2.num_points}")     # doctest: +ELLIPSIS
-            ...
             >>> len(sample_scale2.area_of_influence) == sample_scale1.num_points
             True
 
@@ -977,7 +973,7 @@ PYBIND11_MODULE(_nptsne, m)
             Sum the influences from each landmark j at scale 2 on 
             the individual landmarks i in scale 1.
             For each landmark i at scale 1 the total influence from the j
-            landmarks should be approximately 1,
+            landmarks should be approximately 1.0.
             (In practice the difference is < :math:`1\mathrm{e}{-7}`)
 
             >>> aoi_2on1 = sample_scale2.area_of_influence
