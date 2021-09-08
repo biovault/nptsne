@@ -1,3 +1,4 @@
 cmake>=3.15.0
-conan>=1.38.1
+conan==1.39.0
 gitpython
+packaging

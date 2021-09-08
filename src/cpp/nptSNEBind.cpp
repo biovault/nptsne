@@ -964,18 +964,45 @@ PYBIND11_MODULE(_nptsne, m)
             Examples
             --------
             The size of landmark area of influence should match the number of points
-            in the more detailed (s-1) scale. 
+            in the more detailed (s-1) scale.
 
+            >>> print(f"num points at scale 1 {sample_scale1.num_points}")     # doctest: +ELLIPSIS
+            ...
+            >>> print(f"num points at scale 2 {sample_scale2.num_points}")     # doctest: +ELLIPSIS
+            ...
             >>> len(sample_scale2.area_of_influence) == sample_scale1.num_points
+            True
+
+            Loop over all the landmarks, i, at scale 1.
+            Sum the influences from each landmark j at scale 2 on 
+            the individual landmarks i in scale 1.
+            For each landmark i at scale 1 the total influence from the j
+            landmarks should be approximately 1,
+            (In practice the difference is < :math:`1\mathrm{e}{-7}`)
+
+            >>> aoi_2on1 = sample_scale2.area_of_influence
+            >>> scale1_sum = {}
+            >>> all_tots_are_1 = True
+            >>> for i in aoi_2on1:
+            ...     sum_inf = 0.0
+            ...     for j_tup in i:
+            ...         sum_inf += j_tup[1]
+            ...     if abs(1 - sum_inf) > 0.0000001:
+            ...         all_tots_are_1 = False
+            >>> all_tots_are_1 == True
             True
 
             Notes
             -----
-            The list returned has one entry for each landmark point, each entry is a list
-            The inner list contains tuples where the first item
-            is an integer landmark index in the scale and the second item
-            is the area of influence matrix value for the two points.
-            The resulting matrix is sparse
+            The list returned has one entry for each landmark point i at scale s-1,
+            :math: `\mathcal{L}_{i}^{s-1}`.
+            Each entry is a list of tuples at where each tuple contains an index
+            j for a landmark at scale s,   :math: `\mathcal{L}_{j}^{s}`
+            and a value :math: `\mathit{I}^{S}(i,j)` representing the probability that the 
+            landmark point i at scale s-1 is influenced by 
+            landmark j at scale s.
+
+            The resulting matrix is sparse.
 
             Returns
             -------

@@ -3,12 +3,14 @@ set -x
 echo ** Start build environment preparation 
 yum remove -y cmake 
 yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel
-pip install --upgrade pip
-pip install -r requirements.txt
+python -m pip install --upgrade pip
+#python -m pip install -r requirements.txt
+which python
 echo Python version:
 python --version
 echo CMake version
 cmake --version 
+python -m pip install conan==1.39.0
 echo conan version
 conan --version 
 echo Prepare conan
