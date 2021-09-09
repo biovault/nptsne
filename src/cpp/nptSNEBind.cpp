@@ -975,7 +975,7 @@ PYBIND11_MODULE(_nptsne, m)
             For each landmark i at scale 1 the total influence from the j
             landmarks should be approximately 1.0.
             In this random data test the difference is assumed 
-            to be < :math:`1\mathrm{e}{-2}`.
+            to be < :math:`1.5\mathrm{e}{-2}`.
 
             >>> aoi_2on1 = sample_scale2.area_of_influence
             >>> scale1_sum = {}
@@ -984,7 +984,7 @@ PYBIND11_MODULE(_nptsne, m)
             ...     sum_inf = 0.0
             ...     for j_tup in i:
             ...         sum_inf += j_tup[1]
-            ...     if abs(1 - sum_inf) > 0.01:
+            ...     if abs(1 - sum_inf) > 0.015:
             ...         print(f"{1- sum_inf}")
             ...         all_tots_are_1 = False
             >>> all_tots_are_1 == True
