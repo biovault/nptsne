@@ -1,9 +1,9 @@
 [build-system]
 requires = [
-    "setuptools >= 40.6.0",
+    "setuptools >= 42",
     "wheel",
     "cmake >= 3.15.0",
-    "conan == 1.39.0",
+    "conan == 1.41.0",
     "packaging",
     "gitpython"
 ]
@@ -35,7 +35,7 @@ repair-wheel-command = [
 [tool.cibuildwheel.macos]
 before-build = [
     "chmod +x .ci/setup_macos.sh",
-    ".ci/setup_macos.sh {project}"    
+    ".ci/setup_macos.sh {project}"
 ]
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
