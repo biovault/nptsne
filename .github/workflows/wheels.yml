@@ -42,31 +42,13 @@ jobs:
       - name: Install cibuildwheel
         uses: pypa/cibuildwheel@v2.2.2
 
-      # cibuildwheel settings are mostle in the pyproject.toml file
+      # cibuildwheel settings are mostly in the pyproject.toml file
 
       # Test the cibuildwheel action
       # cibuildwheel derives platform automatically on CI
       # Local run use --platform windows/linx/macos
-      - name: Build wheels Windows
+      - name: Build wheels all platforms
         uses: pypa/cibuildwheel@v2.2.2
-        if: runner.os == 'Windows'
-        env:
-          CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64 cp39-win_amd64"
-          CIBW_BEFORE_TEST: set CI=TRUE
-
-      - name: Build wheels Ubuntu
-        uses: pypa/cibuildwheel@v2.2.2
-        if: runner.os == 'Linux'
-        env:
-          CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
-          CIBW_BEFORE_TEST: export CI=TRUE
-
-      - name: Build wheels Macos
-        uses: pypa/cibuildwheel@v2.2.2
-        if: runner.os == 'Macos'
-        env:
-          CIBW_BUILD: "cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
-          CIBW_BEFORE_TEST: export CI=TRUE
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI

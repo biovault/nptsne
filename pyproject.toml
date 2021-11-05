@@ -16,12 +16,17 @@ archs = "auto64"
 skip = "cp2* pp*"
 
 [tool.cibuildwheel.windows]
+build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 before-build = ".ci\\setup_windows.bat {project}"
+before-test = [
+    "set CI=TRUE"
+]
 
 [tool.cibuildwheel.linux]
 # The manylinux image needs to match the conan profile
 # 2010 is gcc 8
 manylinux-x86_64-image = "manylinux2010"
+build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
 before-build = [
     "chmod +x .ci/setup_linux.sh",
     ".ci/setup_linux.sh {project}"
@@ -31,11 +36,18 @@ repair-wheel-command = [
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel repair -w {dest_dir} {wheel}"
 ]
+before-test = [
+    "export CI=TRUE"
+]
 
 [tool.cibuildwheel.macos]
+build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]
 before-build = [
     "chmod +x .ci/setup_macos.sh",
     ".ci/setup_macos.sh {project}"
+]
+before-test = [
+    "export CI=TRUE"
 ]
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
