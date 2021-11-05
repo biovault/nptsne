@@ -52,24 +52,21 @@ jobs:
         if: runner.os == 'Windows'
         env:
           CIBW_BUILD: "cp36-win_amd64 cp37-win_amd64 cp38-win_amd64 cp39-win_amd64"
-          CIBW_ENVIRONMENT: >-
-            CI=TRUE
+          CIBW_ENVIRONMENT: CI=TRUE
 
       - name: Build wheels Ubuntu
         uses: pypa/cibuildwheel@v2.2.2
         if: runner.os == 'Linux'
         env:
           CIBW_BUILD: "cp36-manylinux_x86_64 cp37-manylinux_x86_64 cp38-manylinux_x86_64 cp39-manylinux_x86_64"
-          CIBW_ENVIRONMENT: >-
-            CI=TRUE
+          CIBW_BEFORE_ALL: export CI=TRUE
 
       - name: Build wheels Macos
         uses: pypa/cibuildwheel@v2.2.2
         if: runner.os == 'Macos'
         env:
           CIBW_BUILD: "cp36-macosx_x86_64 cp37-macosx_x86_64 cp38-macosx_x86_64 cp39-macosx_x86_64"
-          CIBW_ENVIRONMENT: >-
-            CI=TRUE
+          CIBW_ENVIRONMENT: CI=TRUE
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
