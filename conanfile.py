@@ -4,6 +4,7 @@ from conans import ConanFile, tools
 from conan.tools.cmake import CMakeDeps, CMake, CMakeToolchain
 import os
 import sys
+from pathlib import Path
 
 # Python version for wheel building
 with open(os.path.join(os.path.dirname(__file__), "version.txt")) as fp:
@@ -61,7 +62,7 @@ class NptsneConan(ConanFile):
             tc.variables["CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS"] = True
         tc.variables["BUILD_PYTHON_VERSION"] = __py_version__
         tc.variables["PYBIND11_PYTHON_VERSION"] = __py_version__
-        tc.variables["CMAKE_INSTALL_PREFIX"] = os.path.join(self.package_folder)
+        tc.variables["CMAKE_INSTALL_PREFIX"] = Path(self.package_folder).as_posix()
         # if tools.os_info.is_linux:
         #    tc.variables["LIBCXX"] = "libstdc++"
         tc.generate()
@@ -69,7 +70,7 @@ class NptsneConan(ConanFile):
         deps.generate()
 
     def configure(self):
-        self.options["HDILib"].shared = False
+        # self.options["HDILib"].shared = False
         if tools.os_info.is_linux:
             self.settings.compiler.libcxx = "libstdc++"
 

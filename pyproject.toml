@@ -16,6 +16,7 @@ archs = "auto64"
 skip = "cp2* pp*"
 
 [tool.cibuildwheel.windows]
+skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 before-build = ".ci\\setup_windows.bat {project}"
 before-test = [
@@ -26,6 +27,7 @@ before-test = [
 # The manylinux image needs to match the conan profile
 # 2010 is gcc 8
 manylinux-x86_64-image = "manylinux2010"
+skip = ["cp27-*"]
 build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
 before-build = [
     "chmod +x .ci/setup_linux.sh",
@@ -39,6 +41,7 @@ repair-wheel-command = [
 test-command = "export CI=TRUE; python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.macos]
+skip = ["cp27-*"]
 build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]
 before-build = [
     "chmod +x .ci/setup_macos.sh",
