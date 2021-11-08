@@ -39,6 +39,13 @@ jobs:
         with:
           python-version: 3.x
 
+      - name: Install Conan
+        id: conan
+        uses: turtlebrowser/get-conan@main
+
+      - name: Conan version
+        run: echo "${{ steps.conan.outputs.version }}"
+
       - name: Install cibuildwheel
         uses: pypa/cibuildwheel@v2.2.2
 
