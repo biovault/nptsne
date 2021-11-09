@@ -1,7 +1,5 @@
 rd /s /q %TMP%\\cibwlibsdir
 mkdir %TMP%\\cibwlibsdir 
-pip install --upgrade pip
-pip install -r requirements.txt
 echo Python version:
 python --version
 echo CMake version

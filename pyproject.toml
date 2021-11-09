@@ -18,7 +18,11 @@ skip = "cp2* pp*"
 [tool.cibuildwheel.windows]
 skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
-before-build = ".ci\\setup_windows.bat {project}"
+before-build = [
+    "pip install --user conan==1.41.0",
+    "for /f \"delims=\" %%a in ('where conan') do @set CONANPATH=%%a",
+    ".ci\\setup_windows.bat {project}"
+]
 before-test = [
     "set CI=TRUE"
 ]
