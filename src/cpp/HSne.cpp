@@ -98,6 +98,7 @@ void HSne::save_to_file(const std::string &filePath) {
     }
     std::ofstream out_stream(filePath, std::ios::binary);
     hdi::dr::IO::saveHSNE(*_hsne, out_stream, _log);
+    out_stream.flush();
 }
 
 HSneScale HSne::get_scale(unsigned int scale_number) {

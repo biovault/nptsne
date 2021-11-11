@@ -751,11 +751,14 @@ PYBIND11_MODULE(_nptsne, m)
 
             Examples
             --------
-            Save the hsne to a file and check the number of scales was sved correctly.
+            Save the hsne to a file and check the number of scales was saved correctly.
 
             >>> import nptsne
-            >>> sample_hsne.save("save_test.hsne")
-            >>> nptsne.HSne.read_num_scales("save_test.hsne")
+            >>> from pathlib import Path
+            >>> from tempfile import gettempdir
+            >>> savepath = Path(gettempdir(), "save_test.hsne")
+            >>> sample_hsne.save(str(savepath))
+            >>> nptsne.HSne.read_num_scales(str(savepath))
             3
 
         )pbdoc",

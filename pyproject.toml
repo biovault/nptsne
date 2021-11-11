@@ -22,12 +22,12 @@ skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 before-build = [
     "echo %CONAN_USER_HOME%",
-    "if exist %CD%\\.conan\\ rd /s /q %CD%\\.conan",
-    "if exist %CD%\\build\\ rd /s /q %CD%\\build",
+    "if exist {project}\\.conan\\ rd /s /q {project}\\.conan",
+    "if exist {project}\\build\\ rd /s /q {project}\\build",
     "echo check conan",
     "where conan",
     "conan user",
-    "type %CD%\\cert.pem >> %CD%\\.conan\\cacert.pem",
+    "type {project}\\cert.pem >> {project}\\.conan\\cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
     "conan remote list"
 ]

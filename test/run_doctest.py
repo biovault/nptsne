@@ -7,6 +7,8 @@ import nptsne
 import nptsne.hsne_analysis
 import nptsne.libs._nptsne
 import os
+import tempfile
+from pathlib import Path
 
 _skip = object()
 SKIP_IN_CI = doctest.register_optionflag("SKIP_IN_CI")
@@ -49,8 +51,11 @@ def make_test_globals():
     # save this to a sample file
     hsne = nptsne.HSne(True)
     hsne.create_hsne(hsne_data, 3)
-    file_name = "rnd10000x16.hsne"
-    hsne.save(file_name)
+    file_name = Path(tempfile.gettempdir(), 'rnd10000x16.hsne')
+    print(f"Hsne file saving at {str(file_name)}", flush=True)
+    hsne.save(str(file_name))
+    print("Verify hsne file was saved", flush=True)
+    assert file_name.exists()
     top_analysis = nptsne.hsne_analysis.Analysis(
         hsne, nptsne.hsne_analysis.EmbedderType.CPU
     )
@@ -62,7 +67,7 @@ def make_test_globals():
         "sample_scale0": hsne.get_scale(0),
         "sample_scale1": hsne.get_scale(1),
         "sample_scale2": hsne.get_scale(2),
-        "sample_hsne_file": file_name,
+        "sample_hsne_file": str(file_name),
         "sample_hsne_data": hsne_data,
         "sample_tsne_data": tsne_data,
         "sample_texture_tsne": nptsne.TextureTsne(),
