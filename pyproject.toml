@@ -17,17 +17,17 @@ archs = "auto64"
 skip = "cp2* pp*"
 
 [tool.cibuildwheel.windows]
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c echo %CD%)"}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')"}
 skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 before-build = [
     "echo %CONAN_USER_HOME%",
-    "if exist {project}\\.conan\\ rd /s /q {project}\\.conan",
-    "if exist {project}\\build\\ rd /s /q {project}\\build",
+    "if exist %CONAN_USER_HOME%\\.conan\\ rd /s /q %CONAN_USER_HOME%\\.conan",
+    "if exist %CONAN_USER_HOME%\\build\\ rd /s /q %CONAN_USER_HOME%\\build",
     "echo check conan",
     "where conan",
     "conan user",
-    "type {project}\\cert.pem >> {project}\\.conan\\cacert.pem",
+    "type %CONAN_USER_HOME%\\cert.pem >> %CONAN_USER_HOME%\\.conan\\cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
     "conan remote list"
 ]
