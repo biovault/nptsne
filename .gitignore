@@ -1,6 +1,7 @@
 **/__pycache__
 .vs
 build
+.conan
 demos/data
 .vscode
 wheelhouse/*

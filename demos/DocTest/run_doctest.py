@@ -7,6 +7,7 @@ import nptsne
 import nptsne.hsne_analysis
 import nptsne.libs._nptsne
 import os
+from pathlib import Path
 
 _skip = object()
 SKIP_IN_CI = doctest.register_optionflag('SKIP_IN_CI')
@@ -45,6 +46,10 @@ def make_test_globals():
     hsne.create_hsne(hsne_data, 3)
     file_name = "rnd10000x16.hsne"
     hsne.save(file_name)
+    p = Path(file_name)
+    print("Verify hsne file was saved", flush=True)
+    assert p.exists()
+    print(f"Hsne file saved at {str(p.resolve())}", flush=True)
     top_analysis = nptsne.hsne_analysis.Analysis(hsne, nptsne.hsne_analysis.EmbedderType.CPU)
 
     print("End prepare doctest globals", flush=True)

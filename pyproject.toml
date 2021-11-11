@@ -1,12 +1,13 @@
 [build-system]
 requires = [
-    "setuptools >= 42",
-    "wheel",
-    "cmake >= 3.15.0",
-    "conan == 1.41.0",
+    "cmake>=3.15.0",
+    "conan==1.41.0",
     "packaging",
-    "gitpython"
+    "gitpython",
+    "setuptools>=42",
+    "wheel"
 ]
+build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
 build = "cp38-*"
@@ -16,16 +17,23 @@ archs = "auto64"
 skip = "cp2* pp*"
 
 [tool.cibuildwheel.windows]
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c echo %CD%)"}
 skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 before-build = [
-    "pip install --user conan==1.41.0",
-    "for /f \"delims=\" %%a in ('where conan') do @set CONANPATH=%%a",
-    ".ci\\setup_windows.bat {project}"
+    "echo %CONAN_USER_HOME%",
+    "if exist %CD%\\.conan\\ rd /s /q %CD%\\.conan",
+    "if exist %CD%\\build\\ rd /s /q %CD%\\build",
+    "echo check conan",
+    "where conan",
+    "conan user",
+    "type %CD%\\cert.pem >> %CD%\\.conan\\cacert.pem",
+    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan remote list"
 ]
-before-test = [
-    "set CI=TRUE"
-]
+#before-test = [
+#    "set CI=TRUE"
+#]
 
 [tool.cibuildwheel.linux]
 # The manylinux image needs to match the conan profile

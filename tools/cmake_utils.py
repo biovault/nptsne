@@ -53,7 +53,7 @@ class CMakeBuild(build_ext):
                 tempdir.mkdir(exist_ok=True)
             self.build_extension(ext)
 
-    def build_extension(self, ext):
+    def build_extension(self, ext): 
         self.announce("Building for package: {}".format(ext.package_name), log.INFO)
         self.announce("Building extension: {}".format(ext.name), log.INFO)
 
@@ -128,14 +128,25 @@ class CMakeBuild(build_ext):
             compiler.version=8
             compiler.libcxx=libstdc++
         """
+
+        self.announce(f"Path is {os.environ['PATH']}", log.INFO)
+        self.announce("Set the conan build profile from the current context", log.INFO)
         subprocess.check_call(
             ["conan", "profile", "new", "default", "--detect", "--force"],
             cwd=self.build_temp,
         )
-
         subprocess.check_call(
             ["conan", "profile", "show", "default"], cwd=self.build_temp
         )
+
+        if platform.system() == "Windows":
+            self.announce("Remove build_type from conan profile on windows", log.INFO)
+            subprocess.check_call(
+                ["conan", "profile", "remove", "settings.build_type", "default"], cwd=self.build_temp
+            )
+            subprocess.check_call(
+                ["conan", "profile", "show", "default"], cwd=self.build_temp
+            )
 
         # CMake configure
         subprocess.check_call(
