@@ -42,7 +42,9 @@ before-build = [
     "echo $CONAN_USER_HOME",
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "echo check conan"
+    "echo check conan",
+    "which conan",
+    "conan user"
 ]
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
