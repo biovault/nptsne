@@ -41,12 +41,7 @@ build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_6
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "echo check conan",
-    "which conan",
-    "conan user",
-    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
-    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-    "conan remote list",
+
 ]
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
