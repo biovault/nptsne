@@ -42,9 +42,9 @@ before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
     "echo check conan",
-    "where conan",
+    "which conan",
     "conan user",
-    "type $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
+    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
     "conan remote list",
 ]
@@ -62,9 +62,9 @@ before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
     "echo check conan",
-    "where conan",
+    "which conan",
     "conan user",
-    "type $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
+    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
     "conan remote list",
 ]
