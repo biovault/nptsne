@@ -20,11 +20,7 @@ skip = "cp2* pp*"
 environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')"}
 skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
-before-all = [
-    "echo conan user home %CONAN_USER_HOME% cur dir %cd%"
-]
 before-build = [
-    "echo conan user home %CONAN_USER_HOME% cur dir %cd%",
     "{project}\\.ci\\cleanprevbuild.bat",
     "echo check conan",
     "where conan",
@@ -33,36 +29,44 @@ before-build = [
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
     "conan remote list",
 ]
-#before-test = [
-#    "set CI=TRUE"
-#]
+
 
 [tool.cibuildwheel.linux]
 # The manylinux image needs to match the conan profile
 # 2010 is gcc 8
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)"}
 manylinux-x86_64-image = "manylinux2010"
 skip = ["cp27-*"]
 build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
 before-build = [
-    "chmod +x .ci/setup_linux.sh",
-    ".ci/setup_linux.sh {project}"
+    "chmod +x {project}/.ci/cleanprevbuild.sh",
+    "{project}/.ci/cleanprevbuild.sh",
+    "echo check conan",
+    "where conan",
+    "conan user",
+    "type $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
+    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan remote list",
 ]
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel repair -w {dest_dir} {wheel}"
 ]
-test-command = "export CI=TRUE; python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.macos]
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)"}
 skip = ["cp27-*"]
 build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]
 before-build = [
-    "chmod +x .ci/setup_macos.sh",
-    ".ci/setup_macos.sh {project}"
-]
-before-test = [
-    "export CI=TRUE"
+    "chmod +x {project}/.ci/cleanprevbuild.sh",
+    "{project}/.ci/cleanprevbuild.sh",
+    "echo check conan",
+    "where conan",
+    "conan user",
+    "type $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
+    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan remote list",
 ]
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
