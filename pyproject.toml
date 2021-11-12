@@ -50,6 +50,7 @@ before-build = [
     "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
     "conan remote list",
+    "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel"
 ]
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
@@ -70,6 +71,7 @@ before-build = [
     "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
     "conan remote list",
+    "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel"
 ]
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
