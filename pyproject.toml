@@ -67,6 +67,7 @@ build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
+    "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
     "echo check conan",
     "which python",
     "pip install conan==1.41.0",
