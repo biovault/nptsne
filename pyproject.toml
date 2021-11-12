@@ -57,6 +57,7 @@ repair-wheel-command = [
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel repair -w {dest_dir} {wheel}"
 ]
+test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.macos]
 environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)"}
@@ -78,3 +79,4 @@ repair-wheel-command = [
     "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
     "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
 ]
+test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
