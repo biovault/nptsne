@@ -21,7 +21,7 @@ environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo 
 skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 before-all = [
-    "{project}/.ci/cleanwheelhouse.bat"
+    "{project}\\.ci\\cleanwheelhouse.bat"
 ]
 before-build = [
     "{project}\\.ci\\cleanprevbuild.bat",
