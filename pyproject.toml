@@ -25,15 +25,15 @@ before-all = [
 ]
 before-build = [
     "echo conan user home %CONAN_USER_HOME% cur dir %cd%",
-    "if exist %CONAN_USER_HOME%\\.conan\\ rd /s /q %CONAN_USER_HOME%\\.conan",
-    "if exist %CONAN_USER_HOME%\\build\\ rd /s /q %CONAN_USER_HOME%\\build",
-    "exit 1",
+    "rem if exist %CONAN_USER_HOME%\\.conan\\ rd /s /q %CONAN_USER_HOME%\\.conan",
+    "rem if exist %CONAN_USER_HOME%\\build\\ rd /s /q %CONAN_USER_HOME%\\build",
     "rem echo check conan",
     "rem where conan",
     "rem conan user",
     "rem type %CONAN_USER_HOME%\\cert.pem >> %CONAN_USER_HOME%\\.conan\\cacert.pem",
     "rem conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-    "rem conan remote list"
+    "rem conan remote list",
+    "exit 1"
 ]
 #before-test = [
 #    "set CI=TRUE"
