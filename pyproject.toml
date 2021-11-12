@@ -25,8 +25,13 @@ before-all = [
 ]
 before-build = [
     "echo conan user home %CONAN_USER_HOME% cur dir %cd%",
-    "if exist %CONAN_USER_HOME%\\.conan\\ rd /s /q %CONAN_USER_HOME%\\.conan",
-    "dir"
+    "{project}\.ci\\cleanprevbuild.bat",
+    "echo check conan",
+    "where conan",
+    "conan user",
+    "type %CONAN_USER_HOME%\\cert.pem >> %CONAN_USER_HOME%\\.conan\\cacert.pem",
+    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan remote list",
 ]
 #before-test = [
 #    "set CI=TRUE"
