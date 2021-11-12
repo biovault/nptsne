@@ -1285,7 +1285,7 @@ PYBIND11_MODULE(_nptsne, m)
                 >>> all_top_landmarks=list(range(0,sample_analysis.number_of_points))
                 >>> all_influenced=sample_analysis.get_mapped_area_of_influence(all_top_landmarks)
 
-                Assumes that at leat 99% of the datapoints are in the AOI of the
+                Assumes that at least 99% of the datapoints are in the AOI of the
                 all toplevel landmarks.
 
                 >>> all_influenced.shape[0] > math.floor(sample_scale0.num_points * 0.99)
