@@ -25,6 +25,7 @@ before-all = [
 ]
 before-build = [
     "echo conan user home %CONAN_USER_HOME% cur dir %cd%",
+    "if exist %CONAN_USER_HOME%\\.conan\\ rd /s /q %CONAN_USER_HOME%\\.conan",
     "dir"
 ]
 #before-test = [
