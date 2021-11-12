@@ -61,13 +61,16 @@ test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.macos]
 environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)"}
-build-verbosity=3
+build-verbosity=1
 skip = ["cp27-*"]
 build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]
+before-all = [
+    "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
+    "if [ -d \"$CONAN_USER_HOME/wheelhouse\" ]; then rm -Rf $CONAN_USER_HOME/wheelhouse; fi"
+]
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
     "echo check conan",
     "which python",
     "pip install conan==1.41.0",
