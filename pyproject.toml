@@ -25,7 +25,7 @@ before-all = [
 ]
 before-build = [
     "echo conan user home %CONAN_USER_HOME% cur dir %cd%",
-    "{project}\.ci\\cleanprevbuild.bat",
+    "{project}\\.ci\\cleanprevbuild.bat",
     "echo check conan",
     "where conan",
     "conan user",
