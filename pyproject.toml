@@ -39,9 +39,10 @@ manylinux-x86_64-image = "manylinux2010"
 skip = ["cp27-*"]
 build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
 before-build = [
+    "echo $CONAN_USER_HOME",
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-
+    "echo check conan"
 ]
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
