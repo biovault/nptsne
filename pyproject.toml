@@ -46,7 +46,10 @@ before-build = [
     "which python",
     "pip install conan==1.41.0",
     "which conan",
-    "conan user"
+    "conan user",
+    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
+    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan remote list",
 ]
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
