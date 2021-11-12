@@ -24,7 +24,8 @@ before-all = [
     "echo conan user home %CONAN_USER_HOME% cur dir %cd%"
 ]
 before-build = [
-    "echo conan user home %CONAN_USER_HOME% cur dir %cd%"
+    "echo conan user home %CONAN_USER_HOME% cur dir %cd%",
+    "dir"
 ]
 #before-test = [
 #    "set CI=TRUE"
