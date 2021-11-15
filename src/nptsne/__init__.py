@@ -23,16 +23,22 @@ References
 .. [2] Pezzotti, N. et al., `Hierarchical Stochastic Neighbor Embedding <https://doi.org/10.1111/cgf.12878>`_
 
 """
-from .libs._nptsne import (TextureTsne, TextureTsneExtended, KnnAlgorithm,
-                           KnnDistanceMetric, HSne, HSneScale)
 from . import hsne_analysis
+from .libs._nptsne import (
+    HSne,
+    HSneScale,
+    KnnAlgorithm,
+    KnnDistanceMetric,
+    TextureTsne,
+    TextureTsneExtended,
+)
 
 __all__ = (
-    'TextureTsne',
-    'TextureTsneExtended',
-    'KnnAlgorithm',
-    'KnnDistanceMetric',
-    'HSne',
-    'HSneScale',
-    'hsne_analysis'
+    "TextureTsne",
+    "TextureTsneExtended",
+    "KnnAlgorithm",
+    "KnnDistanceMetric",
+    "HSne",
+    "HSneScale",
+    "hsne_analysis",
 )

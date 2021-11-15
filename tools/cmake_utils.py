@@ -6,17 +6,17 @@ import os
 import pathlib
 import platform
 import re
+import subprocess
 import sys
 import time
-import subprocess
 import urllib
 import urllib.request
+from distutils import log
+from distutils.version import LooseVersion
+from pathlib import Path
 
 from setuptools import Extension
 from setuptools.command.build_ext import build_ext
-from distutils.version import LooseVersion
-from distutils import log
-from pathlib import Path
 
 
 class CMakeExtension(Extension):
@@ -40,9 +40,7 @@ class CMakeBuild(build_ext):
             )
 
         if platform.system() == "Windows":
-            cmake_version = LooseVersion(
-                re.search(r"version\s*([\d.]+)", out.decode()).group(1)
-            )
+            cmake_version = LooseVersion(re.search(r"version\s*([\d.]+)", out.decode()).group(1))
             if cmake_version < "3.1.0":
                 raise RuntimeError("CMake >= 3.1.0 is required on Windows")
 
@@ -53,7 +51,7 @@ class CMakeBuild(build_ext):
                 tempdir.mkdir(exist_ok=True)
             self.build_extension(ext)
 
-    def build_extension(self, ext): 
+    def build_extension(self, ext):
         self.announce("Building for package: {}".format(ext.package_name), log.INFO)
         self.announce("Building extension: {}".format(ext.name), log.INFO)
 
@@ -80,9 +78,7 @@ class CMakeBuild(build_ext):
         if platform.system() == "Windows":
             # VS can produce separate RELEASE or DEBUG outputs
             cmake_args += [
-                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(
-                    cfg.upper(), liboutputdir
-                )
+                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), liboutputdir)
             ]
             if sys.maxsize > 2 ** 32:
                 cmake_args += ["-A", "x64"]
@@ -100,9 +96,7 @@ class CMakeBuild(build_ext):
             # Xcode automatically optimizes core usage
             # as default Xcode will create a release subdir
             cmake_args += [
-                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(
-                    cfg.upper(), liboutputdir
-                )
+                "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), liboutputdir)
             ]
             build_args += ["--"]
         else:
@@ -135,23 +129,18 @@ class CMakeBuild(build_ext):
             ["conan", "profile", "new", "default", "--detect", "--force"],
             cwd=self.build_temp,
         )
-        subprocess.check_call(
-            ["conan", "profile", "show", "default"], cwd=self.build_temp
-        )
+        subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
 
         if platform.system() == "Windows":
             self.announce("Remove build_type from conan profile on windows", log.INFO)
             subprocess.check_call(
-                ["conan", "profile", "remove", "settings.build_type", "default"], cwd=self.build_temp
+                ["conan", "profile", "remove", "settings.build_type", "default"],
+                cwd=self.build_temp,
             )
-            subprocess.check_call(
-                ["conan", "profile", "show", "default"], cwd=self.build_temp
-            )
+            subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
 
         # CMake configure
-        subprocess.check_call(
-            ["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env
-        )
+        subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
         # CMake build
         subprocess.check_call(
             ["cmake", "--build", ".", "--verbose"] + build_args, cwd=self.build_temp

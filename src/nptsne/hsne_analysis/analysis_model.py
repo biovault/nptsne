@@ -1,5 +1,6 @@
-from ..libs._nptsne._hsne_analysis import EmbedderType, Analysis
 import numpy as np
+
+from ..libs._nptsne._hsne_analysis import Analysis, EmbedderType
 
 
 class AnalysisContainer:
