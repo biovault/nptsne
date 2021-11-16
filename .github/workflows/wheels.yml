@@ -71,9 +71,9 @@ jobs:
           echo call setup for version
           python setup.py --version
           echo store version
-          export $VERSION=$(python setup.py --version)
-          echo calculated version: $VERSION
-      # echo "::set-output name=branchname::$VERSION"
+          export VERSION=$(python setup.py --version)
+          echo "::set-output name=branchname::$VERSION"
+
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
       # The default upload name is artifact but a name can be supplied
