@@ -23,6 +23,9 @@ jobs:
           # - job-name: "Windows"
           #   os: "windows-2019"
 
+    outputs:
+      branchname: ${{ steps.getbranch.outputs.branchname }}
+
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
       # and https://stackoverflow.com/a/53409848/584201
@@ -56,6 +59,9 @@ jobs:
       # Local run use --platform windows/linx/macos
       - name: Build wheels all platforms
         uses: pypa/cibuildwheel@v2.2.2
+
+      - id: getbranch
+        run: echo ::set-output name=branchname::$(python setup.py --version)
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
@@ -113,4 +119,4 @@ jobs:
           export VERSION=`python setup.py --version`
           echo Check version $VERSION is on testpypi
           python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
-          curl -X POST -d "branches=${{ env.BRANCH_NAME }}" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
+          curl -X POST -d "branches=${{needs.build_wheels.outputs.branchname}}" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
