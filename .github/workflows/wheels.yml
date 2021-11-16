@@ -97,6 +97,8 @@ jobs:
     name: Upload artifacts to pyPI or TestPyPI
     needs: [build_wheels]
     runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.build_wheels.outputs.version }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
@@ -124,7 +126,7 @@ jobs:
       - name: Publish ReadTheDocs from TestPyPi
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: |
-          export VERSION=${{needs.build_wheels.outputs.version}}
+          echo use nptsne:$VERSION for ReadTheDocs
           echo Check version $VERSION is on testpypi
           python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
           curl -X POST -d "branches=$VERSION" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
