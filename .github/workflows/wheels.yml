@@ -60,9 +60,15 @@ jobs:
       - name: Build wheels all platforms
         uses: pypa/cibuildwheel@v2.2.2
 
+      # get the branchname - needed for version derivation
+      - uses: nelonoel/branch-name@v1.0.1
+      - run: echo ${BRANCH_NAME}
+
       - id: version
         if: matrix.os == 'ubuntu-20.04'
-        run: export $VERSION=`python setup.py --version`
+        run: |
+          pip install GitPython
+          export $VERSION=`python setup.py --version`
           echo ::set-output name=branchname::$VERSION
 
       # Temporary storage of job results
