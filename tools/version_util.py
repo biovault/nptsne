@@ -30,7 +30,7 @@ def get_repo_branch(repo):
             branch = os.environ.get("TRAVIS_BRANCH")
         else:
             # use nelonoel/branch-name on GitHub actions
-            branch = os.environ.het("BRANCH_NAME")
+            branch = os.environ.get("BRANCH_NAME")
     return branch
 
 
