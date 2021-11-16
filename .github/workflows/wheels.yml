@@ -69,7 +69,8 @@ jobs:
         run: |
           pip install GitPython
           export $VERSION=`python setup.py --version`
-          echo ::set-output name=branchname::$VERSION
+          echo calculated version: $VERSION
+          echo "::set-output name=branchname::$VERSION"
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
