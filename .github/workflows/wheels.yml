@@ -68,6 +68,9 @@ jobs:
         if: matrix.os == 'ubuntu-20.04'
         run: |
           pip install GitPython
+          echo call setup for version
+          python setup.py --version
+          echo store version
           export $VERSION=$(python setup.py --version)
           echo calculated version: $VERSION
       # echo "::set-output name=branchname::$VERSION"
