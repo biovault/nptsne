@@ -81,10 +81,14 @@ jobs:
     needs: [build_wheels]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
         with:
           name: artifact
           path: dist
+
+      - name: Set BRANCH_NAME
+        uses: nelonoel/branch-name@v1.0.1
 
       - name: Publish wheels to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -103,11 +107,10 @@ jobs:
           user: __token__
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
           repository_url: https://test.pypi.org/legacy/
-      - name: readthedocs_testpypi
+      - name: Publish ReadTheDocs from TestPyPi
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: nelonoel/branch-name@v1.0.1
         run: |
           export VERSION=`python setup.py --version`
           echo Check version $VERSION is on testpypi
           python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
-          curl -X POST -d "branches=$BRANCH_NAME" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
+          curl -X POST -d "branches=${{ env.BRANCH_NAME }}" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
