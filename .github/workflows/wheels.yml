@@ -134,5 +134,5 @@ jobs:
         run: |
           echo use nptsne:$VERSION for ReadTheDocs
           echo Check version $VERSION is on testpypi
-          python -c "import sys; sys.path.append('.'); from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
+          python -c "import sys; from pathlib import Path; sys.path.append(Path('.').resolve()); from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
           curl -X POST -d "branches=$VERSION" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
