@@ -24,7 +24,7 @@ jobs:
           #   os: "windows-2019"
 
     outputs:
-      branchname: ${{ steps.getbranch.outputs.branchname }}
+      branchname: ${{ steps.version.outputs.version }}
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
@@ -60,8 +60,10 @@ jobs:
       - name: Build wheels all platforms
         uses: pypa/cibuildwheel@v2.2.2
 
-      - id: getbranch
-        run: echo ::set-output name=branchname::$(python setup.py --version)
+      - id: version
+        if: matrix.os == "ubuntu-20.04"
+        run: export $VERSION=`python setup.py --version`
+          echo ::set-output name=branchname::$VERSION
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
@@ -93,9 +95,6 @@ jobs:
           name: artifact
           path: dist
 
-      - name: Set BRANCH_NAME
-        uses: nelonoel/branch-name@v1.0.1
-
       - name: Publish wheels to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         uses: pypa/gh-action-pypi-publish@master
@@ -116,7 +115,7 @@ jobs:
       - name: Publish ReadTheDocs from TestPyPi
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         run: |
-          export VERSION=${{needs.build_wheels.outputs.branchname}}
+          export VERSION=${{needs.build_wheels.outputs.version}}
           echo Check version $VERSION is on testpypi
           python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
           curl -X POST -d "branches=$VERSION" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
