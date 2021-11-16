@@ -61,7 +61,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.2.2
 
       - id: version
-        if: matrix.os == "ubuntu-20.04"
+        if: matrix.os == 'ubuntu-20.04'
         run: export $VERSION=`python setup.py --version`
           echo ::set-output name=branchname::$VERSION
 
