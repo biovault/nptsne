@@ -72,7 +72,7 @@ jobs:
           python setup.py --version
           echo store version
           export VERSION=$(python setup.py --version)
-          echo "::set-output name=branchname::$VERSION"
+          echo "::set-output name=version::$VERSION"
 
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
