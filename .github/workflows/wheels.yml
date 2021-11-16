@@ -24,7 +24,7 @@ jobs:
           #   os: "windows-2019"
 
     outputs:
-      branchname: ${{ steps.version.outputs.version }}
+      nptsneversion: ${{ steps.version.outputs.version }}
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
@@ -98,7 +98,7 @@ jobs:
     needs: [build_wheels]
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ needs.build_wheels.outputs.version }}
+      VERSION: ${{ needs.build_wheels.outputs.nptsneversion }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
