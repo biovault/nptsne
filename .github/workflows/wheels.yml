@@ -72,6 +72,10 @@ jobs:
   #   2) Upload to either :
   #      a) - TestPyPI if no release tag
   #      b) - PyPI if release tag
+  #   3) If the upload succeeds trigger either :
+  #      a) - TestReadTheDocs if no release tag
+  #      b) - ReadTheDocs if release tag
+
   upload_all_artifacts:
     name: Upload artifacts to pyPI or TestPyPI
     needs: [build_wheels]
@@ -81,12 +85,17 @@ jobs:
         with:
           name: artifact
           path: dist
+
       - name: Publish wheels to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN_SECRET  }}
+      - name: readthedocs_pypi
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: echo T.B.D.
+
       - name: Publish wheels to TestPyPI
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         uses: pypa/gh-action-pypi-publish@master
@@ -94,3 +103,11 @@ jobs:
           user: __token__
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
           repository_url: https://test.pypi.org/legacy/
+      - name: readthedocs_testpypi
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        uses: nelonoel/branch-name@v1.0.1
+        run: |
+          export VERSION=`python setup.py --version`
+          echo Check version $VERSION is on testpypi
+          python -c "from tools.cmake_utils import search_for_version; search_for_version('$VERSION', 3, True)"
+          curl -X POST -d "branches=$BRANCH_NAME" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
