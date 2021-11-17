@@ -129,11 +129,21 @@ jobs:
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
           repository_url: https://test.pypi.org/legacy/
 
-      - name: Publish ReadTheDocs from TestPyPi
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      - name: Publish to ReadTheDocs
         run: |
           echo use nptsne:$VERSION for ReadTheDocs
-          echo Check version $VERSION is on testpypi
+          echo Check version $VERSION is on pypi or testpypi
           pip install requests
-          python -c "import os; import requests; r=requests.get(f'https://test.pypi.org/project/nptsne/{os.environ[\\\"VERSION\\\"]}'); exit(0) if r.status_code==200 else exit(1)"
+
+      - name: Verify wheel upload
+        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          import os
+          import requests
+          r=requests.get(f'https://test.pypi.org/project/nptsne/{os.environ["VERSION"]}')
+          exit(0) if r.status_code==200 else exit(1)
+        shell: python
+
+      - name: Post to ReadTheDocs
+        run: |
           curl -X POST -d "branches=$VERSION" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
