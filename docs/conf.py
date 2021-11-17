@@ -35,14 +35,13 @@ __version__ = (
     .decode("ascii")
     .strip()
 )
-
 if on_rtd:
     # Manually triggering a RTD build
     # curl -X POST -d "branches=$GIT_BRANCH" -d "token=$AUTH_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
     # Install a version of nptsne to extract the docstrings
     # READTHEDOCS_VERSION : The RTD name of the version which is being built
     rtd_version = os.environ.get("READTHEDOCS_VERSION")
-    print("In ReadTheDocs")
+    print(f"In ReadTheDocs - build docing for version {__version__}")
 
     # stable represents a tagged version - will be on PyPi
     # non-stable on test.pypi
@@ -56,7 +55,7 @@ if on_rtd:
                     "pip",
                     "install",
                     "--force-reinstall",
-                    "nptsne=={}".format(__version__),
+                    f"nptsne=={__version__}",
                 ]
             )
         except subprocess.CalledProcessError:
@@ -70,7 +69,7 @@ if on_rtd:
                 "install",
                 "--pre",
                 "--no-deps",
-                "nptsne=={}".format(__version__),
+                f"nptsne=={__version__}",
                 "--index-url",
                 "https://test.pypi.org/simple",
             ]
