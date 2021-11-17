@@ -11,12 +11,11 @@ import sys
 import time
 import urllib
 import urllib.request
+from setuptools import Extension
+from setuptools.command.build_ext import build_ext
 from distutils import log
 from distutils.version import LooseVersion
 from pathlib import Path
-
-from setuptools import Extension
-from setuptools.command.build_ext import build_ext
 
 
 class CMakeExtension(Extension):
