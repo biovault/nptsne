@@ -72,4 +72,4 @@ def get_version(repo_path):
     if branch.startswith("release"):
         return raw_version + "rc" + build_number
 
-    return raw_version + ".dev" + build_number
+    return raw_version + "a" + build_number

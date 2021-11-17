@@ -146,4 +146,4 @@ jobs:
 
       - name: Post to ReadTheDocs
         run: |
-          curl -X POST -d "branches=$VERSION" -d"token=${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
+          curl -X POST -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }}" -H "Content-Type: application/json" -d '{"active": true, "hidden": false}' "https://readthedocs.org/api/v3/projects/nptsne/versions/${VERSION}/builds/"

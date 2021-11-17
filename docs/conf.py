@@ -41,7 +41,7 @@ if on_rtd:
     # Install a version of nptsne to extract the docstrings
     # READTHEDOCS_VERSION : The RTD name of the version which is being built
     rtd_version = os.environ.get("READTHEDOCS_VERSION")
-    print(f"In ReadTheDocs - build docing for version {__version__}")
+    print(f"In ReadTheDocs - build docing for version {__version__}", flush=True)
 
     # stable represents a tagged version - will be on PyPi
     # non-stable on test.pypi
