@@ -12,47 +12,75 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-#import sphinx_rtd_theme
+# import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
-project = 'nptsne'
-copyright = '2020, Baldur van Lew'
-author = 'Baldur van Lew'
+project = "nptsne"
+copyright = "2020, Baldur van Lew"
+author = "Baldur van Lew"
 
 import os
 import sys
 import subprocess
+
 # Whether the build is running inside RTD
-on_rtd = os.environ.get('READTHEDOCS') == 'True'
+on_rtd = os.environ.get("READTHEDOCS") == "True"
 
 # Running setup.py with --version returns the extracted version
-__version__ = subprocess.check_output([sys.executable, os.path.abspath(os.path.join('..', 'setup.py')), '--version']).decode('ascii').strip()
+__version__ = (
+    subprocess.check_output(
+        [sys.executable, os.path.abspath(os.path.join("..", "setup.py")), "--version"]
+    )
+    .decode("ascii")
+    .strip()
+)
 
 if on_rtd:
     # Manually triggering a RTD build
     # curl -X POST -d "branches=$GIT_BRANCH" -d "token=$AUTH_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
     # Install a version of nptsne to extract the docstrings
     # READTHEDOCS_VERSION : The RTD name of the version which is being built
-    rtd_version = os.environ.get('READTHEDOCS_VERSION')
+    rtd_version = os.environ.get("READTHEDOCS_VERSION")
     print("In ReadTheDocs")
 
     # stable represents a tagged version - will be on PyPi
     # non-stable on test.pypi
-    if rtd_version == 'stable':
+    if rtd_version == "stable":
         branch = None
         try:
-            subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--force-reinstall', 'nptsne=={}'.format(__version__)])
+            subprocess.check_call(
+                [
+                    sys.executable,
+                    "-m",
+                    "pip",
+                    "install",
+                    "--force-reinstall",
+                    "nptsne=={}".format(__version__),
+                ]
+            )
         except subprocess.CalledProcessError:
-            branch = 'stable'
+            branch = "stable"
     else:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--pre', '--no-deps', 'nptsne=={}'.format(__version__)], '--index-url', 'https://test.pypi.org/simple' ])
+        subprocess.check_call(
+            [
+                sys.executable,
+                "-m",
+                "pip",
+                "install",
+                "--pre",
+                "--no-deps",
+                "nptsne=={}".format(__version__),
+                "--index-url",
+                "https://test.pypi.org/simple",
+            ]
+        )
 else:
-    sys.path.insert(0, os.path.abspath(os.path.join('..', 'installed')))
+    sys.path.insert(0, os.path.abspath(os.path.join("..", "installed")))
 
 import nptsne
 
-mmp = __version__.split('.')
+mmp = __version__.split(".")
 # The short X.Y version
 version = "{}.{}".format(mmp[0], mmp[1])
 # The full version, including alpha/beta/rc tags
@@ -61,58 +89,60 @@ html_title = __version__
 
 rst_epilog = """
 .. |version| replace:: {0}
- """.format(__version__, 'https://github.co/biovault/nptsne')  
- 
+ """.format(
+    __version__, "https://github.co/biovault/nptsne"
+)
+
 # -- General configuration ---------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-needs_sphinx = '3.0'
+needs_sphinx = "3.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 # Prefer numpydoc 1.0.0 to napoleon - it handles complex syntax better in Sphinx 3
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.autosummary',
-    'sphinx.ext.githubpages', 
-    'sphinx.ext.extlinks',
-    'sphinx.ext.autosectionlabel',
-    'numpydoc',
-    'sphinx_rtd_theme',
-#    'sphinx.ext.napoleon',
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.extlinks",
+    "sphinx.ext.autosectionlabel",
+    "numpydoc",
+    "sphinx_rtd_theme",
+    #    'sphinx.ext.napoleon',
 ]
 
 numpydoc_show_class_members = False
 
 # Include class docstring and init docstring in the  class doc
-autoclass_content = 'both'
+autoclass_content = "both"
 
 autodoc_default_options = {
-    "members": True,              # All members (for module classes in __all__)
-    "undoc-members": True,        # Including those without doc strings
-    "inherited-members": False,    # Including inherited members
-    "imported-members": False,     # Including imported classes (imports from the extension)
-    "show-inheritance": False,    # Don't show base classes
+    "members": True,  # All members (for module classes in __all__)
+    "undoc-members": True,  # Including those without doc strings
+    "inherited-members": False,  # Including inherited members
+    "imported-members": False,  # Including imported classes (imports from the extension)
+    "show-inheritance": False,  # Don't show base classes
     "member-order": "groupwise",  # Logical groups not alphabetical
-    "exclude-members": "__init__"  # __init__ function documented in class header
+    "exclude-members": "__init__",  # __init__ function documented in class header
 }
 
 autosummary_imported_members = False
 autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ".rst"
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # The language for content autogenerated by Sphinx. Refer to documentation
 # for a list of supported languages.
@@ -124,11 +154,11 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
-# 'changelogs/*.rst', 
-exclude_patterns = ['modules.rst']
+# 'changelogs/*.rst',
+exclude_patterns = ["modules.rst"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -148,7 +178,7 @@ html_theme = "sphinx_rtd_theme"
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-#html_static_path = ['_static']
+# html_static_path = ['_static']
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -164,7 +194,7 @@ html_theme = "sphinx_rtd_theme"
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'nptsnedoc'
+htmlhelp_basename = "nptsnedoc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -173,15 +203,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -191,8 +218,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'nptsne.tex', 'nptsne Documentation',
-     'Baldur van Lew', 'manual'),
+    (master_doc, "nptsne.tex", "nptsne Documentation", "Baldur van Lew", "manual"),
 ]
 
 
@@ -200,10 +226,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    (master_doc, 'nptsne', 'nptsne Documentation',
-     [author], 1)
-]
+man_pages = [(master_doc, "nptsne", "nptsne Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -212,19 +235,25 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'nptsne', 'nptsne Documentation',
-     author, 'nptsne', 'One line description of project.',
-     'Miscellaneous'),
+    (
+        master_doc,
+        "nptsne",
+        "nptsne Documentation",
+        author,
+        "nptsne",
+        "One line description of project.",
+        "Miscellaneous",
+    ),
 ]
 
 
 # -- Extension configuration -------------------------------------------------
 # add specific members to the undoc - we document __init__ in the class header
 def skip_members(app, what, name, obj, skip, options):
-    exclusions = ('__init__',)
+    exclusions = ("__init__",)
     exclude = name in exclusions
     return skip or exclude
-    
 
-def setup(app): 
-    app.connect('autodoc-skip-member', skip_members)
+
+def setup(app):
+    app.connect("autodoc-skip-member", skip_members)
