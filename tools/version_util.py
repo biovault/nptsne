@@ -47,29 +47,39 @@ def get_git_derived_build_number(repo, commit_path):
     return len(list(repo.iter_commits(rev="{}^..{}".format(that_commit, this_commit))))
 
 
-def get_version(repo_path):
+def get_version(repo_path="./"):
+    """Create the version string by concatenating:
+        - contents of the version file, src/nptsne/_version.txt
+        - the PEP440TYPE (may be blank)
+        - the build number derived from the commit
+          counting since the last
+          change to the version file
+
+        If running on ReadTheDocs the repo tag is used.
+        If PEP440TYPE is blank then the raw version is returned
+
+    Args:
+        repo_path (str): Posix path to the repo defaults to working dir
+
+    Returns:
+        str: derived version string
+    """
     on_rtd = os.environ.get("READTHEDOCS") == "True"
+    pep440type = os.environ.get("PEP440TYPE", "")
     version_file = repo_path / "src/nptsne/_version.txt"
+    repo = Repo(repo_path)
+
+    # Readthedocs must use the tag
+    # The convention is that the tag is prefixed with v
+    if on_rtd:
+        # commit = list(repo.iter_commits())[0].hexsha
+        tag = get_current_tag(repo)
+        assert tag is not None
+        return tag
+
+    build_number = str(get_git_derived_build_number(repo, version_file))
     # print('version file: ', version_file)
     with open(version_file) as f:
         raw_version = f.read().strip()
-    # Readthedocs does a limited clone so the repo commit counting does not work
-    if on_rtd:
-        return raw_version
-    # print('repo dir: ', repo_path)
-    repo = Repo(repo_path)
-    # commit = list(repo.iter_commits())[0].hexsha
-    tag = get_current_tag(repo)
 
-    # If a tag starts with the letter v then just use the given version from the file
-    if tag is not None:
-        return raw_version
-
-    #
-    build_number = str(get_git_derived_build_number(repo, version_file))
-
-    branch = get_repo_branch(repo)
-    if branch.startswith("release"):
-        return raw_version + "rc" + build_number
-
-    return raw_version + "a" + build_number
+    return raw_version + pep440type + build_number if pep440type != "" else raw_version

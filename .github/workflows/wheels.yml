@@ -3,7 +3,18 @@ name: Build
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  cibuildwheel: "1.9.0"
+  # Set READTHEDOCS to
+  #   - "true" if this version is to be loaded to ReadTheDocs
+  #   - "false" otherwise
+  READTHEDOCS: "true"
+  # PEP440TYPE is is used to qualify the version number
+  # Set PEP440TYPE to
+  #   - "a" if an alpha release
+  #   - "b" if a beta release
+  #   - "rc" if a release candidate
+  #   - "" for the final release
+  # Se python PEP 440 for more details on this convention
+  PEP440TYPE: "a"
 
 jobs:
   # Job to buildwheels on all platforms
@@ -82,6 +93,7 @@ jobs:
           path: ./wheelhouse/*.whl
           retention-days: 1
           if-no-files-found: error
+
   # TODO Add job to build sdist
   # Job to upload all artifacts after wheel & sdist build
   # Steps:
@@ -95,6 +107,7 @@ jobs:
 
   upload_all_artifacts:
     name: Upload artifacts to pyPI or TestPyPI
+    if: env.READTHEDOCS == "true"
     needs: [build_wheels]
     runs-on: ubuntu-latest
     env:
@@ -105,6 +118,14 @@ jobs:
         with:
           name: artifact
           path: dist
+
+      - name: Checkout the source
+        uses: actions/checkout@v2
+
+      - name: ReadTheDocs must have a tag - set it here
+        if: env.READTHEDOCS == "true"
+        run: |
+          git tag $VERSION
 
       - name: Setup python
         uses: actions/setup-python@v2
