@@ -144,7 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.build_wheels.outputs.nptsneversion }}
-    if: ${{ needs.build_wheels.outputs.doreadthedocs == "true" }}
+    if: ${{ needs.build_wheels.outputs.doreadthedocs == 'true' }}
 
     steps:
       - name: Checkout the source
