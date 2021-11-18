@@ -36,6 +36,7 @@ jobs:
 
     outputs:
       nptsneversion: ${{ steps.version.outputs.version }}
+      doreadthedocs: ${{ steps.rtd.outputs.readthedocs }}
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
@@ -85,6 +86,9 @@ jobs:
           export VERSION=$(python setup.py --version)
           echo "::set-output name=version::$VERSION"
 
+      - id: rtd
+        run: |
+          echo "::set-output name=readthedocs::$READTHEDOCS"
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
       # The default upload name is artifact but a name can be supplied
@@ -107,30 +111,14 @@ jobs:
 
   upload_all_artifacts:
     name: Upload artifacts to pyPI or TestPyPI
-    if: ${{ env.READTHEDOCS == "true" }}
     needs: [build_wheels]
     runs-on: ubuntu-latest
-    env:
-      VERSION: ${{ needs.build_wheels.outputs.nptsneversion }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
           name: artifact
           path: dist
-
-      - name: Checkout the source
-        uses: actions/checkout@v2
-
-      - name: ReadTheDocs must have a tag - set it here
-        if: ${{ env.READTHEDOCS == 'true' }}
-        run: |
-          git tag $VERSION
-
-      - name: Setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
 
       - name: Publish wheels to PyPI
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
@@ -149,6 +137,29 @@ jobs:
           user: __token__
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
           repository_url: https://test.pypi.org/legacy/
+
+  do_read_the_docs:
+    name: Add documentation to read the docs
+    needs: [upload_all_artifacts]
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.build_wheels.outputs.nptsneversion }}
+    if: ${{ needs.build_wheels.outputs.doreadthedocs == "true" }}
+
+    steps:
+      - name: Checkout the source
+        uses: actions/checkout@v2
+
+      - name: ReadTheDocs must have a tag - set it here
+        if: ${{ env.READTHEDOCS == 'true' }}
+        run: |
+          export TAG="v$VERSION"
+          git tag $TAG
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
 
       - name: Publish to ReadTheDocs
         run: |
