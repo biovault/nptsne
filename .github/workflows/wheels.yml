@@ -107,7 +107,7 @@ jobs:
 
   upload_all_artifacts:
     name: Upload artifacts to pyPI or TestPyPI
-    if: env.READTHEDOCS == "true"
+    if: ${{ env.READTHEDOCS == "true" }}
     needs: [build_wheels]
     runs-on: ubuntu-latest
     env:
@@ -123,7 +123,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: ReadTheDocs must have a tag - set it here
-        if: env.READTHEDOCS == "true"
+        if: ${{ env.READTHEDOCS == 'true' }}
         run: |
           git tag $VERSION
 
