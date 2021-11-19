@@ -122,7 +122,7 @@ jobs:
           from packaging.utils import parse_wheel_filename
           p = Path(".", "dist")
           l = list(p.glob('*.whl'))
-          tup = parse_wheel_path(l[0].name)
+          tup = parse_wheel_filename(l[0].name)
           print(f'::set-output name=tag::v{str(tup[1])}')
           print(f'::set-output name=wheelver::{str(tup[1])}')
 
