@@ -123,8 +123,8 @@ jobs:
           p = Path(".", "dist")
           l = list(p.glob('*.whl'))
           tup = parse_wheel_path(l[0].name)
-          print(f'::set-output name=tag::v{str(tup[1])})
-          print(f'::set-output name=wheelver::{str(tup[1])})
+          print(f'::set-output name=tag::v{str(tup[1])}')
+          print(f'::set-output name=wheelver::{str(tup[1])}')
 
       - name: Tag any uploads to PyPI or TestPyPI
         run: |
