@@ -119,7 +119,7 @@ jobs:
         shell: python
         run: |
           from pathlib import Path
-          from packaging.utils import parse_wheel_path
+          from packaging.utils import parse_wheel_filename
           p = Path(".", "dist")
           l = list(p.glob('*.whl'))
           tup = parse_wheel_path(l[0].name)
