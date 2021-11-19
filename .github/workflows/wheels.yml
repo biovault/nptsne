@@ -3,18 +3,14 @@ name: Build
 on: [push, pull_request, workflow_dispatch]
 
 env:
-  # Set READTHEDOCS to
+  # Set DOREADTHEDOCS to
   #   - "true" if this version is to be loaded to ReadTheDocs
   #   - "false" otherwise
-  READTHEDOCS: "true"
-  # PEP440TYPE is is used to qualify the version number
-  # Set PEP440TYPE to
-  #   - "a" if an alpha release
-  #   - "b" if a beta release
-  #   - "rc" if a release candidate
-  #   - "" for the final release
-  # Se python PEP 440 for more details on this convention
-  PEP440TYPE: "a"
+  DOREADTHEDOCS: "true"
+  # Set DORELEASE to
+  #   - "true" if this version is to be loaded to PyPI
+  #   - "false" if this version is to be loaded to TestPyPI
+  DORELEASE: "false"
 
 jobs:
   # Job to buildwheels on all platforms
@@ -35,8 +31,8 @@ jobs:
           #   os: "windows-2019"
 
     outputs:
-      nptsneversion: ${{ steps.version.outputs.version }}
-      doreadthedocs: ${{ steps.rtd.outputs.readthedocs }}
+      doreadthedocs: ${{ steps.rtd.outputs.doreadthedocs }}
+      dorelease: ${{ steps.rtd.outputs.dorelease }}
 
     steps:
       # see https://github.com/travis-ci/travis-ci/issues/6069#issuecomment-266546552
@@ -62,38 +58,25 @@ jobs:
         run: echo "${{ steps.conan.outputs.version }}"
 
       - name: Install cibuildwheel
-        uses: pypa/cibuildwheel@v2.2.2
+        run: python -m pip install cibuildwheel==2.2.2
 
       # cibuildwheel settings are mostly in the pyproject.toml file
-
       # Test the cibuildwheel action
       # cibuildwheel derives platform automatically on CI
       # Local run use --platform windows/linx/macos
-      - name: Build wheels all platforms
-        uses: pypa/cibuildwheel@v2.2.2
-
-      # get the branchname - needed for version derivation
-      - uses: nelonoel/branch-name@v1.0.1
-      - run: echo ${BRANCH_NAME}
-
-      - id: version
-        if: matrix.os == 'ubuntu-20.04'
-        run: |
-          pip install GitPython
-          echo call setup for version
-          python setup.py --version
-          echo store version
-          export VERSION=$(python setup.py --version)
-          echo "::set-output name=version::$VERSION"
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
 
       - id: rtd
         run: |
-          echo "::set-output name=readthedocs::$READTHEDOCS"
+          echo "::set-output name=doreadthedocs::$DOREADTHEDOCS"
+          echo "::set-output name=dorelease::$DORELEASE"
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
       # The default upload name is artifact but a name can be supplied
       - uses: actions/upload-artifact@v2
         with:
+          name: nptsne_wheels
           path: ./wheelhouse/*.whl
           retention-days: 1
           if-no-files-found: error
@@ -105,70 +88,86 @@ jobs:
   #   2) Upload to either :
   #      a) - TestPyPI if no release tag
   #      b) - PyPI if release tag
-  #   3) If the upload succeeds trigger either :
-  #      a) - TestReadTheDocs if no release tag
-  #      b) - ReadTheDocs if release tag
 
   upload_all_artifacts:
     name: Upload artifacts to pyPI or TestPyPI
+    outputs:
+      nptsneversion: ${{ steps.wheel_version.outputs.wheelver }}
     needs: [build_wheels]
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: artifact
+          name: nptsne_wheels
           path: dist
 
+      - name: Checkout the source
+        uses: actions/checkout@v2
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install packaging>=21.0
+
+      - name: Get the version from the artifact names
+        id: wheel_version
+        shell: python
+        run: |
+          from pathlib import Path
+          from packaging.utils import parse_wheel_path
+          p = Path(".", "dist")
+          l = list(p.glob('*.whl'))
+          tup = parse_wheel_path(l[0].name)
+          print(f'::set-output name=tag::v{str(tup[1])})
+          print(f'::set-output name=wheelver::{str(tup[1])})
+
+      - name: Tag any uploads to PyPI or TestPyPI
+        run: |
+          export TAG=${{ steps.wheel_version.outputs.tag }}
+          git tag $TAG
+
       - name: Publish wheels to PyPI
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ needs.build_wheels.outputs.dorelease == 'true' }}
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN_SECRET  }}
-      - name: readthedocs_pypi
-        if: ${{ startsWith(github.ref, 'refs/tags/') }}
-        run: echo T.B.D.
 
       - name: Publish wheels to TestPyPI
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ needs.build_wheels.outputs.dorelease == 'false' }}
         uses: pypa/gh-action-pypi-publish@master
         with:
           user: __token__
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
           repository_url: https://test.pypi.org/legacy/
 
+  #   1) If the upload succeeds trigger either :
+  #      ReadTheDocs if DOREADTHEDOCS was true
   do_read_the_docs:
     name: Add documentation to read the docs
     needs: [upload_all_artifacts]
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ needs.build_wheels.outputs.nptsneversion }}
+      VERSION: ${{ needs.upload_all_artifacts.outputs.nptsneversion }}
     if: ${{ needs.build_wheels.outputs.doreadthedocs == 'true' }}
 
     steps:
-      - name: Checkout the source
-        uses: actions/checkout@v2
-
-      - name: ReadTheDocs must have a tag - set it here
-        if: ${{ env.READTHEDOCS == 'true' }}
-        run: |
-          export TAG="v$VERSION"
-          git tag $TAG
-
       - name: Setup python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
-
-      - name: Publish to ReadTheDocs
+      - name: Install dependencies
         run: |
-          echo use nptsne:$VERSION for ReadTheDocs
-          echo Check version $VERSION is on pypi or testpypi
+          python -m pip install --upgrade pip
           pip install requests
 
-      - name: Verify wheel upload
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      - name: Verify wheel upload - to test.pypi.org
+        if: ${{ needs.build_wheels.outputs.dorelease == 'false' }}
         run: |
           import os
           import requests
@@ -176,6 +175,9 @@ jobs:
           exit(0) if r.status_code==200 else exit(1)
         shell: python
 
-      - name: Post to ReadTheDocs
+      - name: Activate new version and trigger ReadTheDocs
         run: |
+          # Activate new version
+          curl -X PATCH -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }} "https://readthedocs.org/api/v3/projects/nptsne/versions/${VERSION} -H "Content-Type: application/json" -d '{"active": true, "hidden": false}'
+          # Trigger build
           curl -X POST -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }}" -H "Content-Type: application/json" -d '{"active": true, "hidden": false}' "https://readthedocs.org/api/v3/projects/nptsne/versions/${VERSION}/builds/"

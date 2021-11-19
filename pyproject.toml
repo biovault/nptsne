@@ -26,12 +26,21 @@ profile = "black"
 [tool.cibuildwheel]
 build = "cp38-*"
 test-command = "python {project}/test/run_doctest.py"
-build-verbosity = 0
+build-verbosity = 2
 archs = "auto64"
 skip = "cp2* pp*"
 
+
+#PEP440TYPE is used to insert a qualifier in the version name
+# It must be one of:
+# "a" - alpha release
+# "b" - beta release
+# "rc" - release candidate
+# "" - final release (no build number)
+# the resulting name is "version" + [PEP440TYPE + "build_number"]
+
 [tool.cibuildwheel.windows]
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')"}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE="a"}
 skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 before-all = [
@@ -47,21 +56,19 @@ before-build = [
     "conan remote list",
 ]
 
-
 [tool.cibuildwheel.linux]
-# The manylinux image needs to match the conan profile
-# 2010 is gcc 8
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)"}
+# These are passed into the docker
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="a"}
 manylinux-x86_64-image = "manylinux2010"
 skip = ["cp27-*"]
 # build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
 build = ["cp38-manylinux_x86_64"]
+
+# The following runs in the Linux docker environment
 before-build = [
-    "echo $CONAN_USER_HOME",
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "echo check conan",
-    "which python",
+    "echo install and setup conan",
     "pip install conan==1.41.0",
     "which conan",
     "conan user",
@@ -77,8 +84,9 @@ repair-wheel-command = [
 ]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
+
 [tool.cibuildwheel.macos]
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)"}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="a"}
 build-verbosity=1
 skip = ["cp27-*"]
 build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]

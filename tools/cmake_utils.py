@@ -128,6 +128,16 @@ class CMakeBuild(build_ext):
             ["conan", "profile", "new", "default", "--detect", "--force"],
             cwd=self.build_temp,
         )
+        self.announce("Show conan home dir", log.INFO)
+        subprocess.check_call(
+            ["conan", "config", "home"],
+            cwd=self.build_temp,
+        )
+        self.announce("Show conan remotes", log.INFO)
+        subprocess.check_call(
+            ["conan", "remote", "list"],
+            cwd=self.build_temp,
+        )
         subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
 
         if platform.system() == "Windows":

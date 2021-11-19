@@ -15,7 +15,7 @@ import tempfile
 #  for inclusion in the wheel
 templibdir = Path(Path(tempfile.gettempdir()), "cibwlibsdir")
 # print('cibwlibsdir at: ', templibdir)
-# print("pre setup call")
+# print(f"****Derived version: {get_version(Path(__file__).resolve().parent)}")
 setup(
     # Always append the build number for tracking purposes - this fits with PEP427
     version=get_version(Path(__file__).resolve().parent),
