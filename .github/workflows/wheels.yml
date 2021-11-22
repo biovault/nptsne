@@ -189,13 +189,13 @@ jobs:
           echo Patch in the new version
           curl \
             -X PATCH \
-            -H "Authorization: Token $RTD_TOKEN" https://readthedocs.org/api/v3/projects/nptsne/versions/$VERSION/ \
+            -H "Authorization: Token $RTD_TOKEN" https://readthedocs.org/api/v3/projects/nptsne/versions/v$VERSION/ \
             -H "Content-Type: application/json" \
             -d '{"active": true, "hidden": false}'
           # Trigger build
           echo Trigger the build
           curl \
             -X POST \
-            -H \"Authorization: Token $RTD_TOKEN" \
+            -H "Authorization: Token $RTD_TOKEN" \
             -H "Content-Type: application/json" \
-            -d '{"active": true, "hidden": false}' https://readthedocs.org/api/v3/projects/nptsne/versions/$VERSION/builds/
+            -d '{"active": true, "hidden": false}' https://readthedocs.org/api/v3/projects/nptsne/versions/v$VERSION/builds/
