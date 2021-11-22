@@ -129,7 +129,7 @@ jobs:
           print(f'::set-output name=wheelver::{str(tup[1])}')
 
       - name: Tag using v + VERSION
-        uses: mathieudutour/github-tag-action@v6.0
+        uses: mathieudutour/github-tag-action@v5.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN  }}
           custom_tag: steps.wheel_version.outputs.wheelver
