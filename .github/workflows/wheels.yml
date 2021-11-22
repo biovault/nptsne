@@ -160,6 +160,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.upload_all_artifacts.outputs.nptsneversion }}
+      RTD_TOKEN: ${{ secrets.READTHEDOCS_TOKEN  }}
     if: ${{ needs.build_wheels.outputs.doreadthedocs == 'true' }}
 
     steps:
@@ -187,11 +188,13 @@ jobs:
           echo Patch in the new version
           curl \
             -X PATCH \
-            -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v3/projects/nptsne/versions/$VERSION/ \
-            -H "Content-Type: application/json" -d '{"active": true, "hidden": false}'
+            -H "Authorization: Token $RTD_TOKEN" https://readthedocs.org/api/v3/projects/nptsne/versions/$VERSION/ \
+            -H "Content-Type: application/json" \
+            -d '{"active": true, "hidden": false}'
           # Trigger build
           echo Trigger the build
           curl \
             -X POST \
-            -H \"Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }}" \
-            -H "Content-Type: application/json" -d '{"active": true, "hidden": false}' https://readthedocs.org/api/v3/projects/nptsne/versions/$VERSION/builds/
+            -H \"Authorization: Token $RTD_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"active": true, "hidden": false}' https://readthedocs.org/api/v3/projects/nptsne/versions/$VERSION/builds/
