@@ -129,6 +129,8 @@ jobs:
 
       - name: Tag any uploads to PyPI or TestPyPI
         run: |
+          cd nptsne
+          ls -a
           export TAG=${{ steps.wheel_version.outputs.tag }}
           git tag $TAG
 
@@ -181,6 +183,12 @@ jobs:
       - name: Activate new version and trigger ReadTheDocs
         run: |
           # Activate new version
-          curl -X PATCH -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }} "https://readthedocs.org/api/v3/projects/nptsne/versions/${VERSION} -H "Content-Type: application/json" -d '{"active": true, "hidden": false}'
+          curl \
+            -X PATCH \
+            -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }}" https://readthedocs.org/api/v3/projects/nptsne/versions/${VERSION}/ \
+            -H "Content-Type: application/json" -d '{"active": true, "hidden": false}'
           # Trigger build
-          curl -X POST -H "Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }}" -H "Content-Type: application/json" -d '{"active": true, "hidden": false}' "https://readthedocs.org/api/v3/projects/nptsne/versions/${VERSION}/builds/"
+          curl \
+            -X POST \
+            -H \"Authorization: Token ${{ secrets.READTHEDOCS_TOKEN  }}" \
+            -H "Content-Type: application/json" -d '{"active": true, "hidden": false}' https://readthedocs.org/api/v3/projects/nptsne/versions/${VERSION}/builds/
