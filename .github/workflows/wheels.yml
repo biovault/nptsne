@@ -114,6 +114,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install packaging>=21.0
           ls ./dist
+          ls -a .
 
       - name: Get the version from the artifact names
         id: wheel_version
@@ -130,7 +131,6 @@ jobs:
       - name: Tag any uploads to PyPI or TestPyPI
         run: |
           cd nptsne
-          ls -a
           export TAG=${{ steps.wheel_version.outputs.tag }}
           git tag $TAG
 
