@@ -154,6 +154,7 @@ jobs:
 
   #   1) If the upload succeeds trigger either :
   #      ReadTheDocs if DOREADTHEDOCS was true
+  # (Note that RTD API v3 needs its own token)
   do_read_the_docs:
     name: Add documentation to read the docs
     needs: [upload_all_artifacts]
