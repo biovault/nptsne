@@ -132,7 +132,7 @@ jobs:
         uses: mathieudutour/github-tag-action@v5.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN  }}
-          custom_tag: steps.wheel_version.outputs.wheelver
+          custom_tag: ${{ steps.wheel_version.outputs.wheelver }}
           tag_prefix: "v"
 
       - name: Publish wheels to PyPI
