@@ -24,6 +24,7 @@ References
 
 """
 from . import hsne_analysis
+from .version import version as __version__
 from .libs._nptsne import (
     HSne,
     HSneScale,

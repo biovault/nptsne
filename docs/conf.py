@@ -27,9 +27,23 @@ import subprocess
 # Whether the build is running inside RTD
 on_rtd = os.environ.get("READTHEDOCS") == "True"
 
+# Part of API documentation for RTD is embedded in the docstrings of the
+# binary shared objects. So the version of nptsne is first installed
+# corresponding to the RTD versio being built.
 if on_rtd:
-    # Manually triggering a RTD build
-    # curl -X POST -d "branches=$GIT_BRANCH" -d "token=$AUTH_TOKEN" https://readthedocs.org/api/v2/webhook/bldrvnlw/130867/
+    # Manually triggering a RTD build can be done using the following recipe
+    # Register this version with RTD
+    # curl \
+    # -X PATCH \
+    # -H "Authorization: Token $RTD_TOKEN" https://readthedocs.org/api/v3/projects/nptsne/versions/v$VERSION/ \
+    # -H "Content-Type: application/json" \
+    # -d '{"active": true, "hidden": false}'
+    # Trigger build
+    # curl \
+    # -X POST \
+    # -H "Authorization: Token $RTD_TOKEN" \
+    # -H "Content-Type: application/json" \
+    # -d '{"active": true, "hidden": false}' https://readthedocs.org/api/v3/projects/nptsne/versions/v$VERSION/builds/
     # Install a version of nptsne to extract the docstrings
     # READTHEDOCS_VERSION : The RTD name of the version which is being built
     rtd_version = os.environ.get("READTHEDOCS_VERSION")
@@ -74,6 +88,8 @@ else:
     sys.path.insert(0, os.path.abspath(os.path.join("..", "installed")))
 
 import nptsne
+
+__version__ = nptsne.__version__
 
 mmp = __version__.split(".")
 # The short X.Y version
