@@ -2,3 +2,4 @@ include README.md LICENSE.txt
 recursive-include src *.cpp *.h
 recursive-include src/nptsne *.py
 include src/nptsne/_version.txt
+include src/nptsne/_full_version.txt
