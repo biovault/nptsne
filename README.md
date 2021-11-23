@@ -23,6 +23,8 @@ The *requirements.txt* and the *pyproject.toml* contain the list of build requir
 conan remote add conan-biovault https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local
 ```
 
+
+
 ### Development build & install using python
 
 On Windows if multiple versions of Visual Studio are present the x64 Native Tools batch
@@ -36,6 +38,12 @@ pip install -v -e .
 This will automatically create a *build* subdirectory build the bindings and create an .egg-link file in the current python environment.
 
 On Windows a *_nptsne.sln* file will be present under the build directory
+
+Builds are performed "in tree" (see the *pyproject.toml PIP_USE_FEATURE entry)
+
+### Development debug builds
+
+TBD
 
 
 #### Alternative manual Windows build
