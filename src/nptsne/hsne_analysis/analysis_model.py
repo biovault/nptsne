@@ -54,7 +54,11 @@ class AnalysisContainer:
     def remove_analysis(self, analysis_id):
         """Removes analysis and (recursively) children
 
-        return: list of analysis ids removed including this one"""
+        Returns
+        -------
+        list[str]
+            A list of analysis ids removed including this one
+        """
         analysis = self.get_analysis(analysis_id)
         if analysis is None:
             return []
