@@ -169,7 +169,7 @@ language = None
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path .
 # 'changelogs/*.rst',
-exclude_patterns = ["modules.rst"]
+exclude_patterns = ["modules.rst", "*.inc"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"

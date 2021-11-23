@@ -1,4 +1,4 @@
-Version |version|
+Version 1.1.0
 -----------------
 Supports python 3.6, 3.7, and 3.8 on Windows, Ubuntu (using manylinux2010) and Macos.
 
