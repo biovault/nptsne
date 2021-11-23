@@ -54,6 +54,7 @@ Full details are in the reference below.
    nptsne.hsne_analysis.SparseTsne
    
 .. automodule:: nptsne.hsne_analysis
+
     :members:
     :no-inherited-members:
     :no-imported-members:
