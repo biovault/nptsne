@@ -13,7 +13,7 @@ import tempfile
 
 def update_package_full_version(full_version):
     script_path = Path(__file__).resolve().parent.absolute()
-    with open(Path(script_path, "nptsne", "nptsne", "_full_version.txt", "w")) as verfile:
+    with open(Path(script_path, "nptsne", "nptsne", "_full_version.txt"), "w") as verfile:
         verfile.write(full_version)
 
 
