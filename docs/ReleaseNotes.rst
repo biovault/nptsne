@@ -8,7 +8,7 @@ This contains the release notes for the current version (|version|) of nptsne.
 Release notes
 -------------
 
-.. include:: ./changelogs/v1.2.0.rst
+.. include:: ./changelogs/v1.2.0.rst.inc
 
 Previous versions
 -----------------
