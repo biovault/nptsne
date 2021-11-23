@@ -88,8 +88,8 @@ PYBIND11_MODULE(_nptsne, m)
             knn_lib : :class:`KnnAlgorithm`
                 The algorithm being queried.
 
-            Example
-            -------
+            Examples
+            --------
             Each algorithm has different support. See the tests below.
 
             >>> import nptsne
@@ -201,8 +201,8 @@ PYBIND11_MODULE(_nptsne, m)
             X : :class:`ndarray`
                 The input data with shape (num. data points, num. dimensions)
 
-            Example
-            -------
+            Examples
+            --------
             An 2D embedding is returned in the form of a numpy array
             [x0, y0, x1, y1, ...].
 
@@ -1415,8 +1415,8 @@ PYBIND11_MODULE(_nptsne, m)
             R"pbdoc(
             :class:`ndarray` : the original data indexes for the landmarks in this `Analysis`
 
-            Example
-            -------
+            Examples
+            --------
             The indexes are in the range of the original point indexes.
 
             >>> import numpy as np
@@ -1444,8 +1444,8 @@ PYBIND11_MODULE(_nptsne, m)
             R"pbdoc(
             :class:`ndarray` : the tSNE embedding generated for this `Analysis`
 
-            Example
-            -------
+            Examples
+            --------
             An embedding is a 2d float array. One entry per point.
 
             >>> import numpy as np
