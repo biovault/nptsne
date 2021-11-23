@@ -55,6 +55,9 @@ if on_rtd:
     # TBD this is incorrect
     # stable represents a tagged version - will be on PyPi
     # non-stable on test.pypi
+    install_version = rtd_version
+    if install_version[0] == "v":
+        install_version = rtd_version[1:]
     if rtd_version == "stable":
         branch = None
         try:
@@ -65,7 +68,7 @@ if on_rtd:
                     "pip",
                     "install",
                     "--force-reinstall",
-                    f"nptsne=={rtd_version}",
+                    f"nptsne=={install_version}",
                 ]
             )
         except subprocess.CalledProcessError:
@@ -79,7 +82,7 @@ if on_rtd:
                 "install",
                 "--pre",
                 "--no-deps",
-                f"nptsne=={rtd_version}",
+                f"nptsne=={install_version}",
                 "--index-url",
                 "https://test.pypi.org/simple",
             ]
