@@ -1,7 +1,4 @@
-[![Build Status](https://travis-ci.com/biovault/nptsne.svg?branch=master)](https://travis-ci.com/biovault/nptsne)
-
-[![Build status](https://ci.appveyor.com/api/projects/status/w2paw56r8mju1k2h/branch/master?svg=true)](https://ci.appveyor.com/project/bldrvnlw/nptsne/branch/master)
-
+[![Build Status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?feature/1.2.0-knnmetrics)](https://github.com/biovault/nptsne/tree/feature/1.2.0-knnmetrics)
 
 [![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=stable)](https://nptsne.readthedocs.io/en/release-1.2.0/)
 

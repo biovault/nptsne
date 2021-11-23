@@ -104,7 +104,7 @@ html_title = __version__
 rst_epilog = """
 .. |version| replace:: {0}
  """.format(
-    __version__, "https://github.co/biovault/nptsne"
+    __version__, "https://github.com/biovault/nptsne"
 )
 
 # -- General configuration ---------------------------------------------------
