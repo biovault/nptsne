@@ -52,7 +52,7 @@ class AnalysisContainer:
         return self._container[self._scale_index[analysis_id]].get(analysis_id, None)
 
     def remove_analysis(self, analysis_id):
-        """Removes analysis and (recursively) children
+        """Removes analysis and, recursively, child analyses
 
         Returns
         -------
