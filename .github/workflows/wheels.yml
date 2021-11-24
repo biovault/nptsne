@@ -6,7 +6,7 @@ env:
   # Set DOREADTHEDOCS to
   #   - "true" if this version is to be loaded to ReadTheDocs
   #   - "false" otherwise
-  DOREADTHEDOCS: "true"
+  DOREADTHEDOCS: "false"
   # Set DORELEASE to
   #   - "true" if this version is to be loaded to PyPI
   #   - "false" if this version is to be loaded to TestPyPI
@@ -27,8 +27,8 @@ jobs:
           #   os: "macos-10.15"
           #   xcode-version: "10.3"
 
-          # - job-name: "Windows"
-          #   os: "windows-2019"
+          - job-name: "Windows"
+            os: "windows-2019"
 
     outputs:
       doreadthedocs: ${{ steps.rtd.outputs.doreadthedocs }}
