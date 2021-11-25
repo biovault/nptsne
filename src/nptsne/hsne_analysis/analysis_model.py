@@ -232,6 +232,7 @@ class AnalysisModel:
 
     def remove_analysis(self, id):
         """Remove the analysis and all children
+
         Returns
         -------
         list
