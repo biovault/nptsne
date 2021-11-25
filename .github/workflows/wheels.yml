@@ -6,7 +6,7 @@ env:
   # Set DOREADTHEDOCS to
   #   - "true" if this version is to be loaded to ReadTheDocs
   #   - "false" otherwise
-  DOREADTHEDOCS: "false"
+  DOREADTHEDOCS: "true"
   # Set DORELEASE to
   #   - "true" if this version is to be loaded to PyPI
   #   - "false" if this version is to be loaded to TestPyPI
