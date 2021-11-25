@@ -7,4 +7,4 @@
 from ..libs._nptsne._hsne_analysis import Analysis, EmbedderType, SparseTsne
 from .analysis_model import AnalysisModel
 
-__all__ = ("AnalysisModel", "Analysis", "EmbedderType", "SparseTsne")
+__all__ = ("AnalysisContainer", "AnalysisModel", "Analysis", "EmbedderType", "SparseTsne")
