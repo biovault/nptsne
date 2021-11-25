@@ -5,6 +5,6 @@
 # it simply presents a generic model for navigating an hsne analysis
 
 from ..libs._nptsne._hsne_analysis import Analysis, EmbedderType, SparseTsne
-from .analysis_model import AnalysisModel
+from .analysis_model import AnalysisContainer, AnalysisModel
 
 __all__ = ("AnalysisContainer", "AnalysisModel", "Analysis", "EmbedderType", "SparseTsne")
