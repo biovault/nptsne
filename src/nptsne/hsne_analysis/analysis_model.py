@@ -171,7 +171,7 @@ class AnalysisModel:
         self.top_analysis_id = topAnalysis.id
         self._analysis_container = AnalysisContainer(topAnalysis)
 
-    def add_new_analysis(self, parent, parent_selection):
+    def add_new_analysis(self, parent, parent_selection) -> Analysis:
         """Add a new analysis based on a selection in a parent analysis
 
         Parameters

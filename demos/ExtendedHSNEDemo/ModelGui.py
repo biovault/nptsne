@@ -10,6 +10,7 @@ Classes:
     ModelGui
 
 """
+from io import BytesIO
 import sys
 import os
 import queue
@@ -37,15 +38,19 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QVBoxLayout,
     QLineEdit,
-    QHeaderView)
+    QHeaderView,
+)
 from PyQt5.QtCore import Qt, QTimer, QSize, pyqtSlot
-from PyQt5.QtGui import (QIcon, QStandardItemModel,
-                         QStandardItem, QPixmap, QIntValidator)
+from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem, QPixmap, QIntValidator
 from DemoConfig import CONFIGS
+from typing import List, Optional, Callable, Union, Any, Dict, Tuple
+
+from nptsne.hsne_analysis.analysis_model import AnalysisModel
 
 
 class AnalysisEvent(Enum):
     """The events resulting from the creation and deletion of analyses by the user"""
+
     ADDED = 1
     FINISHED = 2
     REMOVED = 3
@@ -53,45 +58,53 @@ class AnalysisEvent(Enum):
 
 class DemoType(Enum):
     """The style of data being processed. Supported are
-        Labelled: MNIST style data - with or without labels
-        Point: e.g. cell and gene data wit meta data for labels/colors
-        Hyperspectral images: Array of equally size images where each pixel has several
-            dimensions (wavelengths)"""
+    Labelled: MNIST style data - with or without labels
+    Point: e.g. cell and gene data wit meta data for labels/colors
+    Hyperspectral images: Array of equally size images where each pixel has several
+        dimensions (wavelengths)"""
+
     LABELLED_DEMO, POINT_DEMO, HYPERSPECTRAL_DEMO = range(3)
 
 
 class ModelGui(QDialog):
     """The gui to start and manipulate the analysis model"""
+
     ANALYSIS, ID, NUMPOINTS = range(3)
 
     NO_PARENT_ID = 0xFFFFFFFF
 
-    def __init__(self, analysis_event_queue, select, delete, load):
+    def __init__(
+        self,
+        analysis_event_queue: queue.Queue,
+        select: Callable[[int], None],
+        delete: Callable[[List[int]], None],
+        load: Callable[[str, str, str, str], None],
+    ) -> None:
         super(ModelGui, self).__init__()
         self.analysis_event_queue = analysis_event_queue
         self.select_callback = select
         self.delete_callback = delete
         self.load_callback = load
 
-        self.name = None
-        self.label_name = None
-        self.meta_name = None
-        self.hsne_name = None
+        self.name = ""
+        self.label_name = ""
+        self.meta_name = ""
+        self.hsne_name = ""
 
-        self.title = 'Analysis hierarchy viewer'
+        self.title = "Analysis hierarchy viewer"
         self.left = 10
         self.top = 10
-        self.width = 1000
-        self.height = 400
+        self.nwidth = 1000
+        self.nheight = 400
         self.init_ui()
-        self.id_item = {}
-        self.root_id = None
+        self.id_item: Dict[int, QStandardItem] = {}
+        self.root_id: Union[int, None] = None
 
     def init_ui(self):
         """All the ui layout in one place. Note: Part of the ui
         is switchable depending on the selected demo type, see the ui_matrix"""
         self.setWindowTitle(self.title)
-        self.setGeometry(self.left, self.top, self.width, self.height)
+        self.setGeometry(self.left, self.top, self.nwidth, self.nheight)
 
         self.model = self.create_analysis_model(self)
         self.analysis_model = None
@@ -117,14 +130,11 @@ class ModelGui(QDialog):
         self.preconfigured_group = QGroupBox("Preconfigured")
         preconfigured_layout = QFormLayout(self)
         self.preconfigured_combo = QComboBox(self)
-        self.preconfigured_combo.addItem('None', userData=None)
+        self.preconfigured_combo.addItem("None", userData=None)
         for config in CONFIGS:
             self.preconfigured_combo.addItem(config.descriptor, userData=config)
-        self.preconfigured_combo.currentIndexChanged[int].connect(
-            self.on_preconfigured)
-        preconfigured_layout.addRow(
-            QLabel("Load preset demo:"),
-            self.preconfigured_combo)
+        self.preconfigured_combo.currentIndexChanged[int].connect(self.on_preconfigured)
+        preconfigured_layout.addRow(QLabel("Load preset demo:"), self.preconfigured_combo)
         self.preconfigured_group.setLayout(preconfigured_layout)
         controlLayout.addWidget(self.preconfigured_group)
 
@@ -132,20 +142,11 @@ class ModelGui(QDialog):
         self.demo_type_group = QGroupBox("Data type")
         data_type_layout = QFormLayout(self)
         self.data_type_combo = QComboBox(self)
-        self.data_type_combo.addItem(
-            "Image is a data point",
-            DemoType.LABELLED_DEMO)
-        self.data_type_combo.addItem(
-            "Point and metadata",
-            DemoType.POINT_DEMO)
-        self.data_type_combo.addItem(
-            "Hyperspectral image",
-            DemoType.HYPERSPECTRAL_DEMO)
-        data_type_layout.addRow(
-            QLabel("Visualization style:"),
-            self.data_type_combo)
-        self.data_type_combo.currentIndexChanged[int].connect(
-            self.on_demo_style)
+        self.data_type_combo.addItem("Image is a data point", DemoType.LABELLED_DEMO)
+        self.data_type_combo.addItem("Point and metadata", DemoType.POINT_DEMO)
+        self.data_type_combo.addItem("Hyperspectral image", DemoType.HYPERSPECTRAL_DEMO)
+        data_type_layout.addRow(QLabel("Visualization style:"), self.data_type_combo)
+        self.data_type_combo.currentIndexChanged[int].connect(self.on_demo_style)
 
         data_button = QPushButton("Data")
         data_button.clicked.connect(self.on_load)
@@ -246,63 +247,49 @@ class ModelGui(QDialog):
         # According to DemoType True widgets are shown False widgets hidden
         self.ui_matrix = {
             DemoType.LABELLED_DEMO: {
-                True: [
-                    self.label_button,
-                    self.label_label,
-                    self.xy_container,
-                    self.xy_label],
-                False: [
-                    self.meta_button,
-                    self.meta_label]},
+                True: [self.label_button, self.label_label, self.xy_container, self.xy_label],
+                False: [self.meta_button, self.meta_label],
+            },
             DemoType.POINT_DEMO: {
-                True: [
-                    self.meta_button,
-                    self.meta_label],
-                False: [
-                    self.label_button,
-                    self.label_label,
-                    self.xy_container,
-                    self.xy_label]},
+                True: [self.meta_button, self.meta_label],
+                False: [self.label_button, self.label_label, self.xy_container, self.xy_label],
+            },
             DemoType.HYPERSPECTRAL_DEMO: {
-                True: [
-                    self.xy_container,
-                    self.xy_label],
-                False: [
-                    self.label_button,
-                    self.label_label,
-                    self.meta_button,
-                    self.meta_label]}}
+                True: [self.xy_container, self.xy_label],
+                False: [self.label_button, self.label_label, self.meta_button, self.meta_label],
+            },
+        }
 
         self.show()
         self.on_demo_style(0)
 
-    def set_analysis_model(self, analysis_model):
+    def set_analysis_model(self, analysis_model: nptsne.hsne_analysis.AnalysisModel) -> None:
         # TODO empty event queue
         self.analysis_model = analysis_model
         self.top_scale = self.analysis_model.top_scale_id
 
     @property
-    def iterations(self):
+    def iterations(self) -> int:
         return self.iter_spin.value()
 
     @property
-    def scales(self):
+    def scales(self) -> int:
         return self.scale_spin.value()
 
     @property
-    def demo_type(self):
+    def demo_type(self) -> Any:
         return self.data_type_combo.currentData()
 
     @property
-    def im_size_x(self):
+    def im_size_x(self) -> int:
         return int(self.image_x.text())
 
     @property
-    def im_size_y(self):
+    def im_size_y(self) -> int:
         return int(self.image_y.text())
 
     @pyqtSlot(int)
-    def on_preconfigured(self, index):
+    def on_preconfigured(self, index: int) -> None:
         config = self.preconfigured_combo.itemData(index)
         self.on_clear()
         if config is None:
@@ -353,7 +340,7 @@ class ModelGui(QDialog):
         self.start_button.setEnabled(True)
 
     @pyqtSlot(int)
-    def on_demo_style(self, index):
+    def on_demo_style(self, index: Optional[int]) -> None:
         # set the visibility of the widgets according to the
         # type of demo being given
         for state in [False, True]:
@@ -361,24 +348,27 @@ class ModelGui(QDialog):
                 widget.setVisible(state)
 
     @pyqtSlot()
-    def on_load(self):
+    def on_load(self) -> None:
         workdir = os.path.dirname(os.path.abspath(__file__))
-        result = QFileDialog.getOpenFileName(
+        result: Tuple[str, str] = QFileDialog.getOpenFileName(
             self,
-            'Open a numpy file where each row is a data point and columns are dimensions',
+            "Open a numpy file where each row is a data point and columns are dimensions",
             workdir,
-            "Numpy files (*.npy)")
+            "Numpy files (*.npy)",
+        )
         if result[0]:
             self.hsne_label.setText("")
-            self.hsne_name = None
+            self.hsne_name = ""
             self.scale_spin.setEnabled(True)
             self.name = result[0]
             # print(f"Selected: {self.name}")
             self.start_button.setEnabled(True)
-            if (self.demo_type == DemoType.LABELLED_DEMO or
-                    self.demo_type == DemoType.HYPERSPECTRAL_DEMO):
+            if (
+                self.demo_type == DemoType.LABELLED_DEMO
+                or self.demo_type == DemoType.HYPERSPECTRAL_DEMO
+            ):
                 # partial data load (in memory) to read the shape
-                the_data = np.load(self.name, mmap_mode='r')
+                the_data = np.load(self.name, mmap_mode="r")
                 image_flat_size = the_data.shape[1]
                 if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
                     image_flat_size = the_data.shape[0]
@@ -388,114 +378,106 @@ class ModelGui(QDialog):
                 self.image_y.setText(str(ysize))
             self.data_label.setText(str(Path(self.name).name))
 
-    def __set_scale_from_hsne_file(self):
+    def __set_scale_from_hsne_file(self) -> None:
         scale_value = nptsne.HSne.read_num_scales(self.hsne_name)
         self.hsne_label.setText(str(Path(self.hsne_name).name))
         self.scale_spin.setValue(scale_value)
         self.scale_spin.setDisabled(True)
 
     @pyqtSlot()
-    def on_load_hsne(self):
+    def on_load_hsne(self) -> None:
         workdir = os.path.dirname(os.path.abspath(__file__))
         result = QFileDialog.getOpenFileName(
-            self,
-            'Open a pre-calculated hSNE analysis file .hsne',
-            workdir,
-            "hSNE files (*.hsne)")
+            self, "Open a pre-calculated hSNE analysis file .hsne", workdir, "hSNE files (*.hsne)"
+        )
         if result[0]:
             self.hsne_name = result[0]
             # print(f"Selected: {self.name}")
             self.__set_scale_from_hsne_file()
 
     @pyqtSlot()
-    def on_load_labels(self):
+    def on_load_labels(self) -> None:
         workdir = os.path.dirname(os.path.abspath(__file__))
         result = QFileDialog.getOpenFileName(
             self,
-            'Open a numpy file where each row is an integer label',
+            "Open a numpy file where each row is an integer label",
             workdir,
-            "Numpy files (*.npy)")
+            "Numpy files (*.npy)",
+        )
         if result[0]:
             self.label_name = result[0]
             self.label_label.setText(Path(self.label_name).name)
 
     @pyqtSlot()
-    def on_load_labelscolors(self):
+    def on_load_labelscolors(self) -> None:
         workdir = os.path.dirname(os.path.abspath(__file__))
         result = QFileDialog.getOpenFileName(
             self,
-            'Open a CSV file with header where the columns pairs of Label, #COLOR_',
+            "Open a CSV file with header where the columns pairs of Label, #COLOR_",
             workdir,
-            "CSV files (*.csv)")
+            "CSV files (*.csv)",
+        )
 
         if result[0]:
             self.meta_name = result[0]
             self.meta_label.setText(Path(self.meta_name).name)
 
     @pyqtSlot()
-    def on_start(self):
-        self.load_callback(
-            self.name,
-            self.label_name,
-            self.meta_name,
-            self.hsne_name)
+    def on_start(self) -> None:
+        self.load_callback(self.name, self.label_name, self.meta_name, self.hsne_name)
 
     @pyqtSlot()
-    def on_selected(self):
+    def on_selected(self) -> None:
         analysis_id = self._get_selected_id()
         if analysis_id:
             self.select_callback(int(analysis_id))
 
     @pyqtSlot()
-    def on_delete(self):
+    def on_delete(self) -> None:
         analysis_id = self._get_selected_id()
         if analysis_id:
             self.delete_callback([int(analysis_id)])
 
     @pyqtSlot()
-    def on_clear(self):
+    def on_clear(self) -> None:
         if not self.root_id is None:
             self.select_callback(int(self.root_id))
         self.clear()
-        self.name = None
+        self.name = ""
         self.data_label.setText("<choose data .npy>")
-        self.label_name = None
+        self.label_name = ""
         self.label_label.setText("<optionally choose labels .npy>")
-        self.meta_name = None
+        self.meta_name = ""
         self.meta_label.setText("<optionally choose label/color .csv>")
         self.scale_spin.setValue(4)
         self.scale_spin.setEnabled(True)
         self.start_button.setDisabled(True)
-        self.hsne_name = None
+        self.hsne_name = ""
         self.hsne_label.setText("<optionally choose existing .hsne>")
         self.image_x.setText("")
         self.image_y.setText("")
 
-    def _get_selected_id(self):
+    def _get_selected_id(self) -> Union[None, int]:
         index = self.tree.currentIndex()
         if index is None:
             return None
         return self.model.itemData(index.siblingAtColumn(self.ID))[0]
 
-    def create_analysis_model(self, parent):
+    def create_analysis_model(self, parent) -> QStandardItemModel:
         model = QStandardItemModel(0, 3, parent)
         model.setHeaderData(self.ANALYSIS, Qt.Horizontal, "Analysis")
         model.setHeaderData(self.ID, Qt.Horizontal, "Id")
         model.setHeaderData(self.NUMPOINTS, Qt.Horizontal, "#Points")
         return model
 
-    def add_test_analysis(self):
+    def add_test_analysis(self) -> None:
         parent_id = ModelGui.NO_PARENT_ID
         if self.counter > 0:
             parent_id = self.counter - 1
-        self.add_analysis(
-            self.counter,
-            f"{self.counter} Blah blah blah",
-            parent_id,
-            150)
+        self.add_analysis(self.counter, f"{self.counter} Blah blah blah", parent_id, 150)
         self.counter = self.counter + 1
 
-    def update_tree(self):
+    def update_tree(self) -> None:
         # Update tree based on queued events
         while True:
             event = {}
@@ -504,43 +486,42 @@ class ModelGui(QDialog):
             except queue.Empty:
                 break
 
-            if event['event'] == AnalysisEvent.ADDED:
+            if event["event"] == AnalysisEvent.ADDED:
                 self.add_analysis(
-                    event['id'],
-                    event['name'],
-                    event['parent_id'],
-                    event['number_of_points'])
+                    event["id"], event["name"], event["parent_id"], event["number_of_points"]
+                )
                 continue
-            if event['event'] == AnalysisEvent.FINISHED:
-                self.finish_analysis(
-                    event['id'], event['name'], event['image_buf'])
+            if event["event"] == AnalysisEvent.FINISHED:
+                self.finish_analysis(event["id"], event["name"], event["image_buf"])
                 continue
-            if event['event'] == AnalysisEvent.REMOVED:
-                self.remove_analysis(event['id'])
+            if event["event"] == AnalysisEvent.REMOVED:
+                self.remove_analysis(event["id"])
 
-    def add_analysis(self, analysis_id, name, parent_id, numpoints):
-        im = ImageQt.ImageQt(Image.new('RGB', self.thumb_size, (100, 0, 200)))
+    def add_analysis(self, analysis_id: int, name: str, parent_id: int, numpoints: int) -> None:
+        im = ImageQt.ImageQt(Image.new("RGB", self.thumb_size, (100, 0, 200)))
         item = QStandardItem(QIcon(QPixmap.fromImage(im)), name)
         # Need to persist the thumbnails otherwise the ImageQT will get garbage
         # collected along with the memory
-        item.__thumb = im
+        item.__thumb = im  # type: ignore
         if parent_id == ModelGui.NO_PARENT_ID:
-            #print("Adding root")
+            # print("Adding root")
             self.clear()
-            self.model.insertRow(0, [item, QStandardItem(
-                str(analysis_id)), QStandardItem(str(numpoints))])
+            self.model.insertRow(
+                0, [item, QStandardItem(str(analysis_id)), QStandardItem(str(numpoints))]
+            )
             self.root_id = analysis_id
             self.id_item[analysis_id] = item
         else:
-            #print("Adding child")
+            # print("Adding child")
             parent = self.find_analysis_item(parent_id)
             if parent is not None:
-                parent.appendRow([item, QStandardItem(
-                    str(analysis_id)), QStandardItem(str(numpoints))])
+                parent.appendRow(
+                    [item, QStandardItem(str(analysis_id)), QStandardItem(str(numpoints))]
+                )
                 self.id_item[analysis_id] = item
                 self.tree.expand(parent.index())
 
-    def remove_analysis(self, analysis_id):
+    def remove_analysis(self, analysis_id: int):
         if analysis_id == self.root_id:
             self.clear()
             return
@@ -555,7 +536,7 @@ class ModelGui(QDialog):
 
             del self.id_item[analysis_id]
 
-    def finish_analysis(self, analysis_id, name, image_buf):
+    def finish_analysis(self, analysis_id: int, name: str, image_buf: BytesIO) -> None:
         print("finished ", analysis_id)
         img = PIL.Image.open(image_buf)
         thumbnail = img.resize(self.thumb_size, PIL.Image.ANTIALIAS)
@@ -563,15 +544,16 @@ class ModelGui(QDialog):
         im = ImageQt.ImageQt(thumbnail)
         item = self.find_analysis_item(analysis_id)
 
-        item.setIcon(QIcon(QPixmap.fromImage(im)))
-        item.__thumb = im
+        if item is not None:
+            item.setIcon(QIcon(QPixmap.fromImage(im)))
+            item.__thumb = im  # type: ignore
 
-    def find_analysis_item(self, analysis_id):
-        """ Get the item using the numeric analysis_id """
+    def find_analysis_item(self, analysis_id: int) -> Union[QStandardItem, None]:
+        """Get the item using the numeric analysis_id"""
         return self.id_item.get(analysis_id, None)
 
-    def clear(self):
-        print('Clear model content')
+    def clear(self) -> None:
+        print("Clear model content")
         if self.model is not None:
             # print('Remove rows')
             self.model.removeRows(0, self.model.rowCount())
@@ -581,10 +563,13 @@ class ModelGui(QDialog):
 
 
 # A main to allow inspection of layout
-if __name__ == '__main__':
+if __name__ == "__main__":
     APP = QApplication(sys.argv)
-    DIALOG = ModelGui(queue.Queue(), None, None, None)
-    #timer = QTimer(DIALOG)
+    fsel = lambda x: None
+    fdel: Callable[[List[int]], None] = lambda l: None
+    fload = lambda a, b, c, d: None
+    DIALOG = ModelGui(queue.Queue(), fsel, fdel, fload)
+    # timer = QTimer(DIALOG)
     # timer.start(2000)
     # timer.timeout.connect(DIALOG.add_test_analysis)
     sys.exit(DIALOG.exec_())

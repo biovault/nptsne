@@ -6,3 +6,4 @@ demos/data
 .vscode
 wheelhouse/*
 docs/_build
+.mypy_cache

@@ -14,12 +14,18 @@ Classes:
 """
 import time
 import numpy as np
+import nptsne
+from matplotlib import colors
+from matplotlib.backend_bases import TimerBase
 from PyQt5 import QtWidgets  # pylint: disable=no-name-in-module
 from EmbeddingGui import EmbeddingViewer
 from ModelGui import DemoType
 from CompositeImageViewer import CompositeImageViewer
 from HyperspectralImageViewer import HyperspectralImageViewer
 from MetaDataViewer import MetaDataViewer
+from typing import List, Callable, Tuple, Union
+from ModelController import DemoType
+from io import BytesIO
 
 
 class AnalysisController(QtWidgets.QDialog):
@@ -30,14 +36,15 @@ class AnalysisController(QtWidgets.QDialog):
     and this is dynamically displayed in the embedding gui."""
 
     def __init__(
-            self,
-            demo_type,
-            make_new_analysis,
-            remove_analysis,
-            analysis_stopped):
+        self,
+        demo_type: DemoType,
+        make_new_analysis: Callable[[nptsne.hsne_analysis.Analysis, List[int]], None],
+        remove_analysis: Callable[[[int]], List[int]],
+        analysis_stopped: Callable[[nptsne.hsne_analysis.Analysis, BytesIO], None],
+    ) -> None:
         super(QtWidgets.QDialog, self).__init__()
         self.embedding_viewer = EmbeddingViewer(self)
-        self.data_gui = None
+        self.data_gui: QtWidgets.QWidget
         self.demo_type = demo_type
         if demo_type == DemoType.LABELLED_DEMO:
             self.data_gui = CompositeImageViewer()
@@ -55,20 +62,22 @@ class AnalysisController(QtWidgets.QDialog):
         self.__init_ui()
 
         # HSNE Analysis and data
-        self.analysis = None          # hsne analysis
-        self.data = None              # the original data
-        self.image_dimensions = None  # the dimensions if the data rows represent an image
-        self.iterations = None        # number of embedding iterations to perform for the layout
+        self.analysis: nptsne.hsne_analysis.Analysis = None  # hsne analysis
+        self.data: np.ndarray  # the original data
+        self.image_dimensions: Tuple[
+            int, int
+        ]  # the dimensions if the data rows represent an image
+        self.iterations: int  # number of embedding iterations to perform for the layout
 
         # Embedding iteration control
         self.iters_per_frame = 1  # frames contain multiple iterations (for rendering speed)
-        self.num_frames = 0       # number of render frames
-        self._stop_iter = False   # stop iterating flage
-        self._iter_count = 0      # current iteration
-        self.timer_count = 0      # total number or iterations
-        self.timer = None         # iteration timer
+        self.num_frames = 0  # number of render frames
+        self._stop_iter = False  # stop iterating flage
+        self._iter_count = 0  # current iteration
+        self.timer_count = 0  # total number or iterations
+        self.timer: TimerBase = None  # iteration timer
 
-    def __init_ui(self):
+    def __init_ui(self) -> None:
         # Define the layout
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.widget_layout = QtWidgets.QHBoxLayout(self)
@@ -91,15 +100,16 @@ class AnalysisController(QtWidgets.QDialog):
         self.meta_path = meta_path
 
     def start_embedding(
-            self,
-            data,
-            analysis,
-            iterations,
-            image_dimensions,
-            top_level=False,
-            labels=None,
-            color_norm=None):
-        """ Start the embedding  iteration loop with the
+        self,
+        data: np.ndarray,
+        analysis: nptsne.hsne_analysis.Analysis,
+        iterations: int,
+        image_dimensions: Tuple[int, int],
+        top_level: bool = False,
+        labels: Union[np.ndarray, None] = None,
+        color_norm: Union[colors.Normalize, None] = None,
+    ) -> None:
+        """Start the embedding  iteration loop with the
         supplied data and hsne analysis"""
         self.setWindowTitle(str(analysis))
         self.analysis = analysis
@@ -115,15 +125,10 @@ class AnalysisController(QtWidgets.QDialog):
         self._stop_iter = False
         self._iter_count = 0
         self.timer_count = 0
-        if self.demo_type in [
-                DemoType.LABELLED_DEMO,
-                DemoType.HYPERSPECTRAL_DEMO]:
+        if self.demo_type in [DemoType.LABELLED_DEMO, DemoType.HYPERSPECTRAL_DEMO]:
             self.data_gui.init_plot(data, image_dimensions)
         elif self.demo_type == DemoType.POINT_DEMO:
-            self.data_gui.init_metadata(
-                self.meta_path,
-                self.on_meta_colors,
-                self.on_meta_select)
+            self.data_gui.init_metadata(self.meta_path, self.on_meta_colors, self.on_meta_select)
 
         sub_labels = None
         if labels is not None:
@@ -131,10 +136,15 @@ class AnalysisController(QtWidgets.QDialog):
 
         disable_select = self.analysis.scale_id == 0
         self.embedding_viewer.init_plot(
-            analysis.embedding, analysis.landmark_weights,
-            self.on_selection, self.do_close,
+            analysis.embedding,
+            analysis.landmark_weights,
+            self.on_selection,
+            self.do_close,
             disable_select,
-            top_level, sub_labels, color_norm)
+            top_level,
+            sub_labels,
+            color_norm,
+        )
 
         # Fire up the embedding - drive the embedding and animation using a
         # timer
@@ -142,7 +152,7 @@ class AnalysisController(QtWidgets.QDialog):
         self.timer.add_callback(self.iterate_tsne)
         self.timer.start()
 
-    def iterate_tsne(self):
+    def iterate_tsne(self) -> None:
         """Develop the embedding by performing the tsne iterations
         and displaying the intermediate plots"""
         send_stop_event = False
@@ -170,10 +180,9 @@ class AnalysisController(QtWidgets.QDialog):
         if send_stop_event:
             self.embedding_viewer.force_refresh()
             time.sleep(0.1)
-            self.analysis_stopped(self.analysis,
-                                  self.embedding_viewer.get_figure_as_buffer())
+            self.analysis_stopped(self.analysis, self.embedding_viewer.get_figure_as_buffer())
 
-    def data_index_from_selection(self, sel_indexes):
+    def data_index_from_selection(self, sel_indexes: List[int]) -> List[int]:
         """Selection indexes in this analysis are converted to original
         data point indexes"""
         data_indexes = []
@@ -182,7 +191,7 @@ class AnalysisController(QtWidgets.QDialog):
             data_indexes.append(self.analysis.landmark_orig_indexes[i])
         return data_indexes
 
-    def landmark_index_from_selection(self, sel_indexes):
+    def landmark_index_from_selection(self, sel_indexes: List[int]) -> List[int]:
         """Selection indexes in this analysis are converted to landmark
         indexes in this scale"""
         landmark_indexes = []
@@ -192,76 +201,73 @@ class AnalysisController(QtWidgets.QDialog):
         return landmark_indexes
 
     # Triggered by a selection in the embedding gui
-    def on_selection(self, analysis_selection, make_new_analysis):
+    def on_selection(self, analysis_selection: List[int], make_new_analysis: bool) -> None:
         """analysis_selection is a list of indexes at this analysis scale
-            If make_new_analysis is true start a new analysis controller"""
-        landmark_indexes = self.landmark_index_from_selection(
-            analysis_selection)
+        If make_new_analysis is true start a new analysis controller"""
+        landmark_indexes = self.landmark_index_from_selection(analysis_selection)
         if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
             # Pass area influenced to the hyperspectral viewer
-            self.data_gui.set_static_mask(
-                self.analysis.get_area_of_influence(landmark_indexes))
+            self.data_gui.set_static_mask(self.analysis.get_area_of_influence(landmark_indexes))
 
         if make_new_analysis:
             self.make_new_analysis(self.analysis, analysis_selection)
         else:
             if self.demo_type == DemoType.LABELLED_DEMO:
                 # Pass data indexes to labelled viewer
-                self.data_gui.set_image_indexes(
-                    self.data_index_from_selection(analysis_selection))
+                self.data_gui.set_image_indexes(self.data_index_from_selection(analysis_selection))
 
     #  Callbacks to be used by meta data manipulation GUIs
     def on_meta_ids(self, ids):
         """Point ids from the meta data (could extend to more metadata)"""
         pass  # pylint: disable=unnecessary-pass
 
-    def on_meta_colors(self, color_array):
+    def on_meta_colors(self, color_array: np.ndarray) -> None:
         """Colors settings from a metadata viewer.
-            The color_array is a numpy array of #XXXXXX colors for all data points. This
-            needs to be filtered for the landmarks in this analysis"""
+        The color_array is a numpy array of #XXXXXX colors for all data points. This
+        needs to be filtered for the landmarks in this analysis"""
 
         # print(self.analysis.landmark_orig_indexes)
         analysis_colors = color_array[self.analysis.landmark_orig_indexes]
         # print(analysis_colors)
         self.embedding_viewer.set_face_colors(analysis_colors)
 
-    def on_meta_select(self, data_index_array):
+    def on_meta_select(self, data_index_array: List[int]) -> None:
         """Selection index from a metadata viewer.
-            The index_array is a numpy array of indexes for all data points. This
-            needs to be filtered for the landmarks in this analysis"""
+        The index_array is a numpy array of indexes for all data points. This
+        needs to be filtered for the landmarks in this analysis"""
 
         select = np.isin(self.analysis.landmark_orig_indexes, data_index_array)
         selected_indexes = np.where(select)
         # print(f'selected indexes {selected_indexes}')
         self.embedding_viewer.set_selection(selected_indexes)
 
-    def win_raise(self):
+    def win_raise(self) -> None:
         """Raise this dialog to the top of the z-order"""
         self.raise_()
         self.activateWindow()
 
-    def do_close(self):
+    def do_close(self) -> None:
         """Callbask to close the dialog"""
         self.cleanup(True)
         self.close()
 
-    def cleanup(self, remove_analysis=True):
+    def cleanup(self, remove_analysis: bool = True) -> None:
         """Cleanup while closing"""
         if self.analysis is None:
             return
         if remove_analysis:
-            print('Deleting analysis on close')
+            print("Deleting analysis on close")
             self.remove_analysis(self.analysis.id)
         del self.analysis
         self.analysis = None
 
     # Override closeEvent for the widget
-    def closeEvent(self, event):  # pylint: disable=invalid-name
+    def closeEvent(self, event) -> None:  # pylint: disable=invalid-name
         """Make sure that closing the dialog cleans up the analysis"""
         self.cleanup(True)
         event.accept()
 
-    def kill(self):
+    def kill(self) -> None:
         """Someone else has deleted the analysis close
         this dialog"""
         if self.analysis is not None:
@@ -270,16 +276,16 @@ class AnalysisController(QtWidgets.QDialog):
         self.do_close()
 
     @property
-    def iter_stopped(self):
+    def iter_stopped(self) -> bool:
         """Has the iteration stopped"""
         return self._stop_iter
 
     @property
-    def iter_count(self):
+    def iter_count(self) -> int:
         """The current iteration count"""
         return self._iter_count
 
     @property
-    def figure_id(self):
+    def figure_id(self) -> str:
         """The string id associated with this analysis"""
         return str(self.analysis)

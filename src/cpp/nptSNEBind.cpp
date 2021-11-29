@@ -940,12 +940,14 @@ PYBIND11_MODULE(_nptsne, m)
             The inner list contains tuples where the first item
             is an integer landmark index in the scale and the second item
             is the transition matrix value for the two points.
-            The resulting matrix is sparse
+
+            The resulting matrix is sparse in list-of-lists (LIL) form, one list per row
+            containing a list of (column number:value) tuples.
 
             Returns
             -------
             list(list(tuple)):
-                The transition (probability) matrix in this scale
+                The transition (probability) matrix in this scale in list-of-lists form
 
         )pbdoc");
 
@@ -995,6 +997,7 @@ PYBIND11_MODULE(_nptsne, m)
 
             Notes
             -----
+            The return is in list-of-lists (LIL) format.
             The list returned has one entry for each landmark point i at scale s-1,
             :math: `\mathcal{L}_{i}^{s-1}`.
             Each entry is a list of tuples at where each tuple contains an index
@@ -1217,7 +1220,8 @@ PYBIND11_MODULE(_nptsne, m)
                 For more information on the `threshold` refer to the HSNE paper
                 section *4.2 Filtering and drilling down*.
 
-                An approach that give less "noisy" results is in `get_mapped_area_of_influence`.
+                A fast but less accurate approach to obtaining area of influence 
+                is `get_mapped_area_of_influence`.
 
                 See Also
                 --------
@@ -1258,10 +1262,13 @@ PYBIND11_MODULE(_nptsne, m)
                     return result;
                 },
                 R"pbdoc(
-                Get the area of influence of the selection in the original data
+                Fast method to get the area of influence of the selection in the original data
                 based on non overlapping :math:`{1}\rightarrow{n}` mapping of scale landmarks
-                to original data points. This mapping is derived by working bottom up from
-                the data points and finding the landmarks at each scale with the maximum influence.
+                to original data points.
+
+                This mapping is derived by working bottom up from the data points and finding 
+                the landmarks at each scale with the maximum influence. The mapping is calculated
+                once on the first call to this function so subsequent calls are fast.
 
                 Due to thresholding it is possible that a datapoint may have no representative
                 landmark at a specific scale.
