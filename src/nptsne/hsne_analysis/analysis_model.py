@@ -1,7 +1,7 @@
 import numpy as np
 
 from ..libs._nptsne._hsne_analysis import Analysis, EmbedderType
-from nptsne import HSne
+from ..libs._nptsne import HSne
 from typing import Set, Dict, List
 
 
