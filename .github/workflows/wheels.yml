@@ -20,8 +20,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - job-name: "Linux"
-            os: "ubuntu-20.04"
+          # - job-name: "Linux"
+          #   os: "ubuntu-20.04"
 
           # - job-name: "macOS"
           #   os: "macos-10.15"

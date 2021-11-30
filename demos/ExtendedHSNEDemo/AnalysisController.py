@@ -23,7 +23,7 @@ from ModelGui import DemoType
 from CompositeImageViewer import CompositeImageViewer
 from HyperspectralImageViewer import HyperspectralImageViewer
 from MetaDataViewer import MetaDataViewer
-from typing import List, Callable, Tuple, Union
+from typing import List, Callable, Tuple, Union, TypeVar
 from ModelController import DemoType
 from io import BytesIO
 
@@ -35,11 +35,13 @@ class AnalysisController(QtWidgets.QDialog):
     iterates over the embedding once the analysis is created
     and this is dynamically displayed in the embedding gui."""
 
+    ListIds = TypeVar
+
     def __init__(
         self,
         demo_type: DemoType,
         make_new_analysis: Callable[[nptsne.hsne_analysis.Analysis, List[int]], None],
-        remove_analysis: Callable[[[int]], List[int]],
+        remove_analysis: Callable[[int], List[int]],
         analysis_stopped: Callable[[nptsne.hsne_analysis.Analysis, BytesIO], None],
     ) -> None:
         super(QtWidgets.QDialog, self).__init__()

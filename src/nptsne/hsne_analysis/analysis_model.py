@@ -1,6 +1,8 @@
 import numpy as np
 
 from ..libs._nptsne._hsne_analysis import Analysis, EmbedderType
+from nptsne import HSne
+from typing import Set, Dict, List
 
 
 class AnalysisContainer:
@@ -18,10 +20,12 @@ class AnalysisContainer:
     self-generated Analysis ids.
     """
 
-    def __init__(self, top_analysis):
-        self._container = {top_analysis.scale_id: {top_analysis.id: top_analysis}}
-        self._children = {top_analysis.id: set()}
-        self._scale_index = {top_analysis.id: top_analysis.scale_id}
+    def __init__(self, top_analysis: Analysis):
+        self._container: Dict[int, Dict[int, Analysis]] = {
+            top_analysis.scale_id: {top_analysis.id: top_analysis}
+        }
+        self._children: Dict[int, Set] = {top_analysis.id: set()}
+        self._scale_index: Dict[int, int] = {top_analysis.id: top_analysis.scale_id}
         self._null_id = 0xFFFFFFFF
 
     def __eq__(self, other):
@@ -40,7 +44,7 @@ class AnalysisContainer:
 
         return True
 
-    def add_analysis(self, analysis):
+    def add_analysis(self, analysis: Analysis):
         if self._container.get(analysis.scale_id, None) is None:
             self._container[analysis.scale_id] = {}
         self._container[analysis.scale_id][analysis.id] = analysis
@@ -48,15 +52,15 @@ class AnalysisContainer:
         self._children[analysis.id] = set()
         self._scale_index[analysis.id] = analysis.scale_id
 
-    def get_analysis(self, analysis_id):
+    def get_analysis(self, analysis_id: int):
         return self._container[self._scale_index[analysis_id]].get(analysis_id, None)
 
-    def remove_analysis(self, analysis_id):
+    def remove_analysis(self, analysis_id: int) -> List[int]:
         """Removes analysis and, recursively, child analyses
 
         Returns
         -------
-        list[str]
+        list[int]
             A list of analysis ids removed including this one
         """
         analysis = self.get_analysis(analysis_id)
@@ -98,6 +102,9 @@ class AnalysisContainer:
 
 class AnalysisModel:
     """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
+    The AnalysisModel initially contains only the top analysis, i.e. the HSNE scale with the least number of points.
+    As selections are made starting from the top analysis new sub analyses are added to the tree
+    in AnalsisModel. The helper class AnalysisContainer is responsible for maintaining this tree of analyses.
 
     Parameters
     ----------
@@ -134,17 +141,17 @@ class AnalysisModel:
     with a top level default hsne_analysis.Analysis containing all top level landmarks.
     """
 
-    def __init__(self, hsne, embedder_type):
+    def __init__(self, hsne: HSne, embedder_type: EmbedderType):
         self.hsne = hsne
         self.embedder_type = embedder_type
 
-        self._analysis_container = None
+        self._analysis_container: AnalysisContainer
         # The uppermost scale id can be derived from the
         # total number of scales
         self.top_scale_id = hsne.num_scales - 1
         # The lowest scale is always 0 - data level
         self.bottom_scale_id = 0
-        self.top_analysis_id = None
+        self.top_analysis_id: int
         self._initialize_top_level()
 
     @property
@@ -171,7 +178,7 @@ class AnalysisModel:
         self.top_analysis_id = topAnalysis.id
         self._analysis_container = AnalysisContainer(topAnalysis)
 
-    def add_new_analysis(self, parent, parent_selection) -> Analysis:
+    def add_new_analysis(self, parent: Analysis, parent_selection: np.ndarray) -> Analysis:
         """Add a new analysis based on a selection in a parent analysis
 
         Parameters
@@ -204,7 +211,7 @@ class AnalysisModel:
         self._analysis_container.add_analysis(analysis)
         return analysis
 
-    def get_analysis(self, id):
+    def get_analysis(self, id: int):
         """Get the `Analysis` for the given id
 
         Parameters
@@ -230,12 +237,12 @@ class AnalysisModel:
         This is an internal property exposed for debug purposes only"""
         return self._analysis_container
 
-    def remove_analysis(self, id):
+    def remove_analysis(self, id: int) -> List[int]:
         """Remove the analysis and all children
 
         Returns
         -------
-        list
+        list[int]
             list of deleted ids
 
         Examples

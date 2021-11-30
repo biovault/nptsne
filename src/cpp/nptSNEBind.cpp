@@ -27,6 +27,7 @@ PYBIND11_MODULE(_nptsne, m)
         -----------------------------------------------------------------------------
     )pbdoc";
 
+    py::class_<hdi::dr::knn_distance_metric> pyKnn_distance_metric(m, "knn_distance_metric");
     // ENUMS
     py::enum_<hdi::dr::knn_distance_metric> enumKDM(m, "KnnDistanceMetric", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn distance metric used. Five possibilities are
@@ -48,6 +49,7 @@ PYBIND11_MODULE(_nptsne, m)
         .value("Hamming", hdi::dr::knn_distance_metric::KNN_METRIC_HAMMING)
         .value("Dot", hdi::dr::knn_distance_metric::KNN_METRIC_DOT);
 
+    py::class_<hdi::dr::knn_library> pyKnn_distance_metric(m, "knn_library");
     py::enum_<hdi::dr::knn_library> enumKA(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn algorithm used. Three possibilities are
             supported:
