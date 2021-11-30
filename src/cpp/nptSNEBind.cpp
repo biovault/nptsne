@@ -27,7 +27,6 @@ PYBIND11_MODULE(_nptsne, m)
         -----------------------------------------------------------------------------
     )pbdoc";
 
-    py::class_<hdi::dr::knn_distance_metric> pyKnn_distance_metric(m, "knn_distance_metric");
     // ENUMS
     py::enum_<hdi::dr::knn_distance_metric> enumKDM(m, "KnnDistanceMetric", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn distance metric used. Five possibilities are
@@ -49,7 +48,6 @@ PYBIND11_MODULE(_nptsne, m)
         .value("Hamming", hdi::dr::knn_distance_metric::KNN_METRIC_HAMMING)
         .value("Dot", hdi::dr::knn_distance_metric::KNN_METRIC_DOT);
 
-    py::class_<hdi::dr::knn_library> pyKnn_library(m, "knn_library");
     py::enum_<hdi::dr::knn_library> enumKA(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn algorithm used. Three possibilities are
             supported:
@@ -183,6 +181,8 @@ PYBIND11_MODULE(_nptsne, m)
 
         )pbdoc");
 
+    auto default_metric = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN;
+    auto default_knnlib = hdi::dr::knn_library::KNN_FLANN;
     textureTsne.def(py::init<bool, int, int, int, int, hdi::dr::knn_library, hdi::dr::knn_distance_metric>(),
                     R"pbdoc(
         )pbdoc",
@@ -191,8 +191,8 @@ PYBIND11_MODULE(_nptsne, m)
                     py::arg("num_target_dimensions") = 2,
                     py::arg("perplexity") = 30,
                     py::arg("exaggeration_iter") = 250,
-                    py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
-                    py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
+                    py::arg("knn_algorithm") = default_knnlib,
+                    py::arg("knn_metric") = default_metric);
 
     textureTsne.def("fit_transform", &TextureTsne::fit_transform,
                     R"pbdoc(
