@@ -1202,6 +1202,72 @@ PYBIND11_MODULE(_nptsne, m)
 
         analysis_class
             .def(
+                "get_influence_on_data_point",
+                [](Analysis &self, nptsne::UnsignedIntType datapointID,
+                   double threshold = 0.0, bool normalized = true)
+                {
+                    std::vector<std::unordered_map<nptsne::UnsignedIntType, nptsne::ScalarType>> influence;
+                    self.hsne->getInfluenceOnDataPoint(datapointID, influence, threshold, normalized);
+
+                    return influence;
+                },
+                R"pbdoc(
+                Return the influence exercised on the data point by the landmarks in each scale
+
+                Parameters
+                ----------
+                datapointID : unsigned int
+                    ID of data point
+                threshold : float, optional
+                    Default is 0/0. The parameter must be in the range 0 to 1.0,
+                    values outside the range it will be ignored.
+                normalized : bool
+                    normalize?
+
+                Returns
+                -------
+                :class:`list`
+                    list of dictionaries
+            )pbdoc",
+                py::arg("datapointID"),
+                py::arg("normalized") = true,
+                py::arg("threshold") = 0.0);
+
+
+        analysis_class
+            .def(
+                "get_area_of_influenceX",
+                [](Analysis &self, std::vector<nptsne::UnsignedIntType> select_list)
+                {
+                    std::vector<nptsne::ScalarType> aoi;
+                    self.hsne->getAreaOfInfluence(self.scale_id, select_list, aoi);
+                    py::array_t<nptsne::ScalarType> result = py::array_t<nptsne::ScalarType>(aoi.size());
+                    auto result_info = result.request();
+                    nptsne::ScalarType *output = static_cast<nptsne::ScalarType *>(result_info.ptr);
+                    for (size_t i = 0; i < aoi.size(); ++i)
+                    {
+                        output[i] = aoi[i];
+                    }
+                    return result;
+                },
+                R"pbdoc(
+                Return the influence exercised on the data point by a subset of landmarks in a given scale
+
+                Parameters
+                ----------
+                select_list : list
+                    A list of selection indexes for landmarks in this analysis
+
+                Returns
+                -------
+                :class:`ndarray`
+                    Stuff
+            )pbdoc",
+                py::arg("select_list"));
+
+
+        analysis_class
+            .def(
                 "get_area_of_influence",
                 [](Analysis &self, std::vector<nptsne::UnsignedIntType> select_list,
                    double threshold = 0.3)
