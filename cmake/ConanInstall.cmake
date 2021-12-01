@@ -46,7 +46,7 @@ else()
 endif()
 
 # debug
-# execute_process(COMMAND ${CMAKE_COMMAND} "-E" "cat" "conanbuildinfo.txt")
+execute_process(COMMAND ${CMAKE_COMMAND} "-E" "cat" "conanbuildinfo.txt")
 message("Set CMAKE_MODULE_PATH and CMAKE_PREFIX_PATH for FindPackage")
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
 set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
@@ -73,7 +73,7 @@ execute_process(
 
 # Add directories 
 foreach(LIB_PATH IN LISTS CONAN_BUILDINFO)
-    # message("APPENDING ***${LIB_PATH}*** TO MODULE PATH")
+    message("APPENDING ***${LIB_PATH}*** TO MODULE PATH")
     list(APPEND CMAKE_MODULE_PATH ${LIB_PATH})
     list(APPEND CMAKE_PREFIX_PATH ${LIB_PATH})
 endforeach()

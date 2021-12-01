@@ -40,10 +40,11 @@ if (NPTSNE_BUILD_WITH_CONAN)
     endif()
     set(LZ4_VERSION "1.9.2")
     include(ConanInstall)
+    message("***CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}***")
     find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
     find_package(flann CONFIG REQUIRED)
 endif()
-find_package(LZ4 REQUIRED)
+# find_package(LZ4 REQUIRED) - the LZ4 does not have a CMake package config file
 
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -344,10 +345,3 @@ else()
         COMMAND ${CMAKE_COMMAND} -E echo "No conan libs for wheel fixup"
     )
 endif()
-
-# -- Upload of latest whl
-add_custom_target (upload_wheel
-    COMMAND ${CMAKE_COMMAND} -E echo "About to upload the wheel "
-    ${Python3_EXECUTABLE} -c "import os; print(os.listdir('${CMAKE_BINARY_DIR}/wheelhouse'))"
-    COMMAND ${CMAKE_COMMAND} -D WHEEL_GLOB=${CMAKE_BINARY_DIR}/wheelhouse/nptsne*.whl -P ${CMAKE_CURRENT_LIST_DIR}/cmake/UploadWheel.cmake
-)

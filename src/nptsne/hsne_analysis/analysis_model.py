@@ -2,7 +2,7 @@ import numpy as np
 
 from ..libs._nptsne._hsne_analysis import Analysis, EmbedderType
 from ..libs._nptsne import HSne
-from typing import Set, Dict, List
+from typing import Set, Dict, List, Union
 
 
 class AnalysisContainer:
@@ -44,7 +44,14 @@ class AnalysisContainer:
 
         return True
 
-    def add_analysis(self, analysis: Analysis):
+    def add_analysis(self, analysis: Analysis) -> None:
+        """Add a new analysis to the container
+
+        Parameters
+        ----------
+        analysis : Analysis
+            The new analysis
+        """
         if self._container.get(analysis.scale_id, None) is None:
             self._container[analysis.scale_id] = {}
         self._container[analysis.scale_id][analysis.id] = analysis
@@ -52,8 +59,27 @@ class AnalysisContainer:
         self._children[analysis.id] = set()
         self._scale_index[analysis.id] = analysis.scale_id
 
-    def get_analysis(self, analysis_id: int):
-        return self._container[self._scale_index[analysis_id]].get(analysis_id, None)
+    def get_analysis(self, analysis_id: int) -> Analysis:
+        """Get the analysis corresponding to the id
+
+        Parameters
+        ----------
+        analysis_id : int
+            [description]
+
+        Returns
+        -------
+        Analysis
+            [description]
+
+        Raises
+        ------
+        ValueError
+            If the id does not correspond to an analysis
+        """
+        analysis = self._container[self._scale_index[analysis_id]].get(analysis_id, None)
+        if analysis is None:
+            raise ValueError("No analysis corresponding to the given id")
 
     def remove_analysis(self, analysis_id: int) -> List[int]:
         """Removes analysis and, recursively, child analyses
@@ -63,8 +89,10 @@ class AnalysisContainer:
         list[int]
             A list of analysis ids removed including this one
         """
-        analysis = self.get_analysis(analysis_id)
-        if analysis is None:
+        analysis = None
+        try:
+            analysis = self.get_analysis(analysis_id)
+        except ValueError:
             return []
         removed_ids = [analysis.id]
         child_list = list(self._children[analysis.id])
@@ -101,7 +129,7 @@ class AnalysisContainer:
 
 
 class AnalysisModel:
-    """Create an analysis model with the a top level Analysis containing all landmarks at the highest scale
+    """Create an analysis model tree with the a top level Analysis containing all landmarks at the highest scale
     The AnalysisModel initially contains only the top analysis, i.e. the HSNE scale with the least number of points.
     As selections are made starting from the top analysis new sub analyses are added to the tree
     in AnalsisModel. The helper class AnalysisContainer is responsible for maintaining this tree of analyses.
@@ -167,6 +195,11 @@ class AnalysisModel:
         >>> analysis = model.top_analysis
         >>> analysis.scale_id
         2
+
+        Raises
+        ------
+        ValueError
+            If there is not top analysis
         """
         return self._analysis_container.get_analysis(self.top_analysis_id)
 
@@ -211,7 +244,7 @@ class AnalysisModel:
         self._analysis_container.add_analysis(analysis)
         return analysis
 
-    def get_analysis(self, id: int):
+    def get_analysis(self, id: int) -> Analysis:
         """Get the `Analysis` for the given id
 
         Parameters
@@ -226,6 +259,15 @@ class AnalysisModel:
         >>> id = model.top_analysis.id
         >>> str(model.top_analysis) == str(model.get_analysis(id))
         True
+
+        Returns
+        -------
+            The Analysis corresponding to the id
+
+        Raises
+        ------
+        ValueError
+            If the id does not correspond to an analysis
         """
 
         return self._analysis_container.get_analysis(id)
