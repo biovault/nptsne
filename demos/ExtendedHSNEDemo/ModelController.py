@@ -18,8 +18,8 @@ from PyQt5.QtWidgets import QApplication
 
 # The demo GUI
 from AnalysisController import AnalysisController
-from ModelGui import ModelGui, AnalysisEvent, DemoType
-
+from ModelGui import ModelGui, AnalysisEvent
+from ConfigClasses import DemoType
 from typing import List, Union, Dict
 
 
@@ -44,7 +44,6 @@ class ModelController:
         self.color_norm = None
         self.analysis_event_queue: queue.Queue = queue.Queue()
         self.im_size = (0, 0)
-        self.app
         self.labelcolor_filename = ""
 
     def run(self) -> None:
@@ -212,7 +211,7 @@ class ModelController:
 
         top_analysis = self.analysis_model.top_analysis
 
-        all_analyses_per_scale = {top_analysis.scale_id: {top_analysis.id: top_analysis}}
+        # all_analyses_per_scale = {top_analysis.scale_id: {top_analysis.id: top_analysis}}
 
         self.__set_labels_and_color_norm(label_file)
 

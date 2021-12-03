@@ -12,9 +12,11 @@
         LabelledImage
         PointMeta
         HyperspectralImage
+        DemoType
 
 """
 from typing import NamedTuple
+from enum import Enum
 
 
 class HsneConfig(NamedTuple):
@@ -85,3 +87,13 @@ class HyperspectralImage(NamedTuple):
     hsne: HsneConfig
     embedding: Embedding
     image: ImageInfo
+
+
+class DemoType(Enum):
+    """The style of data being processed. Supported are
+    Labelled: MNIST style data - with or without labels
+    Point: e.g. cell and gene data wit meta data for labels/colors
+    Hyperspectral images: Array of equally size images where each pixel has several
+        dimensions (wavelengths)"""
+
+    LABELLED_DEMO, POINT_DEMO, HYPERSPECTRAL_DEMO = range(3)

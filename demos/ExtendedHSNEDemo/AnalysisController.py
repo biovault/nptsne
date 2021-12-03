@@ -19,12 +19,11 @@ from matplotlib import colors
 from matplotlib.backend_bases import TimerBase
 from PyQt5 import QtWidgets  # pylint: disable=no-name-in-module
 from EmbeddingGui import EmbeddingViewer
-from ModelGui import DemoType
 from CompositeImageViewer import CompositeImageViewer
 from HyperspectralImageViewer import HyperspectralImageViewer
 from MetaDataViewer import MetaDataViewer
 from typing import List, Callable, Tuple, Union, TypeVar
-from ModelController import DemoType
+from ConfigClasses import DemoType
 from io import BytesIO
 from typing import Union
 

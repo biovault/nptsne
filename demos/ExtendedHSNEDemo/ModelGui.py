@@ -6,7 +6,6 @@ and navigate and manipulate the resulting analysis model as it is formed.
 
 Classes:
     AnalysisEvent
-    DemoType
     ModelGui
 
 """
@@ -46,6 +45,7 @@ from DemoConfig import CONFIGS
 from typing import List, Optional, Callable, Union, Any, Dict, Tuple
 
 from nptsne.hsne_analysis.analysis_model import AnalysisModel
+from ConfigClasses import DemoType
 
 
 class AnalysisEvent(Enum):
@@ -54,16 +54,6 @@ class AnalysisEvent(Enum):
     ADDED = 1
     FINISHED = 2
     REMOVED = 3
-
-
-class DemoType(Enum):
-    """The style of data being processed. Supported are
-    Labelled: MNIST style data - with or without labels
-    Point: e.g. cell and gene data wit meta data for labels/colors
-    Hyperspectral images: Array of equally size images where each pixel has several
-        dimensions (wavelengths)"""
-
-    LABELLED_DEMO, POINT_DEMO, HYPERSPECTRAL_DEMO = range(3)
 
 
 class ModelGui(QDialog):

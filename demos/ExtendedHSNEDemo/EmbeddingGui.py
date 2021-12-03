@@ -107,8 +107,8 @@ class EmbeddingGui(FigureCanvas):
 
     def init_plot(
         self,
-        embedding: np.ndarray[np.float32, Any],
-        weights: np.ndarray[np.float32, Any],
+        embedding: np.ndarray,
+        weights: np.ndarray,
         on_selection: Callable[[List[int], bool], None],
         on_close: Callable[[], None],
         disable_select: bool,
@@ -216,7 +216,7 @@ class EmbeddingGui(FigureCanvas):
         self.fig.canvas.stop_event_loop()
         self.on_close()
 
-    def update_scatter_plot_limits(self, embedding: np.ndarray[np.float32, Any]) -> None:
+    def update_scatter_plot_limits(self, embedding: np.ndarray) -> None:
         """Resize the plot te respect the extent of the updated embedding"""
         minp = np.amin(embedding, axis=0)
         maxp = np.amax(embedding, axis=0)
@@ -238,7 +238,7 @@ class EmbeddingGui(FigureCanvas):
         if self.active_selector:
             self.active_selector.update()
 
-    def update_plot(self, embedding: np.ndarray[np.float32, Any]) -> None:
+    def update_plot(self, embedding: np.ndarray) -> None:
         """Set new coordinated for the embedding and redraw everything"""
         self.embedding = embedding
         self.scatter.set_offsets(embedding)
@@ -512,7 +512,7 @@ class EmbeddingViewer(QtWidgets.QWidget):
         interval is in milliseconds"""
         return self.plot_widget.get_canvas_timer(interval)
 
-    def update_plot(self, embedding: np.ndarray[np.float32, Any]):
+    def update_plot(self, embedding: np.ndarray):
         """Used in the embedding iteration phase when the xys are
         being calculated"""
         self.plot_widget.update_plot(embedding)
