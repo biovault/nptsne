@@ -191,8 +191,8 @@ PYBIND11_MODULE(_nptsne, m)
                     py::arg("num_target_dimensions") = 2,
                     py::arg("perplexity") = 30,
                     py::arg("exaggeration_iter") = 250,
-                    py::arg("knn_algorithm") = default_knnlib,
-                    py::arg("knn_metric") = default_metric);
+                    py::arg_v("knn_algorithm", default_knnlib, "KnnAlgorithm.Flann"),
+                    py::arg_v("knn_metric", default_metric, "KnnDistanceMetric.Euclidean"));
 
     textureTsne.def("fit_transform", &TextureTsne::fit_transform,
                     R"pbdoc(
@@ -376,8 +376,8 @@ PYBIND11_MODULE(_nptsne, m)
                             py::arg("verbose") = false,
                             py::arg("num_target_dimensions") = 2,
                             py::arg("perplexity") = 30,
-                            py::arg("knn_algorithm") = hdi::dr::knn_library::KNN_FLANN,
-                            py::arg("knn_metric") = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
+                            py::arg_v("knn_algorithm", default_knnlib, "KnnAlgorithm.Flann"),
+                            py::arg_v("knn_metric", default_metric, "KnnDistanceMetric.Euclidean"));
 
     textureTsneExtended.def("init_transform",
                             &TextureTsneExtended::init_transform,

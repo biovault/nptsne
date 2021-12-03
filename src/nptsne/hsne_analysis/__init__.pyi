@@ -383,9 +383,9 @@ class SparseTsne():
 
                 References
                 ----------
-                .. [1] Pezzotti, N., Lelieveldt, B.P.F., Maaten, L. van der, Hï¿½llt, T., Eisemann, E., Vilanova, A., 2017.
+                .. [1] Pezzotti, N., Lelieveldt, B.P.F., Maaten, L. van der, Höllt, T., Eisemann, E., Vilanova, A., 2017.
                     `Approximated and User Steerable tSNE for Progressive Visual Analytics. <https://doi.org/10.1109/TVCG.2016.2570755>`_
-                    IEEE Transactions on Visualization and Computer Graphics 23, 1739ï¿½1752.
+                    IEEE Transactions on Visualization and Computer Graphics 23, 1739–1752.
             
     """
     def do_iteration(self) -> None: 
