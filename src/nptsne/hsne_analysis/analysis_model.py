@@ -80,6 +80,7 @@ class AnalysisContainer:
         analysis = self._container[self._scale_index[analysis_id]].get(analysis_id, None)
         if analysis is None:
             raise ValueError("No analysis corresponding to the given id")
+        return analysis
 
     def remove_analysis(self, analysis_id: int) -> List[int]:
         """Removes analysis and, recursively, child analyses
