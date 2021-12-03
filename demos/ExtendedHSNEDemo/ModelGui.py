@@ -291,7 +291,7 @@ class ModelGui(QDialog):
     @pyqtSlot(int)
     def on_preconfigured(self, index: int) -> None:
         config = self.preconfigured_combo.itemData(index)
-        self.on_clear()
+        self.do_clear()
         if config is None:
             return
         if type(config).__name__ == "LabelledImage":
@@ -438,8 +438,7 @@ class ModelGui(QDialog):
         if analysis_id:
             self.delete_callback([int(analysis_id)])
 
-    @pyqtSlot()
-    def on_clear(self) -> None:
+    def do_clear(self):
         if not self.root_id is None:
             self.select_callback(int(self.root_id))
         self.clear()
@@ -457,6 +456,10 @@ class ModelGui(QDialog):
         self.image_x.setText("")
         self.image_y.setText("")
 
+    @pyqtSlot()
+    def on_clear(self) -> None:
+        self.do_clear()
+
     def _get_selected_id(self) -> Union[None, int]:
         index = self.tree.currentIndex()
         if index is None:
@@ -465,9 +468,9 @@ class ModelGui(QDialog):
 
     def create_analysis_model(self, parent) -> QStandardItemModel:
         model = QStandardItemModel(0, 3, parent)
-        model.setHeaderData(self.ANALYSIS, Qt.Horizontal, "Analysis")
-        model.setHeaderData(self.ID, Qt.Horizontal, "Id")
-        model.setHeaderData(self.NUMPOINTS, Qt.Horizontal, "#Points")
+        model.setHeaderData(self.ANALYSIS, Qt.Horizontal, "Analysis")  # type: ignore
+        model.setHeaderData(self.ID, Qt.Horizontal, "Id")  # type: ignore
+        model.setHeaderData(self.NUMPOINTS, Qt.Horizontal, "#Points")  # type: ignore
         return model
 
     def add_test_analysis(self) -> None:

@@ -26,6 +26,7 @@ from MetaDataViewer import MetaDataViewer
 from typing import List, Callable, Tuple, Union, TypeVar
 from ModelController import DemoType
 from io import BytesIO
+from typing import Union
 
 
 class AnalysisController(QtWidgets.QDialog):
@@ -59,7 +60,7 @@ class AnalysisController(QtWidgets.QDialog):
         self.make_new_analysis = make_new_analysis
         self.remove_analysis = remove_analysis
         self.analysis_stopped = analysis_stopped
-        self.meta_path = None
+        self.meta_path: Union[str, None] = None
 
         self.__init_ui()
 
@@ -97,7 +98,7 @@ class AnalysisController(QtWidgets.QDialog):
         self.setLayout(self.main_layout)
         self.show()
 
-    def set_metapath(self, meta_path):
+    def set_metapath(self, meta_path: str):
         """The path to the optional meta data csv file"""
         self.meta_path = meta_path
 
@@ -241,7 +242,7 @@ class AnalysisController(QtWidgets.QDialog):
         select = np.isin(self.analysis.landmark_orig_indexes, data_index_array)
         selected_indexes = np.where(select)
         # print(f'selected indexes {selected_indexes}')
-        self.embedding_viewer.set_selection(selected_indexes)
+        self.embedding_viewer.set_selection(selected_indexes)  # type: ignore
 
     def win_raise(self) -> None:
         """Raise this dialog to the top of the z-order"""

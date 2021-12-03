@@ -13,22 +13,24 @@ Classes:
 
 """
 import io
-from enum import Enum
+import enum
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
 from matplotlib.widgets import RectangleSelector, LassoSelector, EllipseSelector, PolygonSelector
 from matplotlib.path import Path
 from matplotlib.backends.backend_qt5agg import FigureCanvas
+from matplotlib.backend_bases import MouseEvent, KeyEvent
 from matplotlib.figure import Figure
+from matplotlib import colors
 from PyQt5 import QtWidgets, QtCore
 
 from cursors import DrawingCursors, DrawingShape, DrawingMode
 from matplotlib.backend_bases import TimerBase
-from typing import Dict, Any, List, Tuple
+from typing import Dict, Any, List, Tuple, Callable, Union
 
 
-def calculate_ellipse_path(x1, y1, x2, y2):
+def calculate_ellipse_path(x1, y1, x2, y2) -> Path:
     """This is how matplotlib draws the ellipse - thanks for the code"""
 
     xmin, xmax = sorted([x1, x2])
@@ -44,7 +46,7 @@ def calculate_ellipse_path(x1, y1, x2, y2):
     return Path(verts)
 
 
-class SelectionEvent(Enum):
+class SelectionEvent(enum.Enum):
     """The possible selection types from the EmbeddingGui"""
 
     TRANSIENT = 1  # For example mouse over - just views nearest points
@@ -64,7 +66,7 @@ class EmbeddingGui(FigureCanvas):
         mplstyle.use("fast")
         super(EmbeddingGui, self).__init__(self.fig)
         self.fig.tight_layout(pad=0)
-        self.fig.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)
+        self.fig.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)  # type: ignore
         self.fig.canvas.setFocus()
         self.draw_state = (DrawingMode.NoDraw, DrawingShape.NoShape)
         self.selection_mask = np.full((0, 0), False)
@@ -105,14 +107,14 @@ class EmbeddingGui(FigureCanvas):
 
     def init_plot(
         self,
-        embedding: np.ndarray,
-        weights,
-        on_selection,
-        on_close,
-        disable_select,
-        top_level=False,
-        labels=None,
-        color_norm=None,
+        embedding: np.ndarray[np.float32, Any],
+        weights: np.ndarray[np.float32, Any],
+        on_selection: Callable[[List[int], bool], None],
+        on_close: Callable[[], None],
+        disable_select: bool,
+        top_level: bool = False,
+        labels: Union[np.ndarray, None] = None,
+        color_norm: Union[colors.Normalize, None] = None,
     ) -> None:
         """Set the initial embedding and point weights
         to create and display the plot at iteration step=0"""
@@ -214,7 +216,7 @@ class EmbeddingGui(FigureCanvas):
         self.fig.canvas.stop_event_loop()
         self.on_close()
 
-    def update_scatter_plot_limits(self, embedding) -> None:
+    def update_scatter_plot_limits(self, embedding: np.ndarray[np.float32, Any]) -> None:
         """Resize the plot te respect the extent of the updated embedding"""
         minp = np.amin(embedding, axis=0)
         maxp = np.amax(embedding, axis=0)
@@ -236,7 +238,7 @@ class EmbeddingGui(FigureCanvas):
         if self.active_selector:
             self.active_selector.update()
 
-    def update_plot(self, embedding) -> None:
+    def update_plot(self, embedding: np.ndarray[np.float32, Any]) -> None:
         """Set new coordinated for the embedding and redraw everything"""
         self.embedding = embedding
         self.scatter.set_offsets(embedding)
@@ -249,7 +251,7 @@ class EmbeddingGui(FigureCanvas):
         self.facecolors = list(colors)
         self.force_refresh()
 
-    def on_over(self, event) -> None:
+    def on_over(self, event: MouseEvent) -> None:
         """Handle a transient selection"""
         self.fig.canvas.setFocus()
         if not self.in_selection:
@@ -258,10 +260,10 @@ class EmbeddingGui(FigureCanvas):
             perm_set = set(np.nonzero(self.selection_mask)[0])
             if cont:
                 # self.on_selection(list(index['ind']), SelectionEvent.TRANSIENT)
-                self.on_selection(list(set(index["ind"]) | perm_set), SelectionEvent.TRANSIENT)
+                self.on_selection(list(set(index["ind"]) | perm_set), SelectionEvent.TRANSIENT)  # type: ignore
             else:
                 # self.on_selection([], SelectionEvent.TRANSIENT)
-                self.on_selection(list(perm_set), SelectionEvent.TRANSIENT)
+                self.on_selection(list(perm_set), SelectionEvent.TRANSIENT)  # type: ignore
 
     def refresh_selection(self) -> None:
         """Adjust the edge colors to reflect the selection
@@ -281,9 +283,9 @@ class EmbeddingGui(FigureCanvas):
         self.fig.canvas.draw_idle()
         # Emit a permanent selection
         # return the current selection indexes
-        self.on_selection(list(np.nonzero(self.selection_mask)[0]), SelectionEvent.PERMANENT)
+        self.on_selection(list(np.nonzero(self.selection_mask)[0]), SelectionEvent.PERMANENT)  # type: ignore
 
-    def on_keypress(self, event) -> None:
+    def on_keypress(self, event: KeyEvent) -> None:
         """Handle the keyboard shortcuts"""
         if event.key in ["q", "Q", "escape"]:
             self.quit()
@@ -322,7 +324,7 @@ class EmbeddingGui(FigureCanvas):
                 selector.set_active(False)
                 selector.set_visible(False)
 
-    def on_start_select(self, event) -> None:
+    def on_start_select(self, event: KeyEvent) -> None:
         """Check that the user has started a selection and record that"""
         print(f"Event key {event.key}")
 
@@ -335,7 +337,7 @@ class EmbeddingGui(FigureCanvas):
             return
         self.in_selection = True
 
-    def on_end_rectangle_select(self, pressed, released):
+    def on_end_rectangle_select(self, pressed: MouseEvent, released: MouseEvent):
         """Use the rectangle path to make a
         selection based on the selecton state"""
         x1, y1 = pressed.xdata, pressed.ydata
@@ -343,20 +345,20 @@ class EmbeddingGui(FigureCanvas):
         path = Path(np.array(([x1, y1], [x2, y1], [x2, y2], [x1, y2], [x1, y1])))
         self.select_path(path)
 
-    def on_end_ellipse_select(self, pressed, released):
+    def on_end_ellipse_select(self, pressed: MouseEvent, released: MouseEvent):
         """Use the ellipse path to make a
         selection based on the selecton state"""
         path = calculate_ellipse_path(pressed.xdata, pressed.ydata, released.xdata, released.ydata)
         self.select_path(path)
 
-    def on_end_lasso_select(self, verts):
+    def on_end_lasso_select(self, verts: List[float]):
         """Use the lasso or polygon path to make a
         selection based on the selecton state"""
         path = Path(verts)
         self.select_path(path)
 
-    def select_path(self, path):
-        """make a selection from a path"""
+    def select_path(self, path: Path):
+        """make a selection from a matplotlib.path.Path"""
         self.in_selection = False
         xys = self.scatter.get_offsets()
         # length N bool array
@@ -372,7 +374,7 @@ class EmbeddingGui(FigureCanvas):
             self.selection_mask = self.selection_mask & ~selection_mask
         self.refresh_selection()
 
-    def set_selection(self, indexes):
+    def set_selection(self, indexes: np.ndarray):
         """Set a non-interactive selection.
         This could be a saved selection or one driven
         by meta data"""
@@ -459,7 +461,7 @@ class EmbeddingViewer(QtWidgets.QWidget):
         self.plot_widget.set_face_colors(color_array)
 
     def set_selection(self, index_array: np.ndarray) -> None:
-        """Set a selectio from an outside source
+        """Set a selection from an outside source
 
         Args:
             index_array (nd.array): The index_array is a numpy array of indexes
@@ -467,7 +469,7 @@ class EmbeddingViewer(QtWidgets.QWidget):
         self.plot_widget.set_selection(index_array)
 
     @QtCore.pyqtSlot()
-    def on_selection(self, indexes, selection_event):
+    def on_selection(self, indexes: np.ndarray, selection_event: SelectionEvent):
         """Handle a user selection operation in the plot
         Save the indexes and feed them back to the controller
 
@@ -504,11 +506,13 @@ class EmbeddingViewer(QtWidgets.QWidget):
         transient selections. Currently unused."""
         pass  # pylint: disable=unnecessary-pass
 
-    def get_canvas_timer(self, time):
-        """Return a timer that can be used with the plot canvas"""
-        return self.plot_widget.get_canvas_timer(time)
+    def get_canvas_timer(self, interval: int):
+        """Return a timer that can be used with the plot canvas
 
-    def update_plot(self, embedding):
+        interval is in milliseconds"""
+        return self.plot_widget.get_canvas_timer(interval)
+
+    def update_plot(self, embedding: np.ndarray[np.float32, Any]):
         """Used in the embedding iteration phase when the xys are
         being calculated"""
         self.plot_widget.update_plot(embedding)

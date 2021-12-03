@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """View data as a composite (average) of multiple grayscale frames"""
 import pandas as pd
+import numpy as np
 from PyQt5.QtWidgets import (
     QWidget,
     QFormLayout,
@@ -14,6 +15,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QColor
+from typing import Union, Callable, List
 
 
 class MetaDataViewer(QWidget):
@@ -54,7 +56,12 @@ class MetaDataViewer(QWidget):
         self.on_select = None
         self.dframe = None
 
-    def init_metadata(self, meta_path=None, on_color_change=None, on_select=None):
+    def init_metadata(
+        self,
+        meta_path: Union[str, None],
+        on_color_change: Callable[[np.ndarray], None],
+        on_select=Callable[[List[int]], None],
+    ):
         """Load the meta data and register the meta selection callbacks"""
         if meta_path is None:
             return
@@ -95,7 +102,7 @@ class MetaDataViewer(QWidget):
             self.meta_table.setItem(i, 1, color_item)
 
     @pyqtSlot(int)
-    def on_class(self, index):
+    def on_class(self, index: int):
         """A new meta data class has been selected. Load
         and activate the pair of meta columns label + color"""
         if self.meta_path is None:

@@ -92,7 +92,7 @@ class HyperspectralImageCanvas(FigureCanvas):
         self.back_blend = Image.blend(self.black_back, self.background, self.blend)
         self.set_image_index(self.index)
 
-    def set_blend(self, value):
+    def set_blend(self, value: float):
         """Set the blend factor
 
         Args:
@@ -102,7 +102,7 @@ class HyperspectralImageCanvas(FigureCanvas):
         self.back_blend = Image.blend(self.black_back, self.background, self.blend)
         self.set_image_index(self.index)
 
-    def set_image_index(self, index):
+    def set_image_index(self, index: int):
         """Set the forground image index
 
         Args:
@@ -120,11 +120,11 @@ class HyperspectralImageCanvas(FigureCanvas):
         self.display_img.set_array(np.reshape(comp_array, self.image_dimensions))
         self.force_refresh()
 
-    def set_selection_alpha(self, mask):
+    def set_selection_alpha(self, mask: np.ndarray):
         """Set a linear mask - will be reshapen to the image size
 
         Args:
-            mask (np.ndarray): dtype np.uint8 maek - values 0 or 1
+            mask (np.ndarray): dtype np.uint8 mask - values 0 or 1
         """
         self.alphas = np.reshape(mask * 255, self.image_dimensions).astype(np.uint8)
         self.set_image_index(self.index)
@@ -171,7 +171,7 @@ class HyperspectralImageViewer(QWidget):
         self.setLayout(self.main_layout)
         self.data = None
 
-    def init_plot(self, data, image_dimensions):
+    def init_plot(self, data: np.ndarray, image_dimensions: Tuple[int, int]):
         """Initialize the  plot image
 
         Args:
@@ -185,7 +185,7 @@ class HyperspectralImageViewer(QWidget):
         self.image_widget.init_plot(data, image_dimensions, self.image_spin.value())
 
     @pyqtSlot(int)
-    def on_image_changed(self, img_index):
+    def on_image_changed(self, img_index: int):
         """The visible image index has changed
 
         Args:
@@ -194,7 +194,7 @@ class HyperspectralImageViewer(QWidget):
         self.image_widget.set_image_index(img_index)
 
     @pyqtSlot(int)
-    def change_blend(self, value):
+    def change_blend(self, value: float):
         """The blend (between background and foreground) has changed
 
         Args:
@@ -218,6 +218,6 @@ class HyperspectralImageViewer(QWidget):
             back_image = Image.open(self.bkgrnd_name)
             self.image_widget.set_background(back_image.convert("L"))
 
-    def set_static_mask(self, mask):
+    def set_static_mask(self, mask: np.ndarray):
         """Accept 1D num py array of 0 or 1.0 mask values"""
         self.image_widget.set_selection_alpha(mask)
