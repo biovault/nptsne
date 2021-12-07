@@ -29,7 +29,7 @@ class ModelController:
     This controller assumes that selections are hierarchical and that each
     selection produces a new GUI for viewing and further selection."""
 
-    def __init__(self, embedder_type: nptsne.hsne_analysis.EmbedderType) -> None:
+    def __init__(self, embedder_type: hsne_analysis.EmbedderType) -> None:
         self.embedder_type = embedder_type
         self.analysis_model: hsne_analysis.AnalysisModel = None
         self.data: np.ndarray = np.empty(
@@ -56,7 +56,7 @@ class ModelController:
         sys.exit(self.model_gui.exec_())
         # self.model_gui.run()
 
-    def queue_new_analysis(self, analysis: nptsne.hsne_analysis.Analysis) -> None:
+    def queue_new_analysis(self, analysis: hsne_analysis.Analysis) -> None:
         """Utility function for queuing an ADDED analysis"""
         self.analysis_event_queue.put(
             {
@@ -84,9 +84,7 @@ class ModelController:
                 del self.analysis_guis[rid]
         return removed_ids
 
-    def add_analysis(
-        self, analysis: nptsne.hsne_analysis.Analysis, selected_indexes: List[int]
-    ) -> None:
+    def add_analysis(self, analysis: hsne_analysis.Analysis, selected_indexes: List[int]) -> None:
         """Handle 2.) AnalysisEvent.ADDED
         Callback to start a sub analysis in the analysis model"""
         print("Drilling down to new analysis")
@@ -117,9 +115,7 @@ class ModelController:
         self.analysis_guis[new_analysis.id] = analysis_gui
         self.queue_new_analysis(new_analysis)
 
-    def analysis_stopped(
-        self, analysis: nptsne.hsne_analysis.Analysis, image_buf: BytesIO
-    ) -> None:
+    def analysis_stopped(self, analysis: hsne_analysis.Analysis, image_buf: BytesIO) -> None:
         """3.) AnalysisEvent.FINISHED
         Callback tohandle a completed analysis embedding"""
         self.analysis_event_queue.put(
@@ -162,7 +158,7 @@ class ModelController:
         self.start_hsne(data, data_file_path, hsne_file_path, label_filename)
 
     def __set_labels_and_color_norm(self, label_file):
-        if label_file is None:
+        if not label_file or label_file == "":
             return (None, None)
 
         self.labels = np.load(label_file)

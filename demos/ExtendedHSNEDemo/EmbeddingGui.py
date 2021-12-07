@@ -109,7 +109,7 @@ class EmbeddingGui(FigureCanvas):
         self,
         embedding: np.ndarray,
         weights: np.ndarray,
-        on_selection: Callable[[List[int], bool], None],
+        on_selection: Callable[[List[int], bool, bool], None],
         on_close: Callable[[], None],
         disable_select: bool,
         top_level: bool = False,

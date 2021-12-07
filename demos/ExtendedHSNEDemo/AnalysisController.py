@@ -15,6 +15,7 @@ Classes:
 import time
 import numpy as np
 import nptsne
+from nptsne import hsne_analysis
 from matplotlib import colors
 from matplotlib.backend_bases import TimerBase
 from PyQt5 import QtWidgets  # pylint: disable=no-name-in-module
@@ -40,9 +41,9 @@ class AnalysisController(QtWidgets.QDialog):
     def __init__(
         self,
         demo_type: DemoType,
-        make_new_analysis: Callable[[nptsne.hsne_analysis.Analysis, List[int]], None],
+        make_new_analysis: Callable[[hsne_analysis.Analysis, List[int]], None],
         remove_analysis: Callable[[int], List[int]],
-        analysis_stopped: Callable[[nptsne.hsne_analysis.Analysis, BytesIO], None],
+        analysis_stopped: Callable[[hsne_analysis.Analysis, BytesIO], None],
     ) -> None:
         super(QtWidgets.QDialog, self).__init__()
         self.embedding_viewer = EmbeddingViewer(self)
@@ -64,7 +65,7 @@ class AnalysisController(QtWidgets.QDialog):
         self.__init_ui()
 
         # HSNE Analysis and data
-        self.analysis: nptsne.hsne_analysis.Analysis = None  # hsne analysis
+        self.analysis: hsne_analysis.Analysis = None  # hsne analysis
         self.data: np.ndarray  # the original data
         self.image_dimensions: Tuple[
             int, int
@@ -104,7 +105,7 @@ class AnalysisController(QtWidgets.QDialog):
     def start_embedding(
         self,
         data: np.ndarray,
-        analysis: nptsne.hsne_analysis.Analysis,
+        analysis: hsne_analysis.Analysis,
         iterations: int,
         image_dimensions: Tuple[int, int],
         top_level: bool = False,
@@ -203,13 +204,33 @@ class AnalysisController(QtWidgets.QDialog):
         return landmark_indexes
 
     # Triggered by a selection in the embedding gui
-    def on_selection(self, analysis_selection: List[int], make_new_analysis: bool) -> None:
+    def on_selection(
+        self, analysis_selection: List[int], make_new_analysis: bool, fast: bool = False
+    ) -> None:
         """analysis_selection is a list of indexes at this analysis scale
         If make_new_analysis is true start a new analysis controller"""
         landmark_indexes = self.landmark_index_from_selection(analysis_selection)
         if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
             # Pass area influenced to the hyperspectral viewer
             self.data_gui.set_static_mask(self.analysis.get_area_of_influence(landmark_indexes))
+
+        if make_new_analysis:
+            self.make_new_analysis(self.analysis, analysis_selection)
+        else:
+            if self.demo_type == DemoType.LABELLED_DEMO:
+                # Pass data indexes to labelled viewer
+                self.data_gui.set_image_indexes(self.data_index_from_selection(analysis_selection))
+
+    # Triggered by a selection in the embedding gui
+    def on_fast_selection(self, analysis_selection: List[int], make_new_analysis: bool) -> None:
+        """analysis_selection is a list of indexes at this analysis scale
+        If make_new_analysis is true start a new analysis controller"""
+        landmark_indexes = self.landmark_index_from_selection(analysis_selection)
+        if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
+            # Pass area influenced to the hyperspectral viewer
+            self.data_gui.set_static_mask(
+                self.analysis.get_mapped_area_of_influence(landmark_indexes)
+            )
 
         if make_new_analysis:
             self.make_new_analysis(self.analysis, analysis_selection)

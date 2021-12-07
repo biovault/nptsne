@@ -1055,7 +1055,7 @@ PYBIND11_MODULE(_nptsne, m)
     // Wrapped classes are re-exported in the hsne_analysis/__init__.py
     // along with the pure python classes.
     py::module submod_hsne_analysis = m.def_submodule(
-        "_hsne_analysis", "Extension functionality for navigating HSNE analysis");
+        "_hsne_analysis", "Submodule containing classes for navigation of HSNE analyses");
 
     // TODO(B.van_Lew): Prototype shortcut: the hsne_analysis classes are defined here nested
     // Consider moving to a separate file.

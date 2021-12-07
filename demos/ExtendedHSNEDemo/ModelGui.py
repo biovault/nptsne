@@ -43,8 +43,8 @@ from PyQt5.QtCore import Qt, QTimer, QSize, pyqtSlot
 from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem, QPixmap, QIntValidator
 from DemoConfig import CONFIGS
 from typing import List, Optional, Callable, Union, Any, Dict, Tuple
-
-from nptsne.hsne_analysis.analysis_model import AnalysisModel
+import nptsne
+from nptsne import hsne_analysis
 from ConfigClasses import DemoType
 
 
@@ -253,7 +253,7 @@ class ModelGui(QDialog):
         self.show()
         self.on_demo_style(0)
 
-    def set_analysis_model(self, analysis_model: nptsne.hsne_analysis.AnalysisModel) -> None:
+    def set_analysis_model(self, analysis_model: hsne_analysis.AnalysisModel) -> None:
         # TODO empty event queue
         self.analysis_model = analysis_model
         self.top_scale = self.analysis_model.top_scale_id
