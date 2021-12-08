@@ -129,6 +129,53 @@ void TextureTsneExtended::init_transform_with_distribution(nptsne::SparseScalarM
     }
 }
 
+void TextureTsneExtended::init_with_transition_matrix_and_embedding(
+    py::list& transition_matrix,
+    py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding) {
+    _num_data_points = transition_matrix.size();
+    _num_target_dimensions = 2;
+    _distributions.clear();
+    _distributions.resize(_num_data_points);
+
+    // use given initial embedding
+    auto embedding_loc = initial_embedding;
+    py::buffer_info emb_info = embedding_loc.request();
+    std::cout << "emb_info size: " << emb_info.size << " emb_info dims: " << emb_info.ndim << std::endl;
+    if (emb_info.ndim == 2 && emb_info.size > 0) {
+        if (_verbose) {
+            std::cout << "Initialize from given embedding...\n";
+            std::cout << "Embed dimensions: " << emb_info.shape[0] << ", " << emb_info.shape[1] << "\n";
+        }
+        _have_preset_embedding = true;
+        float * emb_in = static_cast<float *>(emb_info.ptr);
+        // user provided default for embedding - overwrite the random def.
+        _embedding = nptsne::EmbeddingType(emb_info.shape[0], emb_info.shape[1]);
+        typename nptsne::EmbeddingType::scalar_vector_type* embedding_container = &(_embedding.getContainer());
+        // simply replace the container by the input?
+        for (int p = 0; p < _num_data_points; p++) {
+            for (int d = 0; d < 2; d++) {
+                (*embedding_container)[p * 2 + d] = emb_in[p * 2 + d];
+            }
+        }
+    }
+
+    if (_verbose) {
+        std::cout << " Size of distribution " << _distributions.size() << "\n";
+    }
+
+    // use given transition matrix
+    // expected is a list of list of tuples as returned from the transition_matrix read-only property
+    for(int data_point_id = 0; data_point_id < _num_data_points; data_point_id++)      // loop over outer list
+    {
+        auto list_inner = transition_matrix[data_point_id].cast<py::list>();           // loop over inner list
+        for(py::handle obj : list_inner)
+        {
+            _distributions[data_point_id][obj.attr("__getitem__")(0).cast<int>()] = obj.attr("__getitem__")(1).cast<float>();       // access tuple values
+        }
+    }
+
+}
+
 void TextureTsneExtended::start_exaggeration_decay() {
     if (!_exaggeration_decay) {
         hdi::dr::TsneParameters tSNE_param;

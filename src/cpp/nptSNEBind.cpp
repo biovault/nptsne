@@ -410,6 +410,22 @@ PYBIND11_MODULE(_nptsne, m)
                             py::arg("X"),
                             py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
+    textureTsneExtended.def("init_with_transition_matrix_and_embedding",
+                            &TextureTsneExtended::init_with_transition_matrix_and_embedding,
+                            R"pbdoc(                        
+            Initialize the transform with a transistion matrix and an initial embedding.
+
+            Parameters
+            ----------
+            transition_matrix : :class:`list(list(tuples)`
+                Transition matrix as returned from the read-only property transition_matrix from an hsne analysis
+            initial_embedding : :class:`ndarray`
+                An optional initial embedding. Shape should be (num data points, num output dimensions)
+
+        )pbdoc",
+                            py::arg("transition_matrix"),
+                            py::arg("initial_embedding"));
+
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform,
                             R"pbdoc(
             Run the transform gradient descent for a number of iterations
