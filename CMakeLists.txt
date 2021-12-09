@@ -32,7 +32,7 @@ if (NPTSNE_BUILD_WITH_CONAN)
     # *******************************************************************
     # ******** If using conan fill the required versions here ***********
     # *******************************************************************
-    set(HDILib_VERSION "1.2.4")
+    set(HDILib_VERSION "1.2.5")
     if (WIN32)
         set(FLANN_VERSION "1.8.5") # has fix for windows
     else()

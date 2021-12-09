@@ -1227,7 +1227,7 @@ PYBIND11_MODULE(_nptsne, m)
 
                 See Also
                 --------
-                get_mapped_area_of_influence
+                get_fast_area_of_influence
 
                 Parameters
                 ----------
@@ -1242,21 +1242,22 @@ PYBIND11_MODULE(_nptsne, m)
                 Returns
                 -------
                 :class:`ndarray`
-                    The indexes for the original points represented by the selected landmarks
+                    The mask of the original points represented by the selected landmarks.
+                    If the point is in the AOI the value is 1.
             )pbdoc",
                 py::arg("select_list"),
                 py::arg("threshold") = 0.3);
 
         analysis_class
             .def(
-                "get_mapped_area_of_influence",
+                "get_fast_area_of_influence",
                 [](Analysis &self, std::vector<nptsne::UnsignedIntType> select_list)
                 {
-                    std::vector<nptsne::UnsignedIntType> aoi;
+                    std::vector<nptsne::ScalarType> aoi;
                     self.hsne->getAreaOfInfluenceBottomUp(self.scale_id, select_list, aoi);
-                    py::array_t<nptsne::UnsignedIntType> result = py::array_t<nptsne::UnsignedIntType>(aoi.size());
+                    py::array_t<nptsne::ScalarType> result = py::array_t<nptsne::ScalarType>(aoi.size());
                     auto result_info = result.request();
-                    nptsne::UnsignedIntType *output = static_cast<nptsne::UnsignedIntType *>(result_info.ptr);
+                    nptsne::ScalarType *output = static_cast<nptsne::ScalarType *>(result_info.ptr);
                     for (size_t i = 0; i < aoi.size(); ++i)
                     {
                         output[i] = aoi[i];
@@ -1268,7 +1269,7 @@ PYBIND11_MODULE(_nptsne, m)
                 based on non overlapping :math:`{1}\rightarrow{n}` mapping of scale landmarks
                 to original data points.
 
-                This mapping is derived by working bottom up from the data points and finding 
+                This mapping is derived by working bottom up from the data points and finding
                 the landmarks at each scale with the maximum influence. The mapping is calculated
                 once on the first call to this function so subsequent calls are fast.
 
@@ -1293,38 +1294,31 @@ PYBIND11_MODULE(_nptsne, m)
                 >>> import numpy as np
                 >>> all_top_landmarks=list(range(0,sample_analysis.number_of_points))
                 >>> all_influenced=sample_analysis.get_mapped_area_of_influence(all_top_landmarks)
-
-                Assumes that at least 99% of the datapoints are in the AOI of the
-                all toplevel landmarks.
-
-                >>> all_influenced.shape[0] > math.floor(sample_scale0.num_points * 0.99)
+                >>> all_influenced.shape[0] == 10000
                 True
 
-                Concatenating the individual landmark AOIs
+                Accumulate the individual landmark AOIs and check the total
 
-                >>> infl_concat = np.empty((0,), dtype=np.uint32)
+                >>> infl_accum = np.zeros((10000,), dtype=np.float32)
+                >>> total = 0
                 >>> for i in all_top_landmarks:
                 ...     influenced = sample_analysis.get_mapped_area_of_influence([i])
-                ...     infl_concat = np.concatenate([infl_concat, influenced])
-
-                Verify that all non-overlapping AOIs add to
-                the same size as the total AOI
-
-                >>> infl_concat.shape[0] == all_influenced.shape[0]
+                ...     total = total + influenced.sum()
+                ...     infl_accum = np.add(infl_accum, influenced)
+                >>> total == 10000
                 True
 
-                Concatenating the individual landmark AOIs gives the
-                same list of datapoints as all the landmarks AOI.
+                Verify that all AOIs are non-overlapping, each datapoint
+                occurs once and only once.
 
-                >>> all_influenced.sort()
-                >>> infl_concat.sort()
-                >>> (all_influenced == infl_concat).all()
+                >>> np.all(infl_accum == 1)
                 True
 
                 Returns
                 -------
                 :class:`ndarray`
-                    The indexes for the original points represented by the selected landmarks
+                    The mask of the original points represented by the selected landmarks.
+                    If the point is in the AOI the value is 1.
             )pbdoc",
                 py::arg("select_list"));
 

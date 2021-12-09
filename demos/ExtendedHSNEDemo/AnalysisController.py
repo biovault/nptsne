@@ -212,25 +212,12 @@ class AnalysisController(QtWidgets.QDialog):
         landmark_indexes = self.landmark_index_from_selection(analysis_selection)
         if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
             # Pass area influenced to the hyperspectral viewer
-            self.data_gui.set_static_mask(self.analysis.get_area_of_influence(landmark_indexes))
-
-        if make_new_analysis:
-            self.make_new_analysis(self.analysis, analysis_selection)
-        else:
-            if self.demo_type == DemoType.LABELLED_DEMO:
-                # Pass data indexes to labelled viewer
-                self.data_gui.set_image_indexes(self.data_index_from_selection(analysis_selection))
-
-    # Triggered by a selection in the embedding gui
-    def on_fast_selection(self, analysis_selection: List[int], make_new_analysis: bool) -> None:
-        """analysis_selection is a list of indexes at this analysis scale
-        If make_new_analysis is true start a new analysis controller"""
-        landmark_indexes = self.landmark_index_from_selection(analysis_selection)
-        if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
-            # Pass area influenced to the hyperspectral viewer
-            self.data_gui.set_static_mask(
-                self.analysis.get_mapped_area_of_influence(landmark_indexes)
-            )
+            aoi: np.ndarray
+            if fast:
+                aoi = self.analysis.get_fast_area_of_influence(landmark_indexes)
+            else:
+                aoi = self.analysis.get_area_of_influence(landmark_indexes)
+            self.data_gui.set_static_mask(aoi)
 
         if make_new_analysis:
             self.make_new_analysis(self.analysis, analysis_selection)

@@ -109,7 +109,7 @@ class EmbeddingGui(FigureCanvas):
         self,
         embedding: np.ndarray,
         weights: np.ndarray,
-        on_selection: Callable[[List[int], bool, bool], None],
+        on_selection: Callable[[List[int], bool], None],
         on_close: Callable[[], None],
         disable_select: bool,
         top_level: bool = False,
@@ -481,15 +481,16 @@ class EmbeddingViewer(QtWidgets.QWidget):
         if selection_event is SelectionEvent.PERMANENT:
             self.selection_list = indexes
             self.landmarks_label.setText(f"Landmarks selected: {len(self.selection_list)}")
-            self.on_selection_callback(self.selection_list, False)
+            self.on_selection_callback(self.selection_list, False, False)
         else:
             # mouse over - dont change the selection list
             if len(indexes) == 0:
                 # restore the previous selection
                 if len(self.selection_list) > 0:
-                    self.on_selection_callback(self.selection_list, False)
+                    self.on_selection_callback(self.selection_list, False, False)
             else:
-                self.on_selection_callback(indexes, False)
+                # a fast transient selection
+                self.on_selection_callback(indexes, False, True)
 
     @QtCore.pyqtSlot()
     def on_new_analysis(self):
