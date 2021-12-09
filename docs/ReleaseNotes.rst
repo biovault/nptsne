@@ -13,12 +13,6 @@ Release notes
 Previous versions
 -----------------
 
-* v1.2.0aX
-* v1.1.0
-* v1.0.0
-* v0.2.0
-* v0.1.1a1
-
 .. include:: ./changelogs/v1.2.0aX.rst.inc
 .. include:: ./changelogs/v1.1.0.rst.inc
 .. include:: ./changelogs/v1.0.0.rst.inc

@@ -12,5 +12,5 @@ Changelog 1.2.0
 - An additional demo set (DC Mall) has been added to the data and the demo
   updated to allow the display of a background image. See :ref:`Demo list`
 
-- nptsne has added typing as specified in [PEP 484](https://www.python.org/dev/peps/pep-0484/).
+- nptsne has added typing as specified in `PEP 484 <https://www.python.org/dev/peps/pep-0484/>`_.
   The demos have also been extended to use PEP 484.
