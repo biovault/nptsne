@@ -1293,7 +1293,7 @@ PYBIND11_MODULE(_nptsne, m)
                 >>> import math
                 >>> import numpy as np
                 >>> all_top_landmarks=list(range(0,sample_analysis.number_of_points))
-                >>> all_influenced=sample_analysis.get_mapped_area_of_influence(all_top_landmarks)
+                >>> all_influenced=sample_analysis.get_fast_area_of_influence(all_top_landmarks)
                 >>> all_influenced.shape[0] == 10000
                 True
 
@@ -1302,7 +1302,7 @@ PYBIND11_MODULE(_nptsne, m)
                 >>> infl_accum = np.zeros((10000,), dtype=np.float32)
                 >>> total = 0
                 >>> for i in all_top_landmarks:
-                ...     influenced = sample_analysis.get_mapped_area_of_influence([i])
+                ...     influenced = sample_analysis.get_fast_area_of_influence([i])
                 ...     total = total + influenced.sum()
                 ...     infl_accum = np.add(infl_accum, influenced)
                 >>> total == 10000
