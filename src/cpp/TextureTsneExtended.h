@@ -37,7 +37,8 @@ class TextureTsneExtended {
             py::array_t<nptsne::ScalarType>({}));
 
     void init_transform_with_distribution(nptsne::SparseScalarMatrixType& sparse_matrix);
-    void init_with_transition_matrix_and_embedding(py::list& transition_matrix, py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding);
+    void init_with_transition_matrix_list_and_embedding(py::list& transition_matrix, py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding);
+    void init_with_transition_matrix_dict_and_embedding(py::dict& transition_matrix, py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding);
 
     void start_exaggeration_decay();
 

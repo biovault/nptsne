@@ -129,7 +129,7 @@ void TextureTsneExtended::init_transform_with_distribution(nptsne::SparseScalarM
     }
 }
 
-void TextureTsneExtended::init_with_transition_matrix_and_embedding(
+void TextureTsneExtended::init_with_transition_matrix_list_and_embedding(
     py::list& transition_matrix,
     py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding) {
     _num_data_points = transition_matrix.size();
@@ -165,13 +165,71 @@ void TextureTsneExtended::init_with_transition_matrix_and_embedding(
 
     // use given transition matrix
     // expected is a list of list of tuples as returned from the transition_matrix read-only property
+    int row = 0;
+    int col = 0;
     for(int data_point_id = 0; data_point_id < _num_data_points; data_point_id++)      // loop over outer list
     {
         auto list_inner = transition_matrix[data_point_id].cast<py::list>();           // loop over inner list
         for(py::handle obj : list_inner)
         {
-            _distributions[data_point_id][obj.attr("__getitem__")(0).cast<int>()] = obj.attr("__getitem__")(1).cast<float>();       // access tuple values
+            row = data_point_id;
+            col = obj.attr("__getitem__")(0).cast<int>();
+
+            _distributions[data_point_id][col] = obj.attr("__getitem__")(1).cast<float>();       // access tuple values
+
+            // std::cout << "Entry: " << row << ", " << col << ": " << _distributions[row][col] <<"\n";
         }
+    }
+
+}
+
+void TextureTsneExtended::init_with_transition_matrix_dict_and_embedding(
+    py::dict& transition_matrix,
+    py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding) {
+    // use given initial embedding
+    auto embedding_loc = initial_embedding;
+    py::buffer_info emb_info = embedding_loc.request();
+    _num_data_points = emb_info.shape[0];
+    _num_target_dimensions = 2;
+
+    std::cout << "emb_info size: " << emb_info.size << " emb_info dims: " << emb_info.ndim << std::endl;
+    if (emb_info.ndim == 2 && emb_info.size > 0) {
+        if (_verbose) {
+            std::cout << "Initialize from given embedding...\n";
+            std::cout << "Embed dimensions: " << emb_info.shape[0] << ", " << emb_info.shape[1] << "\n";
+        }
+        _have_preset_embedding = true;
+        float * emb_in = static_cast<float *>(emb_info.ptr);
+        // user provided default for embedding - overwrite the random def.
+        _embedding = nptsne::EmbeddingType(emb_info.shape[0], emb_info.shape[1]);
+        typename nptsne::EmbeddingType::scalar_vector_type* embedding_container = &(_embedding.getContainer());
+        // simply replace the container by the input?
+        for (int p = 0; p < _num_data_points; p++) {
+            for (int d = 0; d < 2; d++) {
+                (*embedding_container)[p * 2 + d] = emb_in[p * 2 + d];
+            }
+        }
+    }
+
+    _distributions.clear();
+    _distributions.resize(_num_data_points);
+
+    if (_verbose) {
+        std::cout << " Size of distribution " << _distributions.size() << "\n";
+    }
+
+    // use given transition matrix
+    // expected is dict with keys of the format (row, col)
+    // https://pybind11.readthedocs.io/en/stable/advanced/functions.html#python-objects-as-arguments
+    int row = 0;
+    int col = 0;
+    for (auto transition_matrix_dict_entry : transition_matrix)
+    {
+        row = transition_matrix_dict_entry.first.attr("__getitem__")(0).cast<int>();   // keys are tuples
+        col = transition_matrix_dict_entry.first.attr("__getitem__")(1).cast<int>();   // keys are tuples
+        _distributions[row][col] = transition_matrix_dict_entry.second.cast<float>();
+
+        // std::cout << "Entry: " << row << ", " << col << ": " << _distributions[row][col] <<"\n";
     }
 
 }
