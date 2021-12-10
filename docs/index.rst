@@ -9,6 +9,7 @@ Welcome to the nptsne |version| documentation!
    usage
    citation
    nptsne
+   codingtips
    background
    license
    ReleaseNotes 

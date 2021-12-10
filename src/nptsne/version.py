@@ -24,3 +24,5 @@ import pkgutil
 
 __rawversion = pkgutil.get_data("nptsne", "_full_version.txt").strip()
 version = __rawversion.decode("utf-8")
+__rawbranch = pkgutil.get_data("nptsne", "_branch_name.txt").strip()
+branch_name = __rawbranch.decode("utf-8")

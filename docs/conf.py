@@ -93,6 +93,7 @@ else:
 import nptsne
 
 __version__ = nptsne.__version__
+__branch_name__ = nptsne.__branch_name__
 
 mmp = __version__.split(".")
 # The short X.Y version
@@ -100,12 +101,19 @@ version = "{}.{}".format(mmp[0], mmp[1])
 # The full version, including alpha/beta/rc tags
 
 html_title = __version__
+github_branch = "feature/1.2.0-knnmetrics"
 
-rst_epilog = """
-.. |version| replace:: {0}
- """.format(
-    __version__, "https://github.com/biovault/nptsne"
-)
+rst_epilog = f"""
+.. |version| replace:: {__version__}
+.. |HSNEdemo_github_url| replace:: `BasicHSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/BasicHSNEDemo>`__
+.. |EXHSNEdemo_github_url| replace:: `ExtendedHSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/ExtendedHSNEDemo>`__
+.. |Louvdemo_github_url| replace:: `HSNELouvain demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/HSNELouvainDemo>`__
+.. |TTdemo_github_url| replace:: `TextureTsne demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TextureTsne>`__
+.. |TTEdemo_github_url| replace:: `TextureTsneExtended demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TextureTsneExtended>`__
+.. |doctest_github_url| replace:: `Doctest code <https://github.com/biovault/nptsne/tree/{__branch_name__}/test>`__
+
+"""
+
 
 # -- General configuration ---------------------------------------------------
 

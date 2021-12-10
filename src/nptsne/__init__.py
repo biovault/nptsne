@@ -25,6 +25,7 @@ References
 """
 from . import hsne_analysis
 from .version import version as __version__
+from .version import branch_name as __branch_name__
 from .libs._nptsne import (
     HSne,
     HSneScale,

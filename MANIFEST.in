@@ -5,4 +5,5 @@ include src/nptsne/__init__.pyi
 include src/nptsne/hsne_analysis/__init__.pyi
 include src/nptsne/_version.txt
 include src/nptsne/_full_version.txt
+include src/nptsne/_branch_name.txt
 include src/nptsne/py.typed

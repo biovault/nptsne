@@ -83,3 +83,20 @@ def get_version(repo_path="./"):
         raw_version = f.read().strip()
 
     return raw_version + pep440type + build_number if pep440type != "" else raw_version
+
+
+def get_branch_name(repo_path="./"):
+    """Return the github branch
+
+    Don't use this on ReadTheDocs
+
+    Args:
+        repo_path (str): Posix path to the repo defaults to working dir
+
+    Returns:
+        str: branch string - e.g. master, feature/xyz, release/nnn
+    """
+    not_rtd = os.environ.get("READTHEDOCS") != "True"
+    assert not_rtd  # don't use this on read the docs
+    repo = Repo(repo_path)
+    return repo.active_branch.name
