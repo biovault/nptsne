@@ -22,6 +22,9 @@ A number of demos have been created to help you exploit the accelerated tSNE and
 
    * - Demo
      - Description
+   * - `Basic HSNE demo <http://doi.org/10.5281/zenodo.4003503>`_
+     - | A limited demo showing HSNE visual 
+       | analytics on the *mnist* data set
    * - `Extended HSNE demo <http://doi.org/10.5281/zenodo.4003503>`_
      - .. line-block::
          A complete demonstration including 

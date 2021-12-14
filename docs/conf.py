@@ -17,7 +17,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "nptsne"
-copyright = "2020, Baldur van Lew"
+copyright = "2021, TU Delft, LUMC"
 author = "Baldur van Lew"
 
 import os
@@ -105,8 +105,8 @@ github_branch = "feature/1.2.0-knnmetrics"
 
 rst_epilog = f"""
 .. |version| replace:: {__version__}
-.. |HSNEdemo_github_url| replace:: `BasicHSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/BasicHSNEDemo>`__
-.. |EXHSNEdemo_github_url| replace:: `ExtendedHSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/ExtendedHSNEDemo>`__
+.. |HSNEdemo_github_url| replace:: `Basic HSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/BasicHSNEDemo>`__
+.. |EXHSNEdemo_github_url| replace:: `Extended HSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/ExtendedHSNEDemo>`__
 .. |Louvdemo_github_url| replace:: `HSNELouvain demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/HSNELouvainDemo>`__
 .. |TTdemo_github_url| replace:: `TextureTsne demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TextureTsne>`__
 .. |TTEdemo_github_url| replace:: `TextureTsneExtended demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TextureTsneExtended>`__

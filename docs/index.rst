@@ -8,8 +8,8 @@ Welcome to the nptsne |version| documentation!
 
    usage
    citation
-   nptsne
    codingtips
+   nptsne
    background
    license
    ReleaseNotes 

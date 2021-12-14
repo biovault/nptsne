@@ -1,3 +1,5 @@
+.. _nptsne-api-label:
+
 ====================
 nptsne API Reference
 ====================
