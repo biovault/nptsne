@@ -10,7 +10,7 @@ Welcome to the nptsne |version| documentation!
    citation
    codingtips
    nptsne
-   background
+   appendix
    license
    ReleaseNotes 
    roadmap

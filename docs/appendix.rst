@@ -1,7 +1,9 @@
-Background information
-======================
+Appendix
+========
 
 This page is reserved for experiments and other background material that may be of interest to the end user of nptsne. 
+
+.. _umap-tsne-label:
 
 umap to tSNE example
 ~~~~~~~~~~~~~~~~~~~~

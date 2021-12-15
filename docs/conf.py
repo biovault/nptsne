@@ -110,6 +110,7 @@ rst_epilog = f"""
 .. |Louvdemo_github_url| replace:: `HSNELouvain demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/HSNELouvainDemo>`__
 .. |TTdemo_github_url| replace:: `TextureTsne demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TextureTsne>`__
 .. |TTEdemo_github_url| replace:: `TextureTsneExtended demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TextureTsneExtended>`__
+.. |TNotebook_github_url| replace:: `tSNE Jupyter notebook demo <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TSNEJupyterNotebook>`__
 .. |doctest_github_url| replace:: `Doctest code <https://github.com/biovault/nptsne/tree/{__branch_name__}/test>`__
 
 """

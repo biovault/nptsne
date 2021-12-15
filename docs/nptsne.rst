@@ -44,13 +44,14 @@ Full details are in the reference below.
     :exclude-members: __weakref__, __doc__, __module__, __dict__, __members__, __getstate__, __setstate__
 
 
-``nptsne.hsne_analysis``: HSNE analysis support submodule
-==========================================================
+``nptsne.hsne_analysis``: HSNE visual analysis support submodule
+================================================================
 
 .. autosummary::
    :nosignatures:
 
    nptsne.hsne_analysis.Analysis
+   nptsne.hsne_analysis.AnalysisContainer
    nptsne.hsne_analysis.AnalysisModel
    nptsne.hsne_analysis.EmbedderType
    nptsne.hsne_analysis.SparseTsne

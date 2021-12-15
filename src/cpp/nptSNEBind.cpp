@@ -1485,7 +1485,7 @@ PYBIND11_MODULE(_nptsne, m)
 
         sparsetsne_class.def("do_iteration", &SparseTsne::doAnIteration, "Perform a single tsne iteration",
                              R"pbdoc(
-            Perform a sinsle tSNE iteration on the sparse data.
+            Perform a single tSNE iteration on the sparse data.
             Once complete the embedding coordinates can be read via the embedding property
         )pbdoc");
 

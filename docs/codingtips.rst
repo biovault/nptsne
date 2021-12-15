@@ -34,7 +34,7 @@ will produce an embedding:
     print(embed.shape)
     embed = embed.reshape(70000, 2)
 
-.. [#] *mnist* in this example is the well known `handwritten digits data <http://yann.lecun.com/exdb/mnist/>`_.
+.. [#] *mnist* in this example is the well-known `handwritten digits data <http://yann.lecun.com/exdb/mnist/>`_.
 
 1. Creating an extended t-SNE embedding
 ---------------------------------------
@@ -42,7 +42,8 @@ will produce an embedding:
 The class :py:class:`nptsne.TextureTsneExtended` add flexibility to the API in :py:class:`nptsne.TextureTsne`.
 It permits running a number of iterations, examine the embedding,
 then running more embeddings. Force exaggeration decay (refer to the t-SNE GPU paper [NP2019]_)
-can be triggered a suitable point.
+can be triggered a suitable point. If force exaggeration is maintained the resulting
+clusters will more closely resemble a *umap* plot. For a related effect see the :ref:`umap-tsne-label`.
 
 The code shown here is adapted from |TTEdemo_github_url| testtextureextended.py and
 the API is documented at :py:class:`nptsne.TextureTsneExtended`
@@ -58,6 +59,8 @@ the API is documented at :py:class:`nptsne.TextureTsneExtended`
         embedding = tsne.run_transform(verbose=False, iterations=100)
     tsne.close()
 
+A user-friendly way to explore :py:class:`nptsne.TextureTsne` and :py:class:`nptsne.TextureTsneExtended`
+is to use Jupyter notebooks with the |TNotebook_github_url|.
 
 HSNE tips
 =========
@@ -67,7 +70,7 @@ follows a number of steps:
 
 1. Create a multi-scale *HSNE* hierarchy
 2. Display an embedding [#]_ based on all the landmarks [#]_ in the topmost scale
-3. Interact with clusters in the embedding to make subselections of landmarks.
+3. Interact with clusters in the embedding to make sub-selections of landmarks.
 
     a) Handle landmark selections by displaying the *Area of Interest*
     corresponding to the landmark (how this is done this is application dependent).
@@ -240,4 +243,48 @@ for the different data types: *HyperspectralImageViewer*,
 of the *AnalysisModel*.
 
 A detailed explanation of these viewers and other support classes can be found in the |EXHSNEdemo_github_url| README.md
+
+3a. Area of influence from landmarks
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In certain applications (for example hyperspectral imaging) visualizing the entirety 
+of the data points that map to a landmark selection is required. This is termed the 
+*area of influence* (*AOI*) of the landmark selection. 
+
+In |EXHSNEdemo_github_url| AnalysisController.py the *on_selection* function 
+illustrates that this mapping can be done in a slow (accurate method 
+:py:meth:`nptsne.hsne_analysis.Analysis.get_area_of_influence`) 
+or fast (but less accurate method :py:meth:`nptsne.hsne_analysis.Analysis.get_fast_area_of_influence`) 
+manner. Typically the fast *AOI* is suitable for mouse-over events.
+
+Note that selections indexes numbered from 0 to number_of_landmarks-1 at a scale multi-scale
+be converted data indexes using :py:attr:`nptsne.hsne_analysis.Analysis.landmark_indexes`.
+
+.. code-block:: python
+
+    def landmark_index_from_selection(self, sel_indexes: List[int]) -> List[int]:
+        """Selection indexes in this analysis are converted to landmark
+        indexes in this scale"""
+        landmark_indexes = []
+        # Translate the selection indexes to the scale indexes
+        for i in sel_indexes:
+            landmark_indexes.append(self.analysis.landmark_indexes[i])
+        return landmark_indexes
+
+    def on_selection(
+        self, analysis_selection: List[int], make_new_analysis: bool, fast: bool = False
+    ) -> None:
+        """analysis_selection is a list of indexes at this analysis scale
+        If make_new_analysis is true start a new analysis controller"""
+        # Selection indexes are from 0 - number of landmarks. The original
+        # data indexes of the landmarks are needed for the AOI
+        landmark_indexes = self.landmark_index_from_selection(analysis_selection)
+        if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
+            # Pass area influenced to the hyperspectral viewer
+            aoi: np.ndarray
+            if fast:
+                aoi = self.analysis.get_fast_area_of_influence(landmark_indexes)
+            else:
+                aoi = self.analysis.get_area_of_influence(landmark_indexes)
+            self.data_gui.set_static_mask(aoi)
 
