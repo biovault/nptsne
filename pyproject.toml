@@ -42,8 +42,8 @@ skip = "cp2* pp*"
 [tool.cibuildwheel.windows]
 environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE="a"}
 skip = ["cp27-*"]
-#build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
-build = ["cp38-win_amd64"]
+build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
+#build = ["cp38-win_amd64"]
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
 ]
@@ -65,8 +65,8 @@ before-build = [
 environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="a"}
 manylinux-x86_64-image = "manylinux2010"
 skip = ["cp27-*"]
-# build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
-build = ["cp38-manylinux_x86_64"]
+build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
+#build = ["cp38-manylinux_x86_64"]
 
 # The following runs in the Linux docker environment
 before-build = [
@@ -93,8 +93,8 @@ test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="a"}
 build-verbosity=1
 skip = ["cp27-*"]
-#build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]
-build = ["cp38-macosx_x86_64"]
+build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]
+#build = ["cp38-macosx_x86_64"]
 before-all = [
     "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
     "if [ -d \"$CONAN_USER_HOME/wheelhouse\" ]; then rm -Rf $CONAN_USER_HOME/wheelhouse; fi",
