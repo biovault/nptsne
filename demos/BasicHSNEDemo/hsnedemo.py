@@ -172,7 +172,7 @@ def start_hsne(X, data_file, hsne_file, label_file):
         hsne.save(str(hsne_file))
     else:
         print("existing hSNE")
-        hsne.create_hsne(X, str(hsne_file))
+        hsne.load_hsne(X, str(hsne_file))
 
     print("start analysis model")
     data = X

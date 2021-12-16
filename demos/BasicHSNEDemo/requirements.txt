@@ -1,0 +1,4 @@
+matplotlib
+nptsne
+Pillow
+pywin32; sys_platform == 'win32'

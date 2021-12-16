@@ -10,7 +10,6 @@ import matplotlib.cm as cm
 import matplotlib.patches as patches
 import io
 import time
-import threading
 
 matplotlib.use("Qt5Agg")
 
@@ -151,11 +150,13 @@ class AnalysisGui:
 
     def quit(self):
         """Close the plot and cleanup model"""
+        self.ani.event_source.stop()
         plt.close(self.fig)
 
     def kill(self):
         """Close the plot with no cleanup of id in model"""
         self.cleanup = False
+        self.ani.event_source.stop()
         plt.close(self.fig)
 
     def handle_close(self, evt):
@@ -186,31 +187,34 @@ class AnalysisGui:
 
     def iterate_tSNE(self, i):
         self.fig.canvas.flush_events()
-
         send_stop_event = False
-        if not self._stop_iter:
-            for j in range(self.iters_per_frame):
-                self.analysis.do_iteration()
-                self._iter_count = i * self.iters_per_frame + j
-                self.fig.canvas.toolbar.set_message(f"Iteration: {self._iter_count}")
 
-            if i == self.num_frames - 1:
-                self._stop_iter = True
-                send_stop_event = True
+        try:
+            if not self._stop_iter:
+                for j in range(self.iters_per_frame):
+                    self.analysis.do_iteration()
+                    self._iter_count = i * self.iters_per_frame + j
+                    self.fig.canvas.toolbar.set_message(f"Iteration: {self._iter_count}")
 
-            # Update point positions
-            self.scatter.set_offsets(self.analysis.embedding)
-            self.update_scatter_plot_limits()
-            self.force_refresh()
-        else:
-            if i % 10 == 0:
+                if i == self.num_frames - 1:
+                    self._stop_iter = True
+                    send_stop_event = True
+
+                # Update point positions
+                self.scatter.set_offsets(self.analysis.embedding)
+                self.update_scatter_plot_limits()
                 self.force_refresh()
+            else:
+                if i % 10 == 0:
+                    self.force_refresh()
 
-        digit = np.reshape(self.composite_digit, (28, 28))
-        self.digit_im.set_array(digit)
-        # print("Digit data", digit)
-        # ix.imshow(digit, interpolation='bilinear', cmap='gray', vmin=0, vmax=255)
-        # plt.draw()
+            digit = np.reshape(self.composite_digit, (28, 28))
+            self.digit_im.set_array(digit)
+        except AttributeError:
+            # triggered if self.analysis is deleted
+            self._stop_iter = True
+            send_stop_event = True
+
         if send_stop_event:
             # plt.figure(str(self.analysis))
             self.force_refresh()
