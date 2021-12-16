@@ -28,11 +28,10 @@ A number of pre-packages demos provide a quick start to the application.
 
 ### Installing
 
+First unpack the data (see the README.txt in the parent directory).
+Next install requirements for this demo:
+
 ```shell
-> # Unpack data on linux
-> python ../unpack_data.py
-> # or unpack data on windows
-> python ..\unpack_data.py
 > pip install -r requirements.txt
 ```
 ### Running
