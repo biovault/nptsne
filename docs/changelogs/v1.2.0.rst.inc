@@ -9,8 +9,14 @@ Changelog 1.2.0
 
 - Added KnnDistanceMetric to the TextureTsne and TextureTsneExtended classes
 
-- An additional demo set (DC Mall) has been added to the data and the demo
-  updated to allow the display of a background image. See :ref:`Demo list`
+- Added a fast, non-exact implementation of the algorithm to get an area of
+  interest from a landmark based selection at :py:meth:`nptsne.hsne_analysis.Analysis.get_fast_area_of_influence`.
+  The algorithm pre-calculates a set of non-overlapping AOIs for each landmark at an HSNE scale.
+  For the correct AOI (according to the [NP2019]_) use the slower :py:meth:`nptsne.hsne_analysis.Analysis.get_area_of_influence`.
+
+- An additional demo set (DC Mall) has been added to the data and the |EXHSNEdemo_github_url|
+  was updated to allow the display of a background image. See :ref:`Demo list`
 
 - nptsne has added typing as specified in `PEP 484 <https://www.python.org/dev/peps/pep-0484/>`_.
-  The demos have also been extended to use PEP 484.
+  The demos have also been extended to use PEP 484. Types are included in the package using __init__.pyi
+  files as specified in `PEP 561 <https://www.python.org/dev/peps/pep-0561/>`_. 
