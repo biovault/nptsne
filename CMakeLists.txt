@@ -33,10 +33,13 @@ if (NPTSNE_BUILD_WITH_CONAN)
     # ******** If using conan fill the required versions here ***********
     # *******************************************************************
     set(HDILib_VERSION "1.2.5")
+    set(HDILib_CHANNEL "biovault/stable")
     if (WIN32)
         set(FLANN_VERSION "1.8.5") # has fix for windows
+        set(FLANN_CHANNEL "lkeb/stable")
     else()
         set(FLANN_VERSION "1.8.4")
+        set(FLANN_CHANNEL "lkeb/stable")
     endif()
     set(LZ4_VERSION "1.9.2")
     include(ConanInstall)

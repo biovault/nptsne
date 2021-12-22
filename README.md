@@ -23,7 +23,13 @@ The *requirements.txt* and the *pyproject.toml* contain the list of build requir
 conan remote add conan-biovault https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local
 ```
 
+- Run the build using cibuildwheel for a platform choose one of windows or macos or linux.
 
+```
+python -m cibuildwheel --output-dir wheelhouse --platform <windows|macos|linux>
+```
+
+The *build* line in *pyproject.toml* can be modified to change which versions (3.6, 3.7 etc) of the wheels are built.
 
 ### Development build & install using python
 
