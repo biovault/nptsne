@@ -25,6 +25,12 @@ HSNE classes
 
 Full details are in the reference below.
 
+Code examples
+=============
+
+The *Examples* in the documentation make use of the DocTest run_doctest.py to prepare the sample data. 
+Refer to either the repository code |doctest_github_url| or :ref:`demo_list-label` for more information.
+
 ``nptsne``: t-SNE and HSNE data embedding
 ==========================================
 

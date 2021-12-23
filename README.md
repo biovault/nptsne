@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?feature/1.2.0-knnmetrics)](https://github.com/biovault/nptsne/tree/feature/1.2.0-knnmetrics)
+[![Build Status](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?release/1.2.0)](https://github.com/biovault/nptsne/tree/release/1.2.0)
 
 [![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=stable)](https://nptsne.readthedocs.io/en/release-1.2.0/)
 
@@ -12,7 +12,7 @@ Currently python 3.6, 3.7, and 3.8 are supported on Windows, Mac and Linux using
 
 ## Demo software using nptsne
 
-Can be downloaded from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4275752.svg)](https://doi.org/10.5281/zenodo.5801124)
+Can be downloaded from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5801124.svg)](https://doi.org/10.5281/zenodo.5801124)
 
 ## Building
 
@@ -31,6 +31,7 @@ python -m cibuildwheel --output-dir wheelhouse --platform <windows|macos|linux>
 
 The *build* line in *pyproject.toml* can be modified to change which versions (3.6, 3.7 etc) of the wheels are built.
 
+The project is built using python *setuptools*. At time of the  current release *setup.cfg* is still required for package *metadata* and *options*.  In future versions it may be possible to migrate fully to *pyproject.toml*.
 ### Development build & install using python
 
 On Windows if multiple versions of Visual Studio are present the x64 Native Tools batch
@@ -50,22 +51,3 @@ Builds are performed "in tree" (see the *pyproject.toml PIP_USE_FEATURE entry)
 ### Development debug builds
 
 TBD
-
-
-#### Alternative manual Windows build
-
- - Make a build directory below the HDILib project root.
-    For example: *./_build_release* or *./_build_debug*
-    (<u>when using conan the source directories are shared but
-    separate build directories should be used for release and debug.</u>)
- - In the python environment (with conan and cmake accessible)
- cd to the build directory and issue the following (for VisualStudio 2017):
-```
-cmake .. -G "Visual Studio 15 2017 Win64" -DCMAKE_BUILD_TYPE=Release -DNPTSNE_BUILD_WITH_CONAN=ON
-```
-    (*Note: this assumes that the build dir is one level down from the project root.
-    The default of NPTSNE_BUILD_WITH_CONAN is OFF*)
- - If all goes well Conan will have installed the dependencies in its cache and
- created the required defines for the Cmake configuration.
- Open the .sln in VisualStudio and build ALL_BUILD for Release or Debug matching the CMAKE_BUILD_TYPE.
-     On Windows the result of the build are three *.lib files

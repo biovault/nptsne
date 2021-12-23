@@ -1,3 +1,5 @@
+.. _demo_list-label:
+
 Demo list
 =========
 
