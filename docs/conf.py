@@ -60,7 +60,7 @@ if on_rtd:
     install_version = rtd_version
     if install_version[0] == "v":
         install_version = rtd_version[1:]
-    if rtd_version == "stable":
+    if "rc" not in rtd_version and "a" not in rtd_version and "b" not in rtd_version:
         branch = None
         try:
             subprocess.check_call(
