@@ -57,6 +57,7 @@ def get_version(repo_path="./"):
 
         If running on ReadTheDocs the repo tag is used.
         If PEP440TYPE is blank then the raw version is returned
+        If PEP440TYPE is "rcNN" then it is appended to the raw version
 
     Args:
         repo_path (str): Posix path to the repo defaults to working dir
@@ -77,12 +78,17 @@ def get_version(repo_path="./"):
         assert tag is not None
         return tag
 
-    build_number = str(get_git_derived_build_number(repo, version_file))
-    # print('version file: ', version_file)
+    raw_version = "X.Y.Z"
     with open(version_file) as f:
         raw_version = f.read().strip()
 
-    return raw_version + pep440type + build_number if pep440type != "" else raw_version
+    if pep440type == "" or pep440type[0:2] == "rc":
+        return f"{raw_version}{pep440type}"
+    else:
+        build_number = str(get_git_derived_build_number(repo, version_file))
+        # print('version file: ', version_file)
+
+        return f"{raw_version}{pep440type}{build_number}"
 
 
 def get_branch_name(repo_path="./"):
