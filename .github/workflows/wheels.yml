@@ -142,6 +142,7 @@ jobs:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN_SECRET  }}
           packages_dir: ./dist/
+          skip_existing: true
 
       - name: Publish wheels to TestPyPI
         if: ${{ needs.build_wheels.outputs.dorelease == 'false' }}
