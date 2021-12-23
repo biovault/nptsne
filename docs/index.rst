@@ -6,8 +6,9 @@ Welcome to the nptsne |version| documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   usage
+   install
    citation
+   demos
    codingtips
    nptsne
    appendix

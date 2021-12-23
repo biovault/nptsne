@@ -12,7 +12,7 @@ Currently python 3.6, 3.7, and 3.8 are supported on Windows, Mac and Linux using
 
 ## Demo software using nptsne
 
-Can be downloaded from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4275752.svg)](https://doi.org/10.5281/zenodo.4275752)
+Can be downloaded from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4275752.svg)](https://doi.org/10.5281/zenodo.5801124)
 
 ## Building
 

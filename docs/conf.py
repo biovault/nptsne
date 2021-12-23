@@ -19,6 +19,8 @@
 project = "nptsne"
 copyright = "2021, TU Delft, LUMC"
 author = "Baldur van Lew"
+zenodo_url = "https://doi.org/10.5281/zenodo.5801124"
+github_branch = "feature/1.2.0-knnmetrics"
 
 import os
 import sys
@@ -101,7 +103,7 @@ version = "{}.{}".format(mmp[0], mmp[1])
 # The full version, including alpha/beta/rc tags
 
 html_title = __version__
-github_branch = "feature/1.2.0-knnmetrics"
+
 
 rst_epilog = f"""
 .. |version| replace:: {__version__}
@@ -112,7 +114,7 @@ rst_epilog = f"""
 .. |TTEdemo_github_url| replace:: `TextureTsneExtended demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TextureTsneExtended>`__
 .. |TNotebook_github_url| replace:: `tSNE Jupyter notebook demo <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/TSNEJupyterNotebook>`__
 .. |doctest_github_url| replace:: `Doctest code <https://github.com/biovault/nptsne/tree/{__branch_name__}/test>`__
-
+.. |zenodo_url| replace:: `(see demos + data) <{zenodo_url}>`__
 """
 
 

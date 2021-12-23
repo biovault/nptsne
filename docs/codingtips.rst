@@ -10,6 +10,8 @@ The code given in the tips is all taken from either the documentation examples
 (in the docstrings or see :doc:`nptsne API Reference <./nptsne>`)
 or is available in the demos.
 
+Full demos and data are available in demos.zip |zenodo_url|.
+
 t-SNE tips
 ==========
 
