@@ -42,7 +42,7 @@ skip = "cp2* pp*"
 # If PEP440TYPE = "" or "rcN" the resulting name is "version" + [PEP440TYPE]
 
 [tool.cibuildwheel.windows]
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE="rc1"}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE=""}
 skip = ["cp27-*"]
 build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
 #build = ["cp38-win_amd64"]
@@ -64,7 +64,7 @@ before-build = [
 
 [tool.cibuildwheel.linux]
 # These are passed into the docker
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="rc1"}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE=""}
 manylinux-x86_64-image = "manylinux2010"
 skip = ["cp27-*"]
 build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
@@ -92,7 +92,7 @@ test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 
 [tool.cibuildwheel.macos]
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="rc1"}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE=""}
 build-verbosity=1
 skip = ["cp27-*"]
 build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]

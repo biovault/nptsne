@@ -10,7 +10,7 @@ env:
   # Set DORELEASE to
   #   - "true" if this version is to be loaded to PyPI
   #   - "false" if this version is to be loaded to TestPyPI
-  DORELEASE: "false"
+  DORELEASE: "true"
 
 jobs:
   # Job to buildwheels on all platforms
