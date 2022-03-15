@@ -124,9 +124,12 @@ class CMakeBuild(build_ext):
 
         self.announce(f"Path is {os.environ['PATH']}", log.INFO)
         self.announce("Set the conan build profile from the current context", log.INFO)
-        subprocess.check_call(
-            ["conan", "profile", "new", "default", "--detect", "--force"],
+        subprocess.run(
+            ["conan", "--version"],
             cwd=self.build_temp,
+        )
+        subprocess.check_call(
+            ["conan", "profile", "new", "default", "--detect", "--force"], cwd=self.build_temp
         )
         self.announce("Show conan home dir", log.INFO)
         subprocess.check_call(

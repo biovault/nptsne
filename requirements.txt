@@ -1,2 +1,2 @@
-conan==1.41.0
-cibuildwheel=2.2.2
+conan==1.46.0
+cibuildwheel==2.3.1

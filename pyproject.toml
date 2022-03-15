@@ -4,7 +4,7 @@
 [build-system]
 requires = [
     "cmake>=3.15.0",
-    "conan==1.41.0",
+    "conan==1.46.0",
     "packaging",
     "gitpython",
     "setuptools>=42",
@@ -25,7 +25,7 @@ profile = "black"
 
 [tool.cibuildwheel]
 build = "cp38-*"
-test-command = "python {project}/test/run_doctest.py"
+test-command = "pip install scipy==1.7.3 && python {project}/test/run_doctest.py"
 build-verbosity = 2
 archs = "auto64"
 skip = "cp2* pp*"
@@ -42,10 +42,10 @@ skip = "cp2* pp*"
 # If PEP440TYPE = "" or "rcN" the resulting name is "version" + [PEP440TYPE]
 
 [tool.cibuildwheel.windows]
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE=""}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE="a"}
 skip = ["cp27-*"]
-build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
-#build = ["cp38-win_amd64"]
+#build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
+build = ["cp37-win_amd64", "cp38-win_amd64"]
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
 ]
@@ -54,6 +54,7 @@ before-build = [
 #    "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
 #    "python get-pip.py",
     "{project}\\.ci\\cleanprevbuild.bat",
+    "pip3 install conan==1.46.0",
     "echo check conan",
     "where conan",
     "conan user",
@@ -64,7 +65,7 @@ before-build = [
 
 [tool.cibuildwheel.linux]
 # These are passed into the docker
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE=""}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="a"}
 manylinux-x86_64-image = "manylinux2010"
 skip = ["cp27-*"]
 build = ["cp36-manylinux_x86_64", "cp37-manylinux_x86_64", "cp38-manylinux_x86_64", "cp39-manylinux_x86_64"]
@@ -75,7 +76,7 @@ before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
     "echo install and setup conan",
-    "pip install conan==1.41.0",
+    "pip install conan==1.46.0",
     "which conan",
     "conan user",
     "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
@@ -88,11 +89,11 @@ repair-wheel-command = [
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel repair -w {dest_dir} {wheel}"
 ]
-test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
+test-command = "export CI=TRUE && pip install scipy==1.7.3 && python {project}/test/run_doctest.py"
 
 
 [tool.cibuildwheel.macos]
-environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE=""}
+environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(pwd)", PEP440TYPE="a"}
 build-verbosity=1
 skip = ["cp27-*"]
 build = ["cp36-macosx_x86_64", "cp37-macosx_x86_64", "cp38-macosx_x86_64", "cp39-macosx_x86_64"]
@@ -107,7 +108,7 @@ before-build = [
     "{project}/.ci/cleanprevbuild.sh",
     "echo check conan",
     "which python",
-    "pip install conan==1.41.0",
+    "pip install conan==1.46.0",
     "which conan",
     "conan user",
     "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
@@ -119,4 +120,4 @@ repair-wheel-command = [
     "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
     "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
 ]
-test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
+test-command = "export CI=TRUE && pip install scipy==1.7.3 && python {project}/test/run_doctest.py"

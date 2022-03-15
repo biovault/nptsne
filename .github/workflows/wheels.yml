@@ -6,11 +6,11 @@ env:
   # Set DOREADTHEDOCS to
   #   - "true" if this version is to be loaded to ReadTheDocs
   #   - "false" otherwise
-  DOREADTHEDOCS: "true"
+  DOREADTHEDOCS: "false"
   # Set DORELEASE to
   #   - "true" if this version is to be loaded to PyPI
   #   - "false" if this version is to be loaded to TestPyPI
-  DORELEASE: "true"
+  DORELEASE: "false"
 
 jobs:
   # Job to buildwheels on all platforms

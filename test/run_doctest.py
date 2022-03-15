@@ -9,6 +9,7 @@ import nptsne.libs._nptsne
 import os
 import tempfile
 from pathlib import Path
+from scipy.spatial.distance import pdist, squareform
 
 _skip = object()
 SKIP_IN_CI = doctest.register_optionflag("SKIP_IN_CI")
@@ -47,18 +48,18 @@ def make_test_globals():
     # with 16 dimensions
     hsne_data = np.random.randint(256, size=(10000, 16))
     tsne_data = np.random.randint(256, size=(2000, 16))
+    # A distance matrix
+    dist_matrix = squareform(pdist(tsne_data, metric="euclidean"))
     # Create a sample hsne with 3 levels and
     # save this to a sample file
     hsne = nptsne.HSne(True)
     hsne.create_hsne(hsne_data, 3)
-    file_name = Path(tempfile.gettempdir(), 'rnd10000x16.hsne')
+    file_name = Path(tempfile.gettempdir(), "rnd10000x16.hsne")
     print(f"Hsne file saving at {str(file_name)}", flush=True)
     hsne.save(str(file_name))
     print("Verify hsne file was saved", flush=True)
     assert file_name.exists()
-    top_analysis = nptsne.hsne_analysis.Analysis(
-        hsne, nptsne.hsne_analysis.EmbedderType.CPU
-    )
+    top_analysis = nptsne.hsne_analysis.Analysis(hsne, nptsne.hsne_analysis.EmbedderType.CPU)
 
     print("End prepare doctest globals", flush=True)
     return {
@@ -70,6 +71,7 @@ def make_test_globals():
         "sample_hsne_file": str(file_name),
         "sample_hsne_data": hsne_data,
         "sample_tsne_data": tsne_data,
+        "sample_dist_matrix": dist_matrix,
         "sample_texture_tsne": nptsne.TextureTsne(),
         "sample_texture_tsne_extended": nptsne.TextureTsneExtended(),
     }
@@ -107,10 +109,7 @@ if __name__ == "__main__":
     )
 
     total_failures = (
-        failures_nptsne
-        + failures_hsne_analysis
-        + failures_nptsne_lib
-        + failures_hsne_analysis_lib
+        failures_nptsne + failures_hsne_analysis + failures_nptsne_lib + failures_hsne_analysis_lib
     )
     if glob_total_skipped:
         print(f"{glob_total_skipped} tests were skipped in the CI environment.")
