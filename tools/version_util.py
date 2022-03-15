@@ -1,5 +1,6 @@
 import os
 from git import Repo
+from pathlib import Path
 
 
 def get_current_tag(repo):
@@ -47,13 +48,15 @@ def get_git_derived_build_number(repo, commit_path):
     return len(list(repo.iter_commits(rev="{}^..{}".format(that_commit, this_commit))))
 
 
-def get_version(repo_path="./"):
+def get_version(repo_path=Path("./")):
     """Create the version string by concatenating:
         - contents of the version file, src/nptsne/_version.txt
         - the PEP440TYPE (may be blank)
         - the build number derived from the commit
           counting since the last
           change to the version file
+        - a non-empty environment variable FULL_VERSION
+          overides all other settings
 
         If running on ReadTheDocs the repo tag is used.
         If PEP440TYPE is blank then the raw version is returned
@@ -65,6 +68,9 @@ def get_version(repo_path="./"):
     Returns:
         str: derived version string
     """
+    version = os.environ.get("FULL_VERSION", "")
+    if not version == "":
+        return version
     on_rtd = os.environ.get("READTHEDOCS") == "True"
     pep440type = os.environ.get("PEP440TYPE", "")
     version_file = repo_path / "src/nptsne/_version.txt"
