@@ -9,7 +9,6 @@ import nptsne.libs._nptsne
 import os
 import tempfile
 from pathlib import Path
-from scipy.spatial.distance import pdist, squareform
 
 _skip = object()
 SKIP_IN_CI = doctest.register_optionflag("SKIP_IN_CI")
@@ -49,7 +48,9 @@ def make_test_globals():
     hsne_data = np.random.randint(256, size=(10000, 16))
     tsne_data = np.random.randint(256, size=(2000, 16))
     # A distance matrix
-    dist_matrix = squareform(pdist(tsne_data, metric="euclidean"))
+    dist_matrix = np.linalg.norm(tsne_data[:, None, :] - tsne_data[None, :, :], axis=-1)
+    # square it for use
+    dist_matrix *= dist_matrix
     # Create a sample hsne with 3 levels and
     # save this to a sample file
     hsne = nptsne.HSne(True)

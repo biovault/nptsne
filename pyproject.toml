@@ -25,7 +25,7 @@ profile = "black"
 
 [tool.cibuildwheel]
 build = "cp38-*"
-test-command = "pip install scipy==1.7.3 && python {project}/test/run_doctest.py"
+test-command = "python {project}/test/run_doctest.py"
 build-verbosity = 2
 archs = "auto64"
 skip = "cp2* pp*"
@@ -44,7 +44,7 @@ skip = "cp2* pp*"
 [tool.cibuildwheel.windows]
 environment = {PIP_USE_FEATURE="in-tree-build", CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE="a", FULL_VERSION="1.3.0.a1"}
 skip = ["cp27-*"]
-#build = ["cp36-win_amd64", "cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64"]
+#build = ["cp38-win_amd64"]
 build = ["cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64", "cp310-win_amd64"]
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
@@ -89,7 +89,7 @@ repair-wheel-command = [
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel repair -w {dest_dir} {wheel}"
 ]
-test-command = "export CI=TRUE && pip install scipy==1.7.3 && python {project}/test/run_doctest.py"
+test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 
 [tool.cibuildwheel.macos]
@@ -120,4 +120,4 @@ repair-wheel-command = [
     "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
     "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
 ]
-test-command = "export CI=TRUE && pip install scipy==1.7.3 && python {project}/test/run_doctest.py"
+test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
