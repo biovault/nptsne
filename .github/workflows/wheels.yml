@@ -58,7 +58,7 @@ jobs:
         run: echo "${{ steps.conan.outputs.version }}"
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.2.2
+        run: python -m pip install cibuildwheel==2.3.1
 
       # cibuildwheel settings are mostly in the pyproject.toml file
       # Test the cibuildwheel action

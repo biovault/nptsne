@@ -410,6 +410,39 @@ PYBIND11_MODULE(_nptsne, m)
                             py::arg("X"),
                             py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
+    textureTsneExtended.def("init_transform_with_distance_matrix",
+                            &TextureTsneExtended::init_transform_with_distance_matrix,
+                            R"pbdoc(
+            Initialize the transform with squared distance matrix and optional initial embedding.
+            Fit X into an embedded space and return that transformed output.
+
+            Parameters
+            ----------
+            squared_distance : :class:`ndarray`
+                The input distances with shape (num. data points, num. data points)
+            initial_embedding : :class:`ndarray`
+                An optional initial embedding. Shape should be (num data points, num output dimensions)
+
+            Returns
+            -------
+            bool
+                True if successful, False otherwise
+
+            Examples
+            --------
+            Create an TextureTsneExtended wrapper and initialize the data. 
+            The square distances matrix is converted to the probability 
+            distribution.
+
+            >>> import nptsne
+            >>> tsne = nptsne.TextureTsneExtended()
+            >>> tsne.init_transform_with_distance_matrix(sample_dist_matrix)
+            True
+
+        )pbdoc",
+                            py::arg("squared_distance"),
+                            py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
+
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform,
                             R"pbdoc(
             Run the transform gradient descent for a number of iterations

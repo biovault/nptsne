@@ -36,6 +36,13 @@ class TextureTsneExtended {
         py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding =
             py::array_t<nptsne::ScalarType>({}));
 
+    // Initialize from a user supplied distance matrix
+    // Skip knn
+    bool TextureTsneExtended::init_transform_with_distance_matrix(
+        py::array_t<float, py::array::c_style | py::array::forcecast> distances,
+        py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding =
+            py::array_t<nptsne::ScalarType>({}));
+
     void init_transform_with_distribution(nptsne::SparseScalarMatrixType& sparse_matrix);
 
     void start_exaggeration_decay();

@@ -115,6 +115,79 @@ bool TextureTsneExtended::init_transform(
     return true;
 }
 
+bool TextureTsneExtended::init_transform_with_distance_matrix(
+    py::array_t<float, py::array::c_style | py::array::forcecast> squared_distances,
+    py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding) {
+    auto embedding_loc = initial_embedding;
+    py::buffer_info emb_info = embedding_loc.request();
+    auto dist_loc = squared_distances;
+    py::buffer_info dist_info = dist_loc.request();
+    if (dist_info.ndim != 2) {
+        throw std::runtime_error("Expecting input distances to have two dimensions");
+    }
+    if (dist_info.shape[0] != dist_info.shape[1]) {
+        throw std::runtime_error("Expecting input distances to be a square matrix");
+    }
+    _num_data_points = dist_info.shape[0];
+    std::cout << "emb_info size: " << emb_info.size << " emb_info dims: " << emb_info.ndim << std::endl;
+    if (emb_info.ndim == 2 && emb_info.size > 0) {
+        if (_verbose) {
+            std::cout << "Initialize from given embedding...\n";
+            std::cout << "Embed dimensions: " << emb_info.shape[0] << ", " << emb_info.shape[1] << "\n";
+        }
+        _have_preset_embedding = true;
+        float * emb_in = static_cast<float *>(emb_info.ptr);
+        // user provided default for embedding - overwrite the random def.
+        _embedding = nptsne::EmbeddingType(emb_info.shape[0], emb_info.shape[1]);
+        typename nptsne::EmbeddingType::scalar_vector_type* embedding_container = &(_embedding.getContainer());
+        // simply replace the container by the input?
+        for (int p = 0; p < _num_data_points; p++) {
+            for (int d = 0; d < 2; d++) {
+                (*embedding_container)[p * 2 + d] = emb_in[p * 2 + d];
+            }
+        }
+    }
+    if (_verbose) {
+        std::cout << "Target dimensions: " << _num_target_dimensions << "\n";
+        std::cout << "Perplexity: " << _perplexity << "\n";
+        std::cout << "Distance matrix contains: " << dist_info.size << " values.\n";
+    }
+    try {
+        float distribution_comp_time = 0;
+        _exaggeration_decay = false;
+        _iteration_count = 0;
+        _decay_started_at = -1;
+
+        if (_verbose) {
+            std::cout << "Distance for " << _num_data_points << " points,\n";
+        }
+
+        nptsne::ProbGenType prob_gen;
+        nptsne::ProbGenType::Parameters prob_gen_param;
+
+        {
+            hdi::utils::ScopedTimer<float, hdi::utils::Seconds> timer(distribution_comp_time);
+            prob_gen_param._perplexity = _perplexity;
+            std::vector<float> dist_vec(static_cast<float *>(dist_info.ptr), static_cast<float *>(dist_info.ptr) + dist_info.size);
+            prob_gen.computeProbabilityDistributionsFromDistanceMatrix(
+                dist_vec,
+                _num_data_points,
+                _distributions,
+                prob_gen_param);
+        }
+
+        std::cout << "distribution calculation" << "\n";
+        if (_verbose) {
+            std::cout << "Distribution computation (sec) " << distribution_comp_time << "\n";
+        }
+    }
+    catch (const std::exception& e) {
+        std::cout << "Fatal error: " << e.what() << std::endl;
+        return false;
+    }
+    return true;
+}
+
 void TextureTsneExtended::init_transform_with_distribution(nptsne::SparseScalarMatrixType& sparse_matrix) {
     _num_data_points = sparse_matrix.size();
     _num_target_dimensions = 2;
