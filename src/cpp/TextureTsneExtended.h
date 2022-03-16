@@ -38,7 +38,7 @@ class TextureTsneExtended {
 
     // Initialize from a user supplied distance matrix
     // Skip knn
-    bool TextureTsneExtended::init_transform_with_distance_matrix(
+    bool init_transform_with_distance_matrix(
         py::array_t<float, py::array::c_style | py::array::forcecast> distances,
         py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding =
             py::array_t<nptsne::ScalarType>({}));
