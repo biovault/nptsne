@@ -1024,7 +1024,7 @@ PYBIND11_MODULE(_nptsne, m)
             ...     sum_inf = 0.0
             ...     for j_tup in i:
             ...         sum_inf += j_tup[1]
-            ...     if abs(1 - sum_inf) > 0.015:
+            ...     if abs(1 - sum_inf) > 0.025:
             ...         print(f"{1- sum_inf}")
             ...         all_tots_are_1 = False
             >>> all_tots_are_1 == True
