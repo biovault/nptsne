@@ -20,7 +20,7 @@ project = "nptsne"
 copyright = "2021, TU Delft, LUMC"
 author = "Baldur van Lew"
 zenodo_url = "https://doi.org/10.5281/zenodo.5801124"
-github_branch = "release/1.2.0"
+github_branch = "release/1.3.0"
 
 import os
 import sys

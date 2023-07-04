@@ -1,12 +1,12 @@
-[![Build Status](https://github.com/biovault/nptsne/actions/workflows/wheels.yml/badge.svg?release/1.2.0)](https://github.com/biovault/nptsne/tree/release/1.2.0)
+[![Build Status](https://github.com/biovault/nptsne/actions/workflows/wheels.yml/badge.svg?release/1.3.0)](https://github.com/biovault/nptsne/tree/release/1.3.0)
 
-[![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=stable)](https://nptsne.readthedocs.io/en/v1.2.0/)
+[![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=stable)](https://nptsne.readthedocs.io/en/v1.3.0/)
 
 # nptsne
 
 **nptsne** is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation and HSNE modelling.
 
-For more detail see the [documentation for the current release - 1.2.0](https://nptsne.readthedocs.io/en/v1.2.0/)
+For more detail see the [documentation for the current release - 1.3.0](https://nptsne.readthedocs.io/en/v1.3.0/)
 
 Currently python 3.6, 3.7, and 3.8 are supported on Windows, Mac and Linux using [cibuildwheel](https://cibuildwheel.readthedocs.io/en/stable/)
 
