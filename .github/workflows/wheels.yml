@@ -65,6 +65,8 @@ jobs:
       # cibuildwheel derives platform automatically on CI
       # Local run use --platform windows/linx/macos
       - name: Build wheels
+        env:
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_RO_PASSWORD }}
         run: python -m cibuildwheel --output-dir wheelhouse
 
       - id: rtd
