@@ -98,6 +98,9 @@ repair-wheel-command = [
 ]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
+[[tool.cibuildwheel.overrides]]
+select = "cp311*"
+manylinux-x86_64-image = "manylinux2014"
 
 [tool.cibuildwheel.macos]
 environment = {CONAN_USER_HOME="$(pwd)", PEP440TYPE="a", FULL_VERSION="1.3.0a2"}
