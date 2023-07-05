@@ -39,14 +39,14 @@ jobs:
       # and https://stackoverflow.com/a/53409848/584201
       # A full checkout allows the git derived build number to work working (based on git log and rev-list)
       - name: Checkout the source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           submodules: recursive
 
       # Used to host cibuildwheel
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.x
 
@@ -58,7 +58,7 @@ jobs:
         run: echo "${{ steps.conan.outputs.version }}"
 
       - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel==2.3.1
+        run: python -m pip install cibuildwheel==2.13.1
 
       # cibuildwheel settings are mostly in the pyproject.toml file
       # Test the cibuildwheel action
@@ -76,7 +76,7 @@ jobs:
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
       # The default upload name is artifact but a name can be supplied
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: nptsne_wheels
           path: ./wheelhouse/*.whl
@@ -99,16 +99,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the source
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: nptsne_wheels
           path: ./dist
 
       - name: Setup python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.x
       - name: Install dependencies
