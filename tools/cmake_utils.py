@@ -121,6 +121,16 @@ class CMakeBuild(build_ext):
             compiler.version=8
             compiler.libcxx=libstdc++
         """
+        # in many_linux2010 the settings are:
+        """
+            os=Linux
+            os_build=Linux
+            arch=x86_64
+            arch_build=x86_64
+            compiler=gcc
+            compiler.version=10
+            compiler.libcxx=libstdc++
+        """
 
         self.announce(f"Path is {os.environ['PATH']}", log.INFO)
         self.announce("Set the conan build profile from the current context", log.INFO)

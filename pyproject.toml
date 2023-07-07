@@ -47,7 +47,7 @@ skip = "cp2* pp*"
 environment = {CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE="a", FULL_VERSION="1.3.0a2"}
 skip = ["cp27-*"]
 # Uncomment and edit to test a single version
-# build = ["cp311-win_amd64"]
+#build = ["cp311-win_amd64"]
 build = ["cp37-win_amd64", "cp38-win_amd64", "cp39-win_amd64", "cp310-win_amd64", "cp311-win_amd64"]
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"

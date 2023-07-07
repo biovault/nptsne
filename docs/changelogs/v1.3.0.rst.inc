@@ -1,6 +1,6 @@
 Version 1.3.0
 -----------------
-Supports python 3.6, 3.7, 3.8, 3.9, 3.10 and 3,11 on Windows, Ubuntu (using manylinux2010) and Macos.
+Supports python 3.7, 3.8, 3.9, 3.10 and 3,11 on Windows, Ubuntu (using manylinux2010/manylinux2014) and Macos.
 
 Changelog 1.3.0
 ~~~~~~~~~~~~~~~
