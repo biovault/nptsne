@@ -458,6 +458,14 @@ PYBIND11_MODULE(_nptsne, m)
                 An optional initial embedding. Shape should be (num data points, num output dimensions)
             allow_kNN_perplexity_mismatch : bool
                 The number of kNN should be k = perplexity*3 + 1 to match the kNN calcualtion that is automatically performed with e.g. fit_transform().
+
+            Examples
+            --------
+            Create an TextureTsneExtended wrapper and initialize with kNN data. 
+            Details T.B.D.
+
+            >>> True==True
+            True
         )pbdoc",
         py::arg("neighbor_dists"),
         py::arg("neighbor_inds"),
