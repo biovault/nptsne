@@ -443,6 +443,27 @@ PYBIND11_MODULE(_nptsne, m)
                             py::arg("squared_distance"),
                             py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}));
 
+    textureTsneExtended.def("init_transform_with_kNN",
+        &TextureTsneExtended::init_transform_with_kNN,
+        R"pbdoc(
+            Initialize the transform with given pre-calculated nearest neighbors.
+            After initializing a t-SNE object with TextureTsneExtended(), use perplexity_matched_nn to determine the recommended number k of nearest neighbors before pre-calculating the kNN.
+            Parameters
+            ----------
+            neighbor_dists : :class:`ndarray`
+                The squared kNN distances (num. data points, num. kNN). Since the nearest neighbors is a data point itself, the first distance is 0 and will internally ingnored
+            neighbor_inds : :class:`ndarray`
+                The kNN distances labels (num. data points, num. kNN). Since the nearest neighbors is a data point itself, the first label should be the data point's indices itself.
+            initial_embedding : :class:`ndarray`
+                An optional initial embedding. Shape should be (num data points, num output dimensions)
+            allow_kNN_perplexity_mismatch : bool
+                The number of kNN should be k = perplexity*3 + 1 to match the kNN calcualtion that is automatically performed with e.g. fit_transform().
+        )pbdoc",
+        py::arg("neighbor_dists"),
+        py::arg("neighbor_inds"),
+        py::arg("initial_embedding") = py::array_t<nptsne::ScalarType>({}),
+        py::arg("allow_kNN_perplexity_mismatch") = false);
+
     textureTsneExtended.def("run_transform", &TextureTsneExtended::run_transform,
                             R"pbdoc(
             Run the transform gradient descent for a number of iterations
@@ -558,6 +579,11 @@ PYBIND11_MODULE(_nptsne, m)
 
             >>> sample_texture_tsne_extended.iteration_count
             0
+        )pbdoc");
+
+    textureTsneExtended.def_property_readonly("perplexity_matched_nn", &TextureTsneExtended::get_perplexity_matched_nn,
+        R"pbdoc(
+            int: The number of nearest neighbors used internally and recommended for external computation based on the perplexity value.
         )pbdoc");
 
     textureTsneExtended.def("close", &TextureTsneExtended::close,

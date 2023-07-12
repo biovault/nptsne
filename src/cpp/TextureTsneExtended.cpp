@@ -188,6 +188,101 @@ bool TextureTsneExtended::init_transform_with_distance_matrix(
     return true;
 }
 
+// Initialise the tSNE from pre-computed nearest neighbors
+bool TextureTsneExtended::init_transform_with_kNN(
+    py::array_t<float, py::array::c_style | py::array::forcecast> neighbor_dists,
+    py::array_t<int, py::array::c_style | py::array::forcecast> neighbor_inds,
+    py::array_t<float, py::array::c_style | py::array::forcecast> initial_embedding,
+    bool allow_kNN_perplexity_mismatch)
+{
+    auto embedding_loc = initial_embedding;
+    py::buffer_info emb_info = embedding_loc.request();
+    auto neigh_dists_loc = neighbor_dists;
+    py::buffer_info neigh_dists_info = neigh_dists_loc.request();
+    auto neigh_inds_loc = neighbor_inds;
+    py::buffer_info neigh_inds_info = neigh_inds_loc.request();
+    if (neigh_dists_info.ndim != 2) {
+        throw std::runtime_error("Expecting neighbor data to have two dimensions, data points and the distances to their nearest neighbors");
+    }
+    if (neigh_dists_info.shape != neigh_inds_info.shape) {
+        throw std::runtime_error("Expecting neighbor distances and neighbor indices to have the same length");
+    }
+    if (neigh_dists_info.shape[1] != (_perplexity * 3 + 1)) {
+        if (allow_kNN_perplexity_mismatch == true) {
+            std::cout << "Potentially undesired behavior: kNN number does not match perplexity.\n";
+        }
+        else {
+            throw std::runtime_error("Expecting number of neighbors to match perplexity (nn = perplexity * 3 + 1)");
+        }
+    }
+    _num_data_points = neigh_dists_info.shape[0];
+    _num_neighbors = neigh_dists_info.shape[1];
+    std::cout << "emb_info size: " << emb_info.size << " emb_info dims: " << emb_info.ndim << std::endl;
+    if (emb_info.ndim == 2 && emb_info.size > 0) {
+        if (_verbose) {
+            std::cout << "Initialize from given embedding...\n";
+            std::cout << "Embed dimensions: " << emb_info.shape[0] << ", " << emb_info.shape[1] << "\n";
+        }
+        _have_preset_embedding = true;
+        float * emb_in = static_cast<float *>(emb_info.ptr);
+        // user provided default for embedding - overwrite the random def.
+        _embedding = nptsne::EmbeddingType(emb_info.shape[0], emb_info.shape[1]);
+        typename nptsne::EmbeddingType::scalar_vector_type* embedding_container = &(_embedding.getContainer());
+        // simply replace the container by the input?
+        for (int p = 0; p < _num_data_points; p++) {
+            for (int d = 0; d < 2; d++) {
+                (*embedding_container)[p * 2 + d] = emb_in[p * 2 + d];
+            }
+        }
+    }
+    // std::cout << "Embedding size before init: " << _embedding.getContainer().size() << std::endl;
+    if (_verbose) {
+        std::cout << "Target dimensions: " << _num_target_dimensions << "\n";
+        std::cout << "Perplexity: " << _perplexity << "\n";
+        std::cout << "kNN " << _num_neighbors - 1 << "\n";
+    }
+    try {
+        float similarities_comp_time = 0;
+        _exaggeration_decay = false;
+        _iteration_count = 0;
+        _decay_started_at = -1;
+
+        if (_verbose) {
+            std::cout << "Read " << _num_data_points << " points,\n";
+        }
+
+        hdi::utils::CoutLog log;
+        nptsne::ProbGenType prob_gen;
+        nptsne::ProbGenType::Parameters prob_gen_param;
+
+        {
+            hdi::utils::ScopedTimer<float, hdi::utils::Seconds> timer(similarities_comp_time);
+
+            prob_gen_param._perplexity = _perplexity;
+
+            // Re-format values
+            std::vector<float> distances_squared(static_cast<float *>(neigh_dists_info.ptr), static_cast<float *>(neigh_dists_info.ptr) + (_num_data_points*_num_neighbors));
+            std::vector<int> indices(static_cast<int *>(neigh_inds_info.ptr), static_cast<int *>(neigh_inds_info.ptr) + (_num_data_points*_num_neighbors));
+
+            // This is ususally done in computeProbabilityDistributions()
+            _distributions.resize(_num_data_points);
+
+            // Use an overloaded, modified version of computeGaussianDistributions. Make sure to use a proper HDILib branch
+            prob_gen.computeGaussianDistributions(distances_squared, indices, _num_neighbors, _distributions, prob_gen_param);
+        }
+
+        std::cout << "High dimensional distribution calculation complete" << "\n";
+        if (_verbose) {
+            std::cout << "Similarities computation (sec) " << similarities_comp_time << "\n";
+        }
+    }
+    catch (const std::exception& e) {
+        std::cout << "Fatal error: " << e.what() << std::endl;
+        return false;
+    }
+    return true;
+}
+
 void TextureTsneExtended::init_transform_with_distribution(nptsne::SparseScalarMatrixType& sparse_matrix) {
     _num_data_points = sparse_matrix.size();
     _num_target_dimensions = 2;
@@ -219,6 +314,10 @@ void TextureTsneExtended::start_exaggeration_decay() {
 
 int TextureTsneExtended::get_decay_started_at() {
     return _decay_started_at;
+}
+
+int TextureTsneExtended::get_perplexity_matched_nn() {
+    return (_perplexity * 3) + 1;
 }
 
 int TextureTsneExtended::get_iteration_count() {
