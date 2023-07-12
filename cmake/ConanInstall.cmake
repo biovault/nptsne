@@ -34,9 +34,7 @@ conan_cmake_configure(
         OPTIONS 
             HDILib/${HDILib_VERSION}@${HDILib_CHANNEL}:fPIC=True
             HDILib/${HDILib_VERSION}@${HDILib_CHANNEL}:shared=False
-            flann/${FLANN_VERSION}@${FLANN_CHANNEL}:fPIC=True
-            flann/${FLANN_VERSION}@${FLANN_CHANNEL}:shared=False)
-
+)
 
 message("Run conan install and generate conanbuildinfo.txt")
 if(UNIX AND NOT APPLE)
