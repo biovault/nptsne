@@ -64,6 +64,7 @@ class TextureTsneExtended {
     int get_num_target_dimensions() { return _num_target_dimensions; }
     int get_iterations() { return _iterations; }
     int get_perplexity() { return _perplexity; }
+    int get_perplexity_matched_nn();
     hdi::dr::knn_library get_knn_algorithm() { return _knn_algorithm; }
     hdi::dr::knn_distance_metric get_knn_metric() { return _knn_metric; }
 
