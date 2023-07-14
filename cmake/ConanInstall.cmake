@@ -37,9 +37,9 @@ conan_cmake_configure(
 )
 message("Run conan install and generate conanbuildinfo.txt")
 if(UNIX AND NOT APPLE)
-    conan_cmake_install(PATH_OR_REFERENCE .)
+    conan_cmake_install(PATH_OR_REFERENCE . SETTINGS build_type=Release)
 else()
-    conan_cmake_install(PATH_OR_REFERENCE .)
+    conan_cmake_install(PATH_OR_REFERENCE . SETTINGS build_type=Release)
 endif()
 
 # debug
