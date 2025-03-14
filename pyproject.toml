@@ -56,9 +56,10 @@ before-build = [
     "pip3 install conan==1.66.0",
     "echo check conan",
     "where conan",
-    "conan user -p %ARTIFACTORY_RO_PASSWORD% hdpsreader",
+    "conan user",
     "type %CONAN_USER_HOME%\\cert.pem >> %CONAN_USER_HOME%\\.conan\\cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan user -p %ARTIFACTORY_RO_PASSWORD% -r lkeb-artifactory hdpsreader",
     "conan remote list",
 ]
 
@@ -77,9 +78,10 @@ before-build = [
     "echo install and setup conan",
     "pip install conan==1.66.0",
     "which conan",
-    "conan user -p $ARTIFACTORY_RO_PASSWORD hdpsreader",
+    "conan user",
     "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
     "conan remote list",
     "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel"
 ]
@@ -109,9 +111,10 @@ before-build = [
     "which python",
     "pip install conan==1.66.0",
     "which conan",
-    "conan user -p $ARTIFACTORY_RO_PASSWORD hdpsreader",
+    "conan user",
     "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
     "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
     "conan remote list",
 ]
 repair-wheel-command = [
