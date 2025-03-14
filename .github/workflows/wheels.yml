@@ -140,7 +140,7 @@ jobs:
 
       - name: Publish wheels to PyPI
         if: ${{ needs.build_wheels.outputs.dorelease == 'true' }}
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.PYPI_TOKEN_SECRET  }}
@@ -149,7 +149,7 @@ jobs:
 
       - name: Publish wheels to TestPyPI
         if: ${{ needs.build_wheels.outputs.dorelease == 'false' }}
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: __token__
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
