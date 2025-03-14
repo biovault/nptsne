@@ -34,7 +34,8 @@ if (NPTSNE_BUILD_WITH_CONAN)
     # *******************************************************************
     set(HDILib_VERSION "1.2.10")
     set(HDILib_CHANNEL "biovault/stable")
-    set(FLANN_VERSION "1.9.2") # has fix for windows
+    set(FLANN_VERSION "1.9.2") 
+    set(FLANN_CHANNEL "lkeb/stable")
     set(LZ4_VERSION "1.10.0")
     include(ConanInstall)
     message("***CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}***")
