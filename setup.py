@@ -19,8 +19,8 @@ def update_package_full_version(full_version):
 
 def update_package_branch_name(branch_name):
     script_path = Path(__file__).resolve().parent.absolute()
-    with open(Path(script_path, "src", "nptsne", "_branch_name.txt"), "w") as brnchfile:
-        brnchfile.write(branch_name)
+    with open(Path(script_path, "src", "nptsne", "_branch_name.txt"), "w") as branchfile:
+        branchfile.write(branch_name)
 
 
 #  This temporary directory is used to collect libs

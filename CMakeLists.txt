@@ -1,4 +1,7 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.25.0)
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.27.0")
+    cmake_policy(SET CMP0144 NEW)    # Remove once we set min cmake version accordingly
+endif()
 
 message(STATUS "1 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "1 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
@@ -7,6 +10,7 @@ file (STRINGS "version.txt" VERSION)
 project(_nptsne)
 
 option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
+option(MV_SNE_USE_ARTIFACTORY_LIBS "Use the prebuilt libraries from artifactory" ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmake")
@@ -28,21 +32,78 @@ execute_process(
 message(STATUS "Working on branch ${GIT_BRANCH}")
 
 # CONAN is only used to install dependencies if the NPTSNE_BUILD_WITH_CONAN is ON
-if (NPTSNE_BUILD_WITH_CONAN)
+#if (NPTSNE_BUILD_WITH_CONAN)
+if (MV_SNE_USE_ARTIFACTORY_LIBS) 
+    set(LIBRARY_INSTALL_DIR ${PROJECT_BINARY_DIR})
+    message(STATUS "Installing artifactory packages to: ${LIBRARY_INSTALL_DIR}")
+
+    set(HDILib_VERSION 1.2.10)
+    set(flann_VERSION 1.9.2)
+    set(lz4_VERSION 1.10.0)
+
+    include(FetchContent)
+    FetchContent_Declare(cmakesupport
+        GIT_REPOSITORY https://github.com/ManiVaultStudio/github-actions
+        GIT_TAG main
+        GIT_SHALLOW TRUE
+        SOURCE_SUBDIR CMakeSupport
+    )
+    FetchContent_MakeAvailable(cmakesupport)
+
+    message(STATUS "FetchContent: ${cmakesupport_SOURCE_DIR} ${cmakesupport_BINARY_DIR}")
+    include("${cmakesupport_SOURCE_DIR}/CMakeSupport/InstallArtifactoryPackage.cmake")
+
+    install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE) 
+    install_artifactory_package(flann ${flann_VERSION} lkeb TRUE)
+    install_artifactory_package(lz4 ${lz4_VERSION} lkeb TRUE)
+
+    set(lz4_ROOT "${LIBRARY_INSTALL_DIR}/lz4/lib/cmake" CACHE PATH "Location of lz4 cmake file")
+    set(flann_ROOT "${LIBRARY_INSTALL_DIR}/flann/lib/cmake/" CACHE PATH "Location of flann cmake file")
+    set(HDILIB_ROOT "${LIBRARY_INSTALL_DIR}/HDILib/lib/cmake/HDILib" CACHE PATH "Location of HDILib cmake file")
+
+    set(MV_SNE_ARTIFACTORY_LIBS_INSTALLED TRUE CACHE BOOL "Use the prebuilt libraries from artifactory" FORCE)
     # *******************************************************************
     # ******** If using conan fill the required versions here ***********
     # *******************************************************************
-    set(HDILib_VERSION "1.2.10")
-    set(HDILib_CHANNEL "biovault/stable")
-    set(FLANN_VERSION "1.9.2") 
-    set(FLANN_CHANNEL "lkeb/stable")
-    set(LZ4_VERSION "1.10.0")
-    include(ConanInstall)
-    message("***CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}***")
-    find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
-    find_package(flann CONFIG REQUIRED)
+    #set(HDILib_VERSION "1.2.10")
+    #set(HDILib_CHANNEL "biovault/stable")
+    #set(FLANN_VERSION "1.9.2") 
+    #set(FLANN_CHANNEL "lkeb/stable")
+    #set(LZ4_VERSION "1.10.0")
+    #include(ConanInstall)
+    #message("***CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}***")
+    #find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
+    #find_package(flann CONFIG REQUIRED)
 endif()
-# find_package(LZ4 REQUIRED) - the LZ4 does not have a CMake package config file
+
+
+find_package(lz4 1.10.0 REQUIRED)
+get_target_property(LZ4_LZ4_TARGETS_LIST lz4::lz4 INTERFACE_LINK_LIBRARIES)
+get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
+
+# message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
+# message(STATUS "All import targets: -${IMPORT_TARGETS}-")
+# message(STATUS "LZ4_TARGETS_LIST is -${LZ4_TARGETS_LIST}-")
+# message(STATUS "LZ4_LZ4_TARGETS_LIST is -${LZ4_LZ4_TARGETS_LIST}-") # exists
+# message(STATUS "LZ4_static_IncludeDirs is -${LZ4_static_IncludeDirs}-") # exists
+# message(STATUS "LZ4_static_Location is -${LZ4_static_Location}-") # exists
+# message(STATUS "lz4_FOUND is -${lz4_FOUND}-")
+# message(STATUS "LZ4_TARGET is -${LZ4_TARGET}-")
+# message(STATUS "lz4_TARGET is -${lz4_TARGET}-")
+
+# message(STATUS "All build targets: ${BUILDSYSTEM_TARGETS}")
+# message(STATUS "All import targets: ${IMPORT_TARGETS}")
+# message(STATUS "LZ4_TARGET is ${LZ4_TARGET}")
+find_package(flann 1.9.2 REQUIRED)
+find_package(HDILib COMPONENTS hdidimensionalityreduction hdiutils hdidata CONFIG REQUIRED PATHS ${HDILIB_ROOT})
+
+message(STATUS "All build targets: ${BUILDSYSTEM_TARGETS}")
+message(STATUS "All import targets: ${IMPORT_TARGETS}")
+
+set(LZ4_LIBRARY "LZ4::lz4_static")
+set(FLANNCPP_LIBRARY "flann::flann_cpp_s")
+
 
 message(STATUS "Processing directory: ${CMAKE_CURRENT_SOURCE_DIR}")
 
@@ -72,6 +133,19 @@ endif()
 
 set(PYBIND11_PYTHON_VERSION "3" CACHE STRING "")
 
+# Utility for installing GLFW headers from the submodule
+macro(install_headers source)
+    install(DIRECTORY   "${CMAKE_CURRENT_SOURCE_DIR}/${source}"
+            DESTINATION "${CMAKE_INSTALL_PREFIX}/include/${CMAKE_PROJECT_NAME}/3rdparty"
+            PATTERN     "*.c"           EXCLUDE
+            PATTERN     "*.cmake"       EXCLUDE
+            PATTERN     "*.cpp"         EXCLUDE
+            PATTERN     "*.in"          EXCLUDE
+            PATTERN     "*.m"           EXCLUDE
+            PATTERN     "*.txt"         EXCLUDE
+            PATTERN     ".gitignore"    EXCLUDE)
+endmacro()
+
 if(TRUE)
     message(STATUS, "Will build GLFW")
     set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "disable GLFX examples")
@@ -93,6 +167,9 @@ pybind11_add_module(_nptsne
     src/cpp/TextureTsneExtended.cpp
 )
 
+target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
+target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
+target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")
 
 message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "3 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
@@ -275,7 +352,7 @@ target_link_libraries(_nptsne PRIVATE ${HDILib_LINK_LIBS})
 if(WIN32)
     # Windows uses static flann lib
     target_link_libraries (_nptsne PRIVATE "${FLANNCPP_LIBRARY}")
-    find_library(LZ4_LIBRARY lz4 HINTS ${lz4_LIB_DIRS})
+    #find_library(LZ4_LIBRARY lz4 HINTS ${lz4_LIB_DIRS})
     target_link_libraries (_nptsne PRIVATE "${LZ4_LIBRARY}")
     # target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
 endif()
@@ -300,7 +377,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
         endif()
         message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
     endif()
-    get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
+    # get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
+    set(LZ4_LIBRARY "LZ4::lz4_static")
+    set(FLANNCPP_LIBRARY "flann::flann_cpp_s")
     target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
     target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
     target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")

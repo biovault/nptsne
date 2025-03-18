@@ -79,7 +79,7 @@ class CMakeBuild(build_ext):
             cmake_args += [
                 "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{}={}".format(cfg.upper(), liboutputdir)
             ]
-            if sys.maxsize > 2 ** 32:
+            if sys.maxsize > 2**32:
                 cmake_args += ["-A", "x64"]
             build_args += ["--", "/m"]
             # If vcvarsall.bat has been run use that setting
@@ -123,39 +123,46 @@ class CMakeBuild(build_ext):
         """
 
         self.announce(f"Path is {os.environ['PATH']}", log.INFO)
-        self.announce("Set the conan build profile from the current context", log.INFO)
-        subprocess.run(
-            ["conan", "--version"],
-            cwd=self.build_temp,
-        )
-        subprocess.check_call(
-            ["conan", "profile", "new", "default", "--detect", "--force"], cwd=self.build_temp
-        )
-        self.announce("Show conan home dir", log.INFO)
-        subprocess.check_call(
-            ["conan", "config", "home"],
-            cwd=self.build_temp,
-        )
-        self.announce("Show conan remotes", log.INFO)
-        subprocess.check_call(
-            ["conan", "remote", "list"],
-            cwd=self.build_temp,
-        )
-        subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
+        # self.announce("Set the conan build profile from the current context", log.INFO)
+        # subprocess.run(
+        #    ["conan", "--version"],
+        #    cwd=self.build_temp,
+        # )
+        # subprocess.check_call(
+        #    ["conan", "profile", "new", "default", "--detect", "--force"], cwd=self.build_temp
+        # )
+        # self.announce("Show conan home dir", log.INFO)
+        # subprocess.check_call(
+        #    ["conan", "config", "home"],
+        #    cwd=self.build_temp,
+        # )
+        # self.announce("Show conan remotes", log.INFO)
+        # subprocess.check_call(
+        #    ["conan", "remote", "list"],
+        ##    cwd=self.build_temp,
+        # )
+        # subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
 
-        if platform.system() == "Windows":
-            self.announce("Remove build_type from conan profile on windows", log.INFO)
-            subprocess.check_call(
-                ["conan", "profile", "remove", "settings.build_type", "default"],
-                cwd=self.build_temp,
-            )
-            subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
+        # if platform.system() == "Windows":
+        #    self.announce("Remove build_type from conan profile on windows", log.INFO)
+        #    subprocess.check_call(
+        #        ["conan", "profile", "remove", "settings.build_type", "default"],
+        #        cwd=self.build_temp,
+        #    )
+        #    subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
 
         # CMake configure
-        subprocess.check_call(["cmake", ext.sourcedir] + cmake_args, cwd=self.build_temp, env=env)
-        # CMake build
+        print("Çalling cmake configure")
         subprocess.check_call(
-            ["cmake", "--build", ".", "--verbose"] + build_args, cwd=self.build_temp
+            ["cmake", ext.sourcedir] + cmake_args,  # "--trace-expand",
+            cwd=self.build_temp,
+            env=env,
+        )
+        # CMake build
+        print("Calling cmake build")
+        subprocess.check_call(
+            ["cmake", "--build", ".", "--verbose"] + build_args,  # "--trace-expand",
+            cwd=self.build_temp,
         )
 
         # get the dependent libs (were supplied by Conan)

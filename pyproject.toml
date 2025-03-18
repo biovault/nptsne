@@ -3,8 +3,8 @@
 
 [build-system]
 requires = [
-    "cmake>=3.15.0",
-    "conan==1.66.0",
+    "cmake>=3.25.0",
+#    "conan==1.66.0",
     "packaging",
     "gitpython",
     "setuptools>=42",
@@ -52,14 +52,14 @@ before-build = [
 #    "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
 #    "python get-pip.py",
     "{project}\\.ci\\cleanprevbuild.bat",
-    "pip3 install conan==1.66.0",
-    "echo check conan",
-    "where conan",
-    "conan user",
-    "type %CONAN_USER_HOME%\\cert.pem >> %CONAN_USER_HOME%\\.conan\\cacert.pem",
-    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-    "conan user -p %ARTIFACTORY_RO_PASSWORD% -r lkeb-artifactory hdpsreader",
-    "conan remote list",
+#    "pip3 install conan==1.66.0",
+#    "echo check conan",
+#    "where conan",
+#    "conan user",
+#    "type %CONAN_USER_HOME%\\cert.pem >> %CONAN_USER_HOME%\\.conan\\cacert.pem",
+#    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+#    "conan user -p %ARTIFACTORY_RO_PASSWORD% -r lkeb-artifactory hdpsreader",
+#    "conan remote list",
 ]
 
 [tool.cibuildwheel.linux]
@@ -73,14 +73,14 @@ build = "cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "echo install and setup conan",
-    "pip install conan==1.66.0",
-    "which conan",
-    "conan user",
-    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
-    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
-    "conan remote list",
+#    "echo install and setup conan",
+#    "pip install conan==1.66.0",
+#    "which conan",
+#    "conan user",
+#    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
+#    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+#    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
+#    "conan remote list",
     "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel"
 ]
 repair-wheel-command = [
@@ -103,15 +103,15 @@ before-all = [
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "echo check conan",
+#    "echo check conan",
     "which python",
-    "pip install conan==1.66.0",
-    "which conan",
-    "conan user",
-    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
-    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
-    "conan remote list",
+#    "pip install conan==1.66.0",
+#    "which conan",
+#    "conan user",
+#    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
+#    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
+#    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
+#    "conan remote list",
 ]
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
