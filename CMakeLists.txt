@@ -78,7 +78,7 @@ endif()
 
 
 find_package(lz4 1.10.0 REQUIRED)
-get_target_property(LZ4_LZ4_TARGETS_LIST lz4::lz4 INTERFACE_LINK_LIBRARIES)
+
 get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
 
@@ -87,7 +87,7 @@ get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEAS
 # message(STATUS "LZ4_TARGETS_LIST is -${LZ4_TARGETS_LIST}-")
 # message(STATUS "LZ4_LZ4_TARGETS_LIST is -${LZ4_LZ4_TARGETS_LIST}-") # exists
 # message(STATUS "LZ4_static_IncludeDirs is -${LZ4_static_IncludeDirs}-") # exists
-# message(STATUS "LZ4_static_Location is -${LZ4_static_Location}-") # exists
+message(STATUS "LZ4_static_Location is -${LZ4_static_Location}-") 
 # message(STATUS "lz4_FOUND is -${lz4_FOUND}-")
 # message(STATUS "LZ4_TARGET is -${LZ4_TARGET}-")
 # message(STATUS "lz4_TARGET is -${lz4_TARGET}-")
@@ -167,8 +167,9 @@ pybind11_add_module(_nptsne
     src/cpp/TextureTsneExtended.cpp
 )
 
-target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
-target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
+message(STATUS "Linking ${LZ4_LIBRARY}")
+#target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
+#target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
 target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")
 
 message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
@@ -321,8 +322,8 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
     get_filename_component(FLANN_LINK_PATH ${FLANNCPP_LIBRARY_PATH} DIRECTORY)
     link_directories(${FLANN_LINK_PATH})
     link_directories(${LZ4_LINK_PATH})
-    target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
-    target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY_PATH} )
+    #target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
+    #target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY_PATH} )
     message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
 
 endif()
@@ -353,8 +354,9 @@ if(WIN32)
     # Windows uses static flann lib
     target_link_libraries (_nptsne PRIVATE "${FLANNCPP_LIBRARY}")
     #find_library(LZ4_LIBRARY lz4 HINTS ${lz4_LIB_DIRS})
+    message(STATUS "Linking LZ4_LIBRARY - ${LZ4_LIBRARY}")
     target_link_libraries (_nptsne PRIVATE "${LZ4_LIBRARY}")
-    # target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
+    target_link_libraries(_nptsne PRIVATE ${GLFW_STATIC_LIBRARIES})
 endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
@@ -380,9 +382,9 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     set(LZ4_LIBRARY "LZ4::lz4_static")
     set(FLANNCPP_LIBRARY "flann::flann_cpp_s")
-    target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
-    target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
-    target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")
+    #target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
+    #target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
+    #target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")
 endif()
 
 if (UNIX)

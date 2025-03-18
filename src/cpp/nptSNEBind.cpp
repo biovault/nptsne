@@ -933,7 +933,7 @@ PYBIND11_MODULE(_nptsne, m)
 
             >>> weights = sample_scale0.get_landmark_weight()
             >>> test = weights[0] == 1.0
-            >>> test.all()
+            >>> (test.all()).item()
             True
 
             Returns
@@ -1070,9 +1070,9 @@ PYBIND11_MODULE(_nptsne, m)
 
             >>> sample_scale0.landmark_orig_indexes.shape
             (10000,)
-            >>> sample_scale0.landmark_orig_indexes[0]
+            >>> (sample_scale0.landmark_orig_indexes[0]).item()
             0
-            >>> sample_scale0.landmark_orig_indexes[9999]
+            >>> (sample_scale0.landmark_orig_indexes[9999]).item()
             9999
 
             Returns
@@ -1338,13 +1338,13 @@ PYBIND11_MODULE(_nptsne, m)
                 ...     influenced = sample_analysis.get_fast_area_of_influence([i])
                 ...     total = total + influenced.sum()
                 ...     infl_accum = np.add(infl_accum, influenced)
-                >>> total == 10000
+                >>> (total == 10000).item()
                 True
 
                 Verify that all AOIs are non-overlapping, each datapoint
                 occurs once and only once.
 
-                >>> np.all(infl_accum == 1)
+                >>> (np.all(infl_accum == 1)).item()
                 True
 
                 Returns
@@ -1456,9 +1456,10 @@ PYBIND11_MODULE(_nptsne, m)
             The indexes are in the range of the original point indexes.
 
             >>> import numpy as np
-            >>> np.logical_and(
+            >>> result = np.logical_and(
             ... sample_analysis.landmark_orig_indexes >= 0,
             ... sample_analysis.landmark_orig_indexes < 10000).any()
+            >>> print(f"{result}")
             True
         )pbdoc");
 
