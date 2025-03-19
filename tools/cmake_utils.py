@@ -101,8 +101,8 @@ class CMakeBuild(build_ext):
         else:
             raise RuntimeError("Unsupported platform")
 
-        # Building with conan - conan is used to install the dependencies
-        cmake_args += ["-DNPTSNE_BUILD_WITH_CONAN=ON"]
+        # Use prebuilt libe from artifactory
+        cmake_args += ["-DUSE_ARTIFACTORY_LIBS=ON"]
 
         env = os.environ.copy()
         env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
@@ -110,51 +110,12 @@ class CMakeBuild(build_ext):
         )
         self.announce("CXXFLAGS: {}".format(self.distribution.get_version()), log.INFO)
 
-        # Set the conan profile in this context now that the compiler is set
-        # in many_linux2010 the settings are:
-        """
-            os=Linux
-            os_build=Linux
-            arch=x86_64
-            arch_build=x86_64
-            compiler=gcc
-            compiler.version=8
-            compiler.libcxx=libstdc++
-        """
-
         self.announce(f"Path is {os.environ['PATH']}", log.INFO)
-        # self.announce("Set the conan build profile from the current context", log.INFO)
-        # subprocess.run(
-        #    ["conan", "--version"],
-        #    cwd=self.build_temp,
-        # )
-        # subprocess.check_call(
-        #    ["conan", "profile", "new", "default", "--detect", "--force"], cwd=self.build_temp
-        # )
-        # self.announce("Show conan home dir", log.INFO)
-        # subprocess.check_call(
-        #    ["conan", "config", "home"],
-        #    cwd=self.build_temp,
-        # )
-        # self.announce("Show conan remotes", log.INFO)
-        # subprocess.check_call(
-        #    ["conan", "remote", "list"],
-        ##    cwd=self.build_temp,
-        # )
-        # subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
-
-        # if platform.system() == "Windows":
-        #    self.announce("Remove build_type from conan profile on windows", log.INFO)
-        #    subprocess.check_call(
-        #        ["conan", "profile", "remove", "settings.build_type", "default"],
-        #        cwd=self.build_temp,
-        #    )
-        #    subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
 
         # CMake configure
         print("Çalling cmake configure")
         subprocess.check_call(
-            ["cmake", ext.sourcedir] + cmake_args,  # "--trace-expand",
+            ["cmake", ext.sourcedir, "--trace-expand"] + cmake_args,  # "--trace-expand",
             cwd=self.build_temp,
             env=env,
         )
@@ -164,9 +125,6 @@ class CMakeBuild(build_ext):
             ["cmake", "--build", ".", "--verbose"] + build_args,  # "--trace-expand",
             cwd=self.build_temp,
         )
-
-        # get the dependent libs (were supplied by Conan)
-        # os.environ['LD_LIBRARY_PATH'] = liboutputdir
 
         # Move the conan dependencies for wheel fix-up
         subprocess.check_call(

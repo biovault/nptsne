@@ -10,7 +10,7 @@ file (STRINGS "version.txt" VERSION)
 project(_nptsne)
 
 option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
-option(MV_SNE_USE_ARTIFACTORY_LIBS "Use the prebuilt libraries from artifactory" ON)
+option(USE_ARTIFACTORY_LIBS "Use the prebuilt libraries from artifactory" ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   "${CMAKE_SOURCE_DIR}/cmake")
@@ -33,7 +33,7 @@ message(STATUS "Working on branch ${GIT_BRANCH}")
 
 # CONAN is only used to install dependencies if the NPTSNE_BUILD_WITH_CONAN is ON
 #if (NPTSNE_BUILD_WITH_CONAN)
-if (MV_SNE_USE_ARTIFACTORY_LIBS) 
+if (USE_ARTIFACTORY_LIBS) 
     set(LIBRARY_INSTALL_DIR ${PROJECT_BINARY_DIR})
     message(STATUS "Installing artifactory packages to: ${LIBRARY_INSTALL_DIR}")
 
@@ -42,6 +42,7 @@ if (MV_SNE_USE_ARTIFACTORY_LIBS)
     set(lz4_VERSION 1.10.0)
 
     include(FetchContent)
+    # Use the ManiVaultStudio github-action tools to get the pre-built packages from artifactory
     FetchContent_Declare(cmakesupport
         GIT_REPOSITORY https://github.com/ManiVaultStudio/github-actions
         GIT_TAG main
@@ -61,19 +62,8 @@ if (MV_SNE_USE_ARTIFACTORY_LIBS)
     set(flann_ROOT "${LIBRARY_INSTALL_DIR}/flann/lib/cmake/" CACHE PATH "Location of flann cmake file")
     set(HDILIB_ROOT "${LIBRARY_INSTALL_DIR}/HDILib/lib/cmake/HDILib" CACHE PATH "Location of HDILib cmake file")
 
-    set(MV_SNE_ARTIFACTORY_LIBS_INSTALLED TRUE CACHE BOOL "Use the prebuilt libraries from artifactory" FORCE)
-    # *******************************************************************
-    # ******** If using conan fill the required versions here ***********
-    # *******************************************************************
-    #set(HDILib_VERSION "1.2.10")
-    #set(HDILib_CHANNEL "biovault/stable")
-    #set(FLANN_VERSION "1.9.2") 
-    #set(FLANN_CHANNEL "lkeb/stable")
-    #set(LZ4_VERSION "1.10.0")
-    #include(ConanInstall)
-    #message("***CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}***")
-    #find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
-    #find_package(flann CONFIG REQUIRED)
+    set(ARTIFACTORY_LIBS_INSTALLED TRUE CACHE BOOL "Use the prebuilt libraries from artifactory" FORCE)
+
 endif()
 
 
