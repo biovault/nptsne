@@ -31,9 +31,14 @@ execute_process(
 )
 message(STATUS "Working on branch ${GIT_BRANCH}")
 
+# Restrict the C standard to 17 to avoid the issues with
+# isoc23 
+if self.settings.os == "Linux":
+    tc.variables["CMAKE_C_FLAGS"] = "${CMAKE_C_FLAGS} -m64 -std=c17"
+
 # CONAN is only used to install dependencies if the NPTSNE_BUILD_WITH_CONAN is ON
 #if (NPTSNE_BUILD_WITH_CONAN)
-if (MV_SNE_USE_ARTIFACTORY_LIBS) 
+if (USE_ARTIFACTORY_LIBS) 
     set(LIBRARY_INSTALL_DIR ${PROJECT_BINARY_DIR})
     message(STATUS "Installing artifactory packages to: ${LIBRARY_INSTALL_DIR}")
 
@@ -57,27 +62,13 @@ if (MV_SNE_USE_ARTIFACTORY_LIBS)
     install_artifactory_package(flann ${flann_VERSION} lkeb TRUE)
     install_artifactory_package(lz4 ${lz4_VERSION} lkeb TRUE)
 
-    set(lz4_ROOT "${LIBRARY_INSTALL_DIR}/lz4/lib/cmake" CACHE PATH "Location of lz4 cmake file")
-    set(flann_ROOT "${LIBRARY_INSTALL_DIR}/flann/lib/cmake/" CACHE PATH "Location of flann cmake file")
-    set(HDILIB_ROOT "${LIBRARY_INSTALL_DIR}/HDILib/lib/cmake/HDILib" CACHE PATH "Location of HDILib cmake file")
+    set(lz4_ROOT "${LIBRARY_INSTALL_DIR}/lz4/lib/cmake")
+    set(flann_ROOT "${LIBRARY_INSTALL_DIR}/flann/lib/cmake/")
+    set(HDILIB_ROOT "${LIBRARY_INSTALL_DIR}/HDILib/lib/cmake/HDILib")
 
-    set(MV_SNE_ARTIFACTORY_LIBS_INSTALLED TRUE CACHE BOOL "Use the prebuilt libraries from artifactory" FORCE)
-    # *******************************************************************
-    # ******** If using conan fill the required versions here ***********
-    # *******************************************************************
-    #set(HDILib_VERSION "1.2.10")
-    #set(HDILib_CHANNEL "biovault/stable")
-    #set(FLANN_VERSION "1.9.2") 
-    #set(FLANN_CHANNEL "lkeb/stable")
-    #set(LZ4_VERSION "1.10.0")
-    #include(ConanInstall)
-    #message("***CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}***")
-    #find_package(HDILib COMPONENTS hdiutils hdidata hdidimensionalityreduction CONFIG REQUIRED)
-    #find_package(flann CONFIG REQUIRED)
 endif()
 
-
-find_package(lz4 1.10.0 REQUIRED)
+find_package(lz4 1.10.0 CONFIG REQUIRED)
 
 get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
 get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
