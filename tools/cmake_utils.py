@@ -102,7 +102,7 @@ class CMakeBuild(build_ext):
             raise RuntimeError("Unsupported platform")
 
         # Building with conan - conan is used to install the dependencies
-        cmake_args += ["-DNPTSNE_BUILD_WITH_CONAN=ON"]
+        cmake_args += ["-DUSE_ARTIFACTORY_LIBS=ON"]
 
         env = os.environ.copy()
         env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
@@ -123,38 +123,11 @@ class CMakeBuild(build_ext):
         """
 
         self.announce(f"Path is {os.environ['PATH']}", log.INFO)
-        # self.announce("Set the conan build profile from the current context", log.INFO)
-        # subprocess.run(
-        #    ["conan", "--version"],
-        #    cwd=self.build_temp,
-        # )
-        # subprocess.check_call(
-        #    ["conan", "profile", "new", "default", "--detect", "--force"], cwd=self.build_temp
-        # )
-        # self.announce("Show conan home dir", log.INFO)
-        # subprocess.check_call(
-        #    ["conan", "config", "home"],
-        #    cwd=self.build_temp,
-        # )
-        # self.announce("Show conan remotes", log.INFO)
-        # subprocess.check_call(
-        #    ["conan", "remote", "list"],
-        ##    cwd=self.build_temp,
-        # )
-        # subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
-
-        # if platform.system() == "Windows":
-        #    self.announce("Remove build_type from conan profile on windows", log.INFO)
-        #    subprocess.check_call(
-        #        ["conan", "profile", "remove", "settings.build_type", "default"],
-        #        cwd=self.build_temp,
-        #    )
-        #    subprocess.check_call(["conan", "profile", "show", "default"], cwd=self.build_temp)
 
         # CMake configure
         print("Çalling cmake configure")
         subprocess.check_call(
-            ["cmake", ext.sourcedir] + cmake_args,  # "--trace-expand",
+            ["cmake", "--log-level=VERBOSE", ext.sourcedir] + cmake_args,  # "--trace-expand",
             cwd=self.build_temp,
             env=env,
         )

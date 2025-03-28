@@ -31,10 +31,7 @@ execute_process(
 )
 message(STATUS "Working on branch ${GIT_BRANCH}")
 
-# Restrict the C standard to 17 to avoid the issues with
-# isoc23 
-if self.settings.os == "Linux":
-    tc.variables["CMAKE_C_FLAGS"] = "${CMAKE_C_FLAGS} -m64 -std=c17"
+
 
 # CONAN is only used to install dependencies if the NPTSNE_BUILD_WITH_CONAN is ON
 #if (NPTSNE_BUILD_WITH_CONAN)
@@ -49,7 +46,7 @@ if (USE_ARTIFACTORY_LIBS)
     include(FetchContent)
     FetchContent_Declare(cmakesupport
         GIT_REPOSITORY https://github.com/ManiVaultStudio/github-actions
-        GIT_TAG main
+        GIT_TAG libcxx_abi
         GIT_SHALLOW TRUE
         SOURCE_SUBDIR CMakeSupport
     )
@@ -58,9 +55,13 @@ if (USE_ARTIFACTORY_LIBS)
     message(STATUS "FetchContent: ${cmakesupport_SOURCE_DIR} ${cmakesupport_BINARY_DIR}")
     include("${cmakesupport_SOURCE_DIR}/CMakeSupport/InstallArtifactoryPackage.cmake")
 
-    install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE) 
-    install_artifactory_package(flann ${flann_VERSION} lkeb TRUE)
-    install_artifactory_package(lz4 ${lz4_VERSION} lkeb TRUE)
+    if(DEFINED ENV{HDILib_channel})
+        install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE "$ENV{HDILib_channel}") 
+    else()
+        install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE stable)  
+    endif()
+    install_artifactory_package(flann ${flann_VERSION} lkeb TRUE stable)
+    install_artifactory_package(lz4 ${lz4_VERSION} lkeb TRUE stable)
 
     set(lz4_ROOT "${LIBRARY_INSTALL_DIR}/lz4/lib/cmake")
     set(flann_ROOT "${LIBRARY_INSTALL_DIR}/flann/lib/cmake/")
@@ -70,17 +71,21 @@ endif()
 
 find_package(lz4 1.10.0 CONFIG REQUIRED)
 
-get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
+if (NOT UNIX)
+    get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
+else()
 
-# message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
-# message(STATUS "All import targets: -${IMPORT_TARGETS}-")
-# message(STATUS "LZ4_TARGETS_LIST is -${LZ4_TARGETS_LIST}-")
-# message(STATUS "LZ4_LZ4_TARGETS_LIST is -${LZ4_LZ4_TARGETS_LIST}-") # exists
-# message(STATUS "LZ4_static_IncludeDirs is -${LZ4_static_IncludeDirs}-") # exists
+endif()
+
+message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
+message(STATUS "All import targets: -${IMPORT_TARGETS}-")
+message(STATUS "LZ4_TARGETS_LIST is -${LZ4_TARGETS_LIST}-")
+message(STATUS "LZ4_LZ4_TARGETS_LIST is -${LZ4_LZ4_TARGETS_LIST}-") # exists
+message(STATUS "LZ4_static_IncludeDirs is -${LZ4_static_IncludeDirs}-") # exists
 message(STATUS "LZ4_static_Location is -${LZ4_static_Location}-") 
-# message(STATUS "lz4_FOUND is -${lz4_FOUND}-")
-# message(STATUS "LZ4_TARGET is -${LZ4_TARGET}-")
+message(STATUS "lz4_FOUND is -${lz4_FOUND}-")
+message(STATUS "LZ4_TARGET is -${LZ4_TARGET}-")
 # message(STATUS "lz4_TARGET is -${lz4_TARGET}-")
 
 # message(STATUS "All build targets: ${BUILDSYSTEM_TARGETS}")
@@ -157,6 +162,7 @@ pybind11_add_module(_nptsne
     src/cpp/TextureTsne.cpp
     src/cpp/TextureTsneExtended.cpp
 )
+
 
 message(STATUS "Linking ${LZ4_LIBRARY}")
 #target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
@@ -352,23 +358,25 @@ endif()
 
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     target_link_libraries(_nptsne PRIVATE ${OPENGL_LIBRARIES})
-    if(PLATFORM_IS_CENTOS)
-        # centos
-        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
-        if(NOT NPTSNE_BUILD_WITH_CONAN)
-            find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64 REQUIRED)
-            get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)
+    if(FALSE)
+        if(PLATFORM_IS_CENTOS)
+            # centos
+            find_library(LZ4_LIBRARY lz4 HINTS /usr/lib64)
+            if(NOT NPTSNE_BUILD_WITH_CONAN)
+                find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib64 REQUIRED)
+                get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)
+            endif()
+            find_package(PkgConfig REQUIRED)
+            message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
+        else()
+            # ubuntu
+            find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
+            if(NOT NPTSNE_BUILD_WITH_CONAN)
+                find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu REQUIRED)
+                get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)
+            endif()
+            message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
         endif()
-        find_package(PkgConfig REQUIRED)
-        message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
-    else()
-        # ubuntu
-        find_library(LZ4_LIBRARY lz4 HINTS /usr/lib/x86_64-linux-gnu)
-        if(NOT NPTSNE_BUILD_WITH_CONAN)
-            find_library(FLANNCPP_LIBRARY flann_cpp HINTS /usr/lib/x86_64-linux-gnu REQUIRED)
-            get_filename_component(FLANNCPP_LIBRARY_PATH ${FLANNCPP_LIBRARY} REALPATH)
-        endif()
-        message(STATUS "Flann library ${FLANNCPP_LIBRARY}")
     endif()
     # get_filename_component(LZ4_LIBRARY_PATH ${LZ4_LIBRARY} REALPATH)
     set(LZ4_LIBRARY "LZ4::lz4_static")
@@ -395,14 +403,17 @@ message(STATUS "4 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_REL
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # In linux bundle prebuilt libflann and liblz4
     install(FILES ${LZ4_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME liblz4.so)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.so.1.8)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.so.1.9.2)
     install(FILES ${GLFWLIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libglfw.so.3)
 endif()
 
 # Platform specific libs
 if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.1.8.dylib)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.1.9.2.dylib)
 endif()
+
+message(STATUS "set compiler flags for linux")
+#add_compile_options(-std=c17 -U_ISOC23_SOURCE)
 
 # Install the extra binaries to the desired liboutput
 if(CMAKE_SYSTEM_NAME STREQUAL Linux OR CMAKE_SYSTEM_NAME STREQUAL Darwin)
@@ -415,3 +426,5 @@ else()
         COMMAND ${CMAKE_COMMAND} -E echo "No conan libs for wheel fixup"
     )
 endif()
+
+message(STATUS "End of CMAKE")
