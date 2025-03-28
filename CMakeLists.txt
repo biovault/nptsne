@@ -71,12 +71,12 @@ endif()
 
 find_package(lz4 1.10.0 CONFIG REQUIRED)
 
-if (NOT UNIX)
-    get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
-else()
-
-endif()
+#if (NOT UNIX)
+#    get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
+#    get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
+#else()
+#
+#endif()
 
 message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
 message(STATUS "All import targets: -${IMPORT_TARGETS}-")
