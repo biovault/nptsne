@@ -6,7 +6,7 @@ endif()
 message(STATUS "1 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "1 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 
-file (STRINGS "version.txt" VERSION)
+file (STRINGS "version.txt" VERSION) 
 project(_nptsne)
 
 option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
@@ -72,7 +72,7 @@ endif()
 find_package(lz4 1.10.0 CONFIG REQUIRED)
 
 if (WIN32)
-    get_target_property(LZ4_static_Location lz4::lz4 IMPORTED_LOCATION_RELEASE)
+    get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
 endif()
 
 #message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
