@@ -127,7 +127,8 @@ class CMakeBuild(build_ext):
         # CMake configure
         print("Çalling cmake configure")
         subprocess.check_call(
-            ["cmake", "--log-level=VERBOSE", ext.sourcedir] + cmake_args,  # "--trace-expand",
+            ["cmake", "--trace-expand", "--log-level=VERBOSE", ext.sourcedir]
+            + cmake_args,  # "--trace-expand",
             cwd=self.build_temp,
             env=env,
         )

@@ -72,8 +72,8 @@ endif()
 find_package(lz4 1.10.0 CONFIG REQUIRED)
 
 if (WIN32)
-    get_target_property(LZ4_static_IncludeDirs LZ4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
+    get_target_property(LZ4_static_IncludeDirs lz4::lz4_static INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(LZ4_static_Location lz4::lz4_static IMPORTED_LOCATION_RELEASE)
 endif()
 
 #message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
