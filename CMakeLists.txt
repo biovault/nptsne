@@ -76,14 +76,14 @@ if (WIN32)
     get_target_property(LZ4_static_Location LZ4::lz4_static IMPORTED_LOCATION_RELEASE)
 endif()
 
-message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
-message(STATUS "All import targets: -${IMPORT_TARGETS}-")
-message(STATUS "LZ4_TARGETS_LIST is -${LZ4_TARGETS_LIST}-")
-message(STATUS "LZ4_LZ4_TARGETS_LIST is -${LZ4_LZ4_TARGETS_LIST}-") # exists
-message(STATUS "LZ4_static_IncludeDirs is -${LZ4_static_IncludeDirs}-") # exists
+#message(STATUS "All build targets: -${BUILDSYSTEM_TARGETS}-")
+#message(STATUS "All import targets: -${IMPORT_TARGETS}-")
+#message(STATUS "LZ4_TARGETS_LIST is -${LZ4_TARGETS_LIST}-")
+#message(STATUS "LZ4_LZ4_TARGETS_LIST is -${LZ4_LZ4_TARGETS_LIST}-") # exists
+#message(STATUS "LZ4_static_IncludeDirs is -${LZ4_static_IncludeDirs}-") # exists
 message(STATUS "LZ4_static_Location is -${LZ4_static_Location}-") 
-message(STATUS "lz4_FOUND is -${lz4_FOUND}-")
-message(STATUS "LZ4_TARGET is -${LZ4_TARGET}-")
+#message(STATUS "lz4_FOUND is -${lz4_FOUND}-")
+#message(STATUS "LZ4_TARGET is -${LZ4_TARGET}-")
 # message(STATUS "lz4_TARGET is -${lz4_TARGET}-")
 
 # message(STATUS "All build targets: ${BUILDSYSTEM_TARGETS}")
