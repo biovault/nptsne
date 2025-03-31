@@ -50,12 +50,12 @@ jobs:
         with:
           python-version: 3.12
 
-      - name: Install Conan
-        id: conan
-        uses: turtlebrowser/get-conan@main
+      #- name: Install Conan
+      #  id: conan
+      #  uses: turtlebrowser/get-conan@main
 
-      - name: Conan version
-        run: echo "${{ steps.conan.outputs.version }}"
+      #- name: Conan version
+      #  run: echo "${{ steps.conan.outputs.version }}"
 
       - name: Install cibuildwheel
         run: python -m pip install cibuildwheel==2.23.0
