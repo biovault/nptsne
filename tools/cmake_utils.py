@@ -101,7 +101,7 @@ class CMakeBuild(build_ext):
         else:
             raise RuntimeError("Unsupported platform")
 
-        # Use prebuilt libe from artifactory
+        # Building with conan - conan is used to install the dependencies
         cmake_args += ["-DUSE_ARTIFACTORY_LIBS=ON"]
 
         env = os.environ.copy()
@@ -115,7 +115,7 @@ class CMakeBuild(build_ext):
         # CMake configure
         print("Çalling cmake configure")
         subprocess.check_call(
-            ["cmake", ext.sourcedir, "--trace-expand"] + cmake_args,  # "--trace-expand",
+            ["cmake", "--log-level=VERBOSE", ext.sourcedir] + cmake_args,  # "--trace-expand",
             cwd=self.build_temp,
             env=env,
         )

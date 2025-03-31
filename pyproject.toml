@@ -3,8 +3,7 @@
 
 [build-system]
 requires = [
-    "cmake>=3.25.0",
-#    "conan==1.66.0",
+    "cmake>=3.25.0,<4.0",
     "packaging",
     "gitpython",
     "setuptools>=42",
@@ -29,7 +28,7 @@ test-command = "python {project}/test/run_doctest.py"
 build-verbosity = 2
 archs = "auto64"
 skip = "cp2* pp*"
-
+# test-skip = "*"
 
 #PEP440TYPE is used to insert a qualifier in the version name
 # It must be one of:
@@ -42,7 +41,6 @@ skip = "cp2* pp*"
 # If PEP440TYPE = "" or "rcN" the resulting name is "version" + [PEP440TYPE]
 
 [tool.cibuildwheel.windows]
-environment = {CONAN_USER_HOME="$(cmd /c 'echo %cd%')", PEP440TYPE="a", FULL_VERSION="1.3.0.a3"}
 build = "cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
@@ -52,43 +50,44 @@ before-build = [
 #    "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
 #    "python get-pip.py",
     "{project}\\.ci\\cleanprevbuild.bat",
-#    "pip3 install conan==1.66.0",
-#    "echo check conan",
-#    "where conan",
-#    "conan user",
-#    "type %CONAN_USER_HOME%\\cert.pem >> %CONAN_USER_HOME%\\.conan\\cacert.pem",
-#    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-#    "conan user -p %ARTIFACTORY_RO_PASSWORD% -r lkeb-artifactory hdpsreader",
-#    "conan remote list",
+    "which python",
 ]
+
+[tool.cibuildwheel.windows.environment]
+CONAN_USER_HOME="$(cmd /c 'echo %cd%')"
+PEP440TYPE="a"
+FULL_VERSION="1.3.0.a3"
+
 
 [tool.cibuildwheel.linux]
 # These are passed into the docker
-environment = {CONAN_USER_HOME="$(pwd)", PEP440TYPE="a", FULL_VERSION="1.3.0.a3"}
-manylinux-x86_64-image = "manylinux2014"
+# environment = {CONAN_USER_HOME="$(pwd)", PEP440TYPE="a", FULL_VERSION="1.3.0.a3", CIBW_DEBUG_KEEP_CONTAINER=true, HDILib_channel="python"}
+manylinux-x86_64-image = "manylinux_2_28"
 build = "cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64"
-#build = ["cp38-manylinux_x86_64"]
 
 # The following runs in the Linux docker environment
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-#    "echo install and setup conan",
-#    "pip install conan==1.66.0",
-#    "which conan",
-#    "conan user",
-#    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
-#    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-#    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
-#    "conan remote list",
-    "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel"
+    "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel",
+    "which python",]
+
+before-test = [
+    # "cp -r /project /host/home/bvanlew/tmp"
 ]
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
-    "auditwheel repair -w {dest_dir} {wheel}"
+    "auditwheel repair --plat manylinux_2_28_x86_64 -w {dest_dir} {wheel}"
 ]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
+
+[tool.cibuildwheel.linux.environment]
+CONAN_USER_HOME = "$(pwd)"
+PEP440TYPE = "a"
+FULL_VERSION = "1.3.0.a3"
+CIBW_DEBUG_KEEP_CONTAINER = true
+HDILib_channel = "python"
 
 
 [tool.cibuildwheel.macos]
@@ -103,15 +102,7 @@ before-all = [
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-#    "echo check conan",
     "which python",
-#    "pip install conan==1.66.0",
-#    "which conan",
-#    "conan user",
-#    "cat $CONAN_USER_HOME/cert.pem >> $CONAN_USER_HOME/.conan/cacert.pem",
-#    "conan remote add -f lkeb-artifactory https://lkeb-artifactory.lumc.nl/artifactory/api/conan/conan-local",
-#    "conan user -p $ARTIFACTORY_RO_PASSWORD -r lkeb-artifactory hdpsreader",
-#    "conan remote list",
 ]
 repair-wheel-command = [
     "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
@@ -119,3 +110,8 @@ repair-wheel-command = [
     "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
 ]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
+
+[tool.cibuildwheel.macos.environment]
+CONAN_USER_HOME="$(pwd)"
+PEP440TYPE="a"
+FULL_VERSION="1.3.0.a3"
