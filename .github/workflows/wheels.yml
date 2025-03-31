@@ -79,7 +79,7 @@ jobs:
       # The default upload name is artifact but a name can be supplied
       - uses: actions/upload-artifact@v4
         with:
-          name: nptsne_wheels
+          name: nptsne_wheels_${{matrix.job-name}}
           path: ./wheelhouse/*.whl
           retention-days: 1
           if-no-files-found: error
