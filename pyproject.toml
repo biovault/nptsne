@@ -91,7 +91,6 @@ HDILib_channel = "python"
 
 
 [tool.cibuildwheel.macos]
-environment = {CONAN_USER_HOME="$(pwd)", PEP440TYPE="a", FULL_VERSION="1.3.0.a3"}
 build-verbosity=1
 build = "cp310-macosx_x86_64 cp311-macosx_x86_64 cp312-macosx_x86_64 cp313-macosx_x86_64"
 before-all = [
