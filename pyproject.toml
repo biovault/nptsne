@@ -92,7 +92,7 @@ HDILib_channel = "python"
 
 [tool.cibuildwheel.macos]
 build-verbosity=3
-build = "cp3(10,11,12,13)-*"
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 archs = ["x86_64"]
 #before-all = [
 #    "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
