@@ -146,19 +146,20 @@ jobs:
         if: ${{ needs.build_wheels.outputs.dorelease == 'true' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.PYPI_TOKEN_SECRET  }}
           packages_dir: ./dist/
           skip_existing: true
+          verbose: true
 
       - name: Publish wheels to TestPyPI
         if: ${{ needs.build_wheels.outputs.dorelease == 'false' }}
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: __token__
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
           repository_url: https://test.pypi.org/legacy/
           packages_dir: ./dist/
+          skip-existing: true
+          verbose: true
 
   #   1) If the upload succeeds trigger either :
   #      ReadTheDocs if DOREADTHEDOCS was true
