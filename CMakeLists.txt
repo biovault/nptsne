@@ -134,7 +134,7 @@ if(TRUE)
     set(GLFW_BUILD_DOCS OFF CACHE BOOL "disable GLFX docs")
     set(GLFW_INSTALL OFF CACHE BOOL "disable GLFX installation target")
     add_subdirectory(external/glfw)
-    install_headers(external/glfw)
+    # install_headers(external/glfw)
 endif()
 
 pybind11_add_module(_nptsne
@@ -395,22 +395,19 @@ message(STATUS "4 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_REL
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
     # In linux bundle prebuilt libflann and liblz4
     install(FILES ${LZ4_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME liblz4.so)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.so.1.9.2)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME "libflann_cpp.so.${flann_VERSION}")
     install(FILES ${GLFWLIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libglfw.so.3)
 endif()
 
 # Platform specific libs
 if (CMAKE_SYSTEM_NAME STREQUAL Darwin)
-    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME libflann_cpp.1.9.2.dylib)
+    install(FILES ${FLANNCPP_LIBRARY_PATH} DESTINATION ${TEMP_LIBS_DIR} RENAME "libflann_cpp.${flann_VERSION}.dylib")
 endif()
-
-message(STATUS "set compiler flags for linux")
-#add_compile_options(-std=c17 -U_ISOC23_SOURCE)
 
 # Install the extra binaries to the desired liboutput
 if(CMAKE_SYSTEM_NAME STREQUAL Linux OR CMAKE_SYSTEM_NAME STREQUAL Darwin)
     add_custom_target (bundle_libs
-        COMMAND ${CMAKE_COMMAND} -E echo "Move conan libs for wheel fix-up fron bin dir: ${CMAKE_BINARY_DIR}"
+        COMMAND ${CMAKE_COMMAND} -E echo "Run install for binary dir ${CMAKE_BINARY_DIR} and the pre-built libs."
         COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR}
     )
 else()
