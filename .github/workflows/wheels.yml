@@ -126,6 +126,7 @@ jobs:
         run: |
           from pathlib import Path
           from packaging.utils import parse_wheel_filename
+          import os
           p = Path("./dist")
           l = list(p.glob('*.whl'))
           tup = parse_wheel_filename(l[0].name)
