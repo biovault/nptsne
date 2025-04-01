@@ -94,7 +94,6 @@ HDILib_channel = "python"
 build-verbosity=3
 build = "cp3(10,11,12,13)-*"
 archs = ["x86_64"]
-debug-traceback = true
 #before-all = [
 #    "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
 #    "if [ -d \"./wheelhouse\" ]; then rm -Rf ./wheelhouse; fi",

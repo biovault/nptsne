@@ -67,7 +67,7 @@ jobs:
       - name: Build wheels
         env:
           ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_RO_PASSWORD }}
-        run: python -m cibuildwheel --output-dir wheelhouse
+        run: python -m cibuildwheel --debug-traceback --output-dir wheelhouse
       
 
       - id: rtd
