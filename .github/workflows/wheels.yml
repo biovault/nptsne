@@ -105,8 +105,9 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          name: nptsne_wheels_*
+          pattern: nptsne_wheels_*
           path: ./dist
+          merge-multiple: true
 
       - name: Setup python
         uses: actions/setup-python@v5
