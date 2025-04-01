@@ -96,19 +96,19 @@ build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*"]
 archs = ["arm64"]
 before-all = [
     "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
-#    "if [ -d \"./wheelhouse\" ]; then rm -Rf ./wheelhouse; fi",
-#    "mkdir ./wheelhouse"
+    "if [ -d \"./wheelhouse\" ]; then rm -Rf ./wheelhouse; fi",
+    "mkdir ./wheelhouse"
 ]
 before-build = [
 #    "chmod +x {project}/.ci/cleanprevbuild.sh",
 #    "{project}/.ci/cleanprevbuild.sh",
     "which python",
 ]
-repair-wheel-command = [
-    "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
-    "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
-    "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
-]
+#repair-wheel-command = [
+#    "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
+#    "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
+#    "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
+#]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.macos.environment]
