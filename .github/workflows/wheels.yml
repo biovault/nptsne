@@ -129,8 +129,8 @@ jobs:
           p = Path("./dist")
           l = list(p.glob('*.whl'))
           tup = parse_wheel_filename(l[0].name)
-          echo "tag=v{str(tup[1])}">> $GITHUB_OUTPUT"
-          echo "wheelver={str(tup[1])}">> $GITHUB_OUTPUT"
+          echo "tag=v{str(tup[1])}" >> $GITHUB_OUTPUT
+          echo "wheelver={str(tup[1])}" >> $GITHUB_OUTPUT
 
       - name: Tag using v + VERSION
         uses: mathieudutour/github-tag-action@v6.2
