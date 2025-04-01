@@ -310,6 +310,12 @@ if (CMAKE_GENERATOR STREQUAL Xcode)
 
 endif()
 
+# Set the OMP root (assume installed via brew)
+if(APPLE)
+    execute_process(COMMAND brew --prefix libomp
+        OUTPUT_VARIABLE OMP_ROOT
+        OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()    
 find_package(OpenMP)
 
 if(OPENMP_FOUND)
