@@ -313,8 +313,9 @@ endif()
 # Set the OMP root (assume installed via brew)
 if(APPLE)
     execute_process(COMMAND brew --prefix libomp
-        OUTPUT_VARIABLE OMP_ROOT
+        OUTPUT_VARIABLE OpenMP_ROOT
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+    message (STATUS "OpenMP root: ${OpenMP_ROOT}")
 endif()    
 find_package(OpenMP)
 
