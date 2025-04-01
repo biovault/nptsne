@@ -147,8 +147,8 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_TOKEN_SECRET  }}
-          packages_dir: ./dist/
-          skip_existing: true
+          packages-dir: ./dist/
+          skip-existing: true
           verbose: true
 
       - name: Publish wheels to TestPyPI
@@ -156,8 +156,8 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
-          repository_url: https://test.pypi.org/legacy/
-          packages_dir: ./dist/
+          repository-url: https://test.pypi.org/legacy/
+          packages-dir: ./dist/
           skip-existing: true
           verbose: true
 
