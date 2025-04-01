@@ -104,11 +104,11 @@ before-build = [
 #    "{project}/.ci/cleanprevbuild.sh",
     "which python",
 ]
-#repair-wheel-command = [
-#    "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
-#    "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
-#    "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
-#]
+repair-wheel-command = [
+    "export DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$TMPDIR/cibwlibsdir",
+    "echo 'Lib path for repair $DYLD_LIBRARY_PATH'",
+    "delocate-listdeps {wheel} && delocate-wheel --require-archs x86_64 -w {dest_dir} {wheel}"
+]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.macos.environment]
