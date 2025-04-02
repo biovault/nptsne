@@ -24,7 +24,7 @@ jobs:
             os: "ubuntu-24.04"
 
           - job-name: "macOS"
-            os: "macos-13-arm64"
+            os: "macos-14"
             xcode-version: "15.2"
 
           - job-name: "Windows"
