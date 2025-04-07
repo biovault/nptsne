@@ -6,7 +6,7 @@ from nptsne import hsne_analysis
 
 # The demo GUI
 from AnalysisGui import AnalysisGui
-from ModelGui import ModelGui, AnalysisEvent
+from ModelGui import AnalysisTreeGui, AnalysisEvent
 
 # Standard support packages
 import numpy as np
@@ -14,6 +14,7 @@ from pathlib import Path
 import queue
 import sys
 from matplotlib import colors
+from typing import List
 
 # Handle running this via Windows Remote Desktop (i.e. no GPU)
 def get_default_embedding_type():
@@ -38,7 +39,7 @@ default_embedder_type = get_default_embedding_type()
 print("Embedder: ", default_embedder_type)
 
 
-analysis_model = None
+analysis_model: hsne_analysis.Analysis = None
 data = None
 analysis_guis = {}
 labels = None
@@ -60,7 +61,7 @@ def queue_new_analysis(analysis):
 
 # Three callbacks for the AnalysisGui used to communicate status
 # 1.)AnalysisEvent.REMOVED
-def remove_analysis(id):
+def remove_analysis(id: int) -> List[int]:
     global analysis_model
     global analysis_guis
     removed_ids = analysis_model.remove_analysis(id)
@@ -77,13 +78,13 @@ def remove_analysis(id):
 
 
 # 2.) AnalysisEvent.ADDED
-def add_analysis(analysis, selected_indexes):
+def add_analysis(parent_analysis: hsne_analysis.Analysis, selected_indexes: np.ndarray):
     """Callback to start a sub analysis in the analysis model"""
     global data
     global analysis_model
     global analysis_guis
     print("Drilling down to new analysis")
-    new_analysis = analysis_model.add_new_analysis(analysis, selected_indexes)
+    new_analysis = analysis_model.add_new_analysis(parent_analysis, selected_indexes)
     print("Updated analysis hierarchy: ")
     print(analysis_model.analysis_container)
     print("Starting analysis GUI")
@@ -101,7 +102,7 @@ def add_analysis(analysis, selected_indexes):
 
 
 # 3.) AnalysisEvent.FINISHED
-def analysis_stopped(analysis_gui):
+def analysis_stopped(analysis_gui: AnalysisGui):
     completed_analysis = analysis_gui.analysis
     analysis_event_queue.put(
         {
@@ -164,7 +165,7 @@ def start_hsne(X, data_file, hsne_file, label_file):
     # raw = np.fromfile('MNIST_70000.bin', np.uint8)
     # X = np.reshape(raw, (70000, 784))
     hsne = nptsne.HSne(True)
-    number_of_scales = 4
+    number_of_scales = 3  # was 4
     if hsne_file is None:
         print("hSNE from scratch")
         hsne.create_hsne(X, number_of_scales)
@@ -178,7 +179,7 @@ def start_hsne(X, data_file, hsne_file, label_file):
     data = X
     analysis_model = hsne_analysis.AnalysisModel(hsne, default_embedder_type)
 
-    top_analysis = analysis_model.top_analysis
+    top_analysis: hsne_analysis.Analysis = analysis_model.top_analysis
 
     all_analyses_per_scale = {top_analysis.scale_id: {top_analysis.id: top_analysis}}
 
@@ -200,12 +201,12 @@ def start_hsne(X, data_file, hsne_file, label_file):
     print(f"Top analysis has {top_analysis.number_of_points} points")
     analysis_guis[top_analysis.id] = top_analysis_gui
     queue_new_analysis(top_analysis)
-    # Queue is used to pass changes in the analyses to the ModelGui
-    # The ModelGui is blocking
+    # Queue is used to pass changes in the analyses to the AnalysisTreeGui
+    # The AnalysisTreeGui is blocking
     model_gui.set_analysis_model(analysis_model)
 
 
 analysis_event_queue = queue.Queue()
 # Display a tree of the scales/analyses
-model_gui = ModelGui(analysis_event_queue, tree_click, tree_del, tree_load)
+model_gui = AnalysisTreeGui(analysis_event_queue, tree_click, tree_del, tree_load)
 model_gui.run()

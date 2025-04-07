@@ -1,33 +1,40 @@
+import matplotlib.backend_bases
 import nptsne
 import numpy as np
 from nptsne import hsne_analysis
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
-from matplotlib import animation
+from matplotlib import animation, colors
 from matplotlib.gridspec import GridSpec
 import matplotlib.cm as cm
 import matplotlib.patches as patches
 import io
 import time
 
+from collections.abc import Callable
+from typing import List, Self
+
 matplotlib.use("Qt5Agg")
 
 
 class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
-    It assumes the analysis is simple image data (this could be abstracted)"""
+    It assumes the analysis is simple image data (this could be abstracted)
+    It shows the anaylsis clusters as a square for a matplotlib scatterplot 
+    and a square for the corresponding digit images.
+    """
 
     def __init__(
         self,
-        data,
-        analysis,
-        make_new_analysis,
-        remove_analysis,
-        analysis_stopped,
-        top_level=False,
-        labels=None,
-        color_norm=None,
+        data: np.ndarray,
+        analysis: hsne_analysis.Analysis,
+        make_new_analysis: Callable[[hsne_analysis.Analysis, np.ndarray], None],
+        remove_analysis: Callable[[int], List[int]],
+        analysis_stopped: Callable[[Self], None],
+        top_level: bool = False,
+        labels: np.ndarray = None,
+        color_norm: colors.Normalize =None,
     ):
         """Create a new analysis gui"""
 
@@ -38,7 +45,7 @@ class AnalysisGui:
         self.remove_analysis = remove_analysis
         self.analysis_stopped = analysis_stopped
         self.top_level = top_level
-        self.labels = None
+        self.labels: np.ndarray = None
         if not labels is None:
             self.labels = labels[self.analysis.landmark_orig_indexes]
         self.color_norm = color_norm
@@ -91,7 +98,6 @@ class AnalysisGui:
         self.ani = animation.FuncAnimation(
             self.fig,
             self.iterate_tSNE,
-            init_func=self.start_plot,
             frames=range(self.num_frames),
             interval=100,
             repeat=True,
@@ -159,12 +165,12 @@ class AnalysisGui:
         self.ani.event_source.stop()
         plt.close(self.fig)
 
-    def handle_close(self, evt):
+    def handle_close(self, evt: matplotlib.backend_bases.Event):
         if self.cleanup:
             self.remove_analysis(self.analysis.id)
         del self.analysis
 
-    def stop_loop(self, event):
+    def stop_loop(self, event: matplotlib.backend_bases.Event):
         self.fig.canvas.stop_event_loop()
 
     def update_scatter_plot_limits(self):
@@ -185,9 +191,12 @@ class AnalysisGui:
         self.fig.set_size_inches(fig_size)
         # or plt.pause(0.00001) causes everything to be redrawn
 
-    def iterate_tSNE(self, i):
+    def iterate_tSNE(self, i: int):
         self.fig.canvas.flush_events()
         send_stop_event = False
+
+        if (i == 0):
+            return (self.start_plot()) 
 
         try:
             if not self._stop_iter:
@@ -227,7 +236,7 @@ class AnalysisGui:
             self.digit_im,
         ]
 
-    def on_over(self, event):
+    def on_over(self, event: matplotlib.backend_bases.Event):
         """Handle two modes:
         1) Digit display mode
         2) Rectangle brush mode"""
@@ -257,14 +266,14 @@ class AnalysisGui:
             self.rect.set_height(height)
             self.rect.set_alpha(0.4)
 
-    def on_keypress(self, event):
+    def on_keypress(self, event: matplotlib.backend_bases.Event):
         if event.key in ["q", "Q", "escape"]:
             self.quit()
 
     def in_zoom_or_pan(self):
         return bool(self.fig.canvas.toolbar.mode)
 
-    def on_start_select(self, event):
+    def on_start_select(self, event: matplotlib.backend_bases.Event):
         if self.analysis.scale_id == 0 or self.in_zoom_or_pan():
             return
         self.in_selection = True
@@ -278,7 +287,7 @@ class AnalysisGui:
         self.rect.set_height(0)
         self.rect.set_alpha(0.4)
 
-    def on_end_select(self, event):
+    def on_end_select(self, event: matplotlib.backend_bases.Event):
         if self.analysis.scale_id == 0 or self.in_zoom_or_pan():
             return
         self.in_selection = False

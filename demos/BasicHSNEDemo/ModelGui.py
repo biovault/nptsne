@@ -13,8 +13,16 @@ class AnalysisEvent(Enum):
     REMOVED = 3
 
 
-class ModelGui:
-    """This is the tkinter based visulization of the analysis model"""
+class AnalysisTreeGui:
+    """This is the tkinter based visualization of the HSNE analysis model.
+    The visualization for the the HSNE model is one line for each
+    level in the hierarchy. Theline comprises:
+        - a thumbnail derived from the (cluster) image in the corresponding AnalysisGui
+        - test description of that level Analysis (contains id, num_points and hsne hierarchy scale)
+        - id - a unique integer for the analysis level
+        - #Points - the number of points in the analysis level
+
+    """
 
     NO_PARENT_ID = 0xFFFFFFFF
 
@@ -96,6 +104,12 @@ class ModelGui:
         item = self.tree.item(self.tree.focus())
         if not item:
             return
+        if len(self.tree.selection()) > 0: 
+            selected_item = self.tree.selection()[0]
+            if self.tree.item(selected_item, 'open'):
+                self.tree.item(selected_item, open=False)
+            else:
+                self.tree.item(selected_item, open=True)
         values = item["values"]
         if len(values) == 0:
             return
@@ -160,7 +174,7 @@ class ModelGui:
         im = PIL.Image.new("RGB", (30, 30), (200, 200, 200))
         tk_thumbnail = ImageTk.PhotoImage(im)
         self.images.append(tk_thumbnail)
-        if parent_id == ModelGui.NO_PARENT_ID:
+        if parent_id == AnalysisTreeGui.NO_PARENT_ID:
             self.clear()
             x = self.tree.insert(
                 "", "end", iid=str(id), text=name, image=tk_thumbnail, values=(id, numpoints)
@@ -196,7 +210,7 @@ class ModelGui:
     def finish_analysis(self, id, name, image_buf):
         # print("finished ", id)
         img = PIL.Image.open(image_buf)
-        thumbnail = img.resize((30, 30), PIL.Image.ANTIALIAS)
+        thumbnail = img.resize((30, 30), PIL.Image.LANCZOS)
         # thumbnail.show()
         tk_thumbnail = ImageTk.PhotoImage(thumbnail)
         self.images.append(tk_thumbnail)
