@@ -2,9 +2,13 @@ from tkinter import ttk, Tk, filedialog, messagebox
 import queue
 import os
 import PIL
+import matplotlib
 from PIL import ImageTk
+from nptsne import hsne_analysis
 
 from enum import Enum
+from collections.abc import Callable
+from typing import List
 
 
 class AnalysisEvent(Enum):
@@ -26,7 +30,7 @@ class AnalysisTreeGui:
 
     NO_PARENT_ID = 0xFFFFFFFF
 
-    def __init__(self, analysis_event_queue, select, delete, load):
+    def __init__(self, analysis_event_queue: queue.Queue, select: Callable[[int], None], delete: Callable[[List[int]]], load: Callable[[str, str], None]):
         """Create a new analysis model gui"""
 
         self.analysis_event_queue = analysis_event_queue
@@ -36,7 +40,7 @@ class AnalysisTreeGui:
         self.delete_callback = delete
         self.load_callback = load
 
-    def set_analysis_model(self, analysis_model):
+    def set_analysis_model(self, analysis_model: hsne_analysis.AnalysisModel):
         # TODO empt event queue
         self.model = analysis_model
         self.top_scale = analysis_model.top_scale_id
@@ -169,7 +173,7 @@ class AnalysisTreeGui:
             if event["event"] == AnalysisEvent.REMOVED:
                 self.remove_analysis(event["id"])
 
-    def add_analysis(self, id, name, scale_id, parent_id, numpoints):
+    def add_analysis(self, id: int, name: str, scale_id: int, parent_id: int, numpoints: int):
         # print("add ", id)
         im = PIL.Image.new("RGB", (30, 30), (200, 200, 200))
         tk_thumbnail = ImageTk.PhotoImage(im)
@@ -194,7 +198,7 @@ class AnalysisTreeGui:
                 self.tree.see(str(id))
                 # print("Inserted id: ", x)
 
-    def remove_analysis(self, id):
+    def remove_analysis(self, id: int):
         # At the top clear everything and empty the queue
         # print("remove ", id)
         if id == self.root_id:
@@ -207,7 +211,7 @@ class AnalysisTreeGui:
             if self.tree.exists(str(id)):
                 self.tree.delete(str(id))
 
-    def finish_analysis(self, id, name, image_buf):
+    def finish_analysis(self, id: int, name: str, image_buf):
         # print("finished ", id)
         img = PIL.Image.open(image_buf)
         thumbnail = img.resize((30, 30), PIL.Image.LANCZOS)

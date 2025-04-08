@@ -108,10 +108,6 @@ class AnalysisGui:
 
     def win_raise(self):
         self.fig.show()
-        # plt.figure(str(self.analysis))
-        # cfm = plt.get_current_fig_manager()
-        # cfm.window.activateWindow()
-        # cfm.window.raise_()
 
     def start_plot(self):
         # self.ax.set(xlim=(-self.extent, self.extent), ylim=(-self.extent, self.extent))

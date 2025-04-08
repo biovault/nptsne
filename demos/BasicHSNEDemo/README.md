@@ -6,6 +6,7 @@
 3. [Running](#running)
 4. [Usage](#usage)
 5. [Demo software architecture](#architecture)
+   1. [Developer tips](#using-the-nptsne-analysis)
 6. [Acknowledgement data sources](#data-sources)
 ### Purpose 
 
@@ -54,7 +55,7 @@ There are two main GUI elements:
 1. The AnalysisTreeGui displays the load controls and the hierarchy of analyses  
 2. The AnalysisGui, one or more dialogs containing the interactive embedding plot widget for an analysis and an associated viewer widget for MNIST digits corresponding to the selection.  
 
-#### Using the nptsne Analysis class interface
+#### Using the nptsne Analysis
 
 The purpose of this is to illustrate how nptsne can be used to perfom an HSNE analysis and how that can be navigated and displayed using tSNE. The following points are illustrated:
 

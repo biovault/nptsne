@@ -14,7 +14,7 @@ from pathlib import Path
 import queue
 import sys
 from matplotlib import colors
-from typing import List
+from typing import List, Tuple
 
 # Handle running this via Windows Remote Desktop (i.e. no GPU)
 def get_default_embedding_type():
@@ -78,7 +78,7 @@ def remove_analysis(id: int) -> List[int]:
 
 
 # 2.) AnalysisEvent.ADDED
-def add_analysis(parent_analysis: hsne_analysis.Analysis, selected_indexes: np.ndarray):
+def add_analysis(parent_analysis: hsne_analysis.Analysis, selected_indexes: np.ndarray) -> None:
     """Callback to start a sub analysis in the analysis model"""
     global data
     global analysis_model
@@ -102,7 +102,7 @@ def add_analysis(parent_analysis: hsne_analysis.Analysis, selected_indexes: np.n
 
 
 # 3.) AnalysisEvent.FINISHED
-def analysis_stopped(analysis_gui: AnalysisGui):
+def analysis_stopped(analysis_gui: AnalysisGui) -> None:
     completed_analysis = analysis_gui.analysis
     analysis_event_queue.put(
         {
@@ -116,20 +116,20 @@ def analysis_stopped(analysis_gui: AnalysisGui):
 
 # Callbacks for the tree control
 # 1.) Clicking an item raises the window
-def tree_click(analysis_id):
+def tree_click(analysis_id: int) -> None:
     analysis_gui = analysis_guis[analysis_id]
     analysis_gui.win_raise()
 
 
 # 2.) Tree remove - returns a list of ananlysis ids to deleter
-def tree_del(analysis_ids):
+def tree_del(analysis_ids: List[int]) -> None:
     for id in analysis_ids:
         if id in analysis_guis:
             remove_analysis(id)
 
 
 # 3.) Load an numpy file - offer the user the chance to preload an hsnefile if one is avaliable
-def tree_load(filename, label_filename):
+def tree_load(filename: str, label_filename: str) -> None:
     data_file_path = Path(filename)
     hsne_file_path = None
     test_file_path = data_file_path.with_suffix(".hsne")
@@ -145,7 +145,7 @@ def tree_load(filename, label_filename):
 model_gui = None
 
 
-def get_labels_and_color_norm(label_file):
+def get_labels_and_color_norm(label_file) -> Tuple[np.ndarray, colors.Normalize]:
     if label_file is None:
         return (None, None)
 
@@ -157,7 +157,7 @@ def get_labels_and_color_norm(label_file):
     return (labels, norm)
 
 
-def start_hsne(X, data_file, hsne_file, label_file):
+def start_hsne(X: np.ndarray, data_file: Path, hsne_file: Path, label_file: str):
     global analysis_model
     global data
     global labels
