@@ -1,9 +1,10 @@
 """A viewer for hyperspectral image data
 
-    Includes controls for loading an blending a background image and
-    choosing the current image index displayed. Hyperspectral and background
-    data are displayed as gray scale
+Includes controls for loading an blending a background image and
+choosing the current image index displayed. Hyperspectral and background
+data are displayed as gray scale
 """
+
 import os
 from pathlib import Path
 import numpy as np
@@ -11,7 +12,7 @@ import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 from matplotlib.figure import Figure
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QLabel,
@@ -21,7 +22,7 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QSlider,
 )
-from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt6.QtCore import pyqtSlot, Qt
 from PIL import Image
 from typing import Tuple
 
@@ -161,7 +162,7 @@ class HyperspectralImageViewer(QWidget):
         self.bkgrnd_button.clicked.connect(self.on_load_bkgrnd)
         self.bkgrnd_label = QLabel("<optionally choose background .png>")
         self.control_layout.addRow(self.bkgrnd_button, self.bkgrnd_label)
-        self.blend_slider = QSlider(Qt.Horizontal, self)
+        self.blend_slider = QSlider(Qt.Orientation.Horizontal, self)
         self.blend_slider.setValue(50)
         self.blend_slider.valueChanged.connect(self.change_blend)
         self.control_layout.addRow(QLabel("Blend: "), self.blend_slider)

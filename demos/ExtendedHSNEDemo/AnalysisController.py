@@ -18,7 +18,7 @@ import nptsne
 from nptsne import hsne_analysis
 from matplotlib import colors
 from matplotlib.backend_bases import TimerBase
-from PyQt5 import QtWidgets  # pylint: disable=no-name-in-module
+from PyQt6 import QtWidgets  # pylint: disable=no-name-in-module
 from EmbeddingGui import EmbeddingViewer
 from CompositeImageViewer import CompositeImageViewer
 from HyperspectralImageViewer import HyperspectralImageViewer

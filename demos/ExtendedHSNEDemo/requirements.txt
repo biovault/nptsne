@@ -1,5 +1,6 @@
-matplotlib
+matplotlib==3.10.1
+numpy==2.2.4
 nptsne
-PyQt5
-pandas
+PyQt6
+pandas==2.2.3
 pywin32; sys_platform == 'win32'

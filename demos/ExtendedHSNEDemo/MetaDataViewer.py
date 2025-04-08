@@ -2,7 +2,7 @@
 """View data as a composite (average) of multiple grayscale frames"""
 import pandas as pd
 import numpy as np
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QWidget,
     QFormLayout,
     QVBoxLayout,
@@ -13,8 +13,8 @@ from PyQt5.QtWidgets import (
     QAbstractItemView,
     QHeaderView,
 )
-from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtGui import QColor
+from PyQt6.QtCore import pyqtSlot
+from PyQt6.QtGui import QColor
 from typing import Union, Callable, List
 
 
@@ -85,9 +85,11 @@ class MetaDataViewer(QWidget):
         """The table allows the user to select labels"""
         self.meta_table.clear()
         # select by row and allow building up multiple selections
-        self.meta_table.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.meta_table.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.meta_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.meta_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.meta_table.setSelectionMode(QTableWidget.SelectionMode.ExtendedSelection)
+        self.meta_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.ResizeToContents
+        )
         self.meta_table.setShowGrid(True)
         self.meta_table.setRowCount(len(self.labels))
         self.meta_table.setColumnCount(2)

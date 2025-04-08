@@ -20,7 +20,7 @@ import nptsne
 import numpy as np
 import PIL
 from PIL import ImageQt, Image
-from PyQt5.QtWidgets import (
+from PyQt6.QtWidgets import (
     QApplication,
     QTreeView,
     QWidget,
@@ -39,8 +39,8 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QHeaderView,
 )
-from PyQt5.QtCore import Qt, QTimer, QSize, pyqtSlot
-from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem, QPixmap, QIntValidator
+from PyQt6.QtCore import Qt, QTimer, QSize, pyqtSlot, QItemSelectionModel
+from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem, QPixmap, QIntValidator
 from DemoConfig import CONFIGS
 from typing import List, Optional, Callable, Union, Any, Dict, Tuple
 import nptsne
@@ -103,8 +103,9 @@ class ModelGui(QDialog):
 
         # The analysis tree
         self.tree = QTreeView()
-        self.tree.setSelectionBehavior(QAbstractItemView.SelectRows)
-        self.tree.header().setSectionResizeMode(QHeaderView.ResizeToContents)
+        self.tree.setSelectionBehavior(QTreeView.SelectionBehavior.SelectRows)
+        self.tree.setSelectionMode(QTreeView.SelectionMode.ExtendedSelection)
+        self.tree.header().setSectionResizeMode(QHeaderView.ResizeMode.ResizeToContents)
         self.tree.setIconSize(QSize(*self.thumb_size))
         self.tree.setModel(self.model)
 
@@ -454,13 +455,15 @@ class ModelGui(QDialog):
         index = self.tree.currentIndex()
         if index is None:
             return None
-        return self.model.itemData(index.siblingAtColumn(self.ID))[0]
+        if len(self.model.itemData(index.siblingAtColumn(self.ID))) > 0:
+            return self.model.itemData(index.siblingAtColumn(self.ID))[0]
+        return None
 
     def create_analysis_model(self, parent) -> QStandardItemModel:
         model = QStandardItemModel(0, 3, parent)
-        model.setHeaderData(self.ANALYSIS, Qt.Horizontal, "Analysis")  # type: ignore
-        model.setHeaderData(self.ID, Qt.Horizontal, "Id")  # type: ignore
-        model.setHeaderData(self.NUMPOINTS, Qt.Horizontal, "#Points")  # type: ignore
+        model.setHeaderData(self.ANALYSIS, Qt.Orientation.Horizontal, "Analysis")  # type: ignore
+        model.setHeaderData(self.ID, Qt.Orientation.Horizontal, "Id")  # type: ignore
+        model.setHeaderData(self.NUMPOINTS, Qt.Orientation.Horizontal, "#Points")  # type: ignore
         return model
 
     def add_test_analysis(self) -> None:
@@ -491,8 +494,8 @@ class ModelGui(QDialog):
                 self.remove_analysis(event["id"])
 
     def add_analysis(self, analysis_id: int, name: str, parent_id: int, numpoints: int) -> None:
-        im = ImageQt.ImageQt(Image.new("RGB", self.thumb_size, (100, 0, 200)))
-        item = QStandardItem(QIcon(QPixmap.fromImage(im)), name)
+        im = ImageQt.Image.new("RGB", self.thumb_size, (100, 0, 200))
+        item = QStandardItem(QIcon(QPixmap.fromImage(ImageQt.ImageQt(im))), name)
         # Need to persist the thumbnails otherwise the ImageQT will get garbage
         # collected along with the memory
         item.__thumb = im  # type: ignore
@@ -532,7 +535,7 @@ class ModelGui(QDialog):
     def finish_analysis(self, analysis_id: int, name: str, image_buf: BytesIO) -> None:
         print("finished ", analysis_id)
         img = PIL.Image.open(image_buf)
-        thumbnail = img.resize(self.thumb_size, PIL.Image.ANTIALIAS)
+        thumbnail = img.resize(self.thumb_size, PIL.Image.Resampling.LANCZOS)
         # thumbnail.show()
         im = ImageQt.ImageQt(thumbnail)
         item = self.find_analysis_item(analysis_id)

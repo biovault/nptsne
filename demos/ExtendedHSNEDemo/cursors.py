@@ -1,8 +1,8 @@
-"""Selection cursors in xpm format
-"""
+"""Selection cursors in xpm format"""
+
 from enum import Enum
-from PyQt5.QtGui import QCursor, QPixmap
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QCursor, QPixmap
+from PyQt6.QtCore import Qt
 
 from typing import Dict, Tuple
 
@@ -518,7 +518,7 @@ class DrawingCursors:
 
     @classmethod
     def __load_cursors(cls):
-        cursors = {(DrawingMode.NoDraw, DrawingShape.NoShape): QCursor(Qt.ArrowCursor)}
+        cursors = {(DrawingMode.NoDraw, DrawingShape.NoShape): QCursor(Qt.CursorShape.ArrowCursor)}
         for k in cls.key_to_drawstate:
             px = QPixmap(cursors_xpm[k])
             mask = px.createHeuristicMask()

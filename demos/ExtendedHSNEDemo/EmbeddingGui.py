@@ -15,15 +15,18 @@ Classes:
 import io
 import enum
 import numpy as np
+import matplotlib
+
+matplotlib.use("QtAgg")
 import matplotlib.pyplot as plt
 import matplotlib.style as mplstyle
 from matplotlib.widgets import RectangleSelector, LassoSelector, EllipseSelector, PolygonSelector
 from matplotlib.path import Path
-from matplotlib.backends.backend_qt5agg import FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backend_bases import MouseEvent, KeyEvent
 from matplotlib.figure import Figure
 from matplotlib import colors
-from PyQt5 import QtWidgets, QtCore
+from PyQt6 import QtWidgets, QtCore
 
 from cursors import DrawingCursors, DrawingShape, DrawingMode
 from matplotlib.backend_bases import TimerBase
@@ -66,8 +69,8 @@ class EmbeddingGui(FigureCanvas):
         mplstyle.use("fast")
         super(EmbeddingGui, self).__init__(self.fig)
         self.fig.tight_layout(pad=0)
-        self.fig.canvas.setFocusPolicy(QtCore.Qt.ClickFocus)  # type: ignore
-        self.fig.canvas.setFocus()
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)  # type: ignore
+        self.setFocus()
         self.draw_state = (DrawingMode.NoDraw, DrawingShape.NoShape)
         self.selection_mask = np.full((0, 0), False)
         self.in_selection = False
@@ -174,25 +177,28 @@ class EmbeddingGui(FigureCanvas):
         rectangle_selector = RectangleSelector(
             self.ax,
             self.on_end_rectangle_select,
-            drawtype="box",
             useblit=True,
             button=[1, 3],
-            rectprops=dict(facecolor=(1, 0, 0, 0.1), edgecolor=(1, 0, 0, 0.5), fill=False),
+            props=dict(
+                facecolor=(1, 0, 0, 0.1),
+                edgecolor=(1, 0, 0, 0.5),
+                fill=False,
+                linestyle="--",
+            ),
             minspanx=5,
             minspany=5,
             spancoords="pixels",
         )
         lasso_selector = LassoSelector(
-            self.ax, onselect=self.on_end_lasso_select, lineprops=dict(color=(1, 0, 0, 0.5))
+            self.ax, onselect=self.on_end_lasso_select, props=dict(color=(1, 0, 0, 0.5))
         )
         ellipse_selector = EllipseSelector(
             self.ax,
             onselect=self.on_end_ellipse_select,
-            drawtype="line",
-            lineprops=dict(color=(1, 0, 0, 0.5)),
+            props=dict(color=(1, 0, 0, 0.5)),
         )
         polygon_selector = PolygonSelector(
-            self.ax, onselect=self.on_end_lasso_select, lineprops=dict(color=(1, 0, 0, 0.5))
+            self.ax, onselect=self.on_end_lasso_select, props=dict(color=(1, 0, 0, 0.5))
         )
 
         self.selectors = {
@@ -234,7 +240,7 @@ class EmbeddingGui(FigureCanvas):
             self.scatter.set_facecolors(self.facecolors)
         fig_size = self.fig.get_size_inches()
         self.fig.set_size_inches(fig_size)
-        self.fig.canvas.draw()
+        self.draw()
         if self.active_selector:
             self.active_selector.update()
 

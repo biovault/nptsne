@@ -14,7 +14,7 @@ from nptsne import hsne_analysis
 
 # Standard support packages
 import numpy as np
-from PyQt5.QtWidgets import QApplication
+from PyQt6.QtWidgets import QApplication
 
 # The demo GUI
 from AnalysisController import AnalysisController
@@ -53,7 +53,7 @@ class ModelController:
         self.model_gui = ModelGui(
             self.analysis_event_queue, self.tree_click, self.tree_del, self.tree_load
         )
-        sys.exit(self.model_gui.exec_())
+        sys.exit(self.model_gui.exec())
         # self.model_gui.run()
 
     def queue_new_analysis(self, analysis: hsne_analysis.Analysis) -> None:
