@@ -1,4 +1,5 @@
 """demonstrate that the HSNE transition matrix can be used for Louvain clustering"""
+
 from pathlib import Path
 import nptsne
 import numpy as np
@@ -8,7 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.lines import Line2D
 
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 
 # Data is in the demo/data directory
 dataroot = Path(__file__).resolve().parent.parent / "data"
@@ -83,7 +84,7 @@ partition = community_louvain.best_partition(graph, resolution=0.7)
 
 print("Calculate network spring layout, this may take some time...")
 pos = nx.spring_layout(graph)
-cmap = matplotlib.cm.get_cmap("rainbow_r")
+cmap = matplotlib.colormaps.get_cmap("rainbow_r")
 legend_coms = []
 
 print("Plotting figure")
