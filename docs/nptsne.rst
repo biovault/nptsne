@@ -37,11 +37,11 @@ Refer to either the repository code |doctest_github_url| or :ref:`demo_list-labe
 .. autosummary::
    :nosignatures:
 
-   nptsne.HSne
-   nptsne.HSneScale
-   nptsne.TextureTsne
-   nptsne.TextureTsneExtended
-   nptsne.KnnAlgorithm
+   HSne
+   HSneScale
+   TextureTsne
+   TextureTsneExtended
+   KnnAlgorithm
    
 .. automodule:: nptsne
     :members:
@@ -56,11 +56,11 @@ Refer to either the repository code |doctest_github_url| or :ref:`demo_list-labe
 .. autosummary::
    :nosignatures:
 
-   nptsne.hsne_analysis.Analysis
-   nptsne.hsne_analysis.AnalysisContainer
-   nptsne.hsne_analysis.AnalysisModel
-   nptsne.hsne_analysis.EmbedderType
-   nptsne.hsne_analysis.SparseTsne
+   hsne_analysis.Analysis
+   hsne_analysis.AnalysisContainer
+   hsne_analysis.AnalysisModel
+   hsne_analysis.EmbedderType
+   hsne_analysis.SparseTsne
    
 .. automodule:: nptsne.hsne_analysis
     :members:

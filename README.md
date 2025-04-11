@@ -1,14 +1,15 @@
-[![Build Status](https://github.com/biovault/nptsne/actions/workflows/wheels.yml/badge.svg?release/1.2.0)](https://github.com/biovault/nptsne/tree/release/1.2.0)
+[![Build Status](https://github.com/biovault/nptsne/actions/workflows/wheels.yml/badge.svg?release/1.3.0)](https://github.com/biovault/nptsne/tree/release/1.3.0)
 
-[![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=stable)](https://nptsne.readthedocs.io/en/v1.2.0/)
+[![Documentation Status](https://readthedocs.org/projects/nptsne/badge/?version=stable)](https://nptsne.readthedocs.io/en/v1.3.0/)
 
 # nptsne
 
 **nptsne** is a numpy compatible python binary package that offers a number of APIs for fast tSNE calculation and HSNE modelling.
 
-For more detail see the [documentation for the current release - 1.2.0](https://nptsne.readthedocs.io/en/v1.2.0/)
+For more detail see the [documentation for the current release - 1.3.0](https://nptsne.readthedocs.io/en/v1.3.0/)
 
-Currently python 3.6, 3.7, and 3.8 are supported on Windows, Mac and Linux using [cibuildwheel](https://cibuildwheel.readthedocs.io/en/stable/)
+Currently python 3.9, 3.10, 3.11, 3.12 and 3.13 are supported on Windows, Mac and Linux using [cibuildwheel](https://cibuildwheel.readthedocs.io/en/stable/)
+The Mac release is restricted to arm64
 
 ## Demo software using nptsne
 
@@ -29,7 +30,7 @@ conan remote add conan-biovault https://lkeb-artifactory.lumc.nl/artifactory/api
 python -m cibuildwheel --output-dir wheelhouse --platform <windows|macos|linux>
 ```
 
-The *build* line in *pyproject.toml* can be modified to change which versions (3.6, 3.7 etc) of the wheels are built.
+The *build* line in *pyproject.toml* can be modified to change which versions (3.12, 3.13 etc) of the wheels are built.
 
 The project is built using python *setuptools*. At time of the  current release *setup.cfg* is still required for package *metadata* and *options*.  In future versions it may be possible to migrate fully to *pyproject.toml*.
 ### Development build & install using python

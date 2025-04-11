@@ -20,7 +20,7 @@ project = "nptsne"
 copyright = "2021, TU Delft, LUMC"
 author = "Baldur van Lew"
 zenodo_url = "https://doi.org/10.5281/zenodo.5801124"
-github_branch = "release/1.2.0"
+github_branch = "release/1.3.0"
 
 import os
 import sys
@@ -107,6 +107,7 @@ html_title = __version__
 
 rst_epilog = f"""
 .. |version| replace:: {__version__}
+.. |Demos_github_url| replace:: `Basic HSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos>`__
 .. |HSNEdemo_github_url| replace:: `Basic HSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/BasicHSNEDemo>`__
 .. |EXHSNEdemo_github_url| replace:: `Extended HSNE demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/ExtendedHSNEDemo>`__
 .. |Louvdemo_github_url| replace:: `HSNELouvain demo code <https://github.com/biovault/nptsne/tree/{__branch_name__}/demos/HSNELouvainDemo>`__
@@ -122,7 +123,7 @@ rst_epilog = f"""
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-needs_sphinx = "3.0"
+needs_sphinx = "8.0"
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -174,7 +175,7 @@ master_doc = "index"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
