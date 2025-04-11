@@ -1,6 +1,7 @@
 """Demonstrate the GPU accelerated t-SNE in the nptsne package
 This shows how the extended API in TextureTsneExtended can be used
 """
+
 from pathlib import Path
 from timeit import default_timer as timer
 import nptsne
@@ -61,7 +62,6 @@ for i in range(20):
         xyembed[..., 1],
         c=mnist["target"],
         cmap=mcolors.ListedColormap(colors),
-        facecolors="None",
         marker="o",
     )
     labels = np.arange(0, 10)

@@ -1,4 +1,4 @@
-matplotlib
-scipy
+matplotlib==3.10.1
+scipy==1.15.2
 nptsne
-numpy
+numpy==2.2.4

@@ -1,4 +1,4 @@
-PyQt5
-matplotlib
-scipy
+PyQt6==6.9.0
+matplotlib==3.10.1
+scipy==1.15.2
 nptsne
