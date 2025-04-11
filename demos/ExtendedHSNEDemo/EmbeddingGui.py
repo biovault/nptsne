@@ -188,6 +188,7 @@ class EmbeddingGui(FigureCanvas):
             minspanx=5,
             minspany=5,
             spancoords="pixels",
+            interactive=True,
         )
         lasso_selector = LassoSelector(
             self.ax, onselect=self.on_end_lasso_select, props=dict(color=(1, 0, 0, 0.5))
