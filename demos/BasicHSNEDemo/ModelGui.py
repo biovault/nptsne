@@ -30,7 +30,13 @@ class AnalysisTreeGui:
 
     NO_PARENT_ID = 0xFFFFFFFF
 
-    def __init__(self, analysis_event_queue: queue.Queue, select: Callable[[int], None], delete: Callable[[List[int]]], load: Callable[[str, str], None]):
+    def __init__(
+        self,
+        analysis_event_queue: queue.Queue,
+        select: Callable[[int], None],
+        delete: Callable[[List[int]], None],
+        load: Callable[[str, str], None],
+    ):
         """Create a new analysis model gui"""
 
         self.analysis_event_queue = analysis_event_queue
@@ -108,9 +114,9 @@ class AnalysisTreeGui:
         item = self.tree.item(self.tree.focus())
         if not item:
             return
-        if len(self.tree.selection()) > 0: 
+        if len(self.tree.selection()) > 0:
             selected_item = self.tree.selection()[0]
-            if self.tree.item(selected_item, 'open'):
+            if self.tree.item(selected_item, "open"):
                 self.tree.item(selected_item, open=False)
             else:
                 self.tree.item(selected_item, open=True)

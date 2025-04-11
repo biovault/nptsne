@@ -15,13 +15,13 @@ import time
 from collections.abc import Callable
 from typing import List, Self
 
-matplotlib.use("Qt5Agg")
+matplotlib.use("QtAgg")
 
 
 class AnalysisGui:
     """This is the matplotlib based GUI for a single analysis
     It assumes the analysis is simple image data (this could be abstracted)
-    It shows the anaylsis clusters as a square for a matplotlib scatterplot 
+    It shows the anaylsis clusters as a square for a matplotlib scatterplot
     and a square for the corresponding digit images.
     """
 
@@ -34,7 +34,7 @@ class AnalysisGui:
         analysis_stopped: Callable[[Self], None],
         top_level: bool = False,
         labels: np.ndarray = None,
-        color_norm: colors.Normalize =None,
+        color_norm: colors.Normalize = None,
     ):
         """Create a new analysis gui"""
 
@@ -191,8 +191,8 @@ class AnalysisGui:
         self.fig.canvas.flush_events()
         send_stop_event = False
 
-        if (i == 0):
-            return (self.start_plot()) 
+        if i == 0:
+            return self.start_plot()
 
         try:
             if not self._stop_iter:

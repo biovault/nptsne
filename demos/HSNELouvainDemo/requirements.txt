@@ -1,6 +1,6 @@
-PyQt6
+PyQt6==6.9.0
 matplotlib==3.10.1
-scipy
+scipy==1.15.2
 networkx==3.4.2
 python-louvain==0.16
 nptsne  

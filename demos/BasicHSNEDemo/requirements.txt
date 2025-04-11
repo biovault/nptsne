@@ -1,5 +1,5 @@
 matplotlib==3.10.1
 numpy==2.2.4
-nptsne==1.3.0
+nptsne
 Pillow==11.1.0
 pywin32; sys_platform == 'win32'
