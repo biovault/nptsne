@@ -1,6 +1,6 @@
-matplotlib
-scipy
+matplotlib==3.10.1
+scipy==1.15.2
 nptsne
-numpy
+numpy==2.2.4
 six
-umap-learn
+umap-learn==0.5.7
