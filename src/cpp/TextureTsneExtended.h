@@ -5,6 +5,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
 namespace py = pybind11;
+#include <SDL3/SDL.h>
 #ifdef __APPLE__
     #include "glad/glad_3_3.h"
 #endif
@@ -91,5 +92,7 @@ class TextureTsneExtended {
     double _theta;
     int _num_target_dimensions;
     bool _have_preset_embedding;
-    GLFWwindow* _offscreen_context;
+    //GLFWwindow* _offscreen_context;
+    SDL_Window* _window = nullptr;
+    SDL_GLContext _glContext = nullptr;
 };

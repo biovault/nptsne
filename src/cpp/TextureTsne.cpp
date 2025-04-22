@@ -49,26 +49,61 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
         std::cout << "knn metric: " << knn_metric_to_string(_knn_metric) << "\n";
     }
 
-    if (!glfwInit()) {
-        throw std::runtime_error("Unable to initialize GLFW.");
+
+    SDL_Window* window = nullptr;
+    SDL_GLContext glContext = nullptr;
+
+    // Request an OpenGL ES 3.1 context (common for compute shader support)
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+
+    // Request double buffering
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+    SDL_PropertiesID props = SDL_CreateProperties();
+    SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "Headless OpenGL Context");
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, 1);
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, 1);
+    // For window flags you should use separate window creation properties,
+    // but for easier migration from SDL2 you can use the following:
+    SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+    window = SDL_CreateWindowWithProperties(props);
+
+
+    if (!window) {
+        SDL_Quit();
+        throw std::runtime_error("SDL window creation failed");
     }
+
+    /*if (!glfwInit()) {
+        throw std::runtime_error("Unable to initialize GLFW.");
+    }*/
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    /*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 #endif
-    glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);  // invisible - ie offscreen, window
+    /*glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);  // invisible - ie offscreen, window
     _offscreen_context = glfwCreateWindow(640, 480, "", NULL, NULL);
     if (_offscreen_context == NULL) {
         glfwTerminate();
         throw std::runtime_error("Failed to create GLFW window");
     }
-    glfwMakeContextCurrent(_offscreen_context);
+    glfwMakeContextCurrent(_offscreen_context);*/
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    /*if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         glfwTerminate();
         throw std::runtime_error("Failed to initialize OpenGL context");
+    }*/
+
+    glContext = SDL_GL_CreateContext(window);
+    if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+        SDL_GL_DestroyContext(glContext);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        throw std::runtime_error("Failed to initialize GLAD");
     }
 
     auto result = py::array_t<float>(0);
@@ -130,8 +165,11 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
             }
         }
         std::cout << "grad descent tsne complete" << "\n";
-        glfwDestroyWindow(_offscreen_context);
-        glfwTerminate();
+        /*glfwDestroyWindow(_offscreen_context);
+        glfwTerminate();*/
+        SDL_GL_DestroyContext(glContext);
+        SDL_DestroyWindow(window);
+        SDL_Quit();
 
         auto size = _num_data_points * _num_target_dimensions;
         result = py::array_t<float>(size);

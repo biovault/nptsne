@@ -31,7 +31,8 @@ TextureTsneExtended::TextureTsneExtended(
     _perplexity(perplexity),
     _knn_algorithm(knn_algorithm),
     _knn_metric(knn_distance_metric),
-    _offscreen_context(nullptr),
+    _window(nullptr),
+    _glContext(nullptr),
     _exaggeration_decay(false),
     _iteration_count(0),
     _have_preset_embedding(false) {
@@ -253,7 +254,31 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
                 tSNE_param._remove_exaggeration_iter = _iteration_count + iterations;
                 tSNE_param._presetEmbedding = _have_preset_embedding;
 
-                if (!glfwInit()) {
+                // Request an OpenGL ES 3.1 context (common for compute shader support)
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+                SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+
+                // Request double buffering
+                SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
+                SDL_PropertiesID props = SDL_CreateProperties();
+                SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, "Headless OpenGL Context");
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, 1);
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, 1);
+                // For window flags you should use separate window creation properties,
+                // but for easier migration from SDL2 you can use the following:
+                SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_FLAGS_NUMBER, SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+                _window = SDL_CreateWindowWithProperties(props);
+
+
+                if (!_window) {
+                    SDL_Quit();
+                    throw std::runtime_error("SDL window creation failed");
+                }
+
+                
+/*                if (!glfwInit()) {
                     throw std::runtime_error("Unable to initialize GLFW.");
                 }
 #ifdef __APPLE__
@@ -271,6 +296,14 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 
                 if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
                     throw std::runtime_error("Failed to initialize OpenGL context");
+                }
+*/
+                _glContext = SDL_GL_CreateContext(_window);
+                if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
+                    SDL_GL_DestroyContext(_glContext);
+                    SDL_DestroyWindow(_window);
+                    SDL_Quit();
+                    throw std::runtime_error("Failed to initialize GLAD");
                 }
                 std::cout << "initializing tSNE" << "\n";
                 _tSNE.initialize(_distributions, &_embedding, tSNE_param);
@@ -350,9 +383,12 @@ void TextureTsneExtended::reinitialize_transform(
     if (!_tSNE.isInitialized()) {
         throw std::runtime_error("Tsne object must have been initialized in order to reinitialize.");
     }
-    if (!_offscreen_context) {
+    if (!_glContext) {
         throw std::runtime_error("Tsne OpenGL context has been closed. Please reinitialize.");
     }
+    /*if (!_offscreen_context) {
+        throw std::runtime_error("Tsne OpenGL context has been closed. Please reinitialize.");
+    }*/
     _exaggeration_decay = false;
     _iteration_count = 0;
     _decay_started_at = -1;
@@ -397,7 +433,12 @@ void TextureTsneExtended::reinitialize_transform(
 }
 
 void TextureTsneExtended::close() {
+    SDL_GL_DestroyContext(_glContext);
+    SDL_DestroyWindow(_window);
+    SDL_Quit();
+    /*
     glfwDestroyWindow(_offscreen_context);
     glfwTerminate();
     _offscreen_context = nullptr;
+    */
 }

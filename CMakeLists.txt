@@ -137,6 +137,14 @@ if(TRUE)
     # install_headers(external/glfw)
 endif()
 
+if (TRUE)
+    message(STATUS, "Will build SDL")
+    set(SDL_BUILD_SHARED_LIBS OFF)  # static build and link
+    set(SDL_VIDEO ON)
+    set(SDL_OFFSCREEN ON)
+    add_subdirectory(external/SDL)
+endif()
+
 pybind11_add_module(_nptsne
     src/cpp/.editorconfig
     src/cpp/nptSNEBind.cpp
@@ -273,6 +281,7 @@ message(STATUS "GLFW include at : ${GLFW_INCLUDE_DIRS}")
 target_include_directories(_nptsne PRIVATE ${GLFW_INCLUDE_DIRS})
 target_link_libraries(_nptsne PRIVATE glfw)
 target_link_libraries(_nptsne PRIVATE pybind11::module)
+target_link_libraries(_nptsne PRIVATE SDL3::SDL3-static)
 
 message(STATUS "CXX compiler ${CMAKE_CXX_COMPILER}")
 if (CMAKE_GENERATOR STREQUAL Xcode)
