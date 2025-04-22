@@ -143,6 +143,9 @@ if (TRUE)
     set(SDL_VIDEO ON)
     set(SDL_OFFSCREEN ON)
     add_subdirectory(external/SDL)
+    if(NOT WIN32) 
+        set_property(target SDL3::SDL3-static PROPERTY POSITION_INDEPENDENT_CODE ON)
+    endif()
 endif()
 
 pybind11_add_module(_nptsne
