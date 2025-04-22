@@ -144,7 +144,7 @@ if (TRUE)
     set(SDL_OFFSCREEN ON)
     add_subdirectory(external/SDL)
     if(NOT WIN32) 
-        set_property(target SDL3::SDL3-static PROPERTY POSITION_INDEPENDENT_CODE ON)
+        set_target_properties(SDL3-static PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
     endif()
 endif()
 
