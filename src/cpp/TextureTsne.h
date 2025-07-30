@@ -4,6 +4,7 @@
 
 #include <pybind11/pybind11.h>
 #include <pybind11/numpy.h>
+#include <vector>
 namespace py = pybind11;
 #ifdef __APPLE__
     #include "glad/glad_3_3.h"
@@ -38,8 +39,10 @@ class TextureTsne {
     int get_iterations() { return _iterations; }
     int get_perplexity() { return _perplexity;  }
     int get_exaggeration_iter() { return _exaggeration_iter; }
+    std::vector<float>& get_kl_values() { return _kl_values; }
     hdi::dr::knn_library get_knn_algorithm() { return _knn_algorithm; }
     hdi::dr::knn_distance_metric get_knn_metric() { return _knn_metric; }
+    nptsne::SparseScalarMatrixType& getTransitionMatrix() {return _distributions;}
 
  private:
     int _num_data_points;
@@ -49,10 +52,12 @@ class TextureTsne {
     int _iterations;
     int _exaggeration_iter;
     int _perplexity;
+    std::vector<float> _kl_values;
     hdi::dr::knn_library _knn_algorithm;
     hdi::dr::knn_distance_metric _knn_metric;
     hdi::dr::TsneParameters tSNE_param;
     double _theta;
     int _num_target_dimensions;
     GLFWwindow* _offscreen_context;
+    typename nptsne::SparseScalarMatrixType _distributions;
 };

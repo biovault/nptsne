@@ -10,6 +10,7 @@ namespace py = pybind11;
 #endif
 #include <GLFW/glfw3.h>
 #include <tuple>
+#include <vector>
 #include <hdi/dimensionality_reduction/knn_utils.h>
 #include "hdi/data/embedding.h"
 #include "hdi/dimensionality_reduction/hd_joint_probability_generator.h"
@@ -55,6 +56,7 @@ class TextureTsneExtended {
     int get_num_target_dimensions() { return _num_target_dimensions; }
     int get_iterations() { return _iterations; }
     int get_perplexity() { return _perplexity; }
+    std::vector<float>& get_kl_values() { return _kl_values; }
     hdi::dr::knn_library get_knn_algorithm() { return _knn_algorithm; }
     hdi::dr::knn_distance_metric get_knn_metric() { return _knn_metric; }
 
@@ -86,6 +88,7 @@ class TextureTsneExtended {
     bool _verbose;
     int _iterations;
     int _perplexity;
+    std::vector<float> _kl_values;
     hdi::dr::knn_library _knn_algorithm;
     hdi::dr::knn_distance_metric _knn_metric;
     double _theta;

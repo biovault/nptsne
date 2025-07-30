@@ -311,6 +311,46 @@ PYBIND11_MODULE(_nptsne, m)
 
         )pbdoc");
 
+    textureTsne.def_property_readonly(
+        "kl_values", 
+        [](TextureTsne &self) {
+            auto kl_values = self.get_kl_values();
+            auto result = py::array_t<float>(kl_values.size());
+            py::buffer_info result_info = result.request();
+            float *output = static_cast<float *>(result_info.ptr);
+            for (decltype(kl_values.size()) i = 0; i < kl_values.size(); i++) {
+                output[i] = kl_values.data()[i];
+            }
+            return result;
+        },
+        R"pbdoc(
+            :class:`ndarray`
+                A numpy array containing KL divergence values for the completed iterations
+                The length or the array will the number of iterations, 
+                any uninitialized values will have the value -1.0f.
+        )pbdoc");
+
+    textureTsne.def_property_readonly(
+        "transition_matrix",
+        [](TextureTsne &self)
+        {
+            nptsne::SparseScalarMatrixType &matrix = self.getTransitionMatrix();
+            std::vector<std::reference_wrapper<nptsne::MapStorageType>> sparse;
+            for (uint32_t i = 0; i < matrix.size(); ++i)
+            {
+                sparse.push_back(matrix[i].memory());
+            }
+            return sparse;
+        },
+        R"pbdoc(
+            Returns
+            -------
+                list(list(tuple(int, float))) : The transition (probability) matrix that was used
+                in the embedding. This is only initialized after fit_transform".
+                The list contains a list of tuples for each point. The tuples
+                are a neighbouring point index and probability. 
+        )pbdoc");
+
     // Extended TextureTsne interface for advanced use of GPU texture tSNE
     py::class_<TextureTsneExtended> textureTsneExtended(m, "TextureTsneExtended",
                                                         R"pbdoc(
@@ -620,6 +660,25 @@ PYBIND11_MODULE(_nptsne, m)
 
             >>> sample_texture_tsne_extended.perplexity
             30
+        )pbdoc");
+
+    textureTsneExtended.def_property_readonly(
+        "kl_values", 
+        [](TextureTsneExtended &self) {
+            auto kl_values = self.get_kl_values();
+            auto result = py::array_t<float>(kl_values.size());
+            py::buffer_info result_info = result.request();
+            float *output = static_cast<float *>(result_info.ptr);
+            for (decltype(kl_values.size()) i = 0; i < kl_values.size(); i++) {
+                output[i] = kl_values.data()[i];
+            }
+            return result;
+        },
+        R"pbdoc(
+            :class:`ndarray`
+                A numpy array containing KL divergence values for the completed iterations
+                The length or the array will the number of iterations, 
+                any uninitialized values will have the value -1.0f.
         )pbdoc");
 
     // ******************************************************************

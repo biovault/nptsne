@@ -29,10 +29,14 @@ TextureTsne::TextureTsne(
     int exaggeration_iter,
     hdi::dr::knn_library knn_algorithm,
     hdi::dr::knn_distance_metric knn_distance_metric
-) : _verbose(verbose), _iterations(iterations), _num_target_dimensions(num_target_dimensions),
-    _perplexity(perplexity), _exaggeration_iter(exaggeration_iter),
-    _knn_algorithm(knn_algorithm), _knn_metric(knn_distance_metric), _offscreen_context(nullptr) {
-}
+) : _verbose(verbose), _iterations(iterations), 
+    _num_target_dimensions(num_target_dimensions),
+    _perplexity(perplexity), 
+    _exaggeration_iter(exaggeration_iter),
+    _knn_algorithm(knn_algorithm), 
+    _knn_metric(knn_distance_metric), 
+    _offscreen_context(nullptr), 
+    _kl_values(iterations, -1.0f) {}
 
 // tSNE transform and return results
 // Only accept c-type float (row-major, dense) and cast any non conforming args.
@@ -75,7 +79,6 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
     try {
         hdi::dr::GradientDescentTSNETexture tSNE;
         nptsne::ProbGenType prob_gen;
-        nptsne::SparseScalarMatrixType distributions;
         nptsne::ProbGenType::Parameters prob_gen_param;
         nptsne::EmbeddingType embedding;
         auto X_loc = X;
@@ -98,11 +101,11 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
             prob_gen_param._perplexity = _perplexity;
             prob_gen_param._aknn_metric = _knn_metric;
             prob_gen_param._aknn_algorithm = _knn_algorithm;
-            prob_gen.computeProbabilityDistributions(
+            prob_gen.computeJointProbabilityDistribution(
                 static_cast<float *>(X_info.ptr),
                 _num_dimensions,
                 _num_data_points,
-                distributions,
+                _distributions,
                 prob_gen_param);
         }
 
@@ -114,15 +117,16 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
             tSNE_param._embedding_dimensionality = _num_target_dimensions;
             tSNE_param._mom_switching_iter = _exaggeration_iter;
             tSNE_param._remove_exaggeration_iter = _exaggeration_iter;
-            tSNE.initialize(distributions, &embedding, tSNE_param);
+            tSNE.initialize(_distributions, &embedding, tSNE_param);
 
             if (_verbose) {
                 std::cout << "Computing gradient descent...\n";
             }
             for (int iter = 0; iter < _iterations; ++iter) {
                 tSNE.doAnIteration();
+                _kl_values[iter] = tSNE.kl_divergence;
                 if (_verbose) {
-                    std::cout << "Iter: " << iter << "\n";
+                    std::cout << "Iter: " << iter << " kl_divergence: " << tSNE.kl_divergence << "\n";
                 }
             }
             if (_verbose) {

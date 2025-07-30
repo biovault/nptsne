@@ -13,7 +13,7 @@ The Mac release is restricted to arm64
 
 ## Demo software using nptsne
 
-Can be downloaded from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5801124.svg)](https://doi.org/10.5281/zenodo.5801124)
+Can be downloaded from [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15212679.svg)](https://doi.org/10.5281/zenodo.15212679)
 
 ## Building
 

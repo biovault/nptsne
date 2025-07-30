@@ -79,6 +79,7 @@ bool TextureTsneExtended::init_transform(
         float similarities_comp_time = 0;
         _exaggeration_decay = false;
         _iteration_count = 0;
+        _kl_values = std::vector<float>();
         _decay_started_at = -1;
 
         if (_verbose) {
@@ -156,6 +157,7 @@ bool TextureTsneExtended::init_transform_with_distance_matrix(
         float distribution_comp_time = 0;
         _exaggeration_decay = false;
         _iteration_count = 0;
+        _kl_values = std::vector<float>();
         _decay_started_at = -1;
 
         if (_verbose) {
@@ -235,6 +237,8 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
     try {
         int argc = 1;
         float gradient_desc_comp_time = 0;
+        int kl_old_size = _iteration_count;
+        _kl_values.resize(_iteration_count + iterations);
         if (_verbose) {
             std::cout << "grad descent tsne starting" << "\n";
         }
@@ -315,6 +319,7 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
 
             for (int iter = 0; iter < _iterations; ++iter) {
                 _tSNE.doAnIteration();
+                _kl_values[kl_old_size + iter] = _tSNE.kl_divergence;
                 if (_verbose) {
                     std::cout << "Iter: " << _iteration_count + iter << "\n";
                 }
@@ -355,6 +360,7 @@ void TextureTsneExtended::reinitialize_transform(
     }
     _exaggeration_decay = false;
     _iteration_count = 0;
+    _kl_values = std::vector<float>();
     _decay_started_at = -1;
     _have_preset_embedding = false;
     _iterations = 0;

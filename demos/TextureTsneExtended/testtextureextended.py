@@ -42,7 +42,7 @@ if tsne.init_transform(mnist["data"]):
     print("Init succeeded")
 
 for i in range(20):
-    plt.figure(i + 1)
+    plt.figure(2 * i + 1)
     start = timer()
     # reduce the forces from iteration 1000
     if i == 10:
@@ -50,6 +50,7 @@ for i in range(20):
         print(f"exaggeration stopping at {tsne.decay_started_at}")
     embedding = tsne.run_transform(verbose=False, iterations=100)
     end = timer()
+    kl_values = tsne.kl_values
     print(f"got embedding in {end - start}")
     print(f"iteration count {tsne.iteration_count}")
     xyembed = np.copy(embedding.reshape((70000, 2)))
@@ -64,6 +65,7 @@ for i in range(20):
         cmap=mcolors.ListedColormap(colors),
         marker="o",
     )
+
     labels = np.arange(0, 10)
     loc = labels
     cb = plt.colorbar(sc, boundaries=np.linspace(-0.5, 9.5, 11))
@@ -71,5 +73,11 @@ for i in range(20):
     cb.set_ticklabels(labels)
     plt.draw()
     plt.savefig(f"testext_{i:02}.png")
+    plt.close()
+    plt.figure(2 * i + 2)
+    plt.plot(range(0, kl_values.shape[0]), kl_values)
+    plt.draw()
+    plt.savefig(f"testext_kl_{i:02}.png")
+    plt.close()
 
 tsne.close()

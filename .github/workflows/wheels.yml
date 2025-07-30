@@ -92,7 +92,7 @@ jobs:
   #      a) - TestPyPI if no release tag
   #      b) - PyPI if release tag
 
-  upload_all_artifacts:
+  upload_PyPI:
     name: Upload artifacts to pyPI or TestPyPI
     outputs:
       nptsneversion: ${{ steps.wheel_version.outputs.wheelver }}
