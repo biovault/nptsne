@@ -41,7 +41,8 @@ skip = "cp2* pp*"
 # If PEP440TYPE = "" or "rcN" the resulting name is "version" + [PEP440TYPE]
 
 [tool.cibuildwheel.windows]
-build = "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
+#build = "cp39-win_amd64 cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64"
+build = "cp313-win_amd64"
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
 ]
@@ -50,7 +51,7 @@ before-build = [
 #    "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
 #    "python get-pip.py",
     "{project}\\.ci\\cleanprevbuild.bat",
-    "which python",
+    "where python",
 ]
 
 [tool.cibuildwheel.windows.environment]

@@ -117,7 +117,7 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
             tSNE_param._embedding_dimensionality = _num_target_dimensions;
             tSNE_param._mom_switching_iter = _exaggeration_iter;
             tSNE_param._remove_exaggeration_iter = _exaggeration_iter;
-            tSNE.initialize(_distributions, &embedding, tSNE_param);
+            tSNE.initializeWithJointProbabilityDistribution(_distributions, &embedding, tSNE_param);
 
             if (_verbose) {
                 std::cout << "Computing gradient descent...\n";

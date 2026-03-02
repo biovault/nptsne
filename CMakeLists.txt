@@ -39,7 +39,7 @@ if (USE_ARTIFACTORY_LIBS)
     set(LIBRARY_INSTALL_DIR ${PROJECT_BINARY_DIR})
     message(STATUS "Installing artifactory packages to: ${LIBRARY_INSTALL_DIR}")
 
-    set(HDILib_VERSION 1.2.10)
+    set(HDILib_VERSION 2.0.0a1)
     set(flann_VERSION 1.9.2)
     set(lz4_VERSION 1.10.0)
 
@@ -67,6 +67,8 @@ if (USE_ARTIFACTORY_LIBS)
     set(lz4_ROOT "${LIBRARY_INSTALL_DIR}/lz4/lib/cmake")
     set(flann_ROOT "${LIBRARY_INSTALL_DIR}/flann/lib/cmake/")
     set(HDILIB_ROOT "${LIBRARY_INSTALL_DIR}/HDILib/lib/cmake/HDILib")
+    set(kompute_ROOT "${LIBRARY_INSTALL_DIR}/HDILib/lib/cmake/kompute")
+    set(fmt_ROOT "${LIBRARY_INSTALL_DIR}/HDILib/lib/cmake/fmt")
 
 endif()
 
@@ -77,6 +79,8 @@ if (WIN32)
 endif()
 
 find_package(flann 1.9.2 REQUIRED)
+find_package(fmt REQUIRED)
+find_package(kompute REQUIRED)
 find_package(HDILib COMPONENTS hdidimensionalityreduction hdiutils hdidata CONFIG REQUIRED PATHS ${HDILIB_ROOT})
 
 message(STATUS "All build targets: ${BUILDSYSTEM_TARGETS}")
@@ -153,6 +157,9 @@ message(STATUS "Linking ${LZ4_LIBRARY}")
 #target_link_libraries(_nptsne PRIVATE ${LZ4_LIBRARY} )
 #target_link_libraries(_nptsne PRIVATE ${FLANNCPP_LIBRARY} )
 target_link_libraries(_nptsne PRIVATE "${OPENGL_gl_LIBRARY}")
+if (WIN32)
+  target_compile_options(_nptsne PRIVATE "/utf-8") # for fmt compatibility
+endif()
 
 message(STATUS "3 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "3 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
