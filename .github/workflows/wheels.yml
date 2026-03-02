@@ -166,10 +166,10 @@ jobs:
   # (Note that RTD API v3 needs its own token)
   do_read_the_docs:
     name: Add documentation to read the docs
-    needs: [upload_all_artifacts]
+    needs: [upload_PyPI]
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ needs.upload_all_artifacts.outputs.nptsneversion }}
+      VERSION: ${{ needs.upload_PyPI.outputs.nptsneversion }}
       RTD_TOKEN: ${{ secrets.READTHEDOCS_TOKEN  }}
     if: ${{ needs.build_wheels.outputs.doreadthedocs == 'true' }}
 
