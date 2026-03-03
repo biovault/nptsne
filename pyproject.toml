@@ -51,7 +51,6 @@ before-build = [
 #    "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
 #    "python get-pip.py",
     "{project}\\.ci\\cleanprevbuild.bat",
-    "winget install --force KhronosGroup.VulkanSDK",
     "where python",
 ]
 
