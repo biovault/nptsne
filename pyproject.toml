@@ -70,7 +70,7 @@ build = "cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel vulkan-loader",
+    "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel vulkan-loader",
     "which python",]
 
 before-test = [
