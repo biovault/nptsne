@@ -51,6 +51,7 @@ before-build = [
 #    "curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py",
 #    "python get-pip.py",
     "{project}\\.ci\\cleanprevbuild.bat",
+    "winget install --force KhronosGroup.VulkanSDK",
     "where python",
 ]
 
@@ -70,7 +71,7 @@ build = "cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel",
+    "yum install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel vulkan-loader",
     "which python",]
 
 before-test = [
@@ -97,7 +98,7 @@ build = ["cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 archs = ["arm64"]
 
 before-all = [
-    "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp",
+    "HOMEBREW_NO_AUTO_UPDATE=1 brew install libomp && brew link --overwrite libomp && brew install vulkan-loader",
     "if [ -d \"./wheelhouse\" ]; then rm -Rf ./wheelhouse; fi",
     "mkdir ./wheelhouse"
 ]
