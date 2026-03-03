@@ -65,7 +65,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           $version = "1.4.341.0"
-          Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/$version/windows/VulkanSDK-$version-Installer.exe" -OutFile VulkanSDK.exe
+          Invoke-WebRequest -Uri "https://sdk.lunarg.com/sdk/download/$version/windows/vulkansdk-windows-X64-$version-Installer.exe" -OutFile VulkanSDK.exe
           Start-Process -FilePath VulkanSDK.exe -Args "--accept-licenses --default-answer --confirm-command install" -Wait
           echo "VULKAN_SDK=C:\VulkanSDK\$version" >> $env:GITHUB_ENV
         shell: pwsh
