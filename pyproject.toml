@@ -72,7 +72,7 @@ before-build = [
     "{project}/.ci/cleanprevbuild.sh",
     "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel wget",
     "cd ~ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
-    "mkdir ~/vulkan && cd ~/vulkan && tar xf ~/https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
+    "mkdir ~/vulkan && cd ~/vulkan && tar xf ~/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
     "~/vulkan/1.4.341.0/x86-64/setup-env.sh",
     "which python",]
 
