@@ -70,7 +70,10 @@ build = "cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel vulkan-loader",
+    "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel",
+    "cd ~ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
+    "mkdir ~/vulkan && cd ~/vulkan && tar xf ~/https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
+    "~/vulkan/1.4.341.0/x86-64/setup-env.sh",
     "which python",]
 
 before-test = [
