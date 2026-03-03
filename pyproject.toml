@@ -74,6 +74,7 @@ before-build = [
     "cd ~ && mkdir ./vulkan && cd ./vulkan/ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
     "cd ~/vulkan && tar xf vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
     "source ~/vulkan/1.4.341.0/setup-env.sh && cd ~",
+    "export VCPKG_INSTALLATION_ROOT=$VULKAN_SDK"
     "which python",]
 
 before-test = [
@@ -92,6 +93,7 @@ PEP440TYPE = "a"
 FULL_VERSION = "1.3.0.b1"
 CIBW_DEBUG_KEEP_CONTAINER = true
 HDILib_channel = "python"
+Vulkan_SDK = "$VULKAN_SDK"
 
 
 [tool.cibuildwheel.macos]
