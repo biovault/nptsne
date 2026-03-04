@@ -68,7 +68,8 @@ build = "cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp
 
 before-all = [
   "dnf install -y gcc-toolset-12",
-  "source /opt/rh/gcc-toolset-12/enable"
+  "source scl_source enable gcc-toolset-12",
+#  "source /opt/rh/gcc-toolset-12/enable"
 ]
 
 # The following runs in the Linux docker environment
