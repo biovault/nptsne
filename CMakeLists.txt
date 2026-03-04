@@ -57,12 +57,16 @@ if (USE_ARTIFACTORY_LIBS)
     include("${cmakesupport_SOURCE_DIR}/CMakeSupport/InstallArtifactoryPackage.cmake")
 
     if(DEFINED ENV{HDILib_channel})
-        install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE "$ENV{HDILib_channel}") 
+        # DEFINED FOR LINUX PYTHON BUILD
+        install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE "$ENV{HDILib_channel}")
+        install_artifactory_package(flann ${flann_VERSION} lkeb TRUE "$ENV{HDILib_channel}")
+        install_artifactory_package(lz4 ${lz4_VERSION} lkeb TRUE "$ENV{HDILib_channel}") 
     else()
-        install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE stable)  
+        install_artifactory_package(HDILib ${HDILib_VERSION} biovault TRUE stable) 
+        install_artifactory_package(flann ${flann_VERSION} lkeb TRUE stable)
+      install_artifactory_package(lz4 ${lz4_VERSION} lkeb TRUE stable) 
     endif()
-    install_artifactory_package(flann ${flann_VERSION} lkeb TRUE stable)
-    install_artifactory_package(lz4 ${lz4_VERSION} lkeb TRUE stable)
+
 
     set(lz4_ROOT "${LIBRARY_INSTALL_DIR}/lz4/lib/cmake")
     set(flann_ROOT "${LIBRARY_INSTALL_DIR}/flann/lib/cmake/")
