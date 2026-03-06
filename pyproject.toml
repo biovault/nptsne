@@ -72,8 +72,9 @@ test-skip = "*-*linux_x86_64}"
 before-all = [
   "dnf install -y gcc-toolset-12",
   "source scl_source enable gcc-toolset-12",
-    "cd ~ && mkdir ./vulkan && cd ./vulkan/ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
-    "cd ~/vulkan && tar xf vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
+  "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel wget",
+  "cd ~ && mkdir ./vulkan && cd ./vulkan/ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
+  "cd ~/vulkan && tar xf vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
 #  "source /opt/rh/gcc-toolset-12/enable"
 ]
 
@@ -81,7 +82,6 @@ before-all = [
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel wget",
     "source ~/vulkan/1.4.341.0/setup-env.sh && cd ~",
     "which python",]
 
