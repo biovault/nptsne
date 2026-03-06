@@ -65,13 +65,26 @@ FULL_VERSION="2.0.0a1"
 # environment = {CONAN_USER_HOME="$(pwd)", PEP440TYPE="a", FULL_VERSION="1.3.0.b1", CIBW_DEBUG_KEEP_CONTAINER=true, HDILib_channel="python"}
 # manylinux_2_34_x86_64
 # manylinux_2_28_x86_64
-manylinux-x86_64-image = "manylinux_2_34"
+manylinux-x86_64-image = "manylinux_2_28"
 build = "cp311-manylinux_x86_64" # cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
 test-skip = "*-*linux_x86_64}"
 
 before-all = [
+  "echo === glibc version ===",
+  "ldd --version",
+  "echo === glibc RPM ===",
+  "rpm -q glibc",
   "dnf install -y gcc-toolset-12",
+  "echo === system libstdc++ ===",
+  "readelf -V /lib64/libstdc++.so.6 | grep -E `GLIBCXX` | tail -3",
+  "echo === libc symbols ===",
+  "readelf -V /lib64/libc.so.6 | grep GLIBC | tail -5",
+  "echo === compiler in use ===", 
+  "gcc --version",
+  "g++ --version",
   "source scl_source enable gcc-toolset-12",
+  "gcc --version",
+  "g++ --version",
   "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel wget",
   "cd ~ && mkdir ./vulkan && cd ./vulkan/ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
   "cd ~/vulkan && tar xf vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
@@ -94,7 +107,7 @@ repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel show {wheel}",
-    "auditwheel repair --plat manylinux_2_34_x86_64 -w {dest_dir} {wheel}"
+    "auditwheel repair --plat manylinux_2_28_x86_64 -w {dest_dir} {wheel}"
 ]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
