@@ -76,7 +76,7 @@ before-all = [
   "rpm -q glibc",
   "dnf install -y gcc-toolset-12",
   "echo === system libstdc++ ===",
-  "readelf -V /lib64/libstdc++.so.6 | grep -E\"GLIBCXX\" | tail -3",
+  "readelf -V /lib64/libstdc++.so.6 | grep GLIBCXX | tail -3",
   "echo === libc symbols ===",
   "readelf -V /lib64/libc.so.6 | grep GLIBC | tail -5",
   "echo === compiler in use ===", 
