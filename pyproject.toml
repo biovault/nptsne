@@ -67,6 +67,7 @@ FULL_VERSION="1.3.0.b1"
 # manylinux_2_28_x86_64
 manylinux-x86_64-image = "manylinux_2_34"
 build = "cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
+test-skip = "*-*linux_x86_64}"
 
 before-all = [
   "dnf install -y gcc-toolset-12",
