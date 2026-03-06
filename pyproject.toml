@@ -85,11 +85,13 @@ before-build = [
 before-test = [
     # "cp -r /project /host/home/bvanlew/tmp"
 ]
+# manylinux_2_34_x86_64
+# manylinux_2_28_x86_64
 repair-wheel-command = [
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
-#    "auditwheel show {wheel}",
-#    "auditwheel repair --plat manylinux_2_28_x86_64 -w {dest_dir} {wheel}"
+    "auditwheel show {wheel}",
+    "auditwheel repair --plat manylinux_2_34_x86_64 -w {dest_dir} {wheel}"
 ]
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
