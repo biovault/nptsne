@@ -77,18 +77,6 @@ before-all = [
   "echo === compiler in use ===", 
   "gcc --version",
   "g++ --version",
-  "echo === system libstdc++ ===",
-  "readelf -V /lib64/libstdc++.so.6 | grep GLIBCXX | tail -3",
-  "echo === libc symbols ===",
-  "readelf -V /lib64/libc.so.6 | grep GLIBC | tail -5",
-  "dnf install -y gcc-toolset-12",
-  "echo === system libstdc++ ===",
-  "readelf -V /lib64/libstdc++.so.6 | grep GLIBCXX | tail -3",
-  "echo === libc symbols ===",
-  "readelf -V /lib64/libc.so.6 | grep GLIBC | tail -5",
-  "source scl_source enable gcc-toolset-12",
-  "gcc --version",
-  "g++ --version",
   "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel wget",
   "cd ~ && mkdir ./vulkan && cd ./vulkan/ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
   "cd ~/vulkan && tar xf vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
@@ -116,8 +104,6 @@ repair-wheel-command = [
 test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.linux.environment]
-CC = "/opt/rh/gcc-toolset-12/root/usr/bin/gcc"
-CXX = "/opt/rh/gcc-toolset-12/root/usr/bin/g++"
 CONAN_USER_HOME = "$(pwd)"
 PEP440TYPE = "a"
 FULL_VERSION = "2.0.0a1"
