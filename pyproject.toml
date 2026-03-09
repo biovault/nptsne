@@ -66,7 +66,7 @@ FULL_VERSION="2.0.0a1"
 # manylinux_2_34_x86_64
 # manylinux_2_28_x86_64
 manylinux-x86_64-image = "manylinux_2_28"
-build = "cp311-manylinux_x86_64" # cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
+build = "cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
 test-skip = "*-*linux_x86_64}"
 
 before-all = [
@@ -78,8 +78,11 @@ before-all = [
   "gcc --version",
   "g++ --version",
   "dnf install -y lz4-devel libXrandr-devel libXinerama-devel libXcursor-devel libXi-devel wget",
-  "cd ~ && mkdir ./vulkan && cd ./vulkan/ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
-  "cd ~/vulkan && tar xf vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
+  "dnf install -y vulkan-loader vulkan-loader-devel", 
+  # Building vulkan in vcpkg creates executables that are no compatible with manylinux_2_28_x86_64
+  # they point to newer versions of the GLIB and GLIBCXX libraries and fail the auditwheel test
+  #"cd ~ && mkdir ./vulkan && cd ./vulkan/ && wget https://sdk.lunarg.com/sdk/download/1.4.341.0/linux/vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
+  #"cd ~/vulkan && tar xf vulkansdk-linux-x86_64-1.4.341.0.tar.xz",
 #  "source /opt/rh/gcc-toolset-12/enable"
 ]
 
@@ -87,7 +90,7 @@ before-all = [
 before-build = [
     "chmod +x {project}/.ci/cleanprevbuild.sh",
     "{project}/.ci/cleanprevbuild.sh",
-    "source ~/vulkan/1.4.341.0/setup-env.sh && cd ~",
+    #"source ~/vulkan/1.4.341.0/setup-env.sh && cd ~",
     "which python",]
 
 before-test = [
@@ -96,6 +99,7 @@ before-test = [
 # manylinux_2_34_x86_64
 # manylinux_2_28_x86_64
 repair-wheel-command = [
+    # "bash -c 'echo entering repair stage; bash;'",
     "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tmp/cibwlibsdir",
     "echo 'Lib path for repair $LD_LIBRARY_PATH'",
     "auditwheel show {wheel}",
