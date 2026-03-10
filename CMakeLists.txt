@@ -39,7 +39,7 @@ if (USE_ARTIFACTORY_LIBS)
     set(LIBRARY_INSTALL_DIR ${PROJECT_BINARY_DIR})
     message(STATUS "Installing artifactory packages to: ${LIBRARY_INSTALL_DIR}")
 
-    set(HDILib_VERSION 2.0.0a1)
+    set(HDILib_VERSION 2.0.0a2)
     set(flann_VERSION 1.9.2)
     set(lz4_VERSION 1.10.0)
 
