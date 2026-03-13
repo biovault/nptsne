@@ -1,0 +1,57 @@
+[project]
+name = "nptsnedemos"
+version = "2.0.0a2"
+description = "Demonstration scripts for nptsne"
+dependencies = [
+  "nptsne==2.0.0a2",
+  "PyQt6==6.9.0",
+  "matplotlib==3.10.1",
+  "scipy==1.15.2",
+  "numpy==2.2.4",
+  "pandas==2.2.3",
+  "Pillow==11.1.0",
+  "networkx==3.4.2",
+  "python-louvain==0.16",
+  "pywin32; sys_platform == 'win32'"
+]
+requires-python = ">=3.11"
+
+[tool.uv]
+package = true
+# This forces uv to install the current project (the demos) into the venv
+# so that "import nptsne_demos" works.
+
+#[dependency-groups]
+#dev = [
+#    { include-group = "nptsne_demos" }
+#]
+
+[tool.uv.workspace]
+members = []
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple"
+explicit = true
+
+
+[project.scripts]
+SimpleTsne = "nptsnedemos.SimpleTsne.test:main"
+
+[tool.uv.sources]
+# This forces uv to look for 'nptsne' on TestPyPI 
+# instead of failing when it's not on the main PyPI
+nptsne = { index = "testpypi" }
+nptsnedemos = { path = ".", editable = true }
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = [
+  "nptsnedemos", 
+  "nptsnedemos.SimpleTsne"
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
