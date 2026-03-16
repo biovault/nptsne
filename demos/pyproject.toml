@@ -37,6 +37,7 @@ explicit = true
 
 [project.scripts]
 SimpleTsne = "nptsnedemos.SimpleTsne.test:main"
+BasicHSNEDemo = "nptsnedemos.BasicHSNEDemo.hsnedemo:main"
 
 [tool.uv.sources]
 # This forces uv to look for 'nptsne' on TestPyPI 
@@ -48,7 +49,8 @@ nptsnedemos = { path = ".", editable = true }
 package-dir = {"" = "src"}
 packages = [
   "nptsnedemos", 
-  "nptsnedemos.SimpleTsne"
+  "nptsnedemos.SimpleTsne",
+  "nptsnedemos.BasicHSNEDemo",
 ]
 
 [build-system]
