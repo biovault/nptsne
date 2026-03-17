@@ -4,7 +4,13 @@ build
 .conan
 demos/src/nptsnedemos/data
 demos/src/nptsnedemos.egg-info
-.vscode
+!.vscode
+.vscode/*
+!.vscode/launch.json
 wheelhouse/*
 docs/_build
 .mypy_cache
+demos/data
+
+# Don't ignore these even in subdirs
+!launch.json

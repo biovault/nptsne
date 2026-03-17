@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Configuration for the demo"""
 from pathlib import Path
-from ConfigClasses import (
+from .ConfigClasses import (
     LabelledImage,
     PointMeta,
     HyperspectralImage,

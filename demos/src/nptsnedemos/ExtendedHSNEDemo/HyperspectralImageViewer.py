@@ -150,7 +150,7 @@ class HyperspectralImageViewer(QWidget):
         self.main_layout.addWidget(self.image_widget)
         self.bkgrnd_name = None
         # self.control_layout = QHBoxLayout(self)
-        self.control_layout = QFormLayout(self)
+        self.control_layout = QFormLayout()
         # self.control_layout.addWidget(QLabel("Select image dimension: "))
         self.image_spin = QSpinBox(self)
         self.image_spin.setValue(0)

@@ -41,11 +41,11 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import Qt, QTimer, QSize, pyqtSlot, QItemSelectionModel
 from PyQt6.QtGui import QIcon, QStandardItemModel, QStandardItem, QPixmap, QIntValidator
-from DemoConfig import CONFIGS
+from .DemoConfig import CONFIGS
 from typing import List, Optional, Callable, Union, Any, Dict, Tuple
 import nptsne
 from nptsne import hsne_analysis
-from ConfigClasses import DemoType
+from .ConfigClasses import DemoType
 
 
 class AnalysisEvent(Enum):

@@ -17,9 +17,9 @@ import numpy as np
 from PyQt6.QtWidgets import QApplication
 
 # The demo GUI
-from AnalysisController import AnalysisController
-from ModelGui import ModelGui, AnalysisEvent
-from ConfigClasses import DemoType
+from .AnalysisController import AnalysisController
+from .ModelGui import ModelGui, AnalysisEvent
+from .ConfigClasses import DemoType
 from typing import List, Union, Dict
 
 

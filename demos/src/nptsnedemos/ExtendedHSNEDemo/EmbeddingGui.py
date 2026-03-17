@@ -28,7 +28,7 @@ from matplotlib.figure import Figure
 from matplotlib import colors
 from PyQt6 import QtWidgets, QtCore
 
-from cursors import DrawingCursors, DrawingShape, DrawingMode
+from .cursors import DrawingCursors, DrawingShape, DrawingMode
 from matplotlib.backend_bases import TimerBase
 from typing import Dict, Any, List, Tuple, Callable, Union
 
@@ -55,7 +55,9 @@ class SelectionEvent(enum.Enum):
     TRANSIENT = 1  # For example mouse over - just views nearest points
     PERMANENT = 2  # Area selected
 
-
+# This class is the matplotlip based plot widget 
+# used by the EmbeddingViewer
+# in order to display the tSNE embedding 
 class EmbeddingGui(FigureCanvas):
     """This is the matplotlib based GUI for a single analysis
     It assumes the analysis is simple image data (this could be abstracted)"""
@@ -63,13 +65,16 @@ class EmbeddingGui(FigureCanvas):
     def __init__(self, width=5, height=5) -> None:
         DrawingCursors.init_cursors()
         self.fig = Figure(figsize=(width, height))
+        self.figure = self.fig
+        self.fig.set_canvas(self)
         self.ax: plt.Axes = self.fig.add_subplot(111)
         self.ax.set_xticks([])
         self.ax.set_yticks([])
         mplstyle.use("fast")
         super(EmbeddingGui, self).__init__(self.fig)
         self.fig.tight_layout(pad=0)
-        self.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)  # type: ignore
+        #self.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)  # type: ignore
+        self.setFocusPolicy(QtCore.Qt.FocusPolicy.StrongFocus)
         self.setFocus()
         self.draw_state = (DrawingMode.NoDraw, DrawingShape.NoShape)
         self.selection_mask = np.full((0, 0), False)
@@ -121,6 +126,7 @@ class EmbeddingGui(FigureCanvas):
     ) -> None:
         """Set the initial embedding and point weights
         to create and display the plot at iteration step=0"""
+        print("Init EmgeddingGui plot")
         # pylint: disable=attribute-defined-outside-init
         self.top_level = top_level
         self.labels = labels
@@ -136,10 +142,10 @@ class EmbeddingGui(FigureCanvas):
         self.lasso_selector = None
 
         # Callbacks
-        self.fig.canvas.mpl_connect("motion_notify_event", self.on_over)
-        self.fig.canvas.mpl_connect("key_press_event", self.on_keypress)
-        self.fig.canvas.mpl_connect("button_press_event", self.on_start_select)
-        self.fig.canvas.mpl_connect("close_event", self.handle_close)
+        self.mpl_connect("motion_notify_event", self.on_over)
+        self.mpl_connect("key_press_event", self.on_keypress)
+        self.mpl_connect("button_press_event", self.on_start_select)
+        self.mpl_connect("close_event", self.handle_close)
 
         # Brush support values
         self.in_selection = False
@@ -336,11 +342,14 @@ class EmbeddingGui(FigureCanvas):
         print(f"Event key {event.key}")
 
         if self.disable_select:
+            print(f"disabled")
             return
         if not event.inaxes == self.scatter.axes:
+            print(f"event not inaxes")
             return
 
         if self.draw_state == (DrawingMode.NoDraw, DrawingShape.NoShape):
+            print(f"draw state {self.draw_state}")
             return
         self.in_selection = True
 
@@ -412,7 +421,7 @@ class EmbeddingViewer(QtWidgets.QWidget):
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.plot_widget = EmbeddingGui()
         self.main_layout.addWidget(self.plot_widget)
-        self.control_layout = QtWidgets.QHBoxLayout(self)
+        self.control_layout = QtWidgets.QHBoxLayout()
         self.landmarks_label = QtWidgets.QLabel("Landmarks selected: 0")
         self.control_layout.addWidget(self.landmarks_label)
         self.new_analysis_button = QtWidgets.QPushButton("New Analysis")

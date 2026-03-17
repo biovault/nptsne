@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Run Demo Folder",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "${fileDirnameBasename}.${fileBasenameNoExtension}",
+            "cwd": "${workspaceFolder}/demos/src/nptsnedemos",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}/demos/src/nptsnedemos"
+            },
+            "console": "integratedTerminal"
+        }
+    ]
+}

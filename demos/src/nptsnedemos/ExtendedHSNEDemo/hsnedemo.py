@@ -3,11 +3,12 @@
 """A demo of HSNE analysis in python using the hsne_analysis from the nptsne package
 """
 import sys
-
+import os
+print(os.getenv("PYTHONPATH", ""))
 # The nptsne package and the hsne_analysis navigation support
 from nptsne import hsne_analysis
 import matplotlib
-from ModelController import ModelController
+from .ModelController import ModelController
 
 matplotlib.use("Qt5Agg")
 # Handle running this via Windows Remote Desktop (i.e. no GPU)
@@ -29,10 +30,11 @@ def get_default_embedding_type():
             print("Assuming GPU")
     return embedder_type
 
-
-default_embedder_type = get_default_embedding_type()
-print("Embedder: ", default_embedder_type)
+def main():
+  default_embedder_type = get_default_embedding_type()
+  print("Embedder: ", default_embedder_type)
+  modelController = ModelController(default_embedder_type)
+  modelController.run()
 
 if __name__ == "__main__":
-    modelController = ModelController(default_embedder_type)
-    modelController.run()
+  main()

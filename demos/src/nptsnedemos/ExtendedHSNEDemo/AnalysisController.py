@@ -19,12 +19,12 @@ from nptsne import hsne_analysis
 from matplotlib import colors
 from matplotlib.backend_bases import TimerBase
 from PyQt6 import QtWidgets  # pylint: disable=no-name-in-module
-from EmbeddingGui import EmbeddingViewer
-from CompositeImageViewer import CompositeImageViewer
-from HyperspectralImageViewer import HyperspectralImageViewer
-from MetaDataViewer import MetaDataViewer
+from .EmbeddingGui import EmbeddingViewer
+from .CompositeImageViewer import CompositeImageViewer
+from .HyperspectralImageViewer import HyperspectralImageViewer
+from .MetaDataViewer import MetaDataViewer
 from typing import List, Callable, Tuple, Union, TypeVar
-from ConfigClasses import DemoType
+from .ConfigClasses import DemoType
 from io import BytesIO
 from typing import Union
 
@@ -83,7 +83,7 @@ class AnalysisController(QtWidgets.QDialog):
     def __init_ui(self) -> None:
         # Define the layout
         self.main_layout = QtWidgets.QVBoxLayout(self)
-        self.widget_layout = QtWidgets.QHBoxLayout(self)
+        self.widget_layout = QtWidgets.QHBoxLayout()
         self.widget_layout.addWidget(self.embedding_viewer, 1)
         data_gui_stretch = 0
         if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
