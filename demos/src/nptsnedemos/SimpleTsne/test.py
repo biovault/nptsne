@@ -61,4 +61,6 @@ def main():
   plt.show()
 
 if __name__ == "__main__":
+    root = Path(__file__).resolve().parent
+    print(f"The rootdir is {root}")
     main()

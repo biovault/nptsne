@@ -11,6 +11,3 @@ wheelhouse/*
 docs/_build
 .mypy_cache
 demos/data
-
-# Don't ignore these even in subdirs
-!launch.json

@@ -10,9 +10,12 @@ dependencies = [
   "numpy==2.2.4",
   "pandas==2.2.3",
   "Pillow==11.1.0",
+  "notebook==7.5.5",
   "networkx==3.4.2",
   "python-louvain==0.16",
-  "pywin32; sys_platform == 'win32'"
+  "pywin32; sys_platform == 'win32'",
+  "umap-learn==0.5.11",
+  "zenodo-get==3.0.0"
 ]
 requires-python = ">=3.11"
 
@@ -36,8 +39,14 @@ explicit = true
 
 
 [project.scripts]
-SimpleTsne = "nptsnedemos.SimpleTsne.test:main"
 BasicHSNEDemo = "nptsnedemos.BasicHSNEDemo.hsnedemo:main"
+ExtendedHSNEDemo = "nptsnedemos.ExtendedHSNEDemo.hsnedemo:main"
+HSNELouvainDemo = "nptsnedemos.HSNELouvainDemo.testhsnelouvain:main"
+SimpleTsne = "nptsnedemos.SimpleTsne.test:main"
+ExtendedTsne = "nptsnedemos.ExtendedTsne.testtextureextended:main"
+DocTest = "nptsnedemos.DocTest.run_doctest:main"
+JupyterNotebookDemo = "nptsnedemos.TSNEJupyterNotebook.run_tsne_notebook:open_notebook"
+GetDemoData = "nptsnedemos.GetDemoData.getdata:main"
 
 [tool.uv.sources]
 # This forces uv to look for 'nptsne' on TestPyPI 
@@ -51,6 +60,7 @@ packages = [
   "nptsnedemos", 
   "nptsnedemos.SimpleTsne",
   "nptsnedemos.BasicHSNEDemo",
+  "nptsnedemos.HSNELouvainDemo"
 ]
 
 [build-system]
