@@ -48,6 +48,26 @@ PYBIND11_MODULE(_nptsne, m)
         .value("Hamming", hdi::dr::knn_distance_metric::KNN_METRIC_HAMMING)
         .value("Dot", hdi::dr::knn_distance_metric::KNN_METRIC_DOT);
 
+    py::enum_<hdi::dr::knn_library> enumGST(m, "GpgpuSneType", py::arithmetic(), R"pbdoc(
+            Enumeration used to select the GPGPU tSNE type used. Four possibilities are
+            supported:
+
+            `GpgpuSneType.Raster`: Raster-based implementation
+            `GpgpuSneType.ComputeShader`: Compute shader-based implementation
+            `GpgpuSneType.ComputeShaderVulkan`: Compute shader-based implementation using Vulkan
+            `GpgpuSneType.AutoDetect`: Automatically detect the best implementation
+        )pbdoc");
+
+    enumGST
+        .value("Raster", hdi::dr::GradientDescentTSNETexture::GpgpuSneType::RASTER)
+    // the ComputeShader implementation is not supported on MacOS due to a driver limitations
+    #if !defined(__APPLE__)
+        .value("ComputeShader", hdi::dr::GradientDescentTSNETexture::GpgpuSneType::COMPUTE_SHADER)
+    #endif
+        .value("ComputeShaderVulkan", hdi::dr::GradientDescentTSNETexture::GpgpuSneType::COMPUTE_SHADER_VULKAN)
+        .value("AutoDetect", hdi::dr::GradientDescentTSNETexture::GpgpuSneType::AUTO_DETECT);
+
+
     py::enum_<hdi::dr::knn_library> enumKA(m, "KnnAlgorithm", py::arithmetic(), R"pbdoc(
             Enumeration used to select the knn algorithm used. Three possibilities are
             supported:

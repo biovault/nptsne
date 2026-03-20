@@ -28,14 +28,16 @@ TextureTsne::TextureTsne(
     int perplexity,
     int exaggeration_iter,
     hdi::dr::knn_library knn_algorithm,
-    hdi::dr::knn_distance_metric knn_distance_metric
-) : _verbose(verbose), _iterations(iterations), 
+    hdi::dr::knn_distance_metric knn_distance_metric,
+    hdi::dr::GradientDescentTSNETexture::GpgpuSneType gpgpu_sne_type
+    ) : _verbose(verbose), _iterations(iterations),
     _num_target_dimensions(num_target_dimensions),
     _perplexity(perplexity), 
     _exaggeration_iter(exaggeration_iter),
     _knn_algorithm(knn_algorithm), 
-    _knn_metric(knn_distance_metric), 
-    _offscreen_context(nullptr), 
+    _knn_metric(knn_distance_metric),
+    _gpgpu_sne_type(gpgpu_sne_type),
+    _offscreen_context(nullptr),
     _kl_values(iterations, -1.0f) {}
 
 // tSNE transform and return results
@@ -51,6 +53,7 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
         std::cout << "Exaggeration iter.: " << _exaggeration_iter << "\n";
         std::cout << "knn type: " << knn_library_to_string(_knn_algorithm) << "\n";
         std::cout << "knn metric: " << knn_metric_to_string(_knn_metric) << "\n";
+        std::cout << "GPGPU tSNE type: " << gpgpu_sne_type_to_string(_gpgpu_sne_type) << "\n";
     }
 
     if (!glfwInit()) {

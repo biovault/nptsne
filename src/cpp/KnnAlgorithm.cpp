@@ -30,3 +30,18 @@ const std::string knn_metric_to_string(hdi::dr::knn_distance_metric knn_algorith
             return "unknown KNN metric";
 	}
 }
+
+const std::string gpgpu_sne_type_to_string(hdi::dr::GradientDescentTSNETexture::GpgpuSneType gpgpu_sne_type) {
+    switch (gpgpu_sne_type) {
+        case hdi::dr::GradientDescentTSNETexture::GpgpuSneType::RASTER:
+            return "Raster";
+        case hdi::dr::GradientDescentTSNETexture::GpgpuSneType::COMPUTE_SHADER:
+            return "ComputeShader";
+        case hdi::dr::GradientDescentTSNETexture::GpgpuSneType::COMPUTE_SHADER_VULKAN:
+            return "ComputeShaderVulkan";
+        case hdi::dr::GradientDescentTSNETexture::GpgpuSneType::AUTO_DETECT:
+            return "AutoDetect";
+        default:
+            return "Unknown";
+    }
+}
