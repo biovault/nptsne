@@ -48,7 +48,7 @@ PYBIND11_MODULE(_nptsne, m)
         .value("Hamming", hdi::dr::knn_distance_metric::KNN_METRIC_HAMMING)
         .value("Dot", hdi::dr::knn_distance_metric::KNN_METRIC_DOT);
 
-    py::enum_<hdi::dr::knn_library> enumGST(m, "GpgpuSneType", py::arithmetic(), R"pbdoc(
+    py::enum_<hdi::dr::GradientDescentTSNETexture::GpgpuSneType> enumGST(m, "GpgpuSneType", py::arithmetic(), R"pbdoc(
             Enumeration used to select the GPGPU tSNE type used. Four possibilities are
             supported:
 
