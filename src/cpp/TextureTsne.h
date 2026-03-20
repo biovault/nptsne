@@ -56,8 +56,8 @@ private:
     std::vector<float> _kl_values;
     hdi::dr::knn_library _knn_algorithm;
     hdi::dr::knn_distance_metric _knn_metric;
-    hdi::dr::GradientDescentTSNETexture::GpgpuSneType _gpgpu_sne_type
-        hdi::dr::TsneParameters tSNE_param;
+    hdi::dr::GradientDescentTSNETexture::GpgpuSneType _gpgpu_sne_type;
+    hdi::dr::TsneParameters tSNE_param;
     double _theta;
     int _num_target_dimensions;
     GLFWwindow* _offscreen_context;
