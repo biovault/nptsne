@@ -203,7 +203,7 @@ PYBIND11_MODULE(_nptsne, m)
 
     auto default_metric = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN;
     auto default_knnlib = hdi::dr::knn_library::KNN_FLANN;
-    textureTsne.def(py::init<bool, int, int, int, int, hdi::dr::knn_library, hdi::dr::knn_distance_metric>(),
+    textureTsne.def(py::init<bool, int, int, int, int, hdi::dr::knn_library, hdi::dr::knn_distance_metric, hdi::dr::GradientDescentTSNETexture::GpgpuSneType>(),
                     R"pbdoc(
         )pbdoc",
                     py::arg("verbose") = false,
@@ -212,7 +212,8 @@ PYBIND11_MODULE(_nptsne, m)
                     py::arg("perplexity") = 30,
                     py::arg("exaggeration_iter") = 250,
                     py::arg_v("knn_algorithm", default_knnlib, "KnnAlgorithm.Flann"),
-                    py::arg_v("knn_metric", default_metric, "KnnDistanceMetric.Euclidean"));
+                    py::arg_v("knn_metric", default_metric, "KnnDistanceMetric.Euclidean"),
+                    py::arg_v("gpgpu_sne_type", hdi::dr::GradientDescentTSNETexture::GpgpuSneType::AUTO_DETECT, "GpgpuSneType.AutoDetect"));
 
     textureTsne.def("fit_transform", &TextureTsne::fit_transform,
                     R"pbdoc(

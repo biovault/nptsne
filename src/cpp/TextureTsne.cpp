@@ -81,6 +81,7 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
     auto result = py::array_t<float>(0);
     try {
         hdi::dr::GradientDescentTSNETexture tSNE;
+        tSNE.setType(_gpgpu_sne_type);
         nptsne::ProbGenType prob_gen;
         nptsne::ProbGenType::Parameters prob_gen_param;
         nptsne::EmbeddingType embedding;
