@@ -31,6 +31,7 @@ from .libs._nptsne import (
     HSneScale,
     KnnAlgorithm,
     KnnDistanceMetric,
+    GpgpuSneType,
     TextureTsne,
     TextureTsneExtended,
 )
@@ -40,6 +41,7 @@ __all__ = (
     "TextureTsneExtended",
     "KnnAlgorithm",
     "KnnDistanceMetric",
+    "GpgpuSneType",
     "HSne",
     "HSneScale",
     "hsne_analysis",

@@ -1,9 +1,9 @@
 [project]
 name = "nptsnedemos"
-version = "2.0.0a4"
+version = "2.0.0a5"
 description = "Demonstration scripts for nptsne"
 dependencies = [
-  "nptsne==2.0.0a4",
+  "nptsne==2.0.0a5",
   "PyQt6==6.9.0",
   "matplotlib==3.10.1",
   "scipy==1.15.2",
@@ -66,4 +66,9 @@ packages = [
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+]
 
