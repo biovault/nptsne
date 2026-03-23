@@ -57,7 +57,7 @@ before-build = [
 [tool.cibuildwheel.windows.environment]
 CONAN_USER_HOME="$(cmd /c 'echo %cd%')"
 PEP440TYPE="a"
-FULL_VERSION="2.0.0a3"
+FULL_VERSION="2.0.0a4"
 
 
 [tool.cibuildwheel.linux]
@@ -110,7 +110,7 @@ test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 [tool.cibuildwheel.linux.environment]
 CONAN_USER_HOME = "$(pwd)"
 PEP440TYPE = "a"
-FULL_VERSION = "2.0.0a3"
+FULL_VERSION = "2.0.0a4"
 CIBW_DEBUG_KEEP_CONTAINER = true
 HDILib_channel = "python"
 Vulkan_SDK = "$HOME/vulkan/1.4.341.0/x86_64"
@@ -143,5 +143,5 @@ test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 MACOSX_DEPLOYMENT_TARGET = "14.5"
 CONAN_USER_HOME="$(pwd)"
 PEP440TYPE="a"
-FULL_VERSION="2.0.0a3"
+FULL_VERSION="2.0.0a4"
 CMAKE_APPLE_SILICON_PROCESSOR="arm64"

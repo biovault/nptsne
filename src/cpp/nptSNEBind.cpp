@@ -162,6 +162,8 @@ PYBIND11_MODULE(_nptsne, m)
             knn_metric : :class:`KnnDistanceMetric`
                 The knn distance metric used for the nearest neighbor calculation.
                 The default is `KnnDistanceMetric.Euclidean` the only supported metric for `Flann`
+            tsne_type : :class:`GpgpuSneType`
+                The GPGPU tSNE type used for the gradient descent optimization. The default is `AutoDetect` which will select the best implementation for the system.
 
             Examples
             --------
