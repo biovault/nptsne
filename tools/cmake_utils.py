@@ -141,8 +141,20 @@ class CMakeBuild(build_ext):
         print("Files in output dir: ", os.listdir(liboutputdir))
         print("Files in temp libs dir: ", os.listdir(ext.templibdir))
         print("LD_LIBRARY_PATH: ", os.environ.get("LD_LIBRARY_PATH", ""))
+        self._generate_version_files()
 
         self._generate_stubs(liboutputdir)
+
+    def _generate_version_files(self):
+        print("Generating full and base version files")
+        build_pkg_dir = Path(self.build_lib) / "nptsne"
+        full_version = Path("full_version.txt").read_text().strip()
+        # Extract base version
+        base_version = re.match(r"^([0-9]+\.[0-9]+\.[0-9]+)", full_version).group(1)
+
+        # Write directly into build_pkg_dir
+        (build_pkg_dir / "_full_version.txt").write_text(full_version + "\n")
+        (build_pkg_dir / "_version.txt").write_text(base_version + "\n")
 
     def _generate_stubs(self, liboutputdir: Path):
         import subprocess, sys
