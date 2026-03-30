@@ -16,12 +16,12 @@ set(BUILD_NUMBER "${CMAKE_MATCH_3}")
 message(STATUS "Version info BASE_VERSION ${BASE_VERSION}, PEP440TYPE ${PEP440TYPE}, BUILD_NUMBER ${BUILD_NUMBER}, FULL_VERSION ${FULL_VERSION}")
 
 file (GENERATE
-  OUTPUT "${CMAKE_BINARY_DIR}/src/nptsne/_version.txt"
+  OUTPUT "${CMAKE_BINARY_DIR}/nptsne/_version.txt"
   CONTENT "${BASE_VERSION}\n"
 )
 
 file (GENERATE
-  OUTPUT "${CMAKE_BINARY_DIR}/src/nptsne/_full_version.txt"
+  OUTPUT "${CMAKE_BINARY_DIR}/nptsne/_full_version.txt"
   CONTENT "${FULL_VERSION}\n"
 )
 
