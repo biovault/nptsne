@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
 from scipy.io import loadmat
 import nptsne
+from nptsne import GpgpuSneType
 import math
+import sys
 
 def main():
   root = Path(__file__).resolve().parent.parent
@@ -30,7 +32,17 @@ def main():
       "#EE0077",
   ]
 
-  tsne = nptsne.TextureTsne(True)  # True triggers verbose output
+  tsne_type = GpgpuSneType.AutoDetect
+  if len(sys.argv) > 1:
+    typestr = str.upper(sys.argv[1]) 
+    if typestr == "COMPUTE":
+      tsne_type = GpgpuSneType.ComputeShader
+    if typestr == "VULKAN":
+      tsne_type = GpgpuSneType.ComputeShaderVulkan
+    if typestr == "RASTER":
+      tsne_type = GpgpuSneType.Raster
+  # True triggers verbose output
+  tsne = nptsne.TextureTsne(True, gpgpu_sne_type=tsne_type)  
   embed = tsne.fit_transform(mnist["data"])
   print(embed.shape)
   num_points = 70000

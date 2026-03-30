@@ -4,6 +4,8 @@ build
 .conan
 demos/src/nptsnedemos/data
 demos/src/nptsnedemos.egg-info
+src/nptsne/_full_version.txt
+src/nptsne/_version.txt
 !.vscode
 .vscode/*
 !.vscode/launch.json

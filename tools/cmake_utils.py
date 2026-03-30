@@ -3,14 +3,17 @@
 
 import json
 import os
+import copy
 import pathlib
 import platform
 import re
+import shutil
 import subprocess
 import sys
 import time
 import urllib
 import urllib.request
+import mypy.stubgen
 from setuptools import Extension
 from setuptools.command.build_ext import build_ext
 from distutils import log
@@ -61,6 +64,9 @@ class CMakeBuild(build_ext):
         #  I prefer to place the libraries in a "libs" subdir in the package
         liboutputdir = extdir.joinpath(ext.package_name, "libs")
         liboutputdir.mkdir(parents=True, exist_ok=True)
+        with open(Path(liboutputdir, "__init__.py").absolute(), "w") as f:
+            pass
+
 
         cmake_args = [
             "-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={}".format(liboutputdir),
@@ -101,14 +107,14 @@ class CMakeBuild(build_ext):
         else:
             raise RuntimeError("Unsupported platform")
 
-        # Building with conan - conan is used to install the dependencies
+        # Prebuilt HDILib, flann and lz4 are downloaded from artifactory 
         cmake_args += ["-DUSE_ARTIFACTORY_LIBS=ON"]
 
         env = os.environ.copy()
-        env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
-            env.get("CXXFLAGS", ""), self.distribution.get_version()
-        )
-        self.announce("CXXFLAGS: {}".format(self.distribution.get_version()), log.INFO)
+        #env["CXXFLAGS"] = '{} -DVERSION_INFO=\\"{}\\"'.format(
+        #    env.get("CXXFLAGS", ""), self.distribution.get_version()
+        #)
+        #self.announce("CXXFLAGS: {}".format(self.distribution.get_version()), log.INFO)
 
         self.announce(f"Path is {os.environ['PATH']}", log.INFO)
 
@@ -136,6 +142,92 @@ class CMakeBuild(build_ext):
         print("Files in temp libs dir: ", os.listdir(ext.templibdir))
         print("LD_LIBRARY_PATH: ", os.environ.get("LD_LIBRARY_PATH", ""))
 
+        self._generate_stubs(liboutputdir)
+
+    def _generate_stubs(self, liboutputdir: Path):
+        import subprocess, sys
+        from pathlib import Path
+
+        subprocess.check_call([
+            sys.executable, f"{str(Path(Path(__file__).parent, 'debug_import.py'))}"
+        ])
+        pkg_dir = Path("src/nptsne")
+        
+        # 1. pybind11-stubgen for the compiled extension
+        #    Import name of the extension module e.g. _nptsne
+        ext_module_name = "nptsne.libs._nptsne"
+        build_pkg_dir = Path(self.build_lib) / "nptsne"
+        
+        env = copy.deepcopy(os.environ)
+        # if os.environ.get("PYTHONPATH", None):
+        #  pypath= ":".join([os.environ.get("PYTHONPATH", None), str(liboutputdir)])
+        # else:
+        #  pypath = str(liboutputdir)
+        # if os.environ.get("PYTHONPATH", None):
+        #  pypath= ":".join([os.environ.get("PYTHONPATH", None), str(Path(self.build_lib))])
+        # else:
+        pypath = str(Path(build_pkg_dir.parent).absolute())
+        env["PYTHONPATH"] = pypath
+
+        print(f"Running pybind11_stubgen on {ext_module_name} with {pypath} as PYTHONPATH")
+
+        subprocess.check_call([
+            sys.executable, "-m", "pybind11_stubgen",
+            ext_module_name,
+            "--output-dir", str(build_pkg_dir.parent.absolute())],
+            env=env
+        )
+        # Due to the import of .libs._nptsne in the top level __init__.py
+        # a duplication of the _nptsne stub directory can be triggered
+        dup_nptsne = Path(build_pkg_dir.absolute(), "_nptsne")
+        if dup_nptsne.exists():
+          print(f"DEBUG removing spurious stub dir: {dup_nptsne}")
+          shutil.rmtree(dup_nptsne)
+
+        # pypath = f"{pypath}:{str(liboutputdir.parent)}:{str(liboutputdir.parent.parent)}"
+        # env["PYTHONPATH"] = pypath
+        # build_pkg_dir = Path(self.build_lib) / "nptsne"
+        # print(f"The build package dir is:  {build_pkg_dir.absolute()}")
+        # # 2. stubgen for the pure Python hierarchy
+        # print(f"Running stubgen on nptse with {pypath} as PYTHONPATH")
+        # init_path = build_pkg_dir / "__init__.py"
+        # print(f"DEBUG exists: {init_path.exists()}")
+        # print(f"DEBUG size: {init_path.stat().st_size}")
+        # print(f"DEBUG contents:\n{init_path.read_text()}")
+
+        # 2. mypy stubgen for pure Python modules
+        # Run in-process with build_lib_dir on sys.path
+        sys.path.insert(0, str(build_pkg_dir.parent.absolute()))
+        try:
+            mypy.stubgen.main([
+                '--package', 'nptsne.hsne_analysis',
+                '--output', str(build_pkg_dir.parent.absolute()),
+                '--no-analysis',
+                '--include-docstrings',
+                '--verbose',
+            ])
+        except SystemExit as e:
+            print(f"DEBUG stubgen SystemExit code: {e.code}")
+        except Exception as e:
+            print(f"DEBUG stubgen Exception: {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
+        finally:
+            sys.path.pop(0)
+        # subprocess.check_call([
+        #     sys.executable, "-c",  "import mypy.stubgen; mypy.stubgen.main(['-p', 'nptsne'])",
+        #     "--search-path", "",
+        #     "--verbose",
+        #     "--package", "nptsne",
+        #     "--output", "src_ms",
+        #     "--no-analysis", # faster, avoids type inference errors
+        #     "--include-docstrings",
+        #     ],   
+        #     env=env,
+        #     cwd=str(build_pkg_dir.parent.absolute())
+        # )
+        for p in build_pkg_dir.parent.rglob("*.pyi"):
+          print(p)
 
 def versions(package_name, testpypi=False):
     url = "https://test.pypi.org/pypi/{}/json".format(

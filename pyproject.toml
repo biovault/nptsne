@@ -1,16 +1,91 @@
 # When PEP621 is fully implemented move setup.cfg data here
 # see https://setuptools.pypa.io/en/latest/history.html for progress
-
 [build-system]
 requires = [
     "cmake>=3.25.0,<4.0",
     "packaging",
     "gitpython",
     "setuptools>=42",
-    "wheel"
+    "wheel",
+    "pybind11-stubgen",
+    "mypy",
+    "numpy>=1.11.0"
 ]
 # specify setuptools as packaging tool - setup.cfg contains config
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "nptsne"
+dynamic = ["version", "readme"]
+dependencies = ["numpy>=1.11.0"]
+description = "The nptsne package is designed to export a number of python classes that wrap tSNE and HSNE"
+keywords = ["tSNE", "HSNE", "embedding", "GPU"]
+authors = [
+  { name = "Nicola Pezzotti" }, 
+  { name = "Thomas Höllt" }, 
+  { name = "Julian Thijssen" }, 
+  { name = "Alexander Vieth" }, 
+  { name = "Baldur van Lew", email = "b.van_lew@lumc.nl"}
+]
+license = "Apache-2.0"
+license-files = ["LICENSE.txt"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License-Expression :: Apache-2.0",
+    "Topic :: Software Development",
+    "Topic :: Scientific/Engineering",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: MacOS :: MacOS X",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: C++",
+    "Typing :: Typed"
+]
+
+[project.urls]
+"Tracker" = "https://github.com/biovault/nptsne/issues"
+"Documentation" = "https://bldrvnlw.readthedocs.io"
+"Source" = "https://github.com/biovault/nptsne"
+
+[tools.setuptools]
+include-package-data = false
+
+[tool.setuptools.dynamic]
+# In full_version.txt
+# PEP440TYPE is used to insert a qualifier in the version name
+# It must be one of:
+# "a" - alpha release
+# "b" - beta release
+# "rc" - release candidate + N or NN
+# "" - final release (no build number)
+# If PEP440TYPE = "a" or "b" the resulting name is "version" + [PEP440TYPE + "build_number"] 
+#    -   where build number is calculated from commit count
+# If PEP440TYPE = "" or "rcN" the resulting name is "version" + [PEP440TYPE]
+# test-skip = "*"
+#
+# For final release remove the PEP440TYPE and build_number
+#
+version = {file = ["full_version.txt"]}
+readme = { file = "DESCRIPTION.md", content-type = "text/markdown" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+nptsne = [
+  "py.typed", 
+  "__init__.pyi", 
+  "hsne_analysis/__init__.pyi",
+  "hsne_analysis/analysis_model.pyi",
+  "libs/_nptsne/_hsne_analysis.pyi",
+  "libs/_nptsne/__init__.pyi"
+]
 
 [tool.black]
 line-length = 99
@@ -23,26 +98,24 @@ max-line-length = 99
 profile = "black"
 
 [tool.cibuildwheel]
-build = "cp311-* cp312-* cp313-* cp314-*"
+build = "cp311-*"
+# cp312-* cp313-* cp314-*"
 test-command = "python {project}/test/run_doctest.py"
 build-verbosity = 2
 archs = "auto64"
 skip = "cp2* pp*"
-# test-skip = "*"
 
-#PEP440TYPE is used to insert a qualifier in the version name
-# It must be one of:
-# "a" - alpha release
-# "b" - beta release
-# "rc" - release candidate + N or NN
-# "" - final release (no build number)
-# If PEP440TYPE = "a" or "b" the resulting name is "version" + [PEP440TYPE + "build_number"] 
-#    -   where build number is calculated from commit count
-# If PEP440TYPE = "" or "rcN" the resulting name is "version" + [PEP440TYPE]
+
+# 
+# The files _version.txt and _full_version.txt are generated based on this information
+[tool.cibuildwheel.environment]
+PEP440TYPE="a"
+PACKAGE_VERSION_BUILD_NUMBER="6"
+
 
 [tool.cibuildwheel.windows]
-build = "cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
-#build = "cp313-win_amd64"
+#build = "cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
+build = "cp313-win_amd64"
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
 ]
@@ -56,9 +129,6 @@ before-build = [
 
 [tool.cibuildwheel.windows.environment]
 CONAN_USER_HOME="$(cmd /c 'echo %cd%')"
-PEP440TYPE="a"
-FULL_VERSION="2.0.0a5"
-
 
 [tool.cibuildwheel.linux]
 # These are passed into the docker
@@ -109,8 +179,6 @@ test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 
 [tool.cibuildwheel.linux.environment]
 CONAN_USER_HOME = "$(pwd)"
-PEP440TYPE = "a"
-FULL_VERSION = "2.0.0a5"
 CIBW_DEBUG_KEEP_CONTAINER = true
 HDILib_channel = "python"
 Vulkan_SDK = "$HOME/vulkan/1.4.341.0/x86_64"
@@ -142,8 +210,6 @@ test-command = "export CI=TRUE && python {project}/test/run_doctest.py"
 [tool.cibuildwheel.macos.environment]
 MACOSX_DEPLOYMENT_TARGET = "14.5"
 CONAN_USER_HOME="$(pwd)"
-PEP440TYPE="a"
-FULL_VERSION="2.0.0a5"
 CMAKE_APPLE_SILICON_PROCESSOR="arm64"
 
 [dependency-groups]

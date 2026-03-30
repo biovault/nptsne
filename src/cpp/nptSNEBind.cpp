@@ -149,21 +149,26 @@ PYBIND11_MODULE(_nptsne, m)
             verbose : bool
                 Enable verbose logging to standard output
             iterations : int
-                The number of iterations to perform. This must be at least 1000.
+                The number of iterations to perform. Typically between 500 and 1000. 
+                The default is 1000.
             num_target_dimensions : int
-                The number of dimensions for the output embedding. Default is 2.
+                The number of dimensions for the output embedding. 
+                The default is 2.
             perplexity : int
-                The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. Default is 30.
+                The tSNE parameter that defines the neighborhood size. Usually between 10 and 30. 
+                The default is 30.
             exaggeration_iter : int
-                The iteration when force exaggeration starts to decay.
+                The iteration when force exaggeration starts to decay. 
+                The default is 250
             knn_algorithm : :class:`KnnAlgorithm`
                 The knn algorithm used for the nearest neighbor calculation.
-                The default is `Flann` for less than 50 dimensions `HNSW` may be faster
+                The default is `HNSW`.
             knn_metric : :class:`KnnDistanceMetric`
                 The knn distance metric used for the nearest neighbor calculation.
-                The default is `KnnDistanceMetric.Euclidean` the only supported metric for `Flann`
+                The default is `KnnDistanceMetric.Euclidean`.
             tsne_type : :class:`GpgpuSneType`
-                The GPGPU tSNE type used for the gradient descent optimization. The default is `AutoDetect` which will select the best implementation for the system.
+                The GPGPU tSNE type used for the gradient descent optimization. 
+                The default is `AutoDetect` which will select the best implementation for the system.
 
             Examples
             --------
@@ -213,7 +218,7 @@ PYBIND11_MODULE(_nptsne, m)
                     py::arg("num_target_dimensions") = 2,
                     py::arg("perplexity") = 30,
                     py::arg("exaggeration_iter") = 250,
-                    py::arg_v("knn_algorithm", default_knnlib, "KnnAlgorithm.Flann"),
+                    py::arg_v("knn_algorithm", default_knnlib, "KnnAlgorithm.HNSW"),
                     py::arg_v("knn_metric", default_metric, "KnnDistanceMetric.Euclidean"),
                     py::arg_v("gpgpu_sne_type", hdi::dr::GradientDescentTSNETexture::GpgpuSneType::AUTO_DETECT, "GpgpuSneType.AutoDetect"));
 

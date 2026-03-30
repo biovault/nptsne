@@ -13,7 +13,7 @@ import tempfile
 
 def update_package_full_version(full_version):
     script_path = Path(__file__).resolve().parent.absolute()
-    with open(Path(script_path, "src", "nptsne", "_full_version.txt"), "w") as verfile:
+    with open(Path(script_path, "_full_version.txt"), "w") as verfile:
         verfile.write(full_version)
 
 
@@ -26,13 +26,13 @@ def update_package_branch_name(branch_name):
 #  This temporary directory is used to collect libs
 #  for inclusion in the wheel
 templibdir = Path(Path(tempfile.gettempdir()), "cibwlibsdir")
-full_version = get_version(Path(__file__).resolve().parent)
-update_package_full_version(full_version)
+#full_version = get_version(Path(__file__).resolve().parent)
+#update_package_full_version(full_version)
 branch_name = get_branch_name(Path(__file__).resolve().parent)
 update_package_branch_name(branch_name)
 
 setup(
-    version=full_version,
+    # version=full_version,
     ext_modules=[
         CMakeExtension("_nptsne", "nptsne", templibdir=str(templibdir))
     ],  # provide the extension name and package_name

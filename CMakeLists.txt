@@ -6,7 +6,29 @@ endif()
 message(STATUS "1 CMAKE LIB OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")
 message(STATUS "1 CMAKE LIB RELEASE OUTPUT: ${CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE}")
 
-file (STRINGS "version.txt" VERSION) 
+# Version is defined in a root file 
+file (READ ${CMAKE_SOURCE_DIR}/full_version.txt FULL_VERSION) 
+message(STATUS "Loaded FULL_VERSION: ${FULL_VERSION}")
+string(REGEX MATCH "^([0-9]+\\.[0-9]+\\.[0-9]+)([a-z]+)([0-9]+)$" _ "${FULL_VERSION}")
+set(BASE_VERSION "${CMAKE_MATCH_1}")
+set(PEP440TYPE   "${CMAKE_MATCH_2}")
+set(BUILD_NUMBER "${CMAKE_MATCH_3}")
+message(STATUS "Version info BASE_VERSION ${BASE_VERSION}, PEP440TYPE ${PEP440TYPE}, BUILD_NUMBER ${BUILD_NUMBER}, FULL_VERSION ${FULL_VERSION}")
+
+file (GENERATE
+  OUTPUT "${CMAKE_SOURCE_DIR}/src/nptsne/_version.txt"
+  CONTENT "${BASE_VERSION}\n"
+)
+
+file (GENERATE
+  OUTPUT "${CMAKE_SOURCE_DIR}/src/nptsne/_full_version.txt"
+  CONTENT "${FULL_VERSION}\n"
+)
+
+file (STRINGS ${CMAKE_SOURCE_DIR}/src/nptsne/_full_version.txt WRITTEN_FULL_VERSION) 
+message(STATUS "Loaded WRITTEN_FULL_VERSION: ${WRITTEN_FULL_VERSION}")
+
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVERSION_INFO=${FULL_VERSION}")
 project(_nptsne)
 
 option(NPTSNE_BUILD_WITH_CONAN "Should Conan package manager be used?" ON)
