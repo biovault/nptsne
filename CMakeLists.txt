@@ -25,6 +25,16 @@ file (GENERATE
   CONTENT "${FULL_VERSION}\n"
 )
 
+file (GENERATE
+  OUTPUT "${CMAKE_SOURCE_DIR}/src/nptsne/_version.txt"
+  CONTENT "${BASE_VERSION}\n"
+)
+
+file (GENERATE
+  OUTPUT "${CMAKE_SOURCE_DIR}/src/nptsne/_full_version.txt"
+  CONTENT "${FULL_VERSION}\n"
+)
+
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DVERSION_INFO=${FULL_VERSION}")
 project(_nptsne)
 
