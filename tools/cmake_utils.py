@@ -148,10 +148,9 @@ class CMakeBuild(build_ext):
         import subprocess, sys
         from pathlib import Path
 
-        subprocess.check_call([
-            sys.executable, f"{str(Path(Path(__file__).parent, 'debug_import.py'))}"
-        ])
-        pkg_dir = Path("src/nptsne")
+        #subprocess.check_call([
+        #    sys.executable, f"{str(Path(Path(__file__).parent, 'debug_import.py'))}"
+        #])
         
         # 1. pybind11-stubgen for the compiled extension
         #    Import name of the extension module e.g. _nptsne
@@ -159,13 +158,7 @@ class CMakeBuild(build_ext):
         build_pkg_dir = Path(self.build_lib) / "nptsne"
         
         env = copy.deepcopy(os.environ)
-        # if os.environ.get("PYTHONPATH", None):
-        #  pypath= ":".join([os.environ.get("PYTHONPATH", None), str(liboutputdir)])
-        # else:
-        #  pypath = str(liboutputdir)
-        # if os.environ.get("PYTHONPATH", None):
-        #  pypath= ":".join([os.environ.get("PYTHONPATH", None), str(Path(self.build_lib))])
-        # else:
+
         pypath = str(Path(build_pkg_dir.parent).absolute())
         env["PYTHONPATH"] = pypath
 
