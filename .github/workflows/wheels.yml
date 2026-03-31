@@ -153,7 +153,7 @@ jobs:
 
       - name: Publish wheels to PyPI
         if: ${{ needs.build_wheels.outputs.dorelease == 'true' }}
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@release/v1.13
         with:
           password: ${{ secrets.PYPI_TOKEN_SECRET  }}
           packages-dir: ./dist/
@@ -162,7 +162,7 @@ jobs:
 
       - name: Publish wheels to TestPyPI
         if: ${{ needs.build_wheels.outputs.dorelease == 'false' }}
-        uses: pypa/gh-action-pypi-publish@release/v1
+        uses: pypa/gh-action-pypi-publish@release/v1.13
         with:
           password: ${{ secrets.TESTPYPI_TOKEN_SECRET  }}
           repository-url: https://test.pypi.org/legacy/
