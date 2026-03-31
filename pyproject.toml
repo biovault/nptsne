@@ -35,7 +35,6 @@ requires-python = ">=3.10"
 classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
-    "License-Expression :: Apache-2.0",
     "Topic :: Software Development",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
