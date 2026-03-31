@@ -109,7 +109,7 @@ skip = "cp2* pp*"
 
 
 [tool.cibuildwheel.windows]
-build = "cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
+build = "cp310-win_amd64 cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
 #build = "cp313-win_amd64"
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
@@ -129,7 +129,7 @@ CONAN_USER_HOME="$(cmd /c 'echo %cd%')"
 # manylinux_2_34_x86_64
 # manylinux_2_28_x86_64
 manylinux-x86_64-image = "manylinux_2_28"
-build = "cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
+build = "cp310-manylinux_x86_64 cp311-manylinux_x86_64 cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64"
 test-skip = "*-*linux_x86_64}"
 
 before-all = [
@@ -180,7 +180,7 @@ Vulkan_SDK = "$HOME/vulkan/1.4.341.0/x86_64"
 
 [tool.cibuildwheel.macos]
 build-verbosity=3
-build = ["cp311-*", "cp312-*", "cp313-*", "cp314-*"]
+build = ["cp310-*", "cp311-*", "cp312-*", "cp313-*", "cp314-*"]
 archs = ["arm64"]
 
 before-all = [
