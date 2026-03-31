@@ -5,7 +5,7 @@ requires = [
     "cmake>=3.25.0,<4.0",
     "packaging",
     "gitpython",
-    "setuptools>=42",
+    "setuptools>=77",
     "wheel",
     "pybind11-stubgen",
     "mypy",
