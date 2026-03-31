@@ -86,7 +86,7 @@ jobs:
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
       # The default upload name is artifact but a name can be supplied
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: nptsne_wheels_${{matrix.job-name}}
           path: ./wheelhouse/*.whl
@@ -109,19 +109,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: nptsne_wheels_*
           path: ./dist
           merge-multiple: true
 
       - name: Setup python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.13
+          python-version: "3.x"
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
