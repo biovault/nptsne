@@ -19,6 +19,7 @@ from setuptools.command.build_ext import build_ext
 from distutils import log
 from distutils.version import LooseVersion
 from pathlib import Path
+from tools.version_util import get_branch_name
 
 
 class CMakeExtension(Extension):
@@ -26,13 +27,13 @@ class CMakeExtension(Extension):
         Extension.__init__(self, name, sources=[])
         self.sourcedir = os.path.abspath(sourcedir)
         self.package_name = package_name
-        # self.templibdir = tempfile.mkdtemp()
         self.templibdir = templibdir
         # print('Temp lib dir is :', self.templibdir)
 
 
 class CMakeBuild(build_ext):
     def run(self):
+        self.announce("In CMakeBuild.run", log.INFO)
         try:
             out = subprocess.check_output(["cmake", "--version"])
         except OSError:
@@ -151,18 +152,16 @@ class CMakeBuild(build_ext):
         full_version = Path("full_version.txt").read_text().strip()
         # Extract base version
         base_version = re.match(r"^([0-9]+\.[0-9]+\.[0-9]+)", full_version).group(1)
+        branch_name = get_branch_name(Path(__file__).resolve().parent.parent)
 
         # Write directly into build_pkg_dir
         (build_pkg_dir / "_full_version.txt").write_text(full_version + "\n")
         (build_pkg_dir / "_version.txt").write_text(base_version + "\n")
+        (build_pkg_dir / "_branch_name.txt").write_text(branch_name + "\n")
 
     def _generate_stubs(self, liboutputdir: Path):
         import subprocess, sys
         from pathlib import Path
-
-        #subprocess.check_call([
-        #    sys.executable, f"{str(Path(Path(__file__).parent, 'debug_import.py'))}"
-        #])
         
         # 1. pybind11-stubgen for the compiled extension
         #    Import name of the extension module e.g. _nptsne
@@ -189,17 +188,6 @@ class CMakeBuild(build_ext):
           print(f"DEBUG removing spurious stub dir: {dup_nptsne}")
           shutil.rmtree(dup_nptsne)
 
-        # pypath = f"{pypath}:{str(liboutputdir.parent)}:{str(liboutputdir.parent.parent)}"
-        # env["PYTHONPATH"] = pypath
-        # build_pkg_dir = Path(self.build_lib) / "nptsne"
-        # print(f"The build package dir is:  {build_pkg_dir.absolute()}")
-        # # 2. stubgen for the pure Python hierarchy
-        # print(f"Running stubgen on nptse with {pypath} as PYTHONPATH")
-        # init_path = build_pkg_dir / "__init__.py"
-        # print(f"DEBUG exists: {init_path.exists()}")
-        # print(f"DEBUG size: {init_path.stat().st_size}")
-        # print(f"DEBUG contents:\n{init_path.read_text()}")
-
         # 2. mypy stubgen for pure Python modules
         # Run in-process with build_lib_dir on sys.path
         sys.path.insert(0, str(build_pkg_dir.parent.absolute()))
@@ -219,18 +207,7 @@ class CMakeBuild(build_ext):
             traceback.print_exc()
         finally:
             sys.path.pop(0)
-        # subprocess.check_call([
-        #     sys.executable, "-c",  "import mypy.stubgen; mypy.stubgen.main(['-p', 'nptsne'])",
-        #     "--search-path", "",
-        #     "--verbose",
-        #     "--package", "nptsne",
-        #     "--output", "src_ms",
-        #     "--no-analysis", # faster, avoids type inference errors
-        #     "--include-docstrings",
-        #     ],   
-        #     env=env,
-        #     cwd=str(build_pkg_dir.parent.absolute())
-        # )
+
         for p in build_pkg_dir.parent.rglob("*.pyi"):
           print(p)
 

@@ -28,7 +28,9 @@ authors = [
   { name = "Baldur van Lew", email = "b.van_lew@lumc.nl"}
 ]
 license = "Apache-2.0"
-license-files = ["LICENSE.txt"]
+license-files = [
+  "LICENSE.txt",
+]
 classifiers = [
     "Intended Audience :: Science/Research",
     "Intended Audience :: Developers",
@@ -53,7 +55,7 @@ classifiers = [
 "Documentation" = "https://bldrvnlw.readthedocs.io"
 "Source" = "https://github.com/biovault/nptsne"
 
-[tools.setuptools]
+[tool.setuptools]
 include-package-data = false
 
 [tool.setuptools.dynamic]
@@ -106,16 +108,9 @@ archs = "auto64"
 skip = "cp2* pp*"
 
 
-# 
-# The files _version.txt and _full_version.txt are generated based on this information
-[tool.cibuildwheel.environment]
-PEP440TYPE="a"
-PACKAGE_VERSION_BUILD_NUMBER="6"
-
-
 [tool.cibuildwheel.windows]
-#build = "cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
-build = "cp313-win_amd64"
+build = "cp311-win_amd64 cp312-win_amd64 cp313-win_amd64 cp314-win_amd64"
+#build = "cp313-win_amd64"
 before-all = [
     "{project}\\.ci\\cleanwheelhouse.bat"
 ]
@@ -131,8 +126,6 @@ before-build = [
 CONAN_USER_HOME="$(cmd /c 'echo %cd%')"
 
 [tool.cibuildwheel.linux]
-# These are passed into the docker
-# environment = {CONAN_USER_HOME="$(pwd)", PEP440TYPE="a", FULL_VERSION="1.3.0.b1", CIBW_DEBUG_KEEP_CONTAINER=true, HDILib_channel="python"}
 # manylinux_2_34_x86_64
 # manylinux_2_28_x86_64
 manylinux-x86_64-image = "manylinux_2_28"
