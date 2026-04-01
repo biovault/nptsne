@@ -5,11 +5,13 @@ This shows how the extended API in TextureTsneExtended can be used
 from pathlib import Path
 from timeit import default_timer as timer
 import nptsne
+from nptsne import GpgpuSneType
 import matplotlib.pyplot as plt
 from matplotlib import rc
 from matplotlib import colors as mcolors
 import numpy as np
 from scipy.io import loadmat
+import sys
 
 def main():
 
@@ -33,13 +35,21 @@ def main():
       "#992288",
       "#EE0077",
   ]
-  # norm = mcolors.Normalize(vmin=0, vmax=9)
 
-  # mcolors.ListedColormap(colors)
+  tsne_type = GpgpuSneType.AutoDetect
+  if len(sys.argv) > 1:
+    typestr = str.upper(sys.argv[1]) 
+    if typestr == "COMPUTE":
+      tsne_type = GpgpuSneType.ComputeShader
+    if typestr == "VULKAN":
+      tsne_type = GpgpuSneType.ComputeShaderVulkan
+    if typestr == "RASTER":
+      tsne_type = GpgpuSneType.Raster
+
   rc("lines", linewidth=2)
   rc("lines", markersize=1)
 
-  tsne = nptsne.TextureTsneExtended(False)
+  tsne = nptsne.TextureTsneExtended(False, gpgpu_sne_type=tsne_type)
   if tsne.init_transform(mnist["data"]):
       print("Init succeeded")
 

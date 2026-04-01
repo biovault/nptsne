@@ -24,13 +24,15 @@ TextureTsneExtended::TextureTsneExtended(
     int num_target_dimensions,
     int perplexity,
     hdi::dr::knn_library knn_algorithm,
-    hdi::dr::knn_distance_metric knn_distance_metric
-) : _decay_started_at(-1),
+    hdi::dr::knn_distance_metric knn_distance_metric,
+    hdi::dr::GradientDescentTSNETexture::GpgpuSneType gpgpu_sne_type
+    ) : _decay_started_at(-1),
     _verbose(verbose),
     _num_target_dimensions(num_target_dimensions),
     _perplexity(perplexity),
     _knn_algorithm(knn_algorithm),
     _knn_metric(knn_distance_metric),
+    _gpgpu_sne_type(gpgpu_sne_type),
     _offscreen_context(nullptr),
     _exaggeration_decay(false),
     _iteration_count(0),
@@ -74,6 +76,7 @@ bool TextureTsneExtended::init_transform(
         std::cout << "Perplexity: " << _perplexity << "\n";
         std::cout << "knn type: " << knn_library_to_string(_knn_algorithm) << "\n";
         std::cout << "knn metric: " << knn_metric_to_string(_knn_metric) << "\n";
+        std::cout << "GPGPU tSNE type: " << gpgpu_sne_type_to_string(_gpgpu_sne_type) << "\n";
     }
     try {
         float similarities_comp_time = 0;
@@ -277,6 +280,7 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
                     throw std::runtime_error("Failed to initialize OpenGL context");
                 }
                 std::cout << "initializing tSNE" << "\n";
+                _tSNE.setType(_gpgpu_sne_type);
                 _tSNE.initialize(_distributions, &_embedding, tSNE_param);
             } else {
                 if (_verbose) {

@@ -29,7 +29,8 @@ class TextureTsneExtended {
         int num_target_dimensions = 2,
         int perplexity = 30,
         hdi::dr::knn_library knn_algorithm = hdi::dr::knn_library::KNN_FLANN,
-        hdi::dr::knn_distance_metric knn_distance_metric = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN);
+        hdi::dr::knn_distance_metric knn_distance_metric = hdi::dr::knn_distance_metric::KNN_METRIC_EUCLIDEAN,
+        hdi::dr::GradientDescentTSNETexture::GpgpuSneType gpgpu_sne_type = hdi::dr::GradientDescentTSNETexture::GpgpuSneType::AUTO_DETECT);
 
     // Initialize the probabilities based on the data
     bool init_transform(
@@ -91,6 +92,7 @@ class TextureTsneExtended {
     std::vector<float> _kl_values;
     hdi::dr::knn_library _knn_algorithm;
     hdi::dr::knn_distance_metric _knn_metric;
+    hdi::dr::GradientDescentTSNETexture::GpgpuSneType _gpgpu_sne_type;
     double _theta;
     int _num_target_dimensions;
     bool _have_preset_embedding;
