@@ -5,11 +5,11 @@ description = "Demonstration scripts for nptsne"
 dependencies = [
   "nptsne==2.0.0a10",
   "PyQt6==6.9.0",
-  "matplotlib==3.10.1",
-  "scipy==1.15.2",
-  "numpy==2.2.4",https://productionresultssa8.blob.core.windows.net/actions-results/4e1aeb49-e25b-4de5-ac53-3162db8874cc/workflow-job-run-7df23650-7924-5e26-9695-01791f2cd42f/logs/job/job-logs.txt?rsct=text%2Fplain&se=2026-04-01T14%3A39%3A05Z&sig=0Zi5Fw5gdmeUla9vND0ZVifox1Z8o1tnUZO6Z586iFc%3D&ske=2026-04-01T16%3A22%3A14Z&skoid=ca7593d4-ee42-46cd-af88-8b886a2f84eb&sks=b&skt=2026-04-01T12%3A22%3A14Z&sktid=398a6654-997b-47e9-b12b-9515b896b4de&skv=2025-11-05&sp=r&spr=https&sr=b&st=2026-04-01T14%3A29%3A00Z&sv=2025-11-05
+  "matplotlib>=3.10.5",
+  "scipy>=1.16.1",
+  "numpy==2.2.4",
   "pandas==2.2.3",
-  "Pillow==11.1.0",
+  "Pillow>=12.0.0",
   "notebook==7.5.5",
   "networkx==3.4.2",
   "python-louvain==0.16",
@@ -46,7 +46,7 @@ members = []
 [tool.uv.sources]
 # Search internaal indexed for development purposes
 nptsne = { index = "testpypi" }
-nptsne = { index = "wheelhouse" }
+#nptsne = { index = "wheelhouse" }
 nptsnedemos = { path = ".", editable = true }
 
 
