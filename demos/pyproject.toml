@@ -28,6 +28,7 @@ ExtendedTsne = "nptsnedemos.ExtendedTsne.testtextureextended:main"
 DocTest = "nptsnedemos.DocTest.run_doctest:main"
 JupyterNotebookDemo = "nptsnedemos.TSNEJupyterNotebook.run_tsne_notebook:open_notebook"
 GetDemoData = "nptsnedemos.GetDemoData.getdata:main"
+DistanceMatrix = "nptsnedemos.DistanceMatrix.test_dist:main"
 
 [tool.uv]
 package = true
@@ -68,8 +69,22 @@ packages = [
   "nptsnedemos", 
   "nptsnedemos.SimpleTsne",
   "nptsnedemos.BasicHSNEDemo",
-  "nptsnedemos.HSNELouvainDemo"
+  "nptsnedemos.HSNELouvainDemo",
+  "nptsnedemos.DistanceMatrix"
 ]
+
+# 
+[tool.create_demo_zip]
+base = "./"
+include = [
+  "src/nptsnedemos",
+  "data",
+  "DEMOS_README.txt",
+  "GETTING_MNIST.txt",
+  "pyproject.toml",
+  "uv.lock"
+]
+
 
 [build-system]
 requires = ["setuptools>=61.0"]
