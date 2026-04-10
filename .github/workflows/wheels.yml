@@ -212,7 +212,7 @@ jobs:
       uses: astral-sh/setup-uv@v5
     - name: Save demo
       run: | 
-        python -m pip debug --verbose | grep manylinux
+        # python -m pip debug --verbose | grep manylinux
         ls dist
         unzip demos.zip
         cd demos
@@ -220,8 +220,8 @@ jobs:
                 --extra-index-url https://pypi.org/simple/ \
                 --find-links ../dist
         cd ..
-        rm demo.zip
         python ./demos/create_demo_zip.py
+        ls -al 
 
     - name: Upload completed demo blob to draft release
       uses: softprops/action-gh-release@v2
