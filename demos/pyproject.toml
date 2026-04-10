@@ -1,9 +1,9 @@
 [project]
 name = "nptsnedemos"
-version = "2.0.0a15"
+version = "2.0.0a16"
 description = "Demonstration scripts for nptsne"
 dependencies = [
-  "nptsne==2.0.0a15",
+  "nptsne==2.0.0a16",
   "PyQt6==6.9.0",
   "matplotlib>=3.10.5",
   "scipy>=1.16.1",
@@ -28,7 +28,7 @@ ExtendedTsne = "nptsnedemos.ExtendedTsne.testtextureextended:main"
 DocTest = "nptsnedemos.DocTest.run_doctest:main"
 JupyterNotebookDemo = "nptsnedemos.TSNEJupyterNotebook.run_tsne_notebook:open_notebook"
 GetDemoData = "nptsnedemos.GetDemoData.getdata:main"
-DistanceMatrix = "nptsnedemos.DistanceMatrix.test_dist:main"
+DistanceMatrix = "nptsnedemos.DistanceMatrixDemo.test_dist:main"
 
 [tool.uv]
 package = true
@@ -70,7 +70,7 @@ packages = [
   "nptsnedemos.SimpleTsne",
   "nptsnedemos.BasicHSNEDemo",
   "nptsnedemos.HSNELouvainDemo",
-  "nptsnedemos.DistanceMatrix"
+  "nptsnedemos.DistanceMatrixDemo"
 ]
 
 # 
