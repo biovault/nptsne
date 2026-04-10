@@ -197,7 +197,6 @@ jobs:
       uses: actions/download-artifact@v8
       with:
         pattern: demo.zip
-        path: ./demofix
         merge-multiple: true
 
     - name: Install uv and zip 
