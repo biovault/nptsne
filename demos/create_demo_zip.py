@@ -14,7 +14,7 @@ def get_demo_data(demobase: Path):
       # Download all files from the nptsne zenodo record
   zen_doi = "10.5281/zenodo.19470311"
   print(f"fetch data from Zenodo DOI {zen_doi}")
-  download(zen_doi, output_dir=Path(demobase, "download"))
+  download(zen_doi, output_dir=Path(demobase, "download"), timeout=45.0)
 
   p = sorted(Path(demobase, "download").rglob("data.zip"))
   
