@@ -212,6 +212,7 @@ jobs:
       uses: astral-sh/setup-uv@v5
     - name: Save demo
       run: | 
+        ls dist
         unzip demos.zip
         cd demos
         uv sync --index-url https://test.pypi.org/simple/ \
