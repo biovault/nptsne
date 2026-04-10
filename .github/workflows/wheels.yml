@@ -199,6 +199,15 @@ jobs:
         pattern: demos.zip
         merge-multiple: true
 
+    # Even thought eh upload to (Test)PyPI has succeeded
+    # the wheel takes some time to become visible
+    # Use a local copy to avoid issues
+    - name: Download wheel artifacts
+      uses: actions/download-artifact@v8
+      with:
+        pattern: nptsne_wheels_*
+        path: ./dist
+        merge-multiple: true
     - name: Install uv and zip 
       uses: astral-sh/setup-uv@v5
     - name: Save demo
@@ -207,6 +216,7 @@ jobs:
         cd demos
         uv sync --index-url https://test.pypi.org/simple/ \
                 --extra-index-url https://pypi.org/simple/
+                --find-links ../dist
         cd ..
         rm demo.zip
         python ./demos/create_demo_zip.py
