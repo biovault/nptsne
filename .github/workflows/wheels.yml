@@ -220,6 +220,7 @@ jobs:
                 --extra-index-url https://pypi.org/simple/ \
                 --find-links ../dist
         cd ..
+        python -m pip install zenodo-get
         python ./demos/create_demo_zip.py
         ls -al 
 
