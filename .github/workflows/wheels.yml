@@ -212,10 +212,11 @@ jobs:
       uses: astral-sh/setup-uv@v5
     - name: Save demo
       run: | 
+        python -m pip debug --verbose | grep manylinux
         ls dist
         unzip demos.zip
         cd demos
-        uv sync --index-url https://test.pypi.org/simple/ \
+        uv sync --python 3.13 --index-url https://test.pypi.org/simple/ \
                 --extra-index-url https://pypi.org/simple/ \
                 --find-links ../dist
         cd ..
