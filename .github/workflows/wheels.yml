@@ -213,13 +213,19 @@ jobs:
     - name: Save demo
       run: | 
         # python -m pip debug --verbose | grep manylinux
-        ls dist
+        echo Available wheels
+        ls ./dist
         unzip demos.zip
         cd demos
+        echo Contents of demos
+        ls .
+        echo Update uv.lock
+        sleep 10
         uv sync --python 3.13 --index-url https://test.pypi.org/simple/ \
                 --extra-index-url https://pypi.org/simple/ \
                 --find-links ../dist
         cd ..
+        echo Package necessary demo subset
         python -m pip install zenodo-get
         python ./demos/create_demo_zip.py
         ls -al 
