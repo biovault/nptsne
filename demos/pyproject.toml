@@ -1,9 +1,9 @@
 [project]
 name = "nptsnedemos"
-version = "2.0.0a20"
+version = "2.0.0a21"
 description = "Demonstration scripts for nptsne"
 dependencies = [
-  "nptsne==2.0.0a20",
+  "nptsne==2.0.0a21",
   "PyQt6==6.9.0",
   "matplotlib>=3.10.5",
   "scipy>=1.16.1",
@@ -17,7 +17,7 @@ dependencies = [
   "umap-learn==0.5.11",
   "zenodo-get==3.0.0"
 ]
-requires-python = ">=3.11"
+requires-python = ">=3.11, <3.14"
 
 [project.scripts]
 BasicHSNEDemo = "nptsnedemos.BasicHSNEDemo.hsnedemo:main"
