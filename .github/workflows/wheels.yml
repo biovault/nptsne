@@ -235,7 +235,7 @@ jobs:
       with:
         draft: true
         tag_name: staging-${{ github.run_id }}
-        working_directory: dist
+        working_directory: .
         files: demos.zip
 
   do_read_the_docs:
