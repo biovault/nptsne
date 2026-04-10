@@ -78,6 +78,19 @@ jobs:
           ARTIFACTORY_RO_PASSWORD: ${{ secrets.ARTIFACTORY_RO_PASSWORD }}
         run: python -m cibuildwheel --debug-traceback --output-dir wheelhouse
       
+      - name: Save demo
+        if: runner.os == 'Linux'
+        run: | 
+          zip -r demos.zip demos/
+
+      - name: Upload demo
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v7
+        with: 
+          name: demos.zip
+          path: ./demos.zip
+          retention-days: 1
+          if-no-files-found: error
 
       - id: rtd
         run: |
@@ -170,9 +183,43 @@ jobs:
           skip-existing: true
           verbose: true
 
+
   #   1) If the upload succeeds trigger either :
   #      ReadTheDocs if DOREADTHEDOCS was true
   # (Note that RTD API v3 needs its own token)
+
+  complete_demos:
+    name: Make the demo.zip externally available as draft
+    needs: [build_wheels, upload_PyPI]
+    runs-on: ubuntu-latest    
+    steps:
+    - name: Download demo artifacts
+      uses: actions/download-artifact@v8
+      with:
+        pattern: demo.zip
+        path: ./demofix
+        merge-multiple: true
+
+    - name: Install uv and zip 
+      uses: astral-sh/setup-uv@v5
+    - name: Save demo
+      run: | 
+        unzip demos.zip -d demos
+        cd demos
+        uv sync --index https://test.pypi.org/simple/ \
+                --extra-index https://pypi.org/simple/
+        cd ..
+        rm demo.zip
+        python ./demos/create_demo_zip.py
+
+    - name: Upload completed demo blob to draft release
+      uses: softprops/action-gh-release@v2
+      with:
+        draft: true
+        tag_name: staging-${{ github.run_id }}
+        working_directory: dist
+        files: demos.zip
+
   do_read_the_docs:
     name: Add documentation to read the docs
     needs: [upload_PyPI]

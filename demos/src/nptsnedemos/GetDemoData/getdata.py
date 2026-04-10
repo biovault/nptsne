@@ -15,15 +15,17 @@ from zenodo_get import download
 import zipfile
 from pathlib import Path
 
-def main():
-  # Download all files from the nptsne zenodo record
-  download("10.5281/zenodo.4023248", output_dir="./zenodo")
 
-  p = sorted(Path('./zenodo').rglob("nptsne*.zip"))
-  
-  print(p)
-  with zipfile.ZipFile(p[0], 'r') as zip_ref:
-      zip_ref.extractall('./data')
+def main():
+    # Download all files from the nptsne zenodo record
+    download("10.5281/zenodo.19470311", output_dir="./zenodo")
+
+    p = sorted(Path("./zenodo").rglob("nptsne*.zip"))
+
+    print(p)
+    with zipfile.ZipFile(p[0], "r") as zip_ref:
+        zip_ref.extractall("./data")
+
 
 if __name__ == "__main__":
     main()

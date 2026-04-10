@@ -38,7 +38,7 @@ def add_to_zip(zf: zipfile.ZipFile, source: Path, base: Path) -> None:
 
 
 def main(output: Path, base: Path = Path(".")) -> None:
-    demobase = Path(Path(__file__).resolve().parent.parent, "demos")
+    demobase = Path(Path(__file__).resolve().parent, "demos")
     get_demo_data(demobase)
     with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as zf:
         zip_includes = load_include_list(Path(demobase, "pyproject.toml"))
