@@ -208,15 +208,40 @@ jobs:
         pattern: nptsne_wheels_*
         path: ./dist
         merge-multiple: true
+    - name: Wait for nptsne to appear on (Test)PyPI
+      shell: bash
+      env:
+        VERSION: ${{ needs.upload_PyPI.outputs.nptsneversion }}  # or set dynamically from your version file
+      run: |
+        URL1="https://test.pypi.org/pypi/nptsne/${VERSION}/json"
+        URL2="https://pypi.org/pypi/nptsne/${VERSION}/json"
+        MAX_ATTEMPTS=20
+        WAIT_SECONDS=10
+        
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL1")
+          if [ "$STATUS" = "200" ]; then
+            echo "✓ nptsne ${VERSION} is available on TestPyPI"
+            exit 0
+          fi
+          echo "Attempt $i/${MAX_ATTEMPTS}: HTTP ${STATUS}, retrying in ${WAIT_SECONDS}s..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL2")
+          if [ "$STATUS" = "200" ]; then
+            echo "✓ nptsne ${VERSION} is available on PyPI"
+            exit 0
+          fi
+          echo "Attempt $i/${MAX_ATTEMPTS}: HTTP ${STATUS}, retrying in ${WAIT_SECONDS}s..."
+          sleep $WAIT_SECONDS
+        done
+        
+        echo "✗ Timed out after $((MAX_ATTEMPTS * WAIT_SECONDS))s waiting for nptsne ${VERSION}"
+        exit 1      
     - name: Install uv and zip 
       uses: astral-sh/setup-uv@v5
     - name: Save demo
       run: | 
         # python -m pip debug --verbose | grep manylinux
         export distdir=`pwd`/dist
-        python -m pip install pypi-server 
-        pypi-server run -p 8080 $distdir &pip install pypi-server 
-        pypi-server run -p 8080 $distdir &
         echo Available wheels in $distdir
         ls $distdir
         unzip demos.zip
@@ -225,8 +250,8 @@ jobs:
         ls .
         echo Update uv.lock
         sleep 10
-        uv sync --dry-run --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ --extra-index-url https://pypi.org/simple/ 2>&1 | head -50
-        uv sync --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ --extra-index-url https://pypi.org/simple/
+        uv sync --dry-run --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/  2>&1 | head -50
+        uv sync --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ 
         cd ..
         echo Package necessary demo subset
         python -m pip install zenodo-get
