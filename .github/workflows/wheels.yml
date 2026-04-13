@@ -214,6 +214,9 @@ jobs:
       run: | 
         # python -m pip debug --verbose | grep manylinux
         export distdir=`pwd`/dist
+        python -m pip install pypi-server 
+        pypi-server run -p 8080 $distdir &pip install pypi-server 
+        pypi-server run -p 8080 $distdir &
         echo Available wheels in $distdir
         ls $distdir
         unzip demos.zip
@@ -222,8 +225,8 @@ jobs:
         ls .
         echo Update uv.lock
         sleep 10
-        uv sync --dry-run --python 3.13 --find-links $distdir --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ 2>&1 | head -50
-        uv sync --python 3.13 --find-links $distdir --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/
+        uv sync --dry-run --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ --extra-index-url https://pypi.org/simple/ 2>&1 | head -50
+        uv sync --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ --extra-index-url https://pypi.org/simple/
         cd ..
         echo Package necessary demo subset
         python -m pip install zenodo-get
