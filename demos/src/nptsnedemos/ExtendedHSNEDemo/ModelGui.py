@@ -340,7 +340,7 @@ class ModelGui(QDialog):
 
     @pyqtSlot()
     def on_load(self) -> None:
-        workdir = Path(Path(__file__).resolve().parent.parent, "data")
+        workdir = str(Path(Path(__file__).resolve().parent.parent, "data"))
         result: Tuple[str, str] = QFileDialog.getOpenFileName(
             self,
             "Open a numpy file where each row is a data point and columns are dimensions",
@@ -377,7 +377,7 @@ class ModelGui(QDialog):
 
     @pyqtSlot()
     def on_load_hsne(self) -> None:
-        workdir = Path(Path(__file__).resolve().parent.parent, "data")
+        workdir = str(Path(Path(__file__).resolve().parent.parent, "data"))
         result = QFileDialog.getOpenFileName(
             self, "Open a pre-calculated hSNE analysis file .hsne", workdir, "hSNE files (*.hsne)"
         )
@@ -388,7 +388,7 @@ class ModelGui(QDialog):
 
     @pyqtSlot()
     def on_load_labels(self) -> None:
-        workdir = Path(Path(__file__).resolve().parent.parent, "data")
+        workdir = str(Path(Path(__file__).resolve().parent.parent, "data"))
         result = QFileDialog.getOpenFileName(
             self,
             "Open a numpy file where each row is an integer label",
@@ -401,7 +401,7 @@ class ModelGui(QDialog):
 
     @pyqtSlot()
     def on_load_labelscolors(self) -> None:
-        workdir = Path(Path(__file__).resolve().parent.parent, "data")
+        workdir = str(Path(Path(__file__).resolve().parent.parent, "data"))
         result = QFileDialog.getOpenFileName(
             self,
             "Open a CSV file with header where the columns pairs of Label, #COLOR_",
