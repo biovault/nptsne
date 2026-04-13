@@ -206,7 +206,7 @@ class HyperspectralImageViewer(QWidget):
     @pyqtSlot()
     def on_load_bkgrnd(self):
         """Load a background image"""
-        workdir = os.path.dirname(os.path.abspath(__file__))
+        workdir = Path(Path(__file__).resolve().parent.parent, "data")
         result = QFileDialog.getOpenFileName(
             self,
             "A png background image the same size as the hyperspectral frame",

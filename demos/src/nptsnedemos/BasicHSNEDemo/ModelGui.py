@@ -12,7 +12,7 @@ from typing import List
 from pathlib import Path
 
 
-default_data_path = Path(Path(__file__).resolve().parent().parent(), "data")
+default_data_path = Path(Path(__file__).resolve().parent.parent, "data")
 class AnalysisEvent(Enum):
     ADDED = 1
     FINISHED = 2
