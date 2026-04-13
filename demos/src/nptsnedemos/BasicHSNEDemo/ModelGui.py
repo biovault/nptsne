@@ -9,8 +9,10 @@ from nptsne import hsne_analysis
 from enum import Enum
 from collections.abc import Callable
 from typing import List
+from pathlib import Path
 
 
+default_data_path = Path(Path(__file__).resolve().parent().parent(), "data")
 class AnalysisEvent(Enum):
     ADDED = 1
     FINISHED = 2
@@ -132,7 +134,7 @@ class AnalysisTreeGui:
         self.delete_callback([int(x) for x in selection])
 
     def load(self, event):
-        workdir = os.path.dirname(os.path.abspath(__file__))
+        workdir = default_data_path
         self.name = filedialog.askopenfilename(
             initialdir=workdir,
             filetypes=[("Numpy files", "*.npy")],
@@ -140,7 +142,7 @@ class AnalysisTreeGui:
         )
 
     def load_labels(self, event):
-        workdir = os.path.dirname(os.path.abspath(__file__))
+        workdir = default_data_path
         self.label_name = filedialog.askopenfilename(
             initialdir=workdir,
             filetypes=[("Numpy files", "*.npy")],
