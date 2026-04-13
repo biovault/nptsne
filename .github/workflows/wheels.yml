@@ -215,15 +215,15 @@ jobs:
         # python -m pip debug --verbose | grep manylinux
         echo Available wheels
         ls ./dist
+        export distdir=`pwd`/dist
         unzip demos.zip
         cd demos
         echo Contents of demos
         ls .
         echo Update uv.lock
         sleep 10
-        uv sync --python 3.13 --index-url https://test.pypi.org/simple/ \
-                --extra-index-url https://pypi.org/simple/ \
-                --find-links ../dist
+        uv sync --python 3.13 \
+                --find-links $distdir
         cd ..
         echo Package necessary demo subset
         python -m pip install zenodo-get
