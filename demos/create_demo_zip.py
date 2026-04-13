@@ -20,7 +20,7 @@ def get_demo_data(demobase: Path):
   
   print(p)
   with zipfile.ZipFile(p[0], 'r') as zip_ref:
-      zip_ref.extractall(Path(demobase, './data'))
+      zip_ref.extractall(Path(demobase, 'src', 'nptsnedemos', 'data'))
 
 def load_include_list(pyproject_path: Path = Path("./demos/pyproject.toml")) -> list[str]:
     with open(pyproject_path, "rb") as f:
