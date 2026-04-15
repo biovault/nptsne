@@ -215,7 +215,7 @@ jobs:
       run: |
         URL1="https://test.pypi.org/pypi/nptsne/${VERSION}/json"
         URL2="https://pypi.org/pypi/nptsne/${VERSION}/json"
-        MAX_ATTEMPTS=20
+        MAX_ATTEMPTS=30
         WAIT_SECONDS=10
         
         for i in $(seq 1 $MAX_ATTEMPTS); do
@@ -241,9 +241,6 @@ jobs:
     - name: Save demo
       run: | 
         # python -m pip debug --verbose | grep manylinux
-        export distdir=`pwd`/dist
-        echo Available wheels in $distdir
-        ls $distdir
         unzip demos.zip
         cd demos
         echo Contents of demos
