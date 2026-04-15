@@ -247,6 +247,9 @@ jobs:
         ls .
         echo Update uv.lock
         sleep 10
+        export UV_HTTP_CONNECT_TIMEOUT=30
+        export UV_HTTP_RETRIES=10
+        export UV_HTTP_TIMEOUT=120
         uv sync --dry-run --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/  2>&1 | head -50
         uv sync --python 3.13 --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ 
         cd ..
