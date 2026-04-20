@@ -16,6 +16,7 @@ namespace py = pybind11;
 #include "hdi/dimensionality_reduction/hd_joint_probability_generator.h"
 #ifdef __APPLE__
 #define __gl3_h_
+#include <OpenGL/gl3.h>
 #endif
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
 
