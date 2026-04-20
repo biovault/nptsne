@@ -1,9 +1,9 @@
 [project]
 name = "nptsnedemos"
-version = "2.0.0rc4"
+version = "2.0.0rc5"
 description = "Demonstration scripts for nptsne"
 dependencies = [
-  "nptsne==2.0.0rc4",
+  "nptsne==2.0.0rc5",
   "PyQt6==6.9.0",
   "matplotlib>=3.10.5",
   "scipy>=1.16.1",
@@ -32,6 +32,7 @@ DistanceMatrix = "nptsnedemos.DistanceMatrixDemo.test_dist:main"
 
 [tool.uv]
 package = true
+prerelease = "allow"
 # This forces uv to install the current project (the demos) into the venv
 # so that "import nptsne_demos" works.
 
@@ -43,10 +44,9 @@ package = true
 [tool.uv.workspace]
 members = []
 
-
 [tool.uv.sources]
 # Search internaal indexed for development purposes
-nptsne = { index = "testpypi", prerelease = "allow" }
+nptsne = { index = "testpypi" }
 #nptsne = { index = "wheelhouse" }
 nptsnedemos = { path = ".", editable = true }
 
