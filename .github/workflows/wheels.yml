@@ -221,20 +221,20 @@ jobs:
         for i in $(seq 1 $MAX_ATTEMPTS); do
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL1")
           if [ "$STATUS" = "200" ]; then
-            echo "✓ nptsne ${VERSION} is available on TestPyPI"
+            echo "** nptsne ${VERSION} is available on TestPyPI"
             exit 0
           fi
           echo "Attempt $i/${MAX_ATTEMPTS}: HTTP ${STATUS}, retrying in ${WAIT_SECONDS}s..."
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL2")
           if [ "$STATUS" = "200" ]; then
-            echo "✓ nptsne ${VERSION} is available on PyPI"
+            echo "** nptsne ${VERSION} is available on PyPI"
             exit 0
           fi
           echo "Attempt $i/${MAX_ATTEMPTS}: HTTP ${STATUS}, retrying in ${WAIT_SECONDS}s..."
           sleep $WAIT_SECONDS
         done
         
-        echo "✗ Timed out after $((MAX_ATTEMPTS * WAIT_SECONDS))s waiting for nptsne ${VERSION}"
+        echo "!! Timed out after $((MAX_ATTEMPTS * WAIT_SECONDS))s waiting for nptsne ${VERSION}"
         exit 1      
     - name: Install uv and zip 
       uses: astral-sh/setup-uv@v5

@@ -1,9 +1,9 @@
 [project]
 name = "nptsnedemos"
-version = "2.0.0rc3"
+version = "2.0.0rc4"
 description = "Demonstration scripts for nptsne"
 dependencies = [
-  "nptsne==2.0.0rc3",
+  "nptsne==2.0.0rc4",
   "PyQt6==6.9.0",
   "matplotlib>=3.10.5",
   "scipy>=1.16.1",
@@ -46,7 +46,7 @@ members = []
 
 [tool.uv.sources]
 # Search internaal indexed for development purposes
-nptsne = { index = "testpypi" }
+nptsne = { index = "testpypi", prerelease = "allow" }
 #nptsne = { index = "wheelhouse" }
 nptsnedemos = { path = ".", editable = true }
 
