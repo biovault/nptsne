@@ -6,16 +6,14 @@
 #include <pybind11/numpy.h>
 #include <vector>
 namespace py = pybind11;
-#ifndef __APPLE__
-#include "glad/glad_3_3.h"
-#endif
+#ifdef __APPLE__
+    #include <OpenGL/gl3.h>
+#else // __APPLE__
+    #include "hdi/utils/glad/glad.h"
+#endif // __APPLE__
 #include <GLFW/glfw3.h>
 #include <hdi/dimensionality_reduction/knn_utils.h>
 #include "hdi/dimensionality_reduction/tsne.h"
-#ifdef __APPLE__
-#define __gl3_h_
-#include <OpenGL/gl3.h>
-#endif
 #include "hdi/dimensionality_reduction/gradient_descent_tsne_texture.h"
 #include "Types.h"
 
