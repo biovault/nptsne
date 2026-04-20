@@ -73,10 +73,12 @@ py::array_t<float, py::array::c_style> TextureTsne::fit_transform(
     }
     glfwMakeContextCurrent(_offscreen_context);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+#ifndef __APPLE__
+    if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         glfwTerminate();
         throw std::runtime_error("Failed to initialize OpenGL context");
     }
+#endif
 
     auto result = py::array_t<float>(0);
     try {

@@ -275,10 +275,12 @@ py::array_t<float, py::array::c_style> TextureTsneExtended::run_transform(
                     throw std::runtime_error("Failed to create GLFW offscreen window");
                 }
                 glfwMakeContextCurrent(_offscreen_context);
-
-                if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+#ifndef __APPLE__
+                if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+                    glfwTerminate();
                     throw std::runtime_error("Failed to initialize OpenGL context");
                 }
+#endif
                 std::cout << "initializing tSNE" << "\n";
                 _tSNE.setType(_gpgpu_sne_type);
                 _tSNE.initialize(_distributions, &_embedding, tSNE_param);
