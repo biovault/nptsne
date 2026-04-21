@@ -47,7 +47,7 @@ jobs:
       # and https://stackoverflow.com/a/53409848/584201
       # A full checkout allows the git derived build number to work working (based on git log and rev-list)
       - name: Checkout the source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: recursive
@@ -102,8 +102,8 @@ jobs:
 
       - id: rtd
         run: |
-          echo "::set-output name=doreadthedocs::$DOREADTHEDOCS"
-          echo "::set-output name=dorelease::$DORELEASE"
+          echo "doreadthedocs=$DOREADTHEDOCS" >> $GITHUB_OUTPUT
+          echo "dorelease=$DORELEASE" >> $GITHUB_OUTPUT
       # Temporary storage of job results
       # In later steps are collected and uploaded to (Test)PyPI
       # The default upload name is artifact but a name can be supplied
@@ -286,7 +286,7 @@ jobs:
 
   do_read_the_docs:
     name: Add documentation to read the docs
-    needs: [upload_PyPI]
+    needs: [build_wheels, upload_PyPI]
     runs-on: ubuntu-latest
     env:
       VERSION: ${{ needs.upload_PyPI.outputs.nptsneversion }}
