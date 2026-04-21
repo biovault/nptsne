@@ -4,6 +4,31 @@ from git.exc import InvalidGitRepositoryError
 
 from pathlib import Path
 
+import os
+
+def _branch_from_env() -> str | None:
+    # PR builds
+    if os.getenv("GITHUB_HEAD_REF"):
+        return os.environ["GITHUB_HEAD_REF"]
+    # push/tag builds
+    if os.getenv("GITHUB_REF_NAME"):
+        return os.environ["GITHUB_REF_NAME"]
+    return None
+
+def _git_branch_or_sha(repo_path) -> str:
+    try:
+        from git import Repo  # GitPython
+        repo = Repo(repo_path)
+
+        # Detached HEAD safe: active_branch may raise TypeError
+        try:
+            return repo.active_branch.name
+        except TypeError:
+            # detached: use short sha
+            return repo.head.commit.hexsha[:12]
+    except Exception:
+        return "unknown"
+    
 def get_branch_name(repo_path="./"):
     """Return the github branch
 
@@ -16,20 +41,5 @@ def get_branch_name(repo_path="./"):
         str: branch string - e.g. master, feature/xyz, release/nnn
     """
     not_rtd = os.environ.get("READTHEDOCS") != "True"
-    assert not_rtd  # don't use this on read the docs
-    repo = None
-    try:
-      repo = Repo(repo_path)
-
-    except InvalidGitRepositoryError:
-        return "0+unknown"
-
-    try:
-        # works only when on a branch
-        return repo.active_branch.name
-    except TypeError:
-        # detached HEAD
-        # If HEAD is detached, do NOT use repo.head.reference / active_branch
-        sha = repo.head.commit.hexsha[:8]
-        return f"0+g{sha}"
+    return _branch_from_env() or _git_branch_or_sha(repo_path)
     
