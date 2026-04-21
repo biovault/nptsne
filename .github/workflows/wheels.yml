@@ -1,16 +1,24 @@
 name: Build
 
-on: [push, pull_request, workflow_dispatch]
+on: 
+  push: 
+  pull_request: 
+  workflow_dispatch: 
+    inputs:
+       force_release:
+        description: 'Force release mode regardless of tag'
+        type: boolean
+        default: false     
 
 env:
   # Set DOREADTHEDOCS to
   #   - "true" if this version is to be loaded to ReadTheDocs
   #   - "false" otherwise
   DOREADTHEDOCS: "true"
-  # Set DORELEASE to
-  #   - "true" if this version is to be loaded to PyPI
-  #   - "false" if this version is to be loaded to TestPyPI
-  DORELEASE: "false"
+  # Set force_release to
+  #   - "true" to force this version is to be loaded to PyPI
+  #   - "false" PyPI release is triggered by the presence of a tag 
+  DORELEASE: ${{ github.ref_type == 'tag' || inputs.force_release == true }} 
 
 jobs:
   # Job to buildwheels on all platforms
@@ -260,10 +268,19 @@ jobs:
         ls -al 
 
     - name: Upload completed demo blob to draft release
+      if: ${{ needs.build_wheels.outputs.dorelease == 'false' }}
       uses: softprops/action-gh-release@v2
       with:
         draft: true
         tag_name: staging-${{ github.run_id }}
+        working_directory: .
+        files: demos.zip
+
+    - name: Upload completed demo blob to release 
+      if: ${{ needs.build_wheels.outputs.dorelease == 'true' }}
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ github.ref_name }}
         working_directory: .
         files: demos.zip
 
