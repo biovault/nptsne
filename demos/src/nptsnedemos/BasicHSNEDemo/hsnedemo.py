@@ -166,7 +166,11 @@ def main():
       # raw = np.fromfile('MNIST_70000.bin', np.uint8)
       # X = np.reshape(raw, (70000, 784))
       hsne = nptsne.HSne(True)
-      number_of_scales = 3  # was 4
+      number_of_scales = 3  
+      # for small data 3 scales functions poorly 
+      # too few points for the embeddings
+      if X.shape[0] < 10000:
+          number_of_scales = 2
       if hsne_file is None:
           print("hSNE from scratch")
           hsne.create_hsne(X, number_of_scales)
