@@ -66,8 +66,7 @@ def make_test_globals():
         "sample_texture_tsne_extended": nptsne.TextureTsneExtended()
     }
 
-
-if __name__ == "__main__":
+def main():
     # doctest checks that the module name matches before finding tests
     # The module name is fixed in the __module__ of the class and methods
     # To pick up the tests in the binarys use the correct module name
@@ -98,3 +97,6 @@ if __name__ == "__main__":
     if total_failures:
         exit(1)
     exit(0)
+
+if __name__ == "__main__":
+    main()
