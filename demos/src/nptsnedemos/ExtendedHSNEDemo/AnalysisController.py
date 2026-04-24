@@ -137,13 +137,13 @@ class AnalysisController(QtWidgets.QDialog):
         if labels is not None:
             sub_labels = labels[self.analysis.landmark_orig_indexes]
 
-        disable_select = self.analysis.scale_id == 0
+        self.disable_select = self.analysis.scale_id == 0
         self.embedding_viewer.init_plot(
             analysis.embedding,
             analysis.landmark_weights,
             self.on_selection,
             self.do_close,
-            disable_select,
+            self.disable_select,
             top_level,
             sub_labels,
             color_norm,
@@ -213,14 +213,18 @@ class AnalysisController(QtWidgets.QDialog):
         if self.demo_type == DemoType.HYPERSPECTRAL_DEMO:
             # Pass area influenced to the hyperspectral viewer
             aoi: np.ndarray
-            if fast:
+            # fast area of influence throws exception at scale 0
+            if fast and self.analysis.scale_id != 0:
                 aoi = self.analysis.get_fast_area_of_influence(landmark_indexes)
             else:
                 aoi = self.analysis.get_area_of_influence(landmark_indexes)
             self.data_gui.set_static_mask(aoi)
 
         if make_new_analysis:
-            self.make_new_analysis(self.analysis, analysis_selection)
+            if not self.disable_select:
+              self.make_new_analysis(self.analysis, analysis_selection)
+            else:
+              print("Already at scale 0")
         else:
             if self.demo_type == DemoType.LABELLED_DEMO:
                 # Pass data indexes to labelled viewer
