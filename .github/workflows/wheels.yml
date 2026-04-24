@@ -312,6 +312,15 @@ jobs:
           exit(0) if r.status_code==200 else exit(1)
         shell: python
 
+      - name: Verify wheel upload - to test.pypi.org
+        if: ${{ needs.build_wheels.outputs.dorelease == 'true' }}
+        run: |
+          import os
+          import requests
+          r=requests.get(f'https://pypi.org/project/nptsne/{os.environ["VERSION"]}')
+          exit(0) if r.status_code==200 else exit(1)
+        shell: python
+
       # The new version (tagged as v + VERSION above) is activated and built in readthedocs
       - name: Activate new version and trigger ReadTheDocs
         run: |

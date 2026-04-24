@@ -1140,10 +1140,10 @@ PYBIND11_MODULE(_nptsne, m)
             -----
             The return is in list-of-lists (LIL) format.
             The list returned has one entry for each landmark point i at scale s-1,
-            :math: `\mathcal{L}_{i}^{s-1}`.
+            :math:`\mathcal{L}_{i}^{s-1}`.
             Each entry is a list of tuples at where each tuple contains an index
-            j for a landmark at scale s,   :math: `\mathcal{L}_{j}^{s}`
-            and a value :math: `\mathit{I}^{S}(i,j)` representing the probability that the 
+            j for a landmark at scale s,   :math:`\mathcal{L}_{j}^{s}`
+            and a value :math:`\mathit{I}^{S}(i,j)` representing the probability that the 
             landmark point i at scale s-1 is influenced by 
             landmark j at scale s.
 

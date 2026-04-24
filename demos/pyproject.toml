@@ -1,9 +1,9 @@
 [project]
 name = "nptsnedemos"
-version = "2.0.1"
+version = "2.0.2"
 description = "Demonstration scripts for nptsne"
 dependencies = [
-  "nptsne==2.0.1",
+  "nptsne==2.0.2",
   "PyQt6==6.9.0",
   "matplotlib>=3.10.5",
   "scipy>=1.16.1",

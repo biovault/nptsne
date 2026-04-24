@@ -26,4 +26,8 @@ The t-SNE and HSNE implementations are the original work of the authors named in
 
 ###### Full documentation
 
-Full documentation is available at the [nptsne doc pages](https://nptsne.readthedocs.io/en/v2.0.1)
+Full documentation is available at the [nptsne doc pages](https://nptsne.readthedocs.io/en/v2.0.2)
+
+###### Demos
+
+Demos, runnable  via uv, are at [nptsne demo release pages] https://github.com/biovault/nptsne/releases/tag/v2.0.2
