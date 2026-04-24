@@ -25,6 +25,7 @@ github_branch = "release/2.0.0"
 import os
 import sys
 import subprocess
+from packaging.version import Version
 
 # Whether the build is running inside RTD
 on_rtd = os.environ.get("READTHEDOCS") == "True"
@@ -57,38 +58,54 @@ if on_rtd:
     # TBD this is incorrect
     # stable represents a tagged version - will be on PyPi
     # non-stable on test.pypi
+    RTD_ALIASES = {"latest", "stable"}
     install_version = rtd_version
     if install_version[0] == "v":
         install_version = rtd_version[1:]
-    if "rc" not in rtd_version and "a" not in rtd_version and "b" not in rtd_version:
-        branch = None
-        try:
+    if install_version in RTD_ALIASES:
+        subprocess.check_call(
+            [
+                sys.executable, 
+                "-m", 
+                "pip", 
+                "install",
+                "--pre",
+                "nptsne"
+            ]
+        )
+    else:
+        v = Version(install_version)
+        if v.is_prerelease:
             subprocess.check_call(
                 [
                     sys.executable,
                     "-m",
                     "pip",
                     "install",
-                    "--force-reinstall",
+                    "--pre",
+                    "--no-deps",
                     f"nptsne=={install_version}",
+                    "--index-url",
+                    "https://test.pypi.org/simple",
                 ]
             )
-        except subprocess.CalledProcessError:
-            branch = "stable"
-    else:
-        subprocess.check_call(
-            [
-                sys.executable,
-                "-m",
-                "pip",
-                "install",
-                "--pre",
-                "--no-deps",
-                f"nptsne=={install_version}",
-                "--index-url",
-                "https://test.pypi.org/simple",
-            ]
-        )
+        else:
+            branch = None
+            try:
+                subprocess.check_call(
+                    [
+                        sys.executable,
+                        "-m",
+                        "pip",
+                        "install",
+                        "--force-reinstall",
+                        f"nptsne=={install_version}",
+                    ]
+                )
+            except subprocess.CalledProcessError:
+                branch = "stable"
+
+
 else:
     sys.path.insert(0, os.path.abspath(os.path.join("..", "installed")))
 
